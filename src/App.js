@@ -17,6 +17,24 @@ function App() {
         >
           bla bla bla hi hi hi 
         </a>
+        <table>
+          <tr>
+            <td>
+              Hello
+            </td>
+            <td>
+              hi again
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Hello
+            </td>
+            <td>
+              hi again
+            </td>
+          </tr>
+        </table>
       </header>
     </div>
   );
