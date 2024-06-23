@@ -19,7 +19,11 @@ function App() {
               school offers driver's ed you can take that class (although it
               will take more time). I recommend using Aceable Driving, and you
               can buy their California Driver's ed course{" "}
-              <a href="http://share.aceable.com/6z9QCp" target="_blank">
+              <a
+                href="http://share.aceable.com/6z9QCp"
+                target="_blank"
+                rel="noreferrer"
+              >
                 here
               </a>
               . This link gives you a $10 discount.*{" "}
@@ -51,6 +55,7 @@ function App() {
               <a
                 href="https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/instruction-permits/"
                 target="_blank"
+                rel="noreferrer"
               >
                 official dmv page
               </a>{" "}
@@ -61,6 +66,7 @@ function App() {
             <a
               href="https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/instruction-permits/"
               target="_blank"
+              rel="noreferrer"
             >
               <img
                 src={perm_reqs}
@@ -96,6 +102,7 @@ function App() {
                 <a
                   href="https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/dl-id-online-app-edl-44/"
                   target="_blank"
+                  rel="noreferrer"
                 >
                   here.
                 </a>
@@ -167,6 +174,7 @@ function App() {
                   <a
                     href="https://www.dmv.ca.gov/portal/file/federal-non-compliant-dl-id-card-documents-list-pdf/"
                     target="_blank"
+                    rel="noreferrer"
                   >
                     this list.
                   </a>
@@ -202,6 +210,7 @@ function App() {
               <a
                 href="https://www.dmv.ca.gov/portal/driver-education-and-safety/educational-materials/sample-driver-license-dl-knowledge-tests/"
                 target="_blank"
+                rel="noreferrer"
               >
                 DMV practice tests
               </a>
@@ -209,6 +218,7 @@ function App() {
               <a
                 href="https://driving-tests.org/california/dmv-practice-test/"
                 target="_blank"
+                rel="noreferrer"
               >
                 driving-test.org.
               </a>
