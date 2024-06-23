@@ -98,13 +98,13 @@ function App() {
               </h3>
               <p>
                 This one's a bit more complicated. Visit the hyperlink on the
-                website or{" "}
+                website or 
                 <a
                   href="https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/dl-id-online-app-edl-44/"
                   target="_blank"
                   rel="noreferrer"
                 >
-                  here.
+                  here. 
                 </a>
                 Start off by creating a California DMV account, and then you can
                 fill out the application. Then follow these steps with a parent:{" "}
@@ -206,7 +206,7 @@ function App() {
               When you finally get there, the hardest part will be the knowledge
               test. You can practice by actually paying attention during
               driver's ed (jk who even does that (jk again)) and by taking
-              practice tests. I recommend the official
+              practice tests. I recommend the official 
               <a
                 href="https://www.dmv.ca.gov/portal/driver-education-and-safety/educational-materials/sample-driver-license-dl-knowledge-tests/"
                 target="_blank"
@@ -220,7 +220,7 @@ function App() {
                 target="_blank"
                 rel="noreferrer"
               >
-                driving-test.org.
+                driving-test.org. 
               </a>
               The latter has some good practice tests and a decent amount of the
               questions were on the actual test. I don't recommend the Aceable
