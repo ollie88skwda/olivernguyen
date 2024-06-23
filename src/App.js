@@ -1,4 +1,3 @@
-import "./App.css";
 import perm_reqs from "./assets/permitrequirements.png";
 
 function App() {
