@@ -1,13 +1,13 @@
 import "./App.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import perm_reqs from "./assets/permitrequirements.png";
 import on_logo from "./assets/on_logo.png";
 
 function App() {
   const [showTopBar, setShowTopBar] = useState(true);
-  let lastScrollTop = 0;
+  const [lastScrollTop, setLastScrollTop] = useState(0);
 
-  const handleScroll = () => {
+  const handleScroll = useCallback(() => {
     let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
     if (scrollTop > lastScrollTop) {
       // Scrolling down
@@ -16,14 +16,7 @@ function App() {
       // Scrolling up
       setShowTopBar(true);
     }
-    lastScrollTop = scrollTop;
-  };
-
-  useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    setLastScrollTop(scrollTop);
   }, [lastScrollTop]);
 
   useEffect(() => {
