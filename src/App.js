@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useState, useEffect, handleScroll } from "react";
+import React, { useState, useEffect } from "react";
 import perm_reqs from "./assets/permitrequirements.png";
 import on_logo from "./assets/on_logo.png";
 
@@ -24,7 +24,7 @@ function App() {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [handleScroll]);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
