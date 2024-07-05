@@ -1,5 +1,5 @@
 import "./App.css";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, handleScroll } from "react";
 import perm_reqs from "./assets/permitrequirements.png";
 import on_logo from "./assets/on_logo.png";
 
@@ -272,7 +272,7 @@ function App() {
         <footer>* - I make money from the referral code</footer>
       </div>
       <div className={`top-bar ${showTopBar ? "visible" : "hidden"}`}>
-        <img src={on_logo} width="100px" />
+        <img src={on_logo} width="100px" alt="website logo" />
       </div>
     </div>
   );
