@@ -4,23 +4,7 @@ import perm_reqs from "./assets/permitrequirements.png";
 import on_logo from "./assets/on_logo.png";
 
 function App() {
-  const handleScroll = () => {
-      let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      if (scrollTop > lastScrollTop) {
-        // Scrolling down
-        setShowTopBar(false);
-      } else {
-        // Scrolling up
-        setShowTopBar(true);
-      }
-      lastScrollTop = scrollTop;
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);const [showTopBar, setShowTopBar] = useState(true);
+  const [showTopBar, setShowTopBar] = useState(true);
   let lastScrollTop = 0;
 
   const handleScroll = () => {
