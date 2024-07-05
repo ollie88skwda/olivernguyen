@@ -4,7 +4,23 @@ import perm_reqs from "./assets/permitrequirements.png";
 import on_logo from "./assets/on_logo.png";
 
 function App() {
-  const [showTopBar, setShowTopBar] = useState(true);
+  const handleScroll = () => {
+      let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      if (scrollTop > lastScrollTop) {
+        // Scrolling down
+        setShowTopBar(false);
+      } else {
+        // Scrolling up
+        setShowTopBar(true);
+      }
+      lastScrollTop = scrollTop;
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);const [showTopBar, setShowTopBar] = useState(true);
   let lastScrollTop = 0;
 
   const handleScroll = () => {
@@ -18,6 +34,13 @@ function App() {
     }
     lastScrollTop = scrollTop;
   };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
