@@ -101,6 +101,7 @@ function App() {
                 src={perm_reqs}
                 alt="dmv permit requirements"
                 height="500px"
+                class="dmvphoto"
               />
             </a>
             <section>
