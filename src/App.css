@@ -9,10 +9,12 @@ body {
 }
 
 .content {
-  top: 50px;
+  max-width: fit-content;
+  margin-inline: auto;
+  /* top: 50px;
   padding: 10px;
   position: relative;
-  left: 35%;
+  left: 35%;*/
   width: 30%;
 }
 
