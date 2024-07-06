@@ -9,13 +9,13 @@ body {
 }
 
 .content {
-  min-width: 20%;
-  max-width: 30%;
+  /* min-width: 20%; */
+  max-width: fit-content;
   margin-inline: auto;
   padding: 10px;
   top: 50px;
   position: relative;
-  /* width: 30%; */
+  width: 30%;
 }
 
 h1 {
