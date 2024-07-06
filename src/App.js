@@ -6,10 +6,14 @@ import on_logo from "./assets/on_logo.png";
 function App() {
   const [showTopBar, setShowTopBar] = useState(true);
   const [lastScrollTop, setLastScrollTop] = useState(0);
+  const SCROLL_TOP_THRESHOLD = 25; // Adjust this value to set the threshold near the top
 
   const handleScroll = useCallback(() => {
     let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    if (scrollTop > lastScrollTop) {
+    if (scrollTop <= SCROLL_TOP_THRESHOLD) {
+      // Near the top
+      setShowTopBar(true);
+    } else if (scrollTop > lastScrollTop) {
       // Scrolling down
       setShowTopBar(false);
     } else {
