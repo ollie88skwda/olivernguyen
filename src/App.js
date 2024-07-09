@@ -2,6 +2,7 @@ import "./App.css";
 import React, { useState, useEffect, useCallback } from "react";
 import perm_reqs from "./assets/permitrequirements.png";
 import on_logo from "./assets/on_logo.png";
+import { Routes } from "./Routes";
 
 function App() {
   const [showTopBar, setShowTopBar] = useState(true);
@@ -32,7 +33,7 @@ function App() {
 
   return (
     <div>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <div class="content">
         <main>
           <header>
