@@ -4,7 +4,7 @@
 }
 
 body {
-  background-color: #ffffff;
+  background-color: white;
   font-family: 'DMSans', sans-serif;
 }
 
@@ -63,4 +63,13 @@ p {
 
 .top-bar.visible {
   top: 0;
+}
+
+.try-links {
+  max-width: fit-content;
+  margin-inline: auto;
+  padding: 10px;
+  top: 50px;
+  position: relative;
+  text-align: center;
 }
