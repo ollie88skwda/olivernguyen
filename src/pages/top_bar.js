@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import on_logo from "../assets/on_logo.png";
-export const Top_Bar = () => {
+export const TopBar = () => {
   const [showTopBar, setShowTopBar] = useState(true);
   const [lastScrollTop, setLastScrollTop] = useState(0);
   const SCROLL_TOP_THRESHOLD = 25; // Adjust this value to set the threshold near the top

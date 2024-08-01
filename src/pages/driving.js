@@ -1,6 +1,6 @@
 import "../App.css";
 import perm_reqs from "../assets/permitrequirements.png";
-import { Top_Bar } from "./top_bar";
+import { TopBar } from "./top_bar";
 // import { Routes } from "../Routes";
 
 export const Driving = () => {
@@ -252,7 +252,7 @@ export const Driving = () => {
         </main>
         <footer>* - I make money from the referral code</footer>
       </div>
-      <Top_Bar />
+      <TopBar />
     </div>
   );
 };
