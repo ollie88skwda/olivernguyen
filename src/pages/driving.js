@@ -1,7 +1,5 @@
 import "../App.css";
-import React, { useState, useEffect, useCallback } from "react";
 import perm_reqs from "../assets/permitrequirements.png";
-import on_logo from "../assets/on_logo.png";
 import { Top_Bar } from "./top_bar";
 // import { Routes } from "../Routes";
 

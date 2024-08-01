@@ -1,5 +1,3 @@
-import React, { useState, useEffect, useCallback } from "react";
-import on_logo from "../assets/on_logo.png";
 import {Top_Bar} from "./top_bar";
 export const Home = () => {
   return (
