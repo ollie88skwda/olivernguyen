@@ -1,0 +1,11 @@
+.home-page-content {
+  max-width: fit-content;
+  margin-inline: auto;
+  /* top: 50px; */
+  /* position: relative; */
+  /* padding-top: 10px; */
+}
+
+.home-title-text {
+    margin-top: 100px;
+}
