@@ -29,7 +29,9 @@ export const TopBar = () => {
   return (
     <div class>
       <div className={`top-bar ${showTopBar ? "visible" : "hidden"}`}>
-        <img src={on_logo} width="100px" alt="website logo" />
+        <a href="../">
+          <img src={on_logo} width="100px" alt="website logo" />
+        </a>
       </div>
     </div>
   );
