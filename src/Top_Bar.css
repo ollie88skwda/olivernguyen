@@ -1,0 +1,69 @@
+.top-bar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  /* background-color: #333; */
+  height: 67px;
+}
+
+.on-logo {
+  display: flex;
+  align-items: center;
+}
+
+.dropdown {
+  display: inline-block;
+  position: relative;
+}
+
+button {
+  font-family: "DMSans", sans-serif;
+  position: relative;
+  border: none;
+  border-radius: 5px;
+  padding: 15px 15px;
+  font-size: 28px;
+  cursor: pointer;
+  background-color: #73937e;
+  color: #28262c;
+  right: 50px;
+}
+
+button:hover {
+  background-color: #94bfa3;
+  color: 28262c;
+}
+
+.dropdown-options {
+  margin: 0;
+  padding: 15px 15px;
+  font-size: 28px;
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  overflow: auto;
+  background-color: #73937e;
+  border-radius: 5px;
+  z-index: 1;
+  right: 50px;
+}
+
+.dropdown:hover .dropdown-options {
+  display: block;
+}
+
+.dropdown-options a {
+  display: block;
+  color: #28262c;
+  /* padding: 20px 40px; */
+  text-decoration: none;
+}
+
+.dropdown-options a:hover {
+  color: #28262c;
+  background-color: #94bfa3;
+  border-radius: 5px;
+}

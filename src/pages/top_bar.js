@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import on_logo from "../assets/on_logo.png";
+import "../Top_Bar.css";
 export const TopBar = () => {
   const [showTopBar, setShowTopBar] = useState(true);
   const [lastScrollTop, setLastScrollTop] = useState(0);
@@ -30,8 +31,14 @@ export const TopBar = () => {
     <div class>
       <div className={`top-bar ${showTopBar ? "visible" : "hidden"}`}>
         <a href="../">
-          <img src={on_logo} width="100px" alt="website logo" />
+          <img src={on_logo} width="100px" alt="website logo" class="on-logo"/>
         </a>
+        <div class="dropdown">
+          <button>Projects</button>
+          <div class="dropdown-options">
+            <a href="/driving">Driving</a>
+          </div>
+        </div>
       </div>
     </div>
   );
