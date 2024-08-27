@@ -5,11 +5,13 @@ import "../Top_Bar.css";
 export const TopBar = () => {
   const [showTopBar, setShowTopBar] = useState(true);
   const [lastScrollTop, setLastScrollTop] = useState(0);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false); // Sidebar state
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const SCROLL_TOP_THRESHOLD = 25; // Adjust this value to set the threshold near the top
+  const topBarHeight = 67; // The height of the top bar
 
   const handleScroll = useCallback(() => {
     let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
     if (scrollTop <= SCROLL_TOP_THRESHOLD) {
       // Near the top
       setShowTopBar(true);
@@ -20,6 +22,17 @@ export const TopBar = () => {
       // Scrolling up
       setShowTopBar(true);
     }
+
+    // Adjust sidebar position when scrolling down and top bar is hidden
+    const sidebar = document.querySelector(".sidebar");
+    if (sidebar) {
+      if (scrollTop > lastScrollTop) {
+        sidebar.style.top = `${-topBarHeight}px`; // Move sidebar up by the height of the top bar
+      } else {
+        sidebar.style.top = "0"; // Reset sidebar position when scrolling up
+      }
+    }
+
     setLastScrollTop(scrollTop);
   }, [lastScrollTop]);
 
@@ -50,9 +63,6 @@ export const TopBar = () => {
         </button>
       </div>
       <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
-        <button onClick={toggleSidebar} className="close-btn">
-          &times; {/* Close icon */}
-        </button>
         {/* Sidebar content */}
         <ul>
           <li>

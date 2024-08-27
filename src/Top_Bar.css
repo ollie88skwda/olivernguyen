@@ -38,7 +38,7 @@
   background-color: rgba(115, 147, 126, 0.9); /* Background color with opacity */
   color: #28262c;
   z-index: 999;
-  transition: right 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Added transition for opacity */
+  transition: right 0.3s ease-in-out, top 0.2s ease-in-out, opacity 0.3s ease-in-out; /* Added transition for top position */
   padding-top: 65px; /* Adjust padding to match the height of the top bar */
   font-size: 24px;
   text-align: right;
@@ -83,15 +83,4 @@
   z-index: 1001; /* Ensure it's above other content */
   top: 6px;
   font-family: "DMSans", sans-serif;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: white;
-  position: absolute;
-  top: 10px;
-  right: 10px;
 }
