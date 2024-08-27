@@ -1,11 +1,26 @@
+@font-face {
+  font-family: "DMSans";
+  src: url("assets/DMSans-VariableFont_opsz\,wght.ttf");
+}
+
 .top-bar {
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 20px;
-  /* background-color: #333; */
   height: 67px;
+  background-color: #73937e; /* Background color of top bar */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for top bar */
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  transition: transform 0.3s ease-in-out;
+}
+
+.top-bar.hidden {
+  transform: translateY(-100%);
 }
 
 .on-logo {
@@ -13,57 +28,70 @@
   align-items: center;
 }
 
-.dropdown {
-  display: inline-block;
-  position: relative;
-}
-
-button {
-  font-family: "DMSans", sans-serif;
-  position: relative;
-  border: none;
-  border-radius: 5px;
-  padding: 15px 15px;
-  font-size: 28px;
-  cursor: pointer;
-  background-color: #73937e;
+/* Sidebar styles */
+.sidebar {
+  width: 250px;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  right: -250px; /* Hidden by default */
+  background-color: rgba(115, 147, 126, 0.9); /* Background color with opacity */
   color: #28262c;
-  right: 50px;
+  z-index: 999;
+  transition: right 0.3s ease-in-out, opacity 0.3s ease-in-out; /* Added transition for opacity */
+  padding-top: 65px; /* Adjust padding to match the height of the top bar */
+  font-size: 24px;
+  text-align: right;
 }
 
-button:hover {
-  background-color: #94bfa3;
-  color: 28262c;
-}
-
-.dropdown-options {
-  margin: 0;
-  padding: 15px 15px;
-  font-size: 28px;
-  display: none;
-  position: absolute;
-  top: 100%;
+.sidebar.open {
   right: 0;
-  overflow: auto;
-  background-color: #73937e;
-  border-radius: 5px;
-  z-index: 1;
-  right: 50px;
 }
 
-.dropdown:hover .dropdown-options {
-  display: block;
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
 }
 
-.dropdown-options a {
-  display: block;
+.sidebar ul li {
+  padding: 0; /* Remove padding from li */
+  border-bottom: 1px solid #28262c;
+}
+
+.sidebar ul li a {
   color: #28262c;
-  /* padding: 20px 40px; */
   text-decoration: none;
+  display: block;
+  padding: 15px 10px; /* Add padding to the link itself */
+  width: calc(100% - 20px); /* Ensures the link covers the full width of the sidebar */
+  height: 100%; /* Ensures the link covers the full height of the list item */
 }
 
-.dropdown-options a:hover {
+.sidebar ul li a:hover {
+  background-color: #6c8977;
+}
+
+.sidebar-toggle-btn {
+  background: none;
+  border: none;
+  font-size: 36px;
+  cursor: pointer;
   color: #28262c;
-  background-color: #94bfa3;
-  border-radius: 5px;
+  position: fixed; /* Ensure the button stays in place */
+  right: 20px; /* Adjusts horizontal position to bring it inward */
+  z-index: 1001; /* Ensure it's above other content */
+  top: 6px;
+  font-family: "DMSans", sans-serif;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: white;
+  position: absolute;
+  top: 10px;
+  right: 10px;
 }
