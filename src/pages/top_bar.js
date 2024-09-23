@@ -59,7 +59,7 @@ export const TopBar = () => {
           />
         </a>
         <button onClick={toggleSidebar} className="sidebar-toggle-btn">
-          ☰ {/* Sidebar toggle icon */}
+          ☰{/* Sidebar toggle icon */}
         </button>
       </div>
       <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
