@@ -1,0 +1,7 @@
+README.md
+setup.py
+paapi5_python_sdk.egg-info/PKG-INFO
+paapi5_python_sdk.egg-info/SOURCES.txt
+paapi5_python_sdk.egg-info/dependency_links.txt
+paapi5_python_sdk.egg-info/requires.txt
+paapi5_python_sdk.egg-info/top_level.txt

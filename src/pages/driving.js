@@ -192,7 +192,8 @@ export const Driving = () => {
                   <p>Don't pull up to the dmv blind.</p>
                   <h4>4. Take a photo</h4>
                   <p>
-                    Make sure to smile, I made the mistake of not smiling and
+                    <strong>VERY IMPORTANT:  YOU ARE TAKING YOUR PHOTO HERE. THIS PHOTO WILL BE ON YOUR PERMIT AND YOUR ID CARD, SO THIS IS PRETTY PERMANANT</strong><br/><br/>
+                    Also, Make sure to smile, I made the mistake of not smiling and
                     now I look like I was taking a mugshot.
                   </p>
                   <h4>5. Take the knowledge test</h4>

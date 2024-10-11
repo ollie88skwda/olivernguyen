@@ -1,0 +1,12 @@
+Metadata-Version: 2.1
+Name: paapi5-python-sdk
+Version: 1.1.0
+Summary: ProductAdvertisingAPI 5.0 Python SDK
+Home-page: https://github.com/amzn/paapi5-python-sdk
+Author: Amazon Product Advertising API Team
+License: Apache License 2.0
+Keywords: ProductAdvertisingAPI,pa-api,paapi,amazon,paapi5,paapi5.0,paapi5-python-sdk,getbrowsenodes,getvariations,getitems,searchitems
+Requires-Dist: urllib3>=1.15
+Requires-Dist: six>=1.10
+Requires-Dist: certifi
+Requires-Dist: python-dateutil

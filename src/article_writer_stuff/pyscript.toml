@@ -1,0 +1,4 @@
+packages = ["openai", "markdown", "os", "time", "PIL", "numpy", "cv2", "requests", "io", "imgbbpy", "matplotlib"]
+
+[files]
+files = ["./call_paapi.py"]

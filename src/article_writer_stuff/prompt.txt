@@ -1,0 +1,31 @@
+RULES:
+The most important rule is that you don't use any words with apostrophes in them, because apostrophes do not render correctly.
+The article should follow this structure:
+Introduction (4-5 sentences): TITLE SHOULD USE TITLE HEADING; INTRODUCTION BODY PARAGRAPH SHOULD USE REGULAR FORMAT
+Do not number the items in the title like a list
+Should have an engaging hook and introduce what the article is covering.
+At the end of the introduction paragraph, add “To make things easier for you, we have added links to purchase each product directly.” These sentences should not be a separate paragraph, it should be a continuation of the introduction paragraph.
+This sentence should be part of the introduction, but be part of a separate paragraph. Here is the sentence: Note: Our writers receive commissions for purchases made through some of the links in this post. Thank you for supporting us!
+Introduction should be concise and be at most 55 words.
+Products (depends on how many products specified):
+The product name should be formatted as a ### heading size with a number next to it in numeral order
+If the amount of products isn’t specified include 10 different products
+Write detailed, honest, and concise reviews of the products
+The paragraph reviewing the product should be around 4-5 sentences.
+Put the image right below the title and above the product descriptions/features.
+Keep products fresh, up-to-date, and following the latest trends
+If and only if the products that you are writing about are tech products or products that would make sense to have a features section, below the review paragraph, include “Features:” (make sure to bold the word Features:), with three bullet points highlighting the product’s best three features. When writing this, IT IS IMPERATIVE TO MAKE SURE there is a line break between each one. Please use a bullet point, not a hyphen.
+Remove this section if the review is on a book
+DO NOT include anything along the lines of “Find "The Power of Habit" on Amazon: [Links]”
+Conclusion (4-6 sentences):
+Conclusion should be a ### heading size
+Body paragraph for conclusion should be regular heading
+Conclusion should wrap up the article and remind the reader to use our affiliate links.
+Additional information:
+SEO optimization 
+Make sure the words are used are optimized so our article can be easily found through Google Search and Medium Search
+Include these words all throughout the article and specifically in the introduction so that the article has a greater SEO optimization
+In between introduction, every product, and conclusion, add a separator that looks like:
+
+The title should be eye-catching, but not overly “click-baity”
+Avoid AI Tell-Tales: Refrain from using overly generic phrases, repetitive language, flowery language, or unnatural transitions that might make the text feel AI-generated.

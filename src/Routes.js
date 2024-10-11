@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { Driving } from "./pages/driving.js";
 import { NotFoundPage } from "./pages/not_found_page.js";
 import { Home } from "./pages/home.js";
+import { ArticleWriter } from "./pages/article_writer.js";
 export const Routes = () => {
   return (
     <Router>
@@ -11,6 +12,9 @@ export const Routes = () => {
         </Route>
         <Route path="/driving">
           <Driving />
+        </Route>
+        <Route path="/articlewriter">
+          <ArticleWriter />
         </Route>
         <Route>
           <NotFoundPage />
