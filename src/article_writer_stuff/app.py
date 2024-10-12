@@ -10,7 +10,19 @@ import requests
 from io import BytesIO
 import imgbbpy
 import matplotlib.pyplot as plt
-from pyscript import document
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+origins = ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # use setx to set api var
 openai.api_key = os.getenv("OPENAI_API_KEY")
@@ -131,13 +143,12 @@ def gen_tags(PRODUCT):
         print(chunk.choices[0].delta.content, end='')
       
 
-def main(ARTICLENUMBER):
+@app.post("/generate-article")
+async def generate_article(request: Request):
   # define product
-  # product = input("Input product that you would like to sell: ")
-  input_text = document.querySelector("#product")
-  product = input_text.value
-  output_div = document.querySelector("#output")
-  output_div.innerText = "Generating article..."
+  data = await request.json()
+  product = data['product']
+  
   products = gen_products(product)
 
   # generate information for article
@@ -158,21 +169,6 @@ def main(ARTICLENUMBER):
   # make it so you can copy and paste to a readable format
   with open('article.txt', 'r') as f:
     text = f.read()
-    html = markdown.markdown(text)
-  # f.close()
+    html_content = markdown.markdown(text)
     
-  # with open('article' + str(ARTICLENUMBER) + '.html', 'w') as f:
-  #   f.write(html)
-  # f.close()
-
-  
-  output_div.innerText = html
-  # gen_tags(product)
-  
-def submit_product_prompt(event):
-  for i in range(1):
-    main(i+1)
-
-# main(1)
-
-# process_image("https://m.media-amazon.com/images/I/51-+O3-wFxL._AC_SL1000_.jpg", 1)
+  return {"html_content": html_content}
