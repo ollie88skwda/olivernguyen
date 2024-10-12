@@ -1,3 +1,8 @@
+:root {
+  --page-size: 100vw;
+}
+
+
 @font-face {
   font-family: "DMSans";
   src: url("assets/DMSans-VariableFont_opsz\,wght.ttf");
@@ -26,6 +31,18 @@ body {
   top: 50px;
   position: relative;
   width: 650px;
+}
+
+@media (max-width: 1280px) {
+  .content {
+    /* min-width: 20%; */
+    max-width: fit-content;
+    margin-inline: auto;
+    padding: 10px;
+    top: 50px;
+    position: relative;
+    width: 100vw;
+  }
 }
 
 h1 {
