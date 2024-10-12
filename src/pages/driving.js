@@ -28,7 +28,7 @@ export const Driving = () => {
               <a
                 href="http://share.aceable.com/6z9QCp"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
               >
                 here
               </a>
@@ -60,7 +60,7 @@ export const Driving = () => {
               <a
                 href="https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/instruction-permits/"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
               >
                 official dmv page
               </a>{" "}
@@ -71,7 +71,7 @@ export const Driving = () => {
             <a
               href="https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/instruction-permits/"
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
             >
               <img
                 src={perm_reqs}
@@ -108,7 +108,7 @@ export const Driving = () => {
                 <a
                   href="https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/dl-id-online-app-edl-44/"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                 >
                   here.
                 </a>{" "}
@@ -179,7 +179,7 @@ export const Driving = () => {
                     <a
                       href="https://www.dmv.ca.gov/portal/file/federal-non-compliant-dl-id-card-documents-list-pdf/"
                       target="_blank"
-                      rel="noreferrer"
+                      rel="noopener noreferrer"
                     >
                       this list.
                     </a>{" "}
@@ -214,7 +214,7 @@ export const Driving = () => {
               <a
                 href="https://www.dmv.ca.gov/portal/driver-education-and-safety/educational-materials/sample-driver-license-dl-knowledge-tests/"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
               >
                 DMV practice tests
               </a>{" "}
@@ -222,7 +222,7 @@ export const Driving = () => {
               <a
                 href="https://driving-tests.org/california/dmv-practice-test/"
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
               >
                 driving-test.org.
               </a>{" "}
