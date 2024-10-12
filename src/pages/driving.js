@@ -1,6 +1,7 @@
 import "../App.css";
 import perm_reqs from "../assets/permitrequirements.png";
 import { TopBar } from "./top_bar";
+import React from 'react';
 // import { Routes } from "../Routes";
 
 export const Driving = () => {

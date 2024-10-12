@@ -1,3 +1,4 @@
+import React from 'react';
 import { TopBar } from "./top_bar";
 import "../Home.css";
 export const Home = () => {
