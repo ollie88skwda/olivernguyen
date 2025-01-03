@@ -1,6 +1,6 @@
 @font-face {
   font-family: "DMSans";
-  src: url("assets/DMSans-VariableFont_opsz\,wght.ttf");
+  src: url("./assets/DMSans-VariableFont_opsz,wght.ttf");
 }
 
 .top-bar {
@@ -49,27 +49,101 @@
 }
 
 .sidebar ul {
-  list-style-type: none;
-  padding: 0;
+  list-style: none;
+  padding: 20px;
   margin: 0;
 }
 
-.sidebar ul li {
-  padding: 0; /* Remove padding from li */
-  border-bottom: 1px solid #28262c;
+.sidebar li {
+  margin: 0;
+  padding: 0;
+  border-bottom: 1px solid rgba(40, 38, 44, 0.2);
+}
+
+.sidebar li:last-child {
+  border-bottom: none;
 }
 
 .sidebar ul li a {
   color: #28262c;
   text-decoration: none;
   display: block;
-  padding: 15px 10px; /* Add padding to the link itself */
+  padding: 12px 0;
+  font-size: 24px;
+  font-weight: normal;
   width: calc(100% - 20px); /* Ensures the link covers the full width of the sidebar */
   height: 100%; /* Ensures the link covers the full height of the list item */
+  transition: opacity 0.3s ease;
 }
 
 .sidebar ul li a:hover {
-  background-color: #6c8977;
+  opacity: 0.8;
+}
+
+.dropdown-content {
+  display: none;
+  padding-left: 20px;
+  margin: 0;
+  background-color: rgba(40, 38, 44, 0.05);
+  border-top: 1px solid rgba(40, 38, 44, 0.2);
+}
+
+.dropdown-content li {
+  margin: 0;
+  padding: 0;
+  border-bottom: none;
+}
+
+.dropdown-content li:last-child {
+  border-bottom: 1px solid rgba(40, 38, 44, 0.2);
+}
+
+.dropdown-content .sidebar-link {
+  font-size: 24px;
+  padding: 12px 0;
+  padding-left: 12px;
+  transition: opacity 0.3s ease;
+}
+
+.dropdown-toggle {
+  cursor: pointer;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  padding: 12px 0;
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 24px;
+  font-weight: normal;
+  text-align: right;
+  font-family: inherit;
+  transition: opacity 0.3s ease;
+}
+
+.dropdown-toggle:hover {
+  opacity: 0.8;
+}
+
+.dropdown-icon {
+  margin-left: 8px;
+  transition: transform 0.3s ease;
+  display: inline-block;
+  font-size: 24px;
+  font-weight: normal;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+}
+
+.dropdown.open .dropdown-icon {
+  transform: rotate(45deg);
+}
+
+.dropdown.open .dropdown-content {
+  display: block;
 }
 
 .sidebar-toggle-btn {

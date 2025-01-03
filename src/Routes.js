@@ -1,9 +1,11 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import React from 'react';
-import { Driving } from "./pages/driving.js";
+import { Permit } from "./pages/permit.js";
 import { NotFoundPage } from "./pages/not_found_page.js";
 import { Home } from "./pages/home.js";
 import { ArticleWriter } from "./pages/article_writer.js";
+import { DriversLicense } from "./pages/drivers_license.js";
+
 export const Routes = () => {
   return (
     <Router>
@@ -12,7 +14,10 @@ export const Routes = () => {
           <Home />
         </Route>
         <Route path="/driving">
-          <Driving />
+          <Permit />
+        </Route>
+        <Route path="/drivers-license">
+          <DriversLicense />
         </Route>
         <Route path="/articlewriter">
           <ArticleWriter />
