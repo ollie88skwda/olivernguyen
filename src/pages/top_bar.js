@@ -7,6 +7,7 @@ export const TopBar = () => {
   const [lastScrollTop, setLastScrollTop] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isDrivingOpen, setIsDrivingOpen] = useState(false);
+  const [isSATOpen, setIsSATOpen] = useState(false);
   const SCROLL_TOP_THRESHOLD = 25;
   const topBarHeight = 67;
 
@@ -48,6 +49,10 @@ export const TopBar = () => {
     setIsDrivingOpen(!isDrivingOpen);
   };
 
+  const toggleSAT = () => {
+    setIsSATOpen(!isSATOpen);
+  };
+
   return (
     <div>
       <div className={`top-bar ${showTopBar ? "visible" : "hidden"}`}>
@@ -84,6 +89,24 @@ export const TopBar = () => {
               <li>
                 <a href="/drivers-license" className="sidebar-link">
                   License
+                </a>
+              </li>
+            </div>
+          </li>
+          <li className={`dropdown ${isSATOpen ? 'open' : ''}`}>
+            <button onClick={toggleSAT} className="dropdown-toggle">
+              SAT
+              <span className="dropdown-icon">+</span>
+            </button>
+            <div className="dropdown-content">
+              <li>
+                <a href="/sat-resources" className="sidebar-link">
+                  Resources
+                </a>
+              </li>
+              <li>
+                <a href="/sat-signup" className="sidebar-link">
+                  Sign Up
                 </a>
               </li>
             </div>
