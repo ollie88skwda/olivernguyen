@@ -1,6 +1,6 @@
-import "../App.css";
-import perm_reqs from "../assets/permitrequirements.png";
-import { TopBar } from "./top_bar";
+import "../../App.css";
+import perm_reqs from "../../assets/permitrequirements.png";
+import { TopBar } from "../top_bar";
 import React from 'react';
 
 export const Permit = () => {
@@ -11,7 +11,7 @@ export const Permit = () => {
         <main>
           <header>
             <h1>
-              How to get your permit from someone with a permit (for high
+              How to get your permit (for high
               schoolers)
             </h1>
           </header>
@@ -31,6 +31,7 @@ export const Permit = () => {
                 here
               </a>
               . This link gives you a $10 discount.*{" "}
+
             </p>
             <h3>Driver's ed info</h3>
             <p>
@@ -62,9 +63,11 @@ export const Permit = () => {
               >
                 official dmv page
               </a>{" "}
+
               and make sure you bring all the right things to your dmv visit.
               I'll go through all the items you need, according to a screenshot
               from the official dmv page:{" "}
+
             </p>
             <a
               href="https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/instruction-permits/"
@@ -103,6 +106,7 @@ export const Permit = () => {
               <p>
                 This one's a bit more complicated. Visit the hyperlink on the
                 website or{" "}
+
                 <a
                   href="https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/dl-id-online-app-edl-44/"
                   target="_blank"
@@ -110,8 +114,10 @@ export const Permit = () => {
                 >
                   here.
                 </a>{" "}
+
                 Start off by creating a California DMV account, and then you can
                 fill out the application. Then follow these steps with a parent:{" "}
+
                 <br />
                 <ol type="1">
                   <li>Start Application</li>
@@ -174,6 +180,7 @@ export const Permit = () => {
                   <p>
                     Bring a proof of residency (I would bring two just in case
                     one doesn't work). You can choose from{" "}
+
                     <a
                       href="https://www.dmv.ca.gov/portal/file/federal-non-compliant-dl-id-card-documents-list-pdf/"
                       target="_blank"
@@ -181,6 +188,7 @@ export const Permit = () => {
                     >
                       this list.
                     </a>{" "}
+
                   </p>
                   <h4>2. Pay the application fee</h4>
                   <p>
@@ -192,6 +200,7 @@ export const Permit = () => {
                   <h4>4. Take a photo</h4>
                   <p>
                     <strong>VERY IMPORTANT:  YOU ARE TAKING YOUR PHOTO HERE. THIS PHOTO WILL BE ON YOUR PERMIT AND YOUR ID CARD, SO THIS IS PRETTY PERMANANT</strong><br/><br/>
+
                     Also, Make sure to smile, I made the mistake of not smiling and
                     now I look like I was taking a mugshot.
                   </p>
@@ -207,6 +216,7 @@ export const Permit = () => {
               This is the part that most people fail. You need to get at least
               38/46 questions right to pass. You can take the test 3 times
               before you have to pay another $45 fee. I recommend using{" "}
+
               <a
                 href="https://www.dmv.ca.gov/portal/driver-education-and-safety/educational-materials/sample-driver-license-dl-knowledge-tests/"
                 target="_blank"
@@ -214,6 +224,7 @@ export const Permit = () => {
               >
                 these practice tests
               </a>{" "}
+
               to study. When I took the test, I got a 43/46, and I only studied
               using these practice tests. The questions on the actual test are
               very similar to the practice tests, so if you can pass the

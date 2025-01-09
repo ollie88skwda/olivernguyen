@@ -77,7 +77,7 @@ export const TopBar = () => {
           </li>
           <li className={`dropdown ${isDrivingOpen ? 'open' : ''}`}>
             <button onClick={toggleDriving} className="dropdown-toggle">
-              Permit
+              Driving
               <span className="dropdown-icon">+</span>
             </button>
             <div className="dropdown-content">
