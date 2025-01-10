@@ -15,7 +15,7 @@ export const Routes = () => {
         <Route path="/" exact>
           <Home />
         </Route>
-        <Route path="/driving">
+        <Route path="/permit">
           <Permit />
         </Route>
         <Route path="/drivers-license">

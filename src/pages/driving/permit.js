@@ -15,7 +15,7 @@ export const Permit = () => {
               schoolers)
             </h1>
           </header>
-          <div id="section1">
+          <div class="section1">
             <h2>1: Driver's ed</h2>
             <p>
               Driver's ed will be the biggest time commitment when getting your
@@ -51,7 +51,7 @@ export const Permit = () => {
             </p>
             <br />
           </div>
-          <div id="section2">
+          <div class="section2">
             <h2>2: Other stuff</h2>
             <p>
               Once you've done all the driver's ed stuff, everything else will
@@ -210,7 +210,7 @@ export const Permit = () => {
               </section>
             </section>
           </div>
-          <div id="section3">
+          <div class="section3">
             <h2>3: The knowledge test</h2>
             <p>
               This is the part that most people fail. You need to get at least
@@ -231,7 +231,7 @@ export const Permit = () => {
               practice tests, you can pass the real test.
             </p>
           </div>
-          <div id="section4">
+          <div class="section4">
             <h2>4: Congrats!</h2>
             <p>
               If you've made it this far, you should have your permit! Now you

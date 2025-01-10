@@ -82,7 +82,7 @@ export const TopBar = () => {
             </button>
             <div className="dropdown-content">
               <li>
-                <a href="/driving" className="sidebar-link">
+                <a href="/permit" className="sidebar-link">
                   Permit
                 </a>
               </li>
