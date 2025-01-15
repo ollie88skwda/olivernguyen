@@ -10,17 +10,33 @@
   align-items: center;
   padding: 0 20px;
   height: 67px;
-  background-color: #73937e; /* Background color of top bar */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional shadow for top bar */
+  background-color: #73937e;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1000;
-  transition: transform 0.3s ease-in-out;
+  transform: translateY(-100%);
+  transition: transform 0.8s ease-in-out;
 }
 
-.top-bar.hidden {
+/* Initial load animation */
+.top-bar.initial-load.show-bar {
+  transition: transform 0.8s ease-in-out !important;
+}
+
+/* Scroll show/hide animation */
+.top-bar.show-bar:not(.initial-load),
+.top-bar.hide-bar:not(.initial-load) {
+  transition: transform 0.3s ease-in-out !important;
+}
+
+.top-bar.hide-bar {
   transform: translateY(-100%);
+}
+
+.top-bar.show-bar {
+  transform: translateY(0);
 }
 
 .on-logo {
@@ -149,12 +165,21 @@
 .sidebar-toggle-btn {
   background: none;
   border: none;
-  font-size: 36px;
-  cursor: pointer;
   color: #28262c;
-  position: fixed; /* Ensure the button stays in place */
-  right: 12px; 
-  z-index: 1001; /* Ensure it's above other content */
-  top: 6px;
-  font-family: "DMSans", sans-serif;
+  font-size: 32px;
+  cursor: pointer;
+  padding: 10px;
+  position: absolute;
+  right: 50px;
+  top: 45%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-toggle-btn:hover {
+  opacity: 0.8;
 }

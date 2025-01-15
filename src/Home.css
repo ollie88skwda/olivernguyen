@@ -1,13 +1,87 @@
 .home-page-content {
-  max-width: fit-content;
-  margin-inline: auto;
-  /* top: 50px; */
-  /* position: relative; */
-  /* padding-top: 10px; */
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.home-title-text {
-    margin-top: 100px;
-    font-size: 20vw;
-    padding: 0px
+.intro-section {
+  margin-top: -100px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
 }
+
+.greeting {
+  font-size: 2.5rem;
+  color: #28262c;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.name {
+  font-size: clamp(4rem, 12vw, 8rem);
+  font-weight: bold;
+  margin: 0;
+  color: #28262c;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.description {
+  font-size: 2rem;
+  color: #28262c;
+  margin-top: 1rem;
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+/* Animations */
+.animate-in {
+  opacity: 0;
+  transform: translateY(-30px);
+  transition: all .8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.greeting.animate-in {
+  transition-delay: 0.2s;
+}
+
+.name.animate-in {
+  transition-delay: 0.5s;
+}
+
+.description.animate-in {
+  transition-delay: 0.8s;
+}
+
+.animate-in.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.box {
+  width: 200px;
+  height: 200px;
+  background-color: #73937e;
+  border-radius: 5;
+}
+
+.button1 {
+  background-color: #0cdcf7;
+  border-radius: 10px;
+  padding: 10px 20px;
+  color: #0f1115;
+  /* position: absolute; */
+  bottom: 0;
+  width: 200px;
+  left: 0;
+  right: 0;
+}
+
+
