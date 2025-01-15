@@ -13,8 +13,9 @@ export const TopBar = () => {
   const topBarHeight = 67;
 
   useEffect(() => {
-    // Show top bar immediately after component mounts
+    // Always show top bar and set initial load
     setShowTopBar(true);
+    setIsInitialLoad(true);
     
     // Set initial load to false after animation completes
     const timer = setTimeout(() => {

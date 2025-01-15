@@ -20,23 +20,14 @@
   transition: transform 0.8s ease-in-out;
 }
 
-/* Initial load animation */
-.top-bar.initial-load.show-bar {
+.top-bar.show-bar {
   transition: transform 0.8s ease-in-out !important;
-}
-
-/* Scroll show/hide animation */
-.top-bar.show-bar:not(.initial-load),
-.top-bar.hide-bar:not(.initial-load) {
-  transition: transform 0.3s ease-in-out !important;
+  transform: translateY(0);
 }
 
 .top-bar.hide-bar {
   transform: translateY(-100%);
-}
-
-.top-bar.show-bar {
-  transform: translateY(0);
+  transition: transform 0.3s ease-in-out !important;
 }
 
 .on-logo {
