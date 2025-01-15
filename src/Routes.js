@@ -18,7 +18,7 @@ export const Routes = () => {
         <Route path="/permit">
           <Permit />
         </Route>
-        <Route path="/drivers-license">
+        <Route path="/license">
           <DriversLicense />
         </Route>
         <Route path="/articlewriter">
