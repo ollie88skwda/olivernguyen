@@ -3,6 +3,16 @@ import { TopBar } from "./top_bar";
 import "../Home.css";
 import { motion } from "framer-motion";
 
+function motionAnimateIn(TEXT) {
+  return (
+  <motion.div
+    initial={{ opacity: 0, y: -20 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.8 }}>
+      <h1>{TEXT}</h1>
+    </motion.div>
+  );
+}
 export const Home = () => {
   useEffect(() => {
     // Trigger animations after component mount
@@ -20,17 +30,18 @@ export const Home = () => {
         <h2 className="description animate-in">
           I love to <a>build </a>things.
         </h2>
-        <div style={{ height: "50vh" }}></div>
+        <div style={{ height: "50rem" }}></div>
       </div>
       <main>
         <div className="definition">
-          <motion.div
+          {<motionAnimateIn TEXT="hi"/>}
+          {/* <motion.div
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h1>build</h1>
-          </motion.div>
+            <h1 style={{textAlign: "left"}}>build</h1>
+          </motion.div> */}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}

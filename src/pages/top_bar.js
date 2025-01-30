@@ -103,7 +103,7 @@ export const TopBar = () => {
                 </a>
               </li>
               <li>
-                <a href="/drivers-license" className="sidebar-link">
+                <a href="/license" className="sidebar-link">
                   License
                 </a>
               </li>

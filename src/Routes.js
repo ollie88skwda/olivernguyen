@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import React from 'react';
+import React from "react";
 import { Permit } from "./pages/driving/permit.js";
 import { NotFoundPage } from "./pages/not_found_page.js";
 import { Home } from "./pages/home.js";
