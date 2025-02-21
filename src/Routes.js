@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import React from "react";
 import { Permit } from "./pages/driving/permit.js";
 import { NotFoundPage } from "./pages/not_found_page.js";
-import { Home } from "./pages/Home.js";
+import { Home } from "./pages/home.js";
 import { ArticleWriter } from "./pages/archive/article_writer.js";
 import { DriversLicense } from "./pages/driving/drivers_license.js";
 import SATResources from "./pages/sat/sat_resources.js";
