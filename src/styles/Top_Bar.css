@@ -1,6 +1,6 @@
 @font-face {
   font-family: "DMSans";
-  src: url("./assets/DMSans-VariableFont_opsz,wght.ttf");
+  src: url("../assets/DMSans-VariableFont_opsz,wght.ttf");
 }
 
 .top-bar {
@@ -33,6 +33,34 @@
 .on-logo {
   display: flex;
   align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding-bottom: 5px; 
+  margin-left: -10px;  /*Pull logo left to counter the top-bar padding*/
+}
+
+.on-logo img {
+  height: 85%;  /* Slightly reduce height to move up */
+  width: auto;
+  object-fit: contain;
+  margin-top: -2px;  /* Fine-tune vertical position */
+}
+
+.menu-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.menu-icon div {
+  width: 25px;
+  height: 3px;
+  background-color: #28262c;
+  margin: 4px 0;
+  transition: 0.3s;
 }
 
 /* Sidebar styles */
@@ -162,7 +190,7 @@
   padding: 10px;
   position: absolute;
   right: 50px;
-  top: 45%;
+  top: 50%;
   transform: translateY(-50%);
   width: 50px;
   height: 50px;

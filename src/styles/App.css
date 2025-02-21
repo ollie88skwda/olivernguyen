@@ -1,0 +1,110 @@
+:root {
+  --page-size: 100vw;
+}
+
+@font-face {
+  font-family: "DMSans";
+  src: url("../assets/DMSans-VariableFont_opsz,wght.ttf");
+}
+
+body {
+  background-color: #f5f5f5;
+  font-family: "DMSans", sans-serif;
+  color: #28262c;
+  margin: 0;
+  padding: 0;
+}
+
+.content {
+  width: 100%;
+  max-width: 650px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+  position: relative;
+  top: 50px;
+}
+
+@media (max-width: 720px) {
+  .content {
+    padding: 15px;
+  }
+}
+
+h1 {
+  font-size: 46px;
+}
+
+h2 {
+  font-size: 30px;
+}
+
+h3 {
+  font-size: 24px;
+}
+
+p {
+  font-size: 20px;
+}
+
+.top-bar {
+  position: fixed;
+  background-color: #73937e;
+  color: #28262c;
+  width: 100%;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  padding-top: 5px;
+  padding-left: 25px;
+  justify-content: space-between;
+  align-items: center;
+  transition: top 0.3s;
+}
+
+.top-bar.hidden {
+  top: -70px;
+}
+
+.top-bar.visible {
+  top: 0;
+}
+
+.try-links {
+  max-width: fit-content;
+  margin-inline: auto;
+  padding: 10px;
+  top: 50px;
+  position: relative;
+  text-align: center;
+}
+
+/* Reset all links to have no special styling by default */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Apply special styling to content links */
+.content a {
+  position: relative;
+  background-image: linear-gradient(currentColor, currentColor);
+  background-position: 0% 100%;
+  background-repeat: no-repeat;
+  background-size: 100% 0.1em;
+  padding: 0.1em 0;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.content a:hover {
+  opacity: 1;
+  background-size: 100% 0.2em;
+  background-color: rgba(40, 38, 44, 0.05);
+}
+
+/* Keep inherited colors for all links */
+a:link,
+a:visited {
+  color: inherit;
+}

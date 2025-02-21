@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import React from "react";
 import { Permit } from "./pages/driving/permit.js";
 import { NotFoundPage } from "./pages/not_found_page.js";
-import { Home } from "./pages/home.js";
+import { Home } from "./pages/Home.js";
 import { ArticleWriter } from "./pages/archive/article_writer.js";
 import { DriversLicense } from "./pages/driving/drivers_license.js";
 import SATResources from "./pages/sat/sat_resources.js";
@@ -37,14 +37,3 @@ export const Routes = () => {
     </Router>
   );
 };
-// import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-
-// <Router>
-//   <Link to="/driving">Driving</Link>
-//   <Link to="/not_found_page">Not Found</Link>
-
-//   <Routes>
-//     <Route path="/driving" element={<driving />} />
-//     <Route path="/not_found_page" element={<not_found_page />} />
-//   </Routes>
-// </Router>;
