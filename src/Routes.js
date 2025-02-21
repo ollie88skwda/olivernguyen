@@ -37,14 +37,3 @@ export const Routes = () => {
     </Router>
   );
 };
-// import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-
-// <Router>
-//   <Link to="/driving">Driving</Link>
-//   <Link to="/not_found_page">Not Found</Link>
-
-//   <Routes>
-//     <Route path="/driving" element={<driving />} />
-//     <Route path="/not_found_page" element={<not_found_page />} />
-//   </Routes>
-// </Router>;

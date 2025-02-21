@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import on_logo from "../assets/on_logo.png";
-import "../Top_Bar.css";
+import "../styles/Top_Bar.css";
 
 export const TopBar = () => {
   const [showTopBar, setShowTopBar] = useState(false);

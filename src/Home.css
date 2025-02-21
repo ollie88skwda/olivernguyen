@@ -1,88 +1,27 @@
-@font-face {
-  font-family: "GeistMono";
-  src: url("./assets/GeistMono-Regular.ttf");
-}
-
-html {
-  scroll-behavior: smooth;
-  scrollbar-width: thin;
-  scroll-snap-type: y proximity;
-}
-
 .home-page-content {
+  padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
-  min-height: 100vh;
-  flex-direction: column;
-  justify-content: left;
-  top: 200px;
 }
 
 .intro-section {
-  margin-top: 150px;
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: left;
-}
-
-.definition {
-  max-width: 900px;
-  margin-left: auto;
-  margin-right: auto;
-  text-align: left;
+  font-size: 24px;
+  text-align: center;
+  margin: 40px 0;
 }
 
 .greeting {
-  font-size: 2.5rem;
-  color: #28262c;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  opacity: 0.7;
-}
-
-.name {
-  font-size: clamp(4rem, 12vw, 8rem);
-  font-weight: bold;
-  margin: 0;
-  color: #28262c;
-  line-height: 1;
-  white-space: nowrap;
-  text-align: left;
-}
-
-.description {
-  font-size: 2.5rem;
-  color: #28262c;
-  margin-top: 1rem;
-  font-weight: 500;
-  opacity: 0.7;
+  margin-bottom: 20px;
+  color: #333;
 }
 
 .animate-in {
   opacity: 0;
-  transform: translateY(-30px);
-  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.greeting.animate-in {
-  transition-delay: 0.2s;
-}
-
-.name.animate-in {
-  transition-delay: 0.5s;
-}
-
-.description.animate-in {
-  transition-delay: 2s;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
 .animate-in.show {
   opacity: 1;
   transform: translateY(0);
-}
-
-.layout-debug {
-  outline: 2px solid red;
 }
