@@ -7,6 +7,7 @@ html {
   scroll-behavior: smooth;
   scrollbar-width: thin;
   scroll-snap-type: y proximity;
+  font-size: 100%
 }
 
 .home-page-content {
