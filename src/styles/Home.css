@@ -23,12 +23,13 @@ html {
   padding-top: 100px;
 }
 
-
 .intro-section {
   width: 100%;
   max-width: 900px;
   text-align: left;
   margin-top: 50px;
+  position: relative;
+  overflow-x: hidden;
 }
 
 .definition {
@@ -52,8 +53,11 @@ html {
   margin: 0;
   color: #28262c;
   line-height: 1;
-  white-space: nowrap;
+  position: relative;
   text-align: left;
+  width: fit-content;
+  max-width: 100%;
+  display: block;
 }
 
 .description {
