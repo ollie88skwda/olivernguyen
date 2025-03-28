@@ -54,7 +54,7 @@ export const Home = () => {
         >
           I love to <a href="#build-definition">build</a> things.
         </motion.h2>
-        <div style={{ height: "25rem" }}></div>
+        <div style={{ height: "50vh" }}></div>
       </div>
       <main>
         <div className="definition">
