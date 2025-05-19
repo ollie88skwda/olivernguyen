@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import on_logo from "../assets/on_logo.png";
+import sussy_logo from "../assets/sussy_logo.png";
 import "../styles/Top_Bar.css";
 
 export const TopBar = () => {
@@ -16,7 +17,7 @@ export const TopBar = () => {
     // Always show top bar and set initial load
     setShowTopBar(true);
     setIsInitialLoad(true);
-    
+
     // Set initial load to false after animation completes
     const timer = setTimeout(() => {
       setIsInitialLoad(false);
@@ -70,7 +71,9 @@ export const TopBar = () => {
   return (
     <>
       <div
-        className={`top-bar ${showTopBar ? "show-bar" : "hide-bar"} ${isInitialLoad ? "initial-load" : ""}`}
+        className={`top-bar ${showTopBar ? "show-bar" : "hide-bar"} ${
+          isInitialLoad ? "initial-load" : ""
+        }`}
       >
         <a href="../">
           <img
@@ -79,6 +82,9 @@ export const TopBar = () => {
             alt="website logo"
             className="on-logo"
           />
+        </a>
+        <a href="/order" className="order-sussy-button">
+          ORDER<img src={sussy_logo} alt="sussy logo" className="sussy-logo-inline" />NOW
         </a>
         <button onClick={toggleSidebar} className="sidebar-toggle-btn">
           ☰
@@ -91,7 +97,12 @@ export const TopBar = () => {
               Home
             </a>
           </li>
-          <li className={`dropdown ${isDrivingOpen ? 'open' : ''}`}>
+          <li>
+            <a href="/order" className="sidebar-link">
+              ORDER SUSSY
+            </a>
+          </li>
+          <li className={`dropdown ${isDrivingOpen ? "open" : ""}`}>
             <button onClick={toggleDriving} className="dropdown-toggle">
               Driving
               <span className="dropdown-icon">+</span>
@@ -109,7 +120,7 @@ export const TopBar = () => {
               </li>
             </div>
           </li>
-          <li className={`dropdown ${isSATOpen ? 'open' : ''}`}>
+          <li className={`dropdown ${isSATOpen ? "open" : ""}`}>
             <button onClick={toggleSAT} className="dropdown-toggle">
               SAT
               <span className="dropdown-icon">+</span>

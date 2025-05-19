@@ -203,3 +203,61 @@
 .sidebar-toggle-btn:hover {
   opacity: 0.8;
 }
+
+/* ORDER SUSSY NOW button styles */
+:root {
+  --sussy-btn-bg: #73937e;
+  --sussy-btn-hover-bg: #64896f;
+  --sussy-btn-text: #222;
+  --sussy-btn-left-offset: -65%; /* Adjust this value to move the button left/right */
+  --sussy-img-vertical-adjust: -2px; /* Adjust this value to move the image up/down */
+}
+.order-sussy-button {
+  background-color: var(--sussy-btn-bg);
+  color: var(--sussy-btn-text);
+  font-weight: bold;
+  padding: 10px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  text-align: center;
+  font-size: 18px;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  animation: pulse 2s infinite;
+  margin: 0 auto;
+  position: absolute;
+  left: 50%;
+  transform: translateX(var(--sussy-btn-left-offset));
+  border: 2px solid #28262c;
+}
+
+
+.order-sussy-button:hover {
+  background-color: var(--sussy-btn-hover-bg);
+  color: var(--sussy-btn-text) !important;
+  transform: translateX(var(--sussy-btn-left-offset)) scale(1.05);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.18);
+}
+
+.sussy-logo-inline {
+  height: 1.6em;
+  width: auto;
+  margin: 0 6px 0 6px;
+  display: inline-block;
+  vertical-align: middle;
+  position: relative;
+  top: var(--sussy-img-vertical-adjust);
+}
+
+@keyframes pulse {
+  0% {
+    transform: translateX(var(--sussy-btn-left-offset)) scale(1);
+  }
+  50% {
+    transform: translateX(var(--sussy-btn-left-offset)) scale(1.05);
+  }
+  100% {
+    transform: translateX(var(--sussy-btn-left-offset)) scale(1);
+  }
+}
