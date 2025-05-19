@@ -57,7 +57,7 @@ const Order = () => {
                 </header>
                 <div className="order-form-container">
                   <form action="https://formsubmit.co/7156848b9f5fd49bae5f30c654c49a35" method="POST" className="order-form">
-                    <input type="hidden" name="_next" value={window.location.href} />
+                    <input type="hidden" name="_next" value={`${window.location.origin}/thank-you`} />
                     <input type="hidden" name="_subject" value="New Order Submission" />
                     <input type="hidden" name="_captcha" value="false" />
                     <input type="hidden" name="_cc" value="aiden.rodrigo8@gmail.com" />
