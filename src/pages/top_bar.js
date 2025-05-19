@@ -120,11 +120,11 @@ export const TopBar = () => {
                   Resources
                 </a>
               </li>
-              <li>
+              {/* <li>
                 <a href="/sat-signup" className="sidebar-link">
                   Sign Up
                 </a>
-              </li>
+              </li> */}
             </div>
           </li>
         </ul>
