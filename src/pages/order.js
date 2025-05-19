@@ -6,7 +6,7 @@ import "../styles/Order.css";
 
 const Order = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [totalPrice, setTotalPrice] = useState(30); // Default to back only price
+  // const [totalPrice, setTotalPrice] = useState(30); // Default to back only price
   const [logoPlacement, setLogoPlacement] = useState("back");
   const [contactMethod, setContactMethod] = useState("");
   const [contactInfo, setContactInfo] = useState("");
@@ -20,7 +20,7 @@ const Order = () => {
   const handleLogoPlacementChange = (e) => {
     const placement = e.target.value;
     setLogoPlacement(placement);
-    setTotalPrice(placement === "front_and_back" ? 35 : 30);
+    // setTotalPrice(placement === "front_and_back" ? 35 : 30);
   };
 
   // Handle contact method change
@@ -56,7 +56,7 @@ const Order = () => {
                   <h1>Place Your Order</h1>
                 </header>
                 <div className="order-form-container">
-                  <form action="https://formsubmit.co/7156848b9f5fd49bae5f30c654c49a35" method="POST" className="order-form">
+                  <form action="https://formsubmit.co/oliverdnguyen@gmail.com, ollien456@gmail.com" method="POST" className="order-form">
                     <input type="hidden" name="_next" value={window.location.href} />
                     <input type="hidden" name="_subject" value="New Order Submission" />
                     <input type="hidden" name="_captcha" value="false" />
@@ -122,12 +122,12 @@ const Order = () => {
                         value={logoPlacement}
                         required
                       >
-                        <option value="back">Back Only ($30)</option>
-                        <option value="front_and_back">Front and Back ($35)</option>
+                        <option value="back">Back Only</option>
+                        <option value="front_and_back">Front and Back)</option>
                       </select>
                     </div>
 
-                    <div className="form-group">
+                    {/* <div className="form-group">
                       <label htmlFor="payment_method">Payment Method</label>
                       <select name="payment_method" id="payment_method" required>
                         <option value="">-- Select Payment Method --</option>
@@ -135,7 +135,7 @@ const Order = () => {
                         <option value="venmo">Venmo (@olivern8)</option>
                         <option value="apple_pay">Apple Pay</option>
                       </select>
-                    </div>
+                    </div> */}
 
                     <div className="form-group">
                       <label htmlFor="notes">Additional Notes</label>
@@ -147,9 +147,9 @@ const Order = () => {
                       ></textarea>
                     </div>
 
-                    <div className="form-group price-display">
+                    {/* <div className="form-group price-display">
                       <p>Total Price: <strong>${totalPrice}</strong></p>
-                    </div>
+                    </div> */}
 
                     <button type="submit" className="submit-button">Submit Order</button>
                   </form>

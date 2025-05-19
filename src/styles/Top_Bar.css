@@ -36,15 +36,15 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  padding-bottom: 5px; 
-  margin-left: -10px;  /*Pull logo left to counter the top-bar padding*/
+  padding-bottom: 5px;
+  margin-left: -10px; /*Pull logo left to counter the top-bar padding*/
 }
 
 .on-logo img {
-  height: 85%;  /* Slightly reduce height to move up */
+  height: 85%; /* Slightly reduce height to move up */
   width: auto;
   object-fit: contain;
-  margin-top: -2px;  /* Fine-tune vertical position */
+  margin-top: -2px; /* Fine-tune vertical position */
 }
 
 .menu-icon {
@@ -71,10 +71,16 @@
   position: fixed;
   top: 0;
   right: -250px; /* Hidden by default */
-  background-color: rgba(115, 147, 126, 0.9); /* Background color with opacity */
+  background-color: rgba(
+    115,
+    147,
+    126,
+    0.9
+  ); /* Background color with opacity */
   color: #28262c;
   z-index: 999;
-  transition: right 0.3s ease-in-out, top 0.2s ease-in-out, opacity 0.3s ease-in-out; /* Added transition for top position */
+  transition: right 0.3s ease-in-out, top 0.2s ease-in-out,
+    opacity 0.3s ease-in-out; /* Added transition for top position */
   padding-top: 65px; /* Adjust padding to match the height of the top bar */
   font-size: 24px;
   text-align: right;
@@ -107,7 +113,9 @@
   padding: 12px 0;
   font-size: 24px;
   font-weight: normal;
-  width: calc(100% - 20px); /* Ensures the link covers the full width of the sidebar */
+  width: calc(
+    100% - 20px
+  ); /* Ensures the link covers the full width of the sidebar */
   height: 100%; /* Ensures the link covers the full height of the list item */
   transition: opacity 0.3s ease;
 }
@@ -232,7 +240,6 @@
   border: 2px solid #28262c;
 }
 
-
 .order-sussy-button:hover {
   background-color: var(--sussy-btn-hover-bg);
   color: var(--sussy-btn-text) !important;
@@ -260,4 +267,27 @@
   100% {
     transform: translateX(var(--sussy-btn-left-offset)) scale(1);
   }
+}
+
+/* Responsive: make ORDER SUSSY NOW button and logo smaller on mobile */
+@media (max-width: 600px) {
+  .order-sussy-button {
+    font-size: 14px;
+    padding: 6px 12px;
+    border-radius: 6px;
+  }
+  .sussy-logo-inline {
+    height: 1.1em;
+    margin: 0 3px 0 3px;
+  }
+}
+
+0% {
+  transform: translateX(var(--sussy-btn-left-offset)) scale(1);
+}
+50% {
+  transform: translateX(var(--sussy-btn-left-offset)) scale(1.05);
+}
+100% {
+  transform: translateX(var(--sussy-btn-left-offset)) scale(1);
 }
