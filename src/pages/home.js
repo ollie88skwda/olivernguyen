@@ -1,12 +1,17 @@
-import React, { useEffect } from "react";
-import { TopBar } from "./top_bar";
+import React, { useState, useEffect } from "react";
+import {TopBar} from "./top_bar";
+import { motion } from "framer-motion";
+import TimelineItem from "../components/TimelineItem";
 import "../styles/Home.css";
 import "../styles/App.css";
-import { motion } from "framer-motion";
 import wahoosfishing from "../assets/wahoosfishing.png";
 import khanclock from "../assets/khanclock.png";
+// ExperiencesTimeline component is now integrated directly into this file
 
 export const Home = () => {
+  const [hovered, setHovered] = useState(null);
+  const [activeTab, setActiveTab] = useState(null);
+
   useEffect(() => {
     // Trigger animations after component mount
     const elements = document.querySelectorAll(".animate-in");
@@ -232,26 +237,28 @@ export const Home = () => {
               </a>
             </motion.div>
 
-            {/* <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="project-card"
-            >
-              <div className="project-content">
-                <h2>
-                  <a
-                    href="https://github.com/yourusername/project3"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Third Project
-                    <svg
-                      className="github-icon"
-                      viewBox="0 0 24 24"
-                      fill="currentColor"
+            {/* 
+              Third project card - commented out for now
+              <motion.div
+                initial={{ opacity: 0, y: -20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="project-card"
+              >
+                <div className="project-content">
+                  <h2>
+                    <a
+                      href="https://github.com/yourusername/project3"
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
-                      <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+                      Third Project
+                      <svg
+                        className="github-icon"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                      >
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
                     </svg>
                   </a>
                 </h2>
@@ -288,9 +295,145 @@ export const Home = () => {
                 rel="noopener noreferrer"
                 className="project-image"
               >
-                <img src="placeholder.jpg" alt="Project screenshot" />
+                <img src="" alt="Project screenshot" />
               </a>
-            </motion.div> */}
+            </motion.div>
+            */}
+          </div>
+        </div>
+
+        {/* Experience & Education Section */}
+        <div className="experiences-section">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <h1 style={{ textAlign: "left" }}>Experience & Education</h1>
+          </motion.div>
+
+          <motion.p
+            className="experiences-subtitle"
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+          >
+            Here's a summary of my professional journey and educational
+            background in software development.
+          </motion.p>
+
+          {/* Tab Navigation */}
+          <div className="timeline-tabs">
+            <button
+              className={`timeline-tab ${
+                activeTab === "experience" ? "active" : ""
+              }`}
+              onClick={() =>
+                setActiveTab(activeTab === "experience" ? null : "experience")
+              }
+            >
+              Experience
+            </button>
+            <button
+              className={`timeline-tab ${
+                activeTab === "education" ? "active" : ""
+              }`}
+              onClick={() =>
+                setActiveTab(activeTab === "education" ? null : "education")
+              }
+            >
+              Education
+            </button>
+          </div>
+
+          <div className="timeline-container">
+            <motion.div
+              className="timeline-bar"
+              whileInView={{ scaleY: 1 }}
+              viewport={{ once: false, margin: "-100px" }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
+            />
+
+            <div className="timeline-items">
+              {/* Experience Items */}
+              {(activeTab === "experience" || activeTab === null) &&
+                [
+                  {
+                    year: "2024 (Present)",
+                    title: "TechX Robotics",
+                    company: "Modern Web App",
+                    description:
+                      "Leading the development of a modern web application using NextJS and context, implementing features like real-time order tracking and inventory management. Introduced automated testing and CI/CD pipelines for reliable deployments.",
+                    type: "experience",
+                    logo: "/logos/techx.svg", // Path to logo image
+                    website: "https://example.com/techx", // Company website URL
+                  },
+                  {
+                    year: "Mid 2024",
+                    title: "Digital Transformation Specialist",
+                    company: "Computer Engineering Department",
+                    description:
+                      "Worked on digital transformation for the Computer Engineering department. Built a faculty and record management portal, digitized paper records, and improved department workflows.",
+                    type: "experience",
+                    logo: "/logos/compeng.svg", // Path to logo image
+                    website: "https://example.com/compeng", // Department website URL
+                  },
+                ].map((item, idx) => (
+                  <TimelineItem
+                    key={`exp-${idx}`}
+                    item={item}
+                    idx={idx}
+                    hovered={hovered}
+                    setHovered={setHovered}
+                    itemType="exp"
+                  />
+                ))}
+
+              {/* Education Items */}
+              {(activeTab === "education" || activeTab === null) &&
+                [
+                  {
+                    year: "2013 - 2017",
+                    title: "Bachelor's Degree in Computer Science",
+                    company: "University of Technology",
+                    description:
+                      "Focused on software engineering, algorithms, and data structures. Completed a senior project on machine learning applications for image recognition.",
+                    type: "education",
+                    logo: "/logos/university.svg", // Path to university logo
+                    website: "https://example.com/university", // University website URL
+                  },
+                  {
+                    year: "2023",
+                    title: "Full Stack Web Development Certification",
+                    company: "Tech Academy Online",
+                    description:
+                      "Intensive program covering modern web technologies including React, Node.js, and cloud deployment strategies.",
+                    type: "education",
+                    logo: "/logos/techacademy.svg", // Path to academy logo
+                    website: "https://example.com/techacademy", // Academy website URL
+                  },
+                ].map((item, idx) => (
+                  <TimelineItem
+                    key={`edu-${idx}`}
+                    item={item}
+                    idx={idx}
+                    hovered={hovered}
+                    setHovered={setHovered}
+                    itemType="edu"
+                  />
+                ))}
+            </div>
+          </div>
+
+          {/* Manual Adjustment Instructions */}
+          <div className="dev-note" style={{ display: "none" }}>
+            {/* 
+              To manually center the timeline dots:
+              1. Inspect the page and look at the timeline-dot elements
+              2. Adjust the 'left' property in .timeline-dot CSS class
+              3. Current value is -30px, increase to move right, decrease to move left
+              4. For example: left: -32px moves dots left, left: -28px moves dots right
+            */}
           </div>
         </div>
 

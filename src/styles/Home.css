@@ -329,3 +329,291 @@ a:visited {
 .layout-debug {
   outline: 2px solid red;
 }
+
+/* Experiences Timeline Styles */
+.experiences-section {
+  max-width: 900px;
+  margin: 8rem auto;
+  text-align: left;
+}
+
+/* Timeline Tabs */
+.timeline-tabs {
+  display: flex;
+  gap: 1rem;
+  margin: 2rem 0;
+}
+
+.timeline-tab {
+  padding: 0.6rem 1.2rem;
+  background: rgba(40, 38, 44, 0.02);
+  border: 2px solid transparent;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: rgba(40, 38, 44, 0.7);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.timeline-tab:hover {
+  background: rgba(40, 38, 44, 0.04);
+  color: rgba(40, 38, 44, 0.9);
+}
+
+.timeline-tab.active {
+  background: rgba(115, 147, 126, 0.1);
+  border-color: #73937e;
+  color: #73937e;
+  font-weight: 600;
+}
+
+.experiences-subtitle {
+  font-size: 1.1rem;
+  color: rgba(40, 38, 44, 0.8);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.timeline-container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  position: relative;
+  min-height: 400px;
+  margin-top: 2rem;
+}
+
+.timeline-bar {
+  width: 4px;
+  background: linear-gradient(180deg, #73937e 0%, #b0c9a8 100%);
+  border-radius: 4px;
+  height: 100%;
+  min-height: 400px;
+  position: absolute;
+  left: 30px;
+  top: 0;
+  transform-origin: top;
+  z-index: 0;
+}
+
+.timeline-items {
+  flex: 1;
+  margin-left: 60px;
+  display: flex;
+  flex-direction: column;
+  gap: 70px;
+  width: 100%;
+}
+
+.timeline-item {
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  cursor: pointer;
+  z-index: 2;
+  transition: all 0.3s ease;
+  width: 100%;
+}
+
+.timeline-dot {
+  width: 20px;
+  height: 20px;
+  background: #73937e;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  position: absolute;
+  left: -28px;
+  top: 25px;
+  transform: translateX(-50%);
+  box-shadow: 0 2px 10px rgba(115,147,126,0.2);
+  z-index: 3;
+  pointer-events: none; /* Prevent the dot from receiving hover events */
+}
+
+/* Education dots have a different color */
+.timeline-dot.education {
+  background: #5a7d65; /* Darker green for education */
+}
+
+/* Ensure dots don't move on hover */
+.timeline-item:hover .timeline-dot {
+  background: #b0c9a8;
+}
+
+.timeline-item:hover .timeline-dot.education {
+  background: #7a9d85;
+}
+
+/* Type tag styling */
+.timeline-type-tag {
+  position: absolute;
+  right: -10px;
+  top: 20px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  z-index: 2;
+}
+
+.timeline-type-tag.experience {
+  background-color: rgba(115, 147, 126, 0.15);
+  color: #73937e;
+}
+
+.timeline-type-tag.education {
+  background-color: rgba(90, 125, 101, 0.15);
+  color: #5a7d65;
+}
+
+.timeline-content {
+  background: rgba(40, 38, 44, 0.02);
+  border-radius: 8px;
+  padding: 1.5rem 2rem;
+  box-shadow: 0 4px 16px rgba(40, 38, 44, 0.08);
+  width: 100%;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.timeline-item:hover .timeline-content {
+  background: rgba(40, 38, 44, 0.04);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  /* Removed transform to prevent movement */
+}
+
+.timeline-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Logo styling */
+.timeline-logo-container {
+  width: 40px;
+  height: 40px;
+  margin-right: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 4px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.timeline-logo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+/* Company name and website link container */
+.timeline-company-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.timeline-website-link {
+  color: #73937e;
+  transition: color 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+}
+
+.timeline-website-link:hover {
+  color: #5a7d65;
+}
+
+.timeline-year {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #73937e;
+  margin-right: 1rem;
+}
+
+.timeline-title-container {
+  flex: 1;
+}
+
+.timeline-job-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #28262c;
+  margin: 0;
+}
+
+.timeline-company {
+  font-size: 1.1rem;
+  color: rgba(40, 38, 44, 0.8);
+  font-weight: 500;
+  display: block;
+  margin-top: 0.2rem;
+}
+
+.timeline-description-container {
+  overflow: hidden;
+}
+
+.timeline-description {
+  font-size: 1rem;
+  color: rgba(40, 38, 44, 0.8);
+  line-height: 1.6;
+  margin-top: 1rem;
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .timeline-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .timeline-year {
+    margin-bottom: 0.5rem;
+  }
+  
+  .timeline-bar {
+    left: 20px;
+  }
+  
+  .timeline-dot {
+    left: -35px;
+  }
+  
+  .timeline-items {
+    margin-left: 40px;
+    gap: 50px;
+  }
+  
+  .timeline-content {
+    padding: 1.2rem 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .timeline-items {
+    margin-left: 30px;
+  }
+  
+  .timeline-dot {
+    left: -25px;
+    width: 16px;
+    height: 16px;
+  }
+  
+  .timeline-content {
+    padding: 1rem;
+  }
+  
+  .timeline-job-title {
+    font-size: 1.2rem;
+  }
+}

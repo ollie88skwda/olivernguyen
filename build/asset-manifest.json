@@ -1,18 +1,23 @@
 {
   "files": {
-    "main.css": "/static/css/main.ba02a725.css",
-    "main.js": "/static/js/main.b5da94e8.js",
+    "main.css": "/static/css/main.9ca8af14.css",
+    "main.js": "/static/js/main.429c553a.js",
     "static/js/453.c5932eb1.chunk.js": "/static/js/453.c5932eb1.chunk.js",
     "static/media/DMSans-VariableFont_opsz,wght.ttf": "/static/media/DMSans-VariableFont_opsz,wght.b230ddb7eabb4b25e123.ttf",
     "static/media/permitrequirements.png": "/static/media/permitrequirements.d9927bab30a0432f7042.png",
+    "static/media/GeistMono-Regular.ttf": "/static/media/GeistMono-Regular.836c967f4fe81ef99044.ttf",
+    "static/media/sussy_logo.png": "/static/media/sussy_logo.4a8876157cecf0a72a60.png",
+    "static/media/licenserequirements.png": "/static/media/licenserequirements.d5269c24012eda4161be.png",
+    "static/media/wahoosfishing.png": "/static/media/wahoosfishing.86c36a3d04bdabfc808e.png",
     "static/media/on_logo.png": "/static/media/on_logo.6f5a8d59b98a7c8815a0.png",
+    "static/media/khanclock.png": "/static/media/khanclock.0323dff87f3e3764da38.png",
     "index.html": "/index.html",
-    "main.ba02a725.css.map": "/static/css/main.ba02a725.css.map",
-    "main.b5da94e8.js.map": "/static/js/main.b5da94e8.js.map",
+    "main.9ca8af14.css.map": "/static/css/main.9ca8af14.css.map",
+    "main.429c553a.js.map": "/static/js/main.429c553a.js.map",
     "453.c5932eb1.chunk.js.map": "/static/js/453.c5932eb1.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.ba02a725.css",
-    "static/js/main.b5da94e8.js"
+    "static/css/main.9ca8af14.css",
+    "static/js/main.429c553a.js"
   ]
 }
