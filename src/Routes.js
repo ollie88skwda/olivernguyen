@@ -4,12 +4,11 @@ import { Permit } from "./pages/driving/permit.js";
 import { NotFoundPage } from "./pages/not_found_page.js";
 import { Home } from "./pages/home.js";
 import { ArticleWriter } from "./pages/archive/article_writer.js";
-import DriversLicense from "./pages/driving/drivers_license.js";
+import { DriversLicense } from "./pages/driving/drivers_license.js";
 import SATResources from "./pages/sat/sat_resources.js";
 import SATSignup from "./pages/sat/sat_signup.js";
 import Order from "./pages/order.js";
 import ThankYou from "./pages/thank_you.js";
-import { DebtTracker } from "./pages/debt_tracker.js";
 
 export const Routes = () => {
   return (
@@ -39,10 +38,6 @@ export const Routes = () => {
         <Route path="/thank-you">
           <ThankYou />
         </Route>
-        <Route path="/debt-tracker">
-          <DebtTracker />
-        </Route>
-
         <Route>
           <NotFoundPage />
         </Route>

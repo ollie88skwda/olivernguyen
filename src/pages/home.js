@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { TopBar } from "./top_bar";
+import {TopBar} from "./top_bar";
 import { motion } from "framer-motion";
-
+import TimelineItem from "../components/TimelineItem";
 import "../styles/Home.css";
 import "../styles/App.css";
 import wahoosfishing from "../assets/wahoosfishing.png";
@@ -9,6 +9,7 @@ import khanclock from "../assets/khanclock.png";
 // ExperiencesTimeline component is now integrated directly into this file
 
 export const Home = () => {
+  const [hovered, setHovered] = useState(null);
   const [activeTab, setActiveTab] = useState(null);
 
   useEffect(() => {
@@ -62,7 +63,7 @@ export const Home = () => {
       </div>
       <main>
         <div className="definition">
-          {/* <motionAnimateIn TEXT="hi" /> */}
+          {<motionAnimateIn TEXT="hi" />}
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -378,13 +379,14 @@ export const Home = () => {
                     website: "https://example.com/compeng", // Department website URL
                   },
                 ].map((item, idx) => (
-                  <div key={`exp-${idx}`} className="timeline-item">
-                    <div className="timeline-content">
-                      <h3>{item.title}</h3>
-                      <p className="company">{item.company}</p>
-                      <p className="description">{item.description}</p>
-                    </div>
-                  </div>
+                  <TimelineItem
+                    key={`exp-${idx}`}
+                    item={item}
+                    idx={idx}
+                    hovered={hovered}
+                    setHovered={setHovered}
+                    itemType="exp"
+                  />
                 ))}
 
               {/* Education Items */}
@@ -411,13 +413,14 @@ export const Home = () => {
                     website: "https://example.com/techacademy", // Academy website URL
                   },
                 ].map((item, idx) => (
-                  <div key={`edu-${idx}`} className="timeline-item">
-                    <div className="timeline-content">
-                      <h3>{item.title}</h3>
-                      <p className="company">{item.company}</p>
-                      <p className="description">{item.description}</p>
-                    </div>
-                  </div>
+                  <TimelineItem
+                    key={`edu-${idx}`}
+                    item={item}
+                    idx={idx}
+                    hovered={hovered}
+                    setHovered={setHovered}
+                    itemType="edu"
+                  />
                 ))}
             </div>
           </div>
