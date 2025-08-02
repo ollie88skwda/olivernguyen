@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import on_logo from "../assets/on_logo.png";
-import sussy_logo from "../assets/sussy_logo.png";
+// import sussy_logo from "../assets/sussy_logo.png";
 import "../styles/Top_Bar.css";
 
 export const TopBar = () => {
@@ -83,9 +83,7 @@ export const TopBar = () => {
             className="on-logo"
           />
         </a>
-        <a href="/order" className="order-sussy-button">
-          ORDER<img src={sussy_logo} alt="sussy logo" className="sussy-logo-inline" />NOW
-        </a>
+
         <button onClick={toggleSidebar} className="sidebar-toggle-btn">
           ☰
         </button>
@@ -97,11 +95,7 @@ export const TopBar = () => {
               Home
             </a>
           </li>
-          <li>
-            <a href="/order" className="sidebar-link">
-              ORDER SUSSY
-            </a>
-          </li>
+
           <li>
             <a href="/debt" className="sidebar-link">
               Debt Tracker
