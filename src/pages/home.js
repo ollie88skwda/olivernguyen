@@ -1,12 +1,37 @@
 import React, { useState, useEffect } from "react";
 import {TopBar} from "./top_bar";
 import { motion } from "framer-motion";
-import TimelineItem from "../components/TimelineItem";
 import "../styles/Home.css";
 import "../styles/App.css";
 import wahoosfishing from "../assets/wahoosfishing.png";
 import khanclock from "../assets/khanclock.png";
 // ExperiencesTimeline component is now integrated directly into this file
+
+// TimelineItem component integrated inline
+const TimelineItem = ({ item, idx, hovered, setHovered, itemType }) => {
+  return (
+    <motion.div
+      className={`timeline-item ${itemType}`}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: idx * 0.1 }}
+      onMouseEnter={() => setHovered(idx)}
+      onMouseLeave={() => setHovered(null)}
+    >
+      <div className="timeline-content">
+        <div className="timeline-year">{item.year}</div>
+        <div className="timeline-title">{item.title}</div>
+        <div className="timeline-company">{item.company}</div>
+        <div className="timeline-description">{item.description}</div>
+        {item.website && (
+          <a href={item.website} target="_blank" rel="noopener noreferrer" className="timeline-link">
+            Learn More
+          </a>
+        )}
+      </div>
+    </motion.div>
+  );
+};
 
 export const Home = () => {
   const [hovered, setHovered] = useState(null);

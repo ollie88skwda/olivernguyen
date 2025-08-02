@@ -102,6 +102,11 @@ export const TopBar = () => {
               ORDER SUSSY
             </a>
           </li>
+          <li>
+            <a href="/debt" className="sidebar-link">
+              Debt Tracker
+            </a>
+          </li>
           <li className={`dropdown ${isDrivingOpen ? "open" : ""}`}>
             <button onClick={toggleDriving} className="dropdown-toggle">
               Driving

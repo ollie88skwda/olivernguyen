@@ -9,6 +9,7 @@ import SATResources from "./pages/sat/sat_resources.js";
 import SATSignup from "./pages/sat/sat_signup.js";
 import Order from "./pages/order.js";
 import ThankYou from "./pages/thank_you.js";
+import { DebtRedirect } from "./pages/debt_redirect.js";
 
 export const Routes = () => {
   return (
@@ -37,6 +38,9 @@ export const Routes = () => {
         </Route>
         <Route path="/thank-you">
           <ThankYou />
+        </Route>
+        <Route path="/debt">
+          <DebtRedirect />
         </Route>
         <Route>
           <NotFoundPage />
