@@ -91,6 +91,11 @@ export const TopBar = () => {
               Home
             </a>
           </li>
+          <li>
+            <a href="/pull" className="sidebar-link">
+              PULL
+            </a>
+          </li>
           <li className={`dropdown ${isDrivingOpen ? 'open' : ''}`}>
             <button onClick={toggleDriving} className="dropdown-toggle">
               Driving
