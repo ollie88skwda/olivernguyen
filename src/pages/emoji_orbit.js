@@ -1,14 +1,19 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 
-const CENTER_IMG_SIZE = 110;
+const CENTER_IMG_SIZE = 240;          // displayed size of center image
 const CENTER_IMG_SRC = "/center-emoji.png";
-const ORBIT_SIZE = 32;
+const ORBIT_SIZE = 36;                // displayed + canvas font size for orbit emojis
+// The image has some inner padding; the visible face is ~38% of CENTER_IMG_SIZE from center
+const ORBIT_MIN_RADIUS = Math.round(CENTER_IMG_SIZE * 0.38);
+const ORBIT_BAND_WIDTH = ORBIT_SIZE + 8; // one tight ring
+const COLLISION_DIST = ORBIT_SIZE + 6;   // prevent visual overlap
+
 const DEFAULT_COUNT = 10;
 const MIN_COUNT = 1;
 const MAX_COUNT = 30;
-// Tight ring — emojis placed just outside the center image
-const ORBIT_MIN_RADIUS = CENTER_IMG_SIZE / 2 + 2;
-const ORBIT_BAND_WIDTH = ORBIT_SIZE + 4; // one emoji wide
+
+// Fixed square output size for downloads — avoids viewport-ratio weirdness
+const DOWNLOAD_SIZE = 800;
 
 function getFirstEmoji(str) {
   if (!str) return "";
@@ -20,7 +25,7 @@ function getFirstEmoji(str) {
 }
 
 function overlaps(positions, x, y) {
-  return positions.some((p) => Math.hypot(p.x - x, p.y - y) < ORBIT_SIZE);
+  return positions.some((p) => Math.hypot(p.x - x, p.y - y) < COLLISION_DIST);
 }
 
 function randomPos(cx, cy, minRadius, maxRadius) {
@@ -43,7 +48,7 @@ function computePositions(count, displayWidth, displayHeight) {
   const positions = [];
   for (let i = 0; i < count; i++) {
     let pos = randomPos(cx, cy, minRadius, maxRadius);
-    for (let attempt = 1; attempt < 10 && overlaps(positions, pos.x, pos.y); attempt++) {
+    for (let attempt = 1; attempt < 20 && overlaps(positions, pos.x, pos.y); attempt++) {
       pos = randomPos(cx, cy, minRadius, maxRadius);
     }
     positions.push(pos);
@@ -82,8 +87,7 @@ export const EmojiOrbit = () => {
   };
 
   const handleInput = (e) => {
-    const raw = e.target.value;
-    const first = getFirstEmoji(raw);
+    const first = getFirstEmoji(e.target.value);
     setInputEmoji(first);
   };
 
@@ -94,43 +98,39 @@ export const EmojiOrbit = () => {
   const displayedEmoji = inputEmoji || null;
 
   const handleDownload = useCallback(() => {
-    const el = displayRef.current;
-    if (!el) return;
-
-    // Measure at call time so the canvas exactly matches what's on screen
-    const rect = el.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
-    const cssW = rect.width;
-    const cssH = rect.height;
-
+    // Fixed square canvas — no viewport-ratio distortion
     const canvas = document.createElement("canvas");
-    canvas.width = Math.round(cssW * dpr);
-    canvas.height = Math.round(cssH * dpr);
-
+    canvas.width = DOWNLOAD_SIZE;
+    canvas.height = DOWNLOAD_SIZE;
     const ctx = canvas.getContext("2d");
-    ctx.scale(dpr, dpr);
 
-    // Background
+    // White background
     ctx.fillStyle = "#ffffff";
-    ctx.fillRect(0, 0, cssW, cssH);
+    ctx.fillRect(0, 0, DOWNLOAD_SIZE, DOWNLOAD_SIZE);
 
-    const cx = cssW / 2;
-    const cy = cssH / 2;
-
-    // Center image
+    // Load center image then draw everything
     const img = new Image();
     img.src = CENTER_IMG_SRC;
     img.onload = () => {
+      const dstCx = DOWNLOAD_SIZE / 2;
+      const dstCy = DOWNLOAD_SIZE / 2;
       const half = CENTER_IMG_SIZE / 2;
-      ctx.drawImage(img, cx - half, cy - half, CENTER_IMG_SIZE, CENTER_IMG_SIZE);
 
-      // Orbit emojis
-      if (displayedEmoji) {
-        ctx.font = `${ORBIT_SIZE}px serif`;
+      // Center image
+      ctx.drawImage(img, dstCx - half, dstCy - half, CENTER_IMG_SIZE, CENTER_IMG_SIZE);
+
+      // Translate orbit positions from display-center → canvas-center
+      if (displayedEmoji && positions.length > 0) {
+        const srcCx = displaySize.width / 2;
+        const srcCy = displaySize.height / 2;
+
+        ctx.font = `${ORBIT_SIZE}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
+        ctx.fillStyle = "#000000"; // reset after background fill
+
         positions.forEach((pos) => {
-          ctx.fillText(displayedEmoji, pos.x, pos.y);
+          ctx.fillText(displayedEmoji, dstCx + (pos.x - srcCx), dstCy + (pos.y - srcCy));
         });
       }
 
@@ -139,13 +139,12 @@ export const EmojiOrbit = () => {
       link.href = canvas.toDataURL("image/png");
       link.click();
     };
-  }, [displayedEmoji, positions]);
+  }, [displayedEmoji, positions, displaySize]);
 
   return (
     <div style={styles.page}>
       {/* Display area */}
       <div ref={displayRef} style={styles.display}>
-        {/* Center image */}
         <img
           src={CENTER_IMG_SRC}
           alt="center"
@@ -153,7 +152,6 @@ export const EmojiOrbit = () => {
           draggable={false}
         />
 
-        {/* Orbit emojis */}
         {positions.map((pos, i) =>
           displayedEmoji ? (
             <span
@@ -179,7 +177,7 @@ export const EmojiOrbit = () => {
         )}
       </div>
 
-      {/* Controls area */}
+      {/* Controls */}
       <div style={styles.controls}>
         <div style={styles.controlsInner}>
           <input
