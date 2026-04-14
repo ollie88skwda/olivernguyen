@@ -6,9 +6,9 @@ const ORBIT_SIZE = 32;
 const DEFAULT_COUNT = 10;
 const MIN_COUNT = 1;
 const MAX_COUNT = 30;
-// Orbit is a constrained band just outside the center image
-const ORBIT_MIN_RADIUS = CENTER_IMG_SIZE / 2 + 16;
-const ORBIT_BAND_WIDTH = 80;
+// Tight ring — emojis placed just outside the center image
+const ORBIT_MIN_RADIUS = CENTER_IMG_SIZE / 2 + 2;
+const ORBIT_BAND_WIDTH = ORBIT_SIZE + 4; // one emoji wide
 
 function getFirstEmoji(str) {
   if (!str) return "";
@@ -94,26 +94,37 @@ export const EmojiOrbit = () => {
   const displayedEmoji = inputEmoji || null;
 
   const handleDownload = useCallback(() => {
+    const el = displayRef.current;
+    if (!el) return;
+
+    // Measure at call time so the canvas exactly matches what's on screen
+    const rect = el.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    const cssW = rect.width;
+    const cssH = rect.height;
+
     const canvas = document.createElement("canvas");
-    canvas.width = displaySize.width;
-    canvas.height = displaySize.height;
+    canvas.width = Math.round(cssW * dpr);
+    canvas.height = Math.round(cssH * dpr);
+
     const ctx = canvas.getContext("2d");
+    ctx.scale(dpr, dpr);
 
-    ctx.fillStyle = "#0f0f0f";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    // Background
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, cssW, cssH);
 
+    const cx = cssW / 2;
+    const cy = cssH / 2;
+
+    // Center image
     const img = new Image();
     img.src = CENTER_IMG_SRC;
     img.onload = () => {
       const half = CENTER_IMG_SIZE / 2;
-      ctx.drawImage(
-        img,
-        canvas.width / 2 - half,
-        canvas.height / 2 - half,
-        CENTER_IMG_SIZE,
-        CENTER_IMG_SIZE
-      );
+      ctx.drawImage(img, cx - half, cy - half, CENTER_IMG_SIZE, CENTER_IMG_SIZE);
 
+      // Orbit emojis
       if (displayedEmoji) {
         ctx.font = `${ORBIT_SIZE}px serif`;
         ctx.textAlign = "center";
@@ -128,7 +139,7 @@ export const EmojiOrbit = () => {
       link.href = canvas.toDataURL("image/png");
       link.click();
     };
-  }, [displaySize, displayedEmoji, positions]);
+  }, [displayedEmoji, positions]);
 
   return (
     <div style={styles.page}>
@@ -220,7 +231,7 @@ const styles = {
     height: "100vh",
     width: "100vw",
     overflow: "hidden",
-    background: "#0f0f0f",
+    background: "#ffffff",
     fontFamily: "GeistMono, monospace",
   },
   display: {
@@ -256,7 +267,7 @@ const styles = {
     width: ORBIT_SIZE * 0.7,
     height: ORBIT_SIZE * 0.7,
     borderRadius: "50%",
-    border: "2px dashed rgba(255,255,255,0.18)",
+    border: "2px dashed rgba(0,0,0,0.18)",
     boxSizing: "border-box",
   },
   controls: {
@@ -264,7 +275,7 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    borderTop: "1px solid rgba(255,255,255,0.08)",
+    borderTop: "1px solid rgba(0,0,0,0.08)",
     padding: "0 16px",
   },
   controlsInner: {
@@ -275,10 +286,10 @@ const styles = {
     justifyContent: "center",
   },
   input: {
-    background: "rgba(255,255,255,0.06)",
-    border: "1px solid rgba(255,255,255,0.15)",
+    background: "rgba(0,0,0,0.04)",
+    border: "1px solid rgba(0,0,0,0.15)",
     borderRadius: 8,
-    color: "#fff",
+    color: "#111",
     fontSize: 24,
     padding: "8px 14px",
     outline: "none",
@@ -292,10 +303,10 @@ const styles = {
     gap: 10,
   },
   stepBtn: {
-    background: "rgba(255,255,255,0.08)",
-    border: "1px solid rgba(255,255,255,0.15)",
+    background: "rgba(0,0,0,0.06)",
+    border: "1px solid rgba(0,0,0,0.15)",
     borderRadius: 8,
-    color: "#fff",
+    color: "#111",
     fontSize: 22,
     width: 40,
     height: 40,
@@ -307,17 +318,17 @@ const styles = {
     transition: "background 0.15s",
   },
   countDisplay: {
-    color: "#fff",
+    color: "#111",
     fontSize: 20,
     minWidth: 32,
     textAlign: "center",
     fontFamily: "inherit",
   },
   rerandomizeBtn: {
-    background: "rgba(255,255,255,0.1)",
-    border: "1px solid rgba(255,255,255,0.2)",
+    background: "rgba(0,0,0,0.06)",
+    border: "1px solid rgba(0,0,0,0.15)",
     borderRadius: 8,
-    color: "#fff",
+    color: "#111",
     fontSize: 15,
     padding: "10px 20px",
     cursor: "pointer",
@@ -326,10 +337,10 @@ const styles = {
     transition: "background 0.15s",
   },
   downloadBtn: {
-    background: "rgba(255,255,255,0.15)",
-    border: "1px solid rgba(255,255,255,0.3)",
+    background: "rgba(0,0,0,0.08)",
+    border: "1px solid rgba(0,0,0,0.2)",
     borderRadius: 8,
-    color: "#fff",
+    color: "#111",
     fontSize: 15,
     padding: "10px 20px",
     cursor: "pointer",
