@@ -17,6 +17,16 @@ function getFirstEmoji(str) {
   return "";
 }
 
+function overlaps(positions, x, y) {
+  return positions.some((p) => Math.hypot(p.x - x, p.y - y) < ORBIT_SIZE);
+}
+
+function randomPos(cx, cy, minRadius, maxRadius) {
+  const angle = Math.random() * 2 * Math.PI;
+  const radius = minRadius + Math.random() * (maxRadius - minRadius);
+  return { x: cx + radius * Math.cos(angle), y: cy + radius * Math.sin(angle) };
+}
+
 function computePositions(count, displayWidth, displayHeight) {
   const cx = displayWidth / 2;
   const cy = displayHeight / 2;
@@ -27,20 +37,11 @@ function computePositions(count, displayWidth, displayHeight) {
 
   const positions = [];
   for (let i = 0; i < count; i++) {
-    let x, y, attempts = 0;
-    do {
-      const angle = Math.random() * 2 * Math.PI;
-      const radius = minRadius + Math.random() * (maxRadius - minRadius);
-      x = cx + radius * Math.cos(angle);
-      y = cy + radius * Math.sin(angle);
-      attempts++;
-    } while (
-      attempts < 10 &&
-      positions.some(
-        (p) => Math.hypot(p.x - x, p.y - y) < ORBIT_SIZE
-      )
-    );
-    positions.push({ x, y });
+    let pos = randomPos(cx, cy, minRadius, maxRadius);
+    for (let attempt = 1; attempt < 10 && overlaps(positions, pos.x, pos.y); attempt++) {
+      pos = randomPos(cx, cy, minRadius, maxRadius);
+    }
+    positions.push(pos);
   }
   return positions;
 }
