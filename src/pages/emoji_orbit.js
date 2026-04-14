@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
 
-const CENTER_EMOJI = "😳";
-const CENTER_SIZE = 90;
+const CENTER_IMG_SIZE = 110;
+const CENTER_IMG_SRC = "/center-emoji.png";
 const ORBIT_SIZE = 32;
 const DEFAULT_COUNT = 10;
 const MIN_COUNT = 1;
 const MAX_COUNT = 30;
+// Orbit is a constrained band just outside the center image
+const ORBIT_MIN_RADIUS = CENTER_IMG_SIZE / 2 + 16;
+const ORBIT_BAND_WIDTH = 80;
 
 function getFirstEmoji(str) {
   if (!str) return "";
   const segmenter = new Intl.Segmenter(undefined, { granularity: "grapheme" });
   for (const { segment } of segmenter.segment(str)) {
-    // Accept any grapheme (emoji or otherwise); caller handles placeholder
     return segment;
   }
   return "";
@@ -30,8 +32,11 @@ function randomPos(cx, cy, minRadius, maxRadius) {
 function computePositions(count, displayWidth, displayHeight) {
   const cx = displayWidth / 2;
   const cy = displayHeight / 2;
-  const minRadius = CENTER_SIZE * 0.9;
-  const maxRadius = Math.min(displayWidth, displayHeight) / 2 - ORBIT_SIZE - 8;
+  const minRadius = ORBIT_MIN_RADIUS;
+  const maxRadius = Math.min(
+    ORBIT_MIN_RADIUS + ORBIT_BAND_WIDTH,
+    Math.min(displayWidth, displayHeight) / 2 - ORBIT_SIZE - 8
+  );
 
   if (maxRadius <= minRadius) return [];
 
@@ -88,12 +93,54 @@ export const EmojiOrbit = () => {
 
   const displayedEmoji = inputEmoji || null;
 
+  const handleDownload = useCallback(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = displaySize.width;
+    canvas.height = displaySize.height;
+    const ctx = canvas.getContext("2d");
+
+    ctx.fillStyle = "#0f0f0f";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    const img = new Image();
+    img.src = CENTER_IMG_SRC;
+    img.onload = () => {
+      const half = CENTER_IMG_SIZE / 2;
+      ctx.drawImage(
+        img,
+        canvas.width / 2 - half,
+        canvas.height / 2 - half,
+        CENTER_IMG_SIZE,
+        CENTER_IMG_SIZE
+      );
+
+      if (displayedEmoji) {
+        ctx.font = `${ORBIT_SIZE}px serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        positions.forEach((pos) => {
+          ctx.fillText(displayedEmoji, pos.x, pos.y);
+        });
+      }
+
+      const link = document.createElement("a");
+      link.download = "emoji-orbit.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    };
+  }, [displaySize, displayedEmoji, positions]);
+
   return (
     <div style={styles.page}>
       {/* Display area */}
       <div ref={displayRef} style={styles.display}>
-        {/* Center emoji */}
-        <span style={styles.centerEmoji}>{CENTER_EMOJI}</span>
+        {/* Center image */}
+        <img
+          src={CENTER_IMG_SRC}
+          alt="center"
+          style={styles.centerImage}
+          draggable={false}
+        />
 
         {/* Orbit emojis */}
         {positions.map((pos, i) =>
@@ -156,6 +203,10 @@ export const EmojiOrbit = () => {
           <button onClick={rerandomize} style={styles.rerandomizeBtn}>
             Rerandomize
           </button>
+
+          <button onClick={handleDownload} style={styles.downloadBtn}>
+            Download
+          </button>
         </div>
       </div>
     </div>
@@ -177,13 +228,14 @@ const styles = {
     flex: "0 0 80%",
     overflow: "hidden",
   },
-  centerEmoji: {
+  centerImage: {
     position: "absolute",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    fontSize: CENTER_SIZE,
-    lineHeight: 1,
+    width: CENTER_IMG_SIZE,
+    height: CENTER_IMG_SIZE,
+    objectFit: "contain",
     userSelect: "none",
     pointerEvents: "none",
   },
@@ -264,6 +316,18 @@ const styles = {
   rerandomizeBtn: {
     background: "rgba(255,255,255,0.1)",
     border: "1px solid rgba(255,255,255,0.2)",
+    borderRadius: 8,
+    color: "#fff",
+    fontSize: 15,
+    padding: "10px 20px",
+    cursor: "pointer",
+    fontFamily: "inherit",
+    letterSpacing: "0.02em",
+    transition: "background 0.15s",
+  },
+  downloadBtn: {
+    background: "rgba(255,255,255,0.15)",
+    border: "1px solid rgba(255,255,255,0.3)",
     borderRadius: 8,
     color: "#fff",
     fontSize: 15,

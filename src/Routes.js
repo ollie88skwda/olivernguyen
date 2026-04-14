@@ -35,7 +35,7 @@ export const Routes = () => {
         <Route path="/pull">
           <Pull />
         </Route>
-        <Route path="/emoji-orbit">
+        <Route path="/emoji">
           <EmojiOrbit />
         </Route>
         <Route>
