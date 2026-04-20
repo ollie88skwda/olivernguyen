@@ -8,7 +8,7 @@ import { DriversLicense } from "./pages/driving/drivers_license.js";
 import SATResources from "./pages/sat/sat_resources.js";
 import SATSignup from "./pages/sat/sat_signup.js";
 import { Pull } from "./pages/pull.js";
-import { EmojiOrbit } from "./pages/emoji_orbit.js";
+import { EmojiPage } from "./pages/emoji.js";
 
 export const Routes = () => {
   return (
@@ -36,7 +36,7 @@ export const Routes = () => {
           <Pull />
         </Route>
         <Route path="/emoji">
-          <EmojiOrbit />
+          <EmojiPage />
         </Route>
         <Route>
           <NotFoundPage />
