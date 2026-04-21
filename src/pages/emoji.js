@@ -244,13 +244,18 @@ export const EmojiPage = () => {
     ctx.fillStyle = bgColor;
     ctx.fillRect(0, 0, size, size);
 
-    // Fishbowl
-    const fw = size * FISHBOWL_COVERAGE;
-    const fx = (size - fw) / 2;
-    const fy = (size - fw) / 2;
+    // Fishbowl (preserve natural aspect ratio, contain within 70% box)
     const fishbowlSrc = fishbowlCanvasRef.current;
     if (fishbowlSrc) {
-      ctx.drawImage(fishbowlSrc, fx, fy, fw, fw);
+      const box = size * FISHBOWL_COVERAGE;
+      const natW = fishbowlSrc.width;
+      const natH = fishbowlSrc.height;
+      const scale = Math.min(box / natW, box / natH);
+      const fw = natW * scale;
+      const fh = natH * scale;
+      const fx = (size - fw) / 2;
+      const fy = (size - fh) / 2;
+      ctx.drawImage(fishbowlSrc, fx, fy, fw, fh);
     }
 
     // Items
