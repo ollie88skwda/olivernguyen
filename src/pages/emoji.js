@@ -18,7 +18,7 @@ const BG_PRESETS = [
   { color: "#092441", label: "chrome purple" },
 ];
 
-const COUNT_PRESETS = [6, 4, 2];
+const COUNT_PRESETS = [67, 41, 25];
 const MAX_COUNT = 200;
 
 function isDarkColor(hex) {
@@ -147,7 +147,7 @@ export const EmojiPage = () => {
   const inputRef = useRef(null);
 
   const [inputValue, setInputValue] = useState("");
-  const [count, setCount] = useState(6);
+  const [count, setCount] = useState(67);
   const [bgColor, setBgColor] = useState("#ffffff");
   const [items, setItems] = useState([]);
   const [fishbowlDataUrl, setFishbowlDataUrl] = useState(FISHBOWL_SRC);
