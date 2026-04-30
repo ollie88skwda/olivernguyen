@@ -9,16 +9,32 @@ import "../styles/Emoji.css";
 
 const FISHBOWL_SRC = "/fishbowl.jpg";
 const FISHBOWL_COVERAGE = 0.7; // 70% of canvas
-const ITEM_COVERAGE = 0.09; // 9% of canvas
+const ITEM_COVERAGE = 0.13; // 13% of canvas
 const EXPORT_SIZE = 1200;
 
 const BG_PRESETS = [
-  { key: "white", color: "#ffffff", label: "white" },
-  { key: "black", color: "#131313", label: "black" },
-  { key: "purple", color: "#092441", label: "chrome purple" },
+  { color: "#ffffff", label: "white" },
+  { color: "#131313", label: "black" },
+  { color: "#092441", label: "chrome purple" },
 ];
 
-const COUNT_CYCLE = [1, 3, 5, 10, 20, 30];
+const COUNT_PRESETS = [6, 4, 2];
+const MAX_COUNT = 200;
+
+function isDarkColor(hex) {
+  if (!hex || typeof hex !== "string") return false;
+  let h = hex.trim().replace("#", "");
+  if (h.length === 3) {
+    h = h.split("").map((c) => c + c).join("");
+  }
+  if (h.length !== 6) return false;
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  // Relative luminance (sRGB)
+  const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+  return lum < 0.6;
+}
 
 function getFirstGrapheme(str) {
   if (!str) return "";
@@ -131,18 +147,14 @@ export const EmojiPage = () => {
   const inputRef = useRef(null);
 
   const [inputValue, setInputValue] = useState("");
-  const [count, setCount] = useState(3);
-  const [bgKey, setBgKey] = useState("white");
+  const [count, setCount] = useState(6);
+  const [bgColor, setBgColor] = useState("#ffffff");
   const [items, setItems] = useState([]);
   const [fishbowlDataUrl, setFishbowlDataUrl] = useState(FISHBOWL_SRC);
   const fishbowlCanvasRef = useRef(null);
   const [draggingId, setDraggingId] = useState(null);
 
-  const bgColor = useMemo(
-    () => BG_PRESETS.find((b) => b.key === bgKey)?.color || "#ffffff",
-    [bgKey]
-  );
-  const isDarkBg = bgKey !== "white";
+  const isDarkBg = useMemo(() => isDarkColor(bgColor), [bgColor]);
 
   // Load + strip fishbowl on mount
   useEffect(() => {
@@ -172,7 +184,9 @@ export const EmojiPage = () => {
     const entry =
       getFirstGrapheme(content) === content ? content : content;
     // Accept multi-char text (e.g. "67"). For single-grapheme emoji inputs, keep as-is.
-    const positions = randomScatterPositions(count);
+    const safeCount =
+      typeof count === "number" && !Number.isNaN(count) && count > 0 ? count : 1;
+    const positions = randomScatterPositions(safeCount);
     setItems((prev) => [
       ...prev,
       ...positions.map((p, i) => ({
@@ -186,10 +200,21 @@ export const EmojiPage = () => {
     inputRef.current?.focus();
   }, [inputValue, count]);
 
-  const cycleCount = useCallback(() => {
+  const handleCountChange = useCallback((e) => {
+    const raw = e.target.value;
+    if (raw === "") {
+      setCount("");
+      return;
+    }
+    const n = parseInt(raw, 10);
+    if (Number.isNaN(n)) return;
+    setCount(Math.max(1, Math.min(MAX_COUNT, n)));
+  }, []);
+
+  const handleCountBlur = useCallback(() => {
     setCount((c) => {
-      const idx = COUNT_CYCLE.indexOf(c);
-      return COUNT_CYCLE[(idx + 1) % COUNT_CYCLE.length] ?? COUNT_CYCLE[0];
+      if (c === "" || Number.isNaN(c)) return 1;
+      return c;
     });
   }, []);
 
@@ -346,15 +371,30 @@ export const EmojiPage = () => {
               placeholder="type emoji or text, then hit return"
               aria-label="emoji or text"
             />
-            <button
-              type="button"
-              className="emoji-count-badge"
-              onClick={cycleCount}
-              aria-label={`count: ${count}, click to change`}
-              title="Click to cycle count"
-            >
-              × {count}
-            </button>
+            <div className="emoji-count-group" aria-label="count">
+              <span className="emoji-count-x" aria-hidden="true">×</span>
+              {COUNT_PRESETS.map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  className={`emoji-count-preset ${count === preset ? "active" : ""}`}
+                  onClick={() => setCount(preset)}
+                  aria-label={`${preset} emojis`}
+                >
+                  {preset}
+                </button>
+              ))}
+              <input
+                type="number"
+                className="emoji-count-input"
+                min="1"
+                max={MAX_COUNT}
+                value={count}
+                onChange={handleCountChange}
+                onBlur={handleCountBlur}
+                aria-label="custom count"
+              />
+            </div>
             <span className="emoji-return-hint" aria-hidden="true">
               ↵
             </span>
@@ -364,15 +404,29 @@ export const EmojiPage = () => {
             <div className="emoji-swatches" role="radiogroup" aria-label="background color">
               {BG_PRESETS.map((preset) => (
                 <button
-                  key={preset.key}
-                  className={`emoji-swatch ${bgKey === preset.key ? "active" : ""}`}
+                  key={preset.color}
+                  className={`emoji-swatch ${bgColor.toLowerCase() === preset.color.toLowerCase() ? "active" : ""}`}
                   style={{ background: preset.color }}
-                  onClick={() => setBgKey(preset.key)}
+                  onClick={() => setBgColor(preset.color)}
                   aria-label={`${preset.label} background`}
                   role="radio"
-                  aria-checked={bgKey === preset.key}
+                  aria-checked={bgColor.toLowerCase() === preset.color.toLowerCase()}
                 />
               ))}
+              <label
+                className="emoji-swatch emoji-swatch-custom"
+                style={{ background: bgColor }}
+                aria-label="custom background color"
+                title="Pick a custom color"
+              >
+                <span className="emoji-swatch-rainbow" aria-hidden="true" />
+                <input
+                  type="color"
+                  className="emoji-swatch-color-input"
+                  value={/^#[0-9a-fA-F]{6}$/.test(bgColor) ? bgColor : "#ffffff"}
+                  onChange={(e) => setBgColor(e.target.value)}
+                />
+              </label>
             </div>
             <div className="emoji-divider" />
             <button
