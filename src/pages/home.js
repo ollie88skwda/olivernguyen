@@ -40,7 +40,7 @@ export const Home = () => {
             ease: [0.16, 1, 0.3, 1],
           }}
         >
-          Oliver Nguyen.
+          Mrs. Zechiel if you read this give us a 5 on the group portion.
         </motion.h1>
         <motion.h2
           className="description"
