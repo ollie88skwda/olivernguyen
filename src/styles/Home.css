@@ -190,11 +190,12 @@
 /* ── About: editorial lead + datasheet rows (no boxes) ────────────────────── */
 .about-lead {
   font-family: var(--font-sans);
-  font-size: 1.3rem;
-  line-height: 1.55;
+  font-size: clamp(1.35rem, 2.4vw, 1.8rem);
+  font-weight: 500;
+  line-height: 1.5;
   color: var(--text);
-  max-width: 52ch;
-  margin: 0 0 44px;
+  max-width: 46ch;
+  margin: 0 0 52px;
 }
 .specs {
   margin: 0;
@@ -204,7 +205,7 @@
   display: grid;
   grid-template-columns: 160px 1fr;
   gap: 24px;
-  padding: 20px 0;
+  padding: 26px 0;
   border-bottom: 1px solid var(--border);
   margin: 0;
 }
@@ -214,14 +215,15 @@
   letter-spacing: 0.1em;
   font-size: 0.72rem;
   color: var(--text-muted);
-  padding-top: 5px;
+  padding-top: 16px;
 }
 .spec-row dd {
   margin: 0;
-  font-family: var(--font-sans);
-  font-size: 1.05rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 3.6vw, 2.7rem);
+  line-height: 1.08;
+  letter-spacing: 0.015em;
   color: var(--text);
-  max-width: 60ch;
 }
 /* NOW keeps its bright-signal role as gold text instead of a gold slab */
 .spec-now dd {
@@ -230,10 +232,10 @@
 }
 .spec-meta {
   font-family: var(--font-mono);
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   letter-spacing: 0.03em;
   color: var(--text-muted);
-  margin-left: 14px;
+  margin-left: 16px;
 }
 .spec-line {
   display: flex;
@@ -241,7 +243,7 @@
   align-items: baseline;
   gap: 16px;
   flex-wrap: wrap;
-  padding: 3px 0;
+  padding: 6px 0;
 }
 .spec-line .spec-meta {
   margin-left: 0;
