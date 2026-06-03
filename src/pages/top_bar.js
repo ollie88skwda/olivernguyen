@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import on_logo from "../assets/on_logo.png";
 import "../styles/Top_Bar.css";
+import ScrollProgress from "../components/ScrollProgress";
 
 export const TopBar = () => {
   const [showTopBar, setShowTopBar] = useState(false);
@@ -49,9 +49,18 @@ export const TopBar = () => {
   }, [lastScrollTop]);
 
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(() => {
+        handleScroll();
+        ticking = false;
+      });
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", onScroll);
     };
   }, [handleScroll]);
 
@@ -69,22 +78,24 @@ export const TopBar = () => {
 
   return (
     <>
+      <ScrollProgress />
       <div
         className={`top-bar ${showTopBar ? "show-bar" : "hide-bar"} ${isInitialLoad ? "initial-load" : ""}`}
       >
-        <a href="../">
+        <a href="/" className="on-logo">
           <img
-            src={on_logo}
-            width="100px"
-            alt="website logo"
-            className="on-logo"
+            src={process.env.PUBLIC_URL + "/on_logo_mark.png"}
+            alt="Oliver Nguyen — home"
           />
         </a>
-        <button onClick={toggleSidebar} className="sidebar-toggle-btn">
+        <button onClick={toggleSidebar} className="sidebar-toggle-btn" aria-label="Open menu">
           ☰
         </button>
       </div>
-      <div className={`sidebar ${isSidebarOpen ? "open" : ""}`}>
+      <div
+        className={`sidebar ${isSidebarOpen ? "open" : ""}`}
+        aria-label="Site navigation"
+      >
         <ul>
           <li>
             <a href="/" className="sidebar-link">

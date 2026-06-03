@@ -1,4 +1,4 @@
-import "../../App.css";
+import "../../styles/App.css";
 import perm_reqs from "../../assets/permitrequirements.png";
 import { TopBar } from "../top_bar";
 import React from "react";
@@ -30,12 +30,12 @@ export const Permit = () => {
               name="viewport"
               content="width=device-width, initial-scale=1.0"
             />
-            <div class="content">
+            <div className="content">
               <main>
                 <header>
                   <h1>How to get your permit (for high schoolers)</h1>
                 </header>
-                <div class="section1">
+                <div className="section1">
                   <h2>1: Driver's ed</h2>
                   <p>
                     Driver's ed will be the biggest time commitment when getting
@@ -72,7 +72,7 @@ export const Permit = () => {
                   </p>
                   <br />
                 </div>
-                <div class="section2">
+                <div className="section2">
                   <h2>2: Other stuff</h2>
                   <p>
                     Once you've done all the driver's ed stuff, everything else
@@ -97,7 +97,7 @@ export const Permit = () => {
                       src={perm_reqs}
                       alt="dmv permit requirements"
                       height="500px"
-                      class="dmvphoto"
+                      className="dmvphoto"
                     />
                   </a>
                   <section>
@@ -238,7 +238,7 @@ export const Permit = () => {
                     </section>
                   </section>
                 </div>
-                <div class="section3">
+                <div className="section3">
                   <h2>3: The knowledge test</h2>
                   <p>
                     This is the part that most people fail. You need to get at
@@ -258,7 +258,7 @@ export const Permit = () => {
                     you can pass the practice tests, you can pass the real test.
                   </p>
                 </div>
-                <div class="section4">
+                <div className="section4">
                   <h2>4: Congrats!</h2>
                   <p>
                     If you've made it this far, you should have your permit! Now

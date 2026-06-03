@@ -1,0 +1,56 @@
+/* ── Design tokens for the dark-navy / gold redesign ──────────────────────────
+   Imported once globally (src/index.js). The emoji + PULL pages paint their own
+   full-viewport backgrounds, so the navy body never bleeds into them. */
+
+:root {
+  --bg-base: #061629;
+  --bg: #092441;
+  --surface: #0e2d52;
+  --surface-2: #163a63;
+  --border: rgba(234, 240, 246, 0.1);
+
+  --text: #edf1f7;
+  --text-muted: #93a4b8;
+  --text-faint: #9aacbe; /* WCAG AA (>=4.5:1) on navy surfaces */
+
+  --accent: #e8b765;
+  --accent-hi: #f4cb82;
+  --accent-deep: #c9974a;
+  --on-accent: #061629;
+
+  --font-display: "Bebas Neue", sans-serif;
+  --font-mono: "DM Mono", ui-monospace, monospace;
+  --font-sans: "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-expr: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --maxw: 920px;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-base);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-osx-font-smoothing: grayscale;
+  line-height: 1.6;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

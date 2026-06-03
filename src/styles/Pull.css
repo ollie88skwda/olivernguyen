@@ -1,8 +1,10 @@
-/* ─── Name Screen ─────────────────────────────────────────────────────────── */
+/* PULL — navy / gold redesign. Tokens from theme.css. Class names unchanged
+   so pull.js logic (Supabase realtime, localStorage, optimistic) is untouched. */
 
+/* ─── Name Screen ─────────────────────────────────────────────────────────── */
 .pull-name-screen {
   min-height: 100vh;
-  background-color: #f1f7f1;
+  background-color: var(--bg-base);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20,82 +22,95 @@
 }
 
 .pull-subtitle {
-  font-size: 0.85rem;
-  color: #73937e;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--accent);
   font-weight: 500;
-  margin: 0 0 8px;
-  letter-spacing: 0.02em;
+  margin: 0 0 10px;
 }
 
 .pull-title {
-  font-size: 5rem;
-  font-weight: 700;
-  color: #28262c;
+  font-family: var(--font-display);
+  font-size: 5.5rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--text);
   margin: 0;
-  line-height: 1;
+  line-height: 0.9;
 }
 
 .pull-tagline {
-  font-size: 0.9rem;
-  color: #666;
-  margin: 10px 0 0;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin: 12px 0 0;
 }
 
 .pull-divider {
-  border-top: 1px solid rgba(40, 38, 44, 0.1);
+  border-top: 1px solid var(--border);
   margin-bottom: 28px;
 }
 
 .pull-label {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #28262c;
-  margin: 0 0 8px;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin: 0 0 10px;
 }
 
 .pull-input {
   width: 100%;
-  background: #fff;
-  border: 1px solid rgba(40, 38, 44, 0.15);
-  border-radius: 8px;
-  padding: 12px 16px;
-  font-family: "DMSans", sans-serif;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 13px 16px;
+  font-family: var(--font-sans);
   font-size: 1rem;
-  color: #28262c;
+  color: var(--text);
   box-sizing: border-box;
   transition: border-color 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
 }
 
 .pull-input::placeholder {
-  color: #aaa;
+  color: var(--text-faint);
 }
 
 .pull-input:focus {
   outline: none;
-  border-color: #73937e;
+  border-color: var(--accent);
+}
+.pull-input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-color: var(--accent);
 }
 
 .pull-btn-primary {
-  margin-top: 10px;
+  margin-top: 12px;
   width: 100%;
-  background-color: #73937e;
-  color: #fff;
+  background-color: var(--accent);
+  color: var(--on-accent);
   border: none;
-  border-radius: 8px;
-  padding: 12px 24px;
-  font-family: "DMSans", sans-serif;
-  font-size: 0.95rem;
+  border-radius: 10px;
+  padding: 13px 24px;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  letter-spacing: 0.03em;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.14s var(--ease-out), background 0.2s ease;
 }
 
 .pull-btn-primary:hover:not(:disabled) {
-  background-color: #64896f;
-  transform: scale(1.01);
+  background-color: var(--accent-hi);
 }
-
+.pull-btn-primary:active:not(:disabled) {
+  transform: scale(0.99);
+}
 .pull-btn-primary:disabled {
   opacity: 0.4;
   cursor: not-allowed;
@@ -105,21 +120,20 @@
   margin-top: 16px;
   text-align: center;
   font-size: 0.75rem;
-  color: #999;
+  color: var(--text-faint);
   line-height: 1.6;
 }
 
 /* ─── Main Page ───────────────────────────────────────────────────────────── */
-
 .pull-page {
   min-height: 100vh;
-  background-color: #f1f7f1;
+  background-color: var(--bg-base);
 }
 
 .pull-content {
   max-width: 680px;
   margin: 0 auto;
-  padding: 90px 20px 40px;
+  padding: 100px 20px 40px;
 }
 
 .pull-page-header {
@@ -130,17 +144,22 @@
 }
 
 .pull-page-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #28262c;
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--text);
   margin: 0;
-  line-height: 1;
+  line-height: 0.9;
 }
 
 .pull-page-sub {
-  font-size: 0.85rem;
-  color: #73937e;
-  margin: 4px 0 0;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin: 6px 0 0;
 }
 
 .pull-user-info {
@@ -150,55 +169,54 @@
 }
 
 .pull-user-name {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #73937e;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--accent);
 }
 
 .pull-change-btn {
   background: none;
   border: none;
-  font-family: "DMSans", sans-serif;
-  font-size: 0.8rem;
-  color: #999;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-faint);
   cursor: pointer;
   padding: 0;
   transition: color 0.2s ease;
 }
-
 .pull-change-btn:hover {
-  color: #28262c;
+  color: var(--text);
 }
 
 .pull-instructions {
-  font-size: 0.9rem;
-  color: #666;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  color: var(--text-muted);
   line-height: 1.6;
   margin: 0 0 24px;
 }
-
 .pull-instructions strong {
-  color: #73937e;
+  color: var(--accent);
   font-weight: 600;
 }
 
 /* ─── Banner ──────────────────────────────────────────────────────────────── */
-
 .pull-banner {
-  background: #fff;
-  border: 1px solid rgba(115, 147, 126, 0.3);
-  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
   padding: 16px;
   margin-bottom: 20px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
 }
 
 .pull-banner-title {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #73937e;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--accent);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   margin: 0 0 12px;
 }
 
@@ -215,24 +233,25 @@
 }
 
 .pull-banner-rank {
+  font-family: var(--font-mono);
   font-size: 0.8rem;
-  color: #999;
+  color: var(--text-faint);
 }
 
 .pull-banner-date {
   font-size: 1.1rem;
   font-weight: 700;
-  color: #28262c;
+  color: var(--text);
 }
 
 .pull-banner-count {
+  font-family: var(--font-mono);
   font-size: 0.8rem;
   font-weight: 500;
-  color: #73937e;
+  color: var(--accent);
 }
 
 /* ─── Cards ───────────────────────────────────────────────────────────────── */
-
 .pull-grid {
   display: flex;
   flex-direction: column;
@@ -240,24 +259,20 @@
 }
 
 .pull-card {
-  background: #fff;
-  border: 1px solid rgba(40, 38, 44, 0.12);
-  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   transition: border-color 0.2s ease;
 }
-
 .pull-card.active {
-  border-color: #73937e;
+  border-color: var(--accent);
 }
-
 .pull-card:hover {
-  border-color: rgba(40, 38, 44, 0.25);
+  border-color: rgba(232, 183, 101, 0.35);
 }
-
 .pull-card.active:hover {
-  border-color: #73937e;
+  border-color: var(--accent);
 }
 
 .pull-card-header {
@@ -271,7 +286,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  font-family: "DMSans", sans-serif;
+  font-family: var(--font-sans);
 }
 
 .pull-card-left {
@@ -287,27 +302,28 @@
 }
 
 .pull-card-month {
+  font-family: var(--font-mono);
   font-size: 0.7rem;
-  color: #999;
+  color: var(--text-faint);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   line-height: 1;
 }
 
 .pull-card-day {
-  font-size: 2rem;
-  font-weight: 700;
-  color: #28262c;
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  font-weight: 400;
+  color: var(--text);
   line-height: 1;
 }
 
 .pull-card-status {
   font-size: 0.8rem;
-  color: #999;
+  color: var(--text-faint);
 }
-
 .pull-card-status.committed {
-  color: #73937e;
+  color: var(--accent);
   font-weight: 500;
 }
 
@@ -318,20 +334,21 @@
 
 .pull-card-count {
   display: block;
+  font-family: var(--font-mono);
   font-size: 0.9rem;
-  font-weight: 600;
-  color: #73937e;
+  font-weight: 500;
+  color: var(--accent);
 }
 
 .pull-card-pool {
   display: block;
   font-size: 0.75rem;
-  color: #999;
+  color: var(--text-faint);
 }
 
 .pull-card-empty {
   font-size: 0.75rem;
-  color: #ccc;
+  color: var(--text-faint);
 }
 
 .pull-card-chips {
@@ -342,42 +359,41 @@
 }
 
 .pull-chip {
-  font-size: 0.75rem;
-  padding: 3px 10px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 4px 10px;
   border-radius: 999px;
-  border: 1px solid rgba(40, 38, 44, 0.12);
-  color: #666;
-  background: #f9f9f9;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  background: var(--surface-2);
 }
-
 .pull-chip.mine {
-  border-color: #73937e;
-  color: #73937e;
-  background: rgba(115, 147, 126, 0.08);
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(232, 183, 101, 0.1);
 }
 
 .pull-card-bar-wrap {
   margin: 0 16px 12px;
   height: 4px;
-  background: rgba(40, 38, 44, 0.06);
+  background: var(--border);
   border-radius: 999px;
   overflow: hidden;
 }
 
 .pull-card-bar-fill {
   height: 100%;
-  background: #73937e;
+  background: var(--accent);
   border-radius: 999px;
-  transition: width 0.6s ease;
+  transition: width 0.6s var(--ease-out);
 }
 
 .pull-card-expanded {
-  border-top: 1px solid rgba(40, 38, 44, 0.06);
+  border-top: 1px solid var(--border);
   padding: 0 16px 16px;
 }
 
 /* ─── Commitment Selector ─────────────────────────────────────────────────── */
-
 .pull-commitment-selector {
   padding-top: 14px;
 }
@@ -387,25 +403,22 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #fff;
-  border: 1px solid rgba(40, 38, 44, 0.12);
-  border-radius: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
   padding: 12px 14px;
   margin-bottom: 6px;
   cursor: pointer;
-  font-family: "DMSans", sans-serif;
+  font-family: var(--font-sans);
   text-align: left;
-  transition: all 0.15s ease;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
-
 .pull-level-btn:hover {
-  border-color: rgba(115, 147, 126, 0.5);
-  background: #f9fbf9;
+  border-color: rgba(232, 183, 101, 0.5);
 }
-
 .pull-level-btn.active {
-  border-color: #73937e;
-  background: rgba(115, 147, 126, 0.05);
+  border-color: var(--accent);
+  background: rgba(232, 183, 101, 0.08);
 }
 
 .pull-level-text {
@@ -417,12 +430,12 @@
 .pull-level-label {
   font-size: 0.9rem;
   font-weight: 500;
-  color: #28262c;
+  color: var(--text);
 }
 
 .pull-level-sub {
   font-size: 0.75rem;
-  color: #999;
+  color: var(--text-faint);
 }
 
 .pull-level-right {
@@ -433,53 +446,74 @@
 }
 
 .pull-level-amount {
+  font-family: var(--font-mono);
   font-size: 0.9rem;
-  font-weight: 600;
-  color: #28262c;
+  font-weight: 500;
+  color: var(--text);
 }
-
 .pull-level-amount.active {
-  color: #73937e;
+  color: var(--accent);
 }
 
 .pull-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #73937e;
+  background: var(--accent);
 }
 
 .pull-clear-btn {
   width: 100%;
   background: none;
   border: none;
-  font-family: "DMSans", sans-serif;
-  font-size: 0.8rem;
-  color: #999;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text-faint);
   cursor: pointer;
   padding: 8px 0;
   text-align: center;
   transition: color 0.2s ease;
 }
-
 .pull-clear-btn:hover {
-  color: #28262c;
+  color: var(--text);
 }
 
 /* ─── Loading / Footer ────────────────────────────────────────────────────── */
-
 .pull-loading {
   text-align: center;
   padding: 48px 0;
-  color: #999;
+  color: var(--text-faint);
+  font-family: var(--font-mono);
   font-size: 0.9rem;
 }
 
 .pull-footer {
   margin-top: 40px;
   padding-top: 20px;
-  border-top: 1px solid rgba(40, 38, 44, 0.08);
+  border-top: 1px solid var(--border);
   text-align: center;
+  font-family: var(--font-mono);
   font-size: 0.75rem;
-  color: #ccc;
+  color: var(--text-faint);
+}
+
+/* Keyboard focus + reduced motion */
+.pull-btn-primary:focus-visible,
+.pull-level-btn:focus-visible,
+.pull-change-btn:focus-visible,
+.pull-clear-btn:focus-visible,
+.pull-card-header:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pull-card-bar-fill,
+  .pull-btn-primary,
+  .pull-level-btn,
+  .pull-card,
+  .pull-input {
+    transition: none !important;
+  }
 }

@@ -1,12 +1,13 @@
 import React from "react";
+import "../styles/App.css";
 import { TopBar } from "./top_bar";
 
 export const NotFoundPage = () => {
   return (
     <div>
-      <div class="content">
+      <div className="content">
         <h1>You probably shouldn't be here...</h1>
-        <div class="try-links">
+        <div className="try-links">
           <h2>Try:</h2>
           <h3>
             <a href="/">Home</a>

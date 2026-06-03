@@ -1,5 +1,5 @@
 import React from 'react';
-import "../../App.css";
+import "../../styles/App.css";
 import { TopBar } from "../top_bar";
 
 const SATSignup = () => {

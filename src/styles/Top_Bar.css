@@ -1,82 +1,107 @@
-@font-face {
-  font-family: "DMSans";
-  src: url("../assets/DMSans-VariableFont_opsz,wght.ttf");
-}
+/* Top bar + sidebar — dark navy / gold. Tokens from theme.css. */
 
 .top-bar {
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 20px;
-  height: 67px;
-  background-color: #73937e;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding: 0 24px;
+  height: 64px;
+  background-color: rgba(6, 22, 41, 0.72);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1000;
   transform: translateY(-100%);
-  transition: transform 0.8s ease-in-out;
+  transition: transform 0.6s var(--ease-out);
 }
 
 .top-bar.show-bar {
-  transition: transform 0.8s ease-in-out !important;
   transform: translateY(0);
 }
 
 .top-bar.hide-bar {
   transform: translateY(-100%);
-  transition: transform 0.3s ease-in-out !important;
+  transition: transform 0.3s var(--ease-out);
 }
 
 .on-logo {
   display: flex;
   align-items: center;
-  justify-content: center;
   height: 100%;
-  padding-bottom: 5px; 
-  margin-left: -10px;  /*Pull logo left to counter the top-bar padding*/
 }
-
 .on-logo img {
-  height: 85%;  /* Slightly reduce height to move up */
+  height: 38px;
   width: auto;
   object-fit: contain;
-  margin-top: -2px;  /* Fine-tune vertical position */
+  transition: opacity 0.2s ease;
+}
+.on-logo:hover img {
+  opacity: 0.85;
 }
 
-.menu-icon {
+.sidebar-toggle-btn {
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 26px;
+  cursor: pointer;
+  padding: 8px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
-  padding: 10px 0;
-  cursor: pointer;
+  border-radius: 8px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+.sidebar-toggle-btn:hover {
+  color: var(--accent);
+  background: rgba(232, 183, 101, 0.08);
 }
 
-.menu-icon div {
-  width: 25px;
-  height: 3px;
-  background-color: #28262c;
-  margin: 4px 0;
-  transition: 0.3s;
-}
-
-/* Sidebar styles */
+/* ── Sidebar ──────────────────────────────────────────────────────────────── */
 .sidebar {
-  width: 250px;
+  width: 280px;
   height: 100%;
   position: fixed;
   top: 0;
-  right: -250px; /* Hidden by default */
-  background-color: rgba(115, 147, 126, 0.9); /* Background color with opacity */
-  color: #28262c;
+  right: -300px;
+  background-color: rgba(9, 36, 65, 0.96);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  border-left: 1px solid var(--border);
+  color: var(--text);
   z-index: 999;
-  transition: right 0.3s ease-in-out, top 0.2s ease-in-out, opacity 0.3s ease-in-out; /* Added transition for top position */
-  padding-top: 65px; /* Adjust padding to match the height of the top bar */
-  font-size: 24px;
+  transition: right 0.32s var(--ease-out), top 0.2s ease-in-out;
+  padding-top: 80px;
   text-align: right;
+}
+
+/* Keyboard focus for nav controls */
+.sidebar-toggle-btn:focus-visible,
+.dropdown-toggle:focus-visible,
+.sidebar ul li a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Lighter blur + opaque fallback on mobile (GPU cost) */
+@media (max-width: 768px) {
+  .top-bar {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background-color: rgba(6, 22, 41, 0.94);
+  }
+  .sidebar {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background-color: rgba(9, 36, 65, 0.99);
+  }
 }
 
 .sidebar.open {
@@ -85,59 +110,47 @@
 
 .sidebar ul {
   list-style: none;
-  padding: 20px;
+  padding: 16px 24px;
   margin: 0;
 }
 
 .sidebar li {
-  margin: 0;
-  padding: 0;
-  border-bottom: 1px solid rgba(40, 38, 44, 0.2);
+  border-bottom: 1px solid var(--border);
 }
-
 .sidebar li:last-child {
   border-bottom: none;
 }
 
 .sidebar ul li a {
-  color: #28262c;
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
   text-decoration: none;
   display: block;
-  padding: 12px 0;
-  font-size: 24px;
-  font-weight: normal;
-  width: calc(100% - 20px); /* Ensures the link covers the full width of the sidebar */
-  height: 100%; /* Ensures the link covers the full height of the list item */
-  transition: opacity 0.3s ease;
+  padding: 14px 0;
+  transition: color 0.2s ease;
 }
-
 .sidebar ul li a:hover {
-  opacity: 0.8;
+  color: var(--accent);
 }
 
+/* Dropdowns */
 .dropdown-content {
   display: none;
-  padding-left: 20px;
+  padding-left: 18px;
   margin: 0;
-  background-color: rgba(40, 38, 44, 0.05);
-  border-top: 1px solid rgba(40, 38, 44, 0.2);
+  border-top: 1px solid var(--border);
 }
-
 .dropdown-content li {
-  margin: 0;
-  padding: 0;
   border-bottom: none;
 }
-
 .dropdown-content li:last-child {
-  border-bottom: 1px solid rgba(40, 38, 44, 0.2);
+  border-bottom: 1px solid var(--border);
 }
-
 .dropdown-content .sidebar-link {
-  font-size: 24px;
-  padding: 12px 0;
-  padding-left: 12px;
-  transition: opacity 0.3s ease;
+  font-size: 0.95rem;
+  color: var(--text-faint);
 }
 
 .dropdown-toggle {
@@ -145,60 +158,33 @@
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  gap: 8px;
   width: 100%;
-  padding: 12px 0;
+  padding: 14px 0;
   background: none;
   border: none;
-  color: inherit;
-  font-size: 24px;
-  font-weight: normal;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 1.05rem;
+  letter-spacing: 0.03em;
   text-align: right;
-  font-family: inherit;
-  transition: opacity 0.3s ease;
+  transition: color 0.2s ease;
 }
-
 .dropdown-toggle:hover {
-  opacity: 0.8;
+  color: var(--accent);
 }
 
 .dropdown-icon {
-  margin-left: 8px;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s var(--ease-out);
   display: inline-block;
-  font-size: 24px;
-  font-weight: normal;
-  width: 24px;
-  height: 24px;
-  line-height: 24px;
-  text-align: center;
+  font-size: 1.2rem;
+  line-height: 1;
+  color: var(--accent);
 }
 
 .dropdown.open .dropdown-icon {
   transform: rotate(45deg);
 }
-
 .dropdown.open .dropdown-content {
   display: block;
-}
-
-.sidebar-toggle-btn {
-  background: none;
-  border: none;
-  color: #28262c;
-  font-size: 32px;
-  cursor: pointer;
-  padding: 10px;
-  position: absolute;
-  right: 50px;
-  top: 48%;
-  transform: translateY(-50%);
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.sidebar-toggle-btn:hover {
-  opacity: 0.8;
 }

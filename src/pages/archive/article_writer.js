@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet";
-import "../../Home.css";
+import "../../styles/App.css";
 
 export const ArticleWriter = () => {
   const [product, setProduct] = useState("");
