@@ -6,11 +6,26 @@ import { motion, useReducedMotion } from "framer-motion";
  * invisible clip edge. Per-word (not per-letter) — letter-by-letter is the #1
  * AI-slop tell and hurts comprehension. Plain text under reduced-motion.
  */
-export const WordReveal = ({ text, className, stagger = 0.08, delay = 0.12 }) => {
+export const WordReveal = ({
+  text,
+  className,
+  stagger = 0.08,
+  delay = 0.12,
+  accentPeriod = false,
+}) => {
   const reduce = useReducedMotion();
-  if (reduce) return <span className={className}>{text}</span>;
+  // pull a trailing "." out so it can render in accent gold on the last word
+  const hasPeriod = accentPeriod && text.trim().endsWith(".");
+  const clean = hasPeriod ? text.trim().slice(0, -1) : text;
+  if (reduce)
+    return (
+      <span className={className}>
+        {clean}
+        {hasPeriod && <span style={{ color: "var(--accent)" }}>.</span>}
+      </span>
+    );
 
-  const words = text.split(/\s+/).filter(Boolean);
+  const words = clean.split(/\s+/).filter(Boolean);
   return (
     <span
       className={className}
@@ -36,6 +51,9 @@ export const WordReveal = ({ text, className, stagger = 0.08, delay = 0.12 }) =>
             }}
           >
             {word}
+            {hasPeriod && i === words.length - 1 && (
+              <span style={{ color: "var(--accent)" }}>.</span>
+            )}
           </motion.span>
         </span>
       ))}

@@ -47,6 +47,11 @@ export const TiltCard = ({ children, className, max = 6 }) => {
       if (!r) return;
       px.set((cx - r.left) / r.width - 0.5);
       py.set((cy - r.top) / r.height - 0.5);
+      // cursor-spotlight position for the CSS ::before glow
+      if (ref.current) {
+        ref.current.style.setProperty("--mx", cx - r.left + "px");
+        ref.current.style.setProperty("--my", cy - r.top + "px");
+      }
     });
   };
   const onLeave = () => {

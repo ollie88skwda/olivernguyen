@@ -78,6 +78,7 @@ export const TopBar = () => {
 
   return (
     <>
+      <div className="grain" aria-hidden="true" />
       <ScrollProgress />
       <div
         className={`top-bar ${showTopBar ? "show-bar" : "hide-bar"} ${isInitialLoad ? "initial-load" : ""}`}
@@ -85,12 +86,18 @@ export const TopBar = () => {
         <a href="/" className="on-logo">
           <img
             src={process.env.PUBLIC_URL + "/on_logo_mark.png"}
-            alt="Oliver Nguyen — home"
+            alt="Oliver Nguyen, home"
           />
         </a>
-        <button onClick={toggleSidebar} className="sidebar-toggle-btn" aria-label="Open menu">
-          ☰
-        </button>
+        <div className="top-bar-right">
+          <span className="topbar-status">
+            <span className="status-dot" aria-hidden="true" />
+            College-bound · open to opportunities
+          </span>
+          <button onClick={toggleSidebar} className="sidebar-toggle-btn" aria-label="Open menu">
+            ☰
+          </button>
+        </div>
       </div>
       <div
         className={`sidebar ${isSidebarOpen ? "open" : ""}`}
