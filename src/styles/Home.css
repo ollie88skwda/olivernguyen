@@ -120,10 +120,15 @@
   letter-spacing: 0.04em;
   color: var(--text);
 }
-/* the ✦ separators stay quiet, not another gold role */
-.hero-marquee .marquee-item:nth-child(even) {
-  color: var(--text-faint);
-  font-size: 1.1rem;
+/* literal pixels as separators: the PCB/pixel-art vocabulary */
+.px {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  background: var(--accent-deep);
+  box-shadow: 7px 7px 0 0 var(--accent-deep); /* 2-step pixel staircase */
+  margin-right: 7px;
+  margin-bottom: 7px;
 }
 
 /* skills band: slow chip rows */
@@ -154,6 +159,16 @@
   font-size: 0.72rem;
   color: var(--text-muted);
   margin: 0 0 14px;
+}
+/* via-square before each reference designator (U1, U2, ...) */
+.section-eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  background: var(--accent-deep);
+  margin-right: 10px;
+  vertical-align: 1px;
 }
 .section-title {
   font-family: var(--font-display);
@@ -360,12 +375,33 @@
 .github-button:hover { background: var(--accent-hi); }
 .github-button:active { transform: scale(0.97); }
 .project-image {
+  position: relative;
   height: 290px;
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid var(--border);
   background: var(--surface-2);
   transform: translateZ(40px);
+}
+/* pixel-grid wink on hover: 3px checkerboard, the game-dev texture */
+.project-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  mix-blend-mode: overlay;
+  background: conic-gradient(
+      rgba(237, 241, 247, 0.9) 90deg,
+      transparent 90deg 180deg,
+      rgba(237, 241, 247, 0.9) 180deg 270deg,
+      transparent 270deg
+    )
+    0 0 / 6px 6px;
+}
+.project-card:hover .project-image::after {
+  opacity: 0.21;
 }
 .project-image img {
   width: 100%;

@@ -7,6 +7,7 @@ import TiltCard from "../components/TiltCard";
 import SectionHeading from "../components/SectionHeading";
 import Marquee from "../components/Marquee";
 import MagneticButton from "../components/MagneticButton";
+import CircuitTrace from "../components/CircuitTrace";
 import wahoosfishing from "../assets/wahoosfishing.png";
 import khanclock from "../assets/khanclock.png";
 
@@ -30,9 +31,12 @@ const LocalClock = () => {
   return <span>{time}</span>;
 };
 
+const Px = () => <span className="px" aria-hidden="true" />;
+
 export const Home = () => {
   return (
     <div className="home">
+      <CircuitTrace />
       {/* ── Hero ───────────────────────────────────────────────────────── */}
       <section className="hero">
         <div className="hero-grid">
@@ -65,21 +69,21 @@ export const Home = () => {
         speed={34}
         items={[
           "GAMES",
-          "✦",
+          <Px key="p1" />,
           "BROWSER TOOLS",
-          "✦",
+          <Px key="p2" />,
           "WEB APPS",
-          "✦",
+          <Px key="p3" />,
           "ROBOTICS",
-          "✦",
+          <Px key="p4" />,
           "PIXEL ART",
-          "✦",
+          <Px key="p5" />,
         ]}
       />
 
       {/* ── About bento ────────────────────────────────────────────────── */}
       <section id="about" className="sec sec-about">
-        <SectionHeading eyebrow="01 / About" title="The Short Version" />
+        <SectionHeading eyebrow="U1 / About" title="The Short Version" />
         <div className="bento">
           <Reveal className="tile tile-who">
             <h3>Who</h3>
@@ -119,7 +123,7 @@ export const Home = () => {
 
       {/* ── Work ───────────────────────────────────────────────────────── */}
       <section id="work" className="sec sec-work">
-        <SectionHeading eyebrow="02 / Selected work" title="Things I've Built" />
+        <SectionHeading eyebrow="U2 / Selected work" title="Things I've Built" />
         <div className="projects">
           <Reveal>
             <TiltCard className="project-card">
@@ -213,7 +217,7 @@ export const Home = () => {
 
       {/* ── Skills marquees: slow, pause on hover, honest list ─────────── */}
       <section id="skills" className="sec sec-skills">
-        <SectionHeading eyebrow="03 / Toolkit" title="What I Work With" />
+        <SectionHeading eyebrow="U3 / Toolkit" title="What I Work With" />
       </section>
       <div className="skills-band">
         <Marquee
@@ -230,7 +234,7 @@ export const Home = () => {
       {/* ── Contact ────────────────────────────────────────────────────── */}
       <section id="contact" className="sec sec-contact">
         <Reveal as="p" className="section-eyebrow">
-          04 / Contact
+          U4 / Contact
         </Reveal>
         <Reveal as="h2" className="contact-big" delay={0.05}>
           LET'S BUILD
@@ -280,7 +284,7 @@ export const Home = () => {
 
       <footer className="home-footer">
         <span>© {new Date().getFullYear()} Oliver Nguyen</span>
-        <span>Navy &amp; gold · built by hand</span>
+        <span>oN.c · REV 2027</span>
       </footer>
 
       <TopBar />
