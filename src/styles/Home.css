@@ -231,6 +231,29 @@
   margin-top: 8px;
 }
 .tile-edu { grid-column: span 8; }
+.edu-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 9px 0;
+}
+.edu-row + .edu-row {
+  border-top: 1px solid var(--border);
+}
+.edu-name {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1.08rem;
+  color: var(--text);
+}
+.edu-meta {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+}
 @media (max-width: 760px) {
   .tile-who, .tile-now, .tile-loc, .tile-edu { grid-column: span 12; }
 }

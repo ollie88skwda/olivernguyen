@@ -105,10 +105,14 @@ export const Home = () => {
           </Reveal>
           <Reveal className="tile tile-edu" delay={0.15}>
             <h3>Education</h3>
-            {/* TODO: your school + class year */}
-            <p>
-              High school senior, applying to study computer science.
-            </p>
+            <div className="edu-row">
+              <span className="edu-name">Legacy Magnet Academy</span>
+              <span className="edu-meta">MS + HS · Class of 2027</span>
+            </div>
+            <div className="edu-row">
+              <span className="edu-name">Irvine Valley College</span>
+              <span className="edu-meta">Dual enrolled · Jan 2022 to 2027</span>
+            </div>
           </Reveal>
         </div>
       </section>
