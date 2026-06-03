@@ -84,41 +84,40 @@ export const Home = () => {
       {/* ── About bento ────────────────────────────────────────────────── */}
       <section id="about" className="sec sec-about">
         <SectionHeading eyebrow="U1 / About" title="The Short Version" />
-        <div className="bento">
-          <Reveal className="tile tile-who">
-            <h3>Who</h3>
-            <p>
-              I build games, browser extensions, and small web apps. Most of
-              what I make starts as a problem I personally ran into, then grows
-              into something other people end up using too. I care about the
-              details that make software feel good.
-            </p>
-          </Reveal>
-          <Reveal className="tile tile-now" delay={0.05}>
-            <h3>Now</h3>
-            <p>
+        <Reveal as="p" className="about-lead">
+          I build games, browser extensions, and small web apps. Most of what I
+          make starts as a problem I personally ran into, then grows into
+          something other people end up using too. I care about the details
+          that make software feel good.
+        </Reveal>
+        {/* datasheet rows: the PCB-world information format, no boxes */}
+        <dl className="specs">
+          <Reveal as="div" className="spec-row spec-now" delay={0.05}>
+            <dt>Now</dt>
+            <dd>
               Deep in college applications, and building with my robotics team.
-            </p>
+            </dd>
           </Reveal>
-          <Reveal className="tile tile-loc" delay={0.1}>
-            <h3>Based in</h3>
-            <div className="tile-big">California</div>
-            <div className="tile-clock">
-              <LocalClock />
-            </div>
+          <Reveal as="div" className="spec-row" delay={0.1}>
+            <dt>Based in</dt>
+            <dd>
+              California <span className="spec-meta"><LocalClock /></span>
+            </dd>
           </Reveal>
-          <Reveal className="tile tile-edu" delay={0.15}>
-            <h3>Education</h3>
-            <div className="edu-row">
-              <span className="edu-name">Legacy Magnet Academy</span>
-              <span className="edu-meta">MS + HS · Class of 2027</span>
-            </div>
-            <div className="edu-row">
-              <span className="edu-name">Irvine Valley College</span>
-              <span className="edu-meta">Dual enrolled · Jan 2022 to 2027</span>
-            </div>
+          <Reveal as="div" className="spec-row" delay={0.15}>
+            <dt>Education</dt>
+            <dd>
+              <div className="spec-line">
+                Legacy Magnet Academy
+                <span className="spec-meta">MS + HS · Class of 2027</span>
+              </div>
+              <div className="spec-line">
+                Irvine Valley College
+                <span className="spec-meta">Dual enrolled · Jan 2022 to 2027</span>
+              </div>
+            </dd>
           </Reveal>
-        </div>
+        </dl>
       </section>
 
       {/* ── Work ───────────────────────────────────────────────────────── */}
