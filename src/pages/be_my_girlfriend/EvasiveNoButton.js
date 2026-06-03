@@ -51,6 +51,15 @@ export default function EvasiveNoButton({ onEvade, reduce }) {
     return { x: targetLeft - r.left, y: targetTop - r.top };
   };
 
+  const evadeToRandom = () => {
+    const next = randomViewportOffset();
+    x.set(next.x);
+    y.set(next.y);
+    rotate.set((Math.random() - 0.5) * 30);
+    onEvade();
+    setEvades((c) => c + 1);
+  };
+
   useEffect(() => {
     const md = () => {
       recentMouseDown.current = true;
@@ -65,12 +74,7 @@ export default function EvasiveNoButton({ onEvade, reduce }) {
     if (!node || reduce) return;
     const handleTouch = (e) => {
       e.preventDefault();
-      const next = randomViewportOffset();
-      x.set(next.x);
-      y.set(next.y);
-      rotate.set((Math.random() - 0.5) * 30);
-      onEvade();
-      setEvades((c) => c + 1);
+      evadeToRandom();
     };
     node.addEventListener("touchstart", handleTouch, { passive: false });
     return () => node.removeEventListener("touchstart", handleTouch);
@@ -129,12 +133,17 @@ export default function EvasiveNoButton({ onEvade, reduce }) {
 
   const handleClick = () => {
     setShowTooltip(true);
-    rotate.set(0);
-    const base = x.get();
-    window.setTimeout(() => x.set(base + 14), 0);
-    window.setTimeout(() => x.set(base - 14), 90);
-    window.setTimeout(() => x.set(base + 10), 180);
-    window.setTimeout(() => x.set(base), 270);
+    if (reduce) {
+      // reduced-motion users don't get the teleport; keep a gentle nudge
+      const base = x.get();
+      window.setTimeout(() => x.set(base + 14), 0);
+      window.setTimeout(() => x.set(base - 14), 90);
+      window.setTimeout(() => x.set(base + 10), 180);
+      window.setTimeout(() => x.set(base), 270);
+    } else {
+      // a click/tap that lands (mostly mobile) makes it run away too
+      evadeToRandom();
+    }
     window.setTimeout(() => setShowTooltip(false), 2400);
   };
 
