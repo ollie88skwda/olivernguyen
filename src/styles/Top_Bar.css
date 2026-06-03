@@ -2,6 +2,7 @@
 
 .top-bar {
   width: 100%;
+  box-sizing: border-box; /* width includes the 24px side padding, so the hamburger stays in view */
   display: flex;
   justify-content: space-between;
   align-items: center;
