@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import { Permit } from "./pages/driving/permit.js";
 import { NotFoundPage } from "./pages/not_found_page.js";
 import { Home } from "./pages/home.js";
@@ -9,6 +9,8 @@ import SATResources from "./pages/sat/sat_resources.js";
 import SATSignup from "./pages/sat/sat_signup.js";
 import { Pull } from "./pages/pull.js";
 import { EmojiPage } from "./pages/emoji.js";
+
+const BeMyGirlfriend = lazy(() => import("./pages/be_my_girlfriend/index.js"));
 
 export const Routes = () => {
   return (
@@ -37,6 +39,11 @@ export const Routes = () => {
         </Route>
         <Route path="/emoji">
           <EmojiPage />
+        </Route>
+        <Route path="/be-my-girlfriend">
+          <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#092441" }} />}>
+            <BeMyGirlfriend />
+          </Suspense>
         </Route>
         <Route>
           <NotFoundPage />
