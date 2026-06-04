@@ -38,7 +38,7 @@ export const CircuitTrace = () => {
         height: "100vh",
         zIndex: 1,
         pointerEvents: "none",
-        opacity: 0.48,
+        opacity: 0.5,
       }}
     >
       <motion.path

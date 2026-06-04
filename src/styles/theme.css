@@ -3,24 +3,24 @@
    full-viewport backgrounds, so the navy body never bleeds into them. */
 
 :root {
-  --bg-base: #061629;
-  --bg: #092441;
-  --surface: #0e2d52;
-  --surface-2: #163a63;
-  --border: rgba(234, 240, 246, 0.1);
+  --bg-base: #f1e9d4;
+  --bg: #f5eedd;
+  --surface: #f9f3e5;
+  --surface-2: #fcf8ee;
+  --border: rgba(18, 34, 49, 0.16);
 
-  --text: #edf1f7;
-  --text-muted: #93a4b8;
-  --text-faint: #9aacbe; /* WCAG AA (>=4.5:1) on navy surfaces */
+  --text: #122231;
+  --text-muted: #45576a;
+  --text-faint: #51637a; /* >=4.5:1 on --bg-base for small mono labels */
 
-  --accent: #e8b765;
-  --accent-hi: #f4cb82;
-  --accent-deep: #c9974a;
-  --on-accent: #061629;
+  --accent: #092441;
+  --accent-hi: #15406b;
+  --accent-deep: #051a30;
+  --on-accent: #f9f3e5;
 
-  --font-display: "Bebas Neue", sans-serif;
-  --font-mono: "DM Mono", ui-monospace, monospace;
-  --font-sans: "DM Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: "Big Shoulders", sans-serif;
+  --font-mono: "Martian Mono", ui-monospace, monospace;
+  --font-sans: "Hanken Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
 
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-expr: cubic-bezier(0.22, 1, 0.36, 1);
@@ -31,6 +31,13 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+}
+
+/* full-bleed 100vw bands include the scrollbar gutter; never allow a
+   horizontal scrollbar from that sliver */
+html,
+body {
+  overflow-x: clip;
 }
 
 body {
@@ -57,8 +64,8 @@ body {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  opacity: 0.07;
-  mix-blend-mode: overlay;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 

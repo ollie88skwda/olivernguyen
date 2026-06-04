@@ -9,8 +9,7 @@ import SectionHeading from "../components/SectionHeading";
 import Marquee from "../components/Marquee";
 import MagneticButton from "../components/MagneticButton";
 import CircuitTrace from "../components/CircuitTrace";
-import wahoosfishing from "../assets/wahoosfishing.png";
-import khanclock from "../assets/khanclock.png";
+import articleshot from "../article_writer_stuff/images/processed_image0.png";
 
 const EMAIL = "oliverdnguyen@gmail.com";
 
@@ -59,39 +58,47 @@ export const Home = () => {
             </Reveal>
           </div>
           <Reveal className="hero-meta" delay={0.55}>
-            <div className="meta-lead">2 projects shipped</div>
-            <div>Developer / maker</div>
+            <div className="meta-lead">Builds with LLMs + agents</div>
+            <div>Robotics mentor & coach</div>
             <div>College-bound</div>
           </Reveal>
         </div>
       </section>
 
-      {/* ── Kinetic marquee: real tokens, nothing invented ─────────────── */}
-      <Marquee
-        className="hero-marquee"
-        speed={34}
-        items={[
-          "GAMES",
-          <Px key="p1" />,
-          "BROWSER TOOLS",
-          <Px key="p2" />,
-          "WEB APPS",
-          <Px key="p3" />,
-          "ROBOTICS",
-          <Px key="p4" />,
-          "PIXEL ART",
-          <Px key="p5" />,
-        ]}
-      />
+      {/* ── Kinetic marquee: real tokens, nothing invented. Decorative —
+             content repeats in About/Toolkit, so hidden from screen readers */}
+      <div aria-hidden="true">
+        <Marquee
+          className="hero-marquee"
+          speed={34}
+          items={[
+            "LLM AGENTS",
+            <Px key="p1" />,
+            "MCP TOOLS",
+            <Px key="p2" />,
+            "CHROME EXTENSIONS",
+            <Px key="p3" />,
+            "AUTONOMOUS LOOPS",
+            <Px key="p4" />,
+            "ROBOTICS",
+            <Px key="p5" />,
+            "MENTORSHIP",
+            <Px key="p6" />,
+            "PIXEL ART",
+            <Px key="p7" />,
+          ]}
+        />
+      </div>
 
       {/* ── About: lead + signal path (chronology as a routed trace) ───── */}
       <section id="about" className="sec sec-about">
         <SectionHeading eyebrow="U1 / About" title="The Short Version" />
         <Reveal as="p" className="about-lead">
-          I build games, browser extensions, and small web apps. Most of what I
-          make starts as a problem I personally ran into, then grows into
-          something other people end up using too. I care about the details
-          that make software feel good.
+          I build with LLMs and autonomous agents: Claude agents with custom
+          MCP tools, an operator loop that ran a project by itself for a week,
+          and pipelines that ship real output. Off the keyboard I mentor
+          robotics — 15+ students, three rookie teams, one Worlds
+          qualification — and spent two years tutoring competition math.
         </Reveal>
 
         <div className="sig-path">
@@ -116,22 +123,40 @@ export const Home = () => {
             <div className="sig-row">
               <span className="sig-year">2022</span>
               <span className="sig-name">Irvine Valley College</span>
-              <span className="sig-meta">Dual enrolled</span>
+              <span className="sig-meta">Dual enrolled · 4.0</span>
             </div>
           </Reveal>
-          <Reveal className="sig-node sig-now" delay={0.16}>
+          <Reveal className="sig-node" delay={0.12}>
+            <span className="sig-px" aria-hidden="true" />
+            <div className="sig-row">
+              <span className="sig-year">2023</span>
+              <span className="sig-name">TechX Robotics — mentor & coach</span>
+              <span className="sig-meta">15+ students · Worlds-qualified team</span>
+            </div>
+          </Reveal>
+          <Reveal className="sig-node" delay={0.16}>
+            <span className="sig-px" aria-hidden="true" />
+            <div className="sig-row">
+              <span className="sig-year">2025</span>
+              <span className="sig-name">
+                Virtual Enterprise — VP of Digital Operations
+              </span>
+              <span className="sig-meta">Gold · rapid prototyping</span>
+            </div>
+          </Reveal>
+          <Reveal className="sig-node sig-now" delay={0.2}>
             <span className="sig-px" aria-hidden="true" />
             <div className="sig-row">
               <span className="sig-year">Now</span>
               <span className="sig-name">
-                College applications, and building with my robotics team
+                College apps, robotics team, and building Claude agents
               </span>
               <span className="sig-meta">
                 California · <LocalClock />
               </span>
             </div>
           </Reveal>
-          <Reveal className="sig-node sig-future" delay={0.24}>
+          <Reveal className="sig-node sig-future" delay={0.28}>
             <span className="sig-px" aria-hidden="true" />
             <div className="sig-row">
               <span className="sig-year">2027</span>
@@ -140,6 +165,21 @@ export const Home = () => {
             </div>
           </Reveal>
         </div>
+
+        {/* datasheet strips: numbers straight from the resume */}
+        <Reveal className="about-numbers" delay={0.1}>
+          <span>15+ students mentored</span>
+          <span>17 awards in one season</span>
+          <span>4x states qualifier</span>
+          <span>30+ robots coached</span>
+          <span>Eagle Scout</span>
+        </Reveal>
+        <Reveal className="about-numbers" delay={0.15}>
+          <span>UCI ICS AI/ML Summer '24</span>
+          <span>Stanford Intro Statistics '23</span>
+          <span>1540 SAT</span>
+          <span>4.0 UW GPA</span>
+        </Reveal>
       </section>
 
       {/* ── Work: editorial rows, no cards ─────────────────────────────── */}
@@ -149,108 +189,170 @@ export const Home = () => {
           <Reveal as="article" className="work-row">
             <div className="work-head">
               <span className="wh-index">01</span>
-              <span className="wh-type">Game · Pygame</span>
-              <span className="wh-status shipped">Shipped</span>
+              <span className="wh-type">Claude Agent SDK · MCP</span>
+              <span className="wh-status">Active WIP</span>
             </div>
             <span className="work-rail" aria-hidden="true">
               Project / 01
             </span>
             <div className="work-body">
-            <div className="work-copy">
-              <h2 className="work-title">
-                <a
-                  href="https://github.com/ollie88skwda/wahoosfishing"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Wahoo's Fishing Game
-                </a>
-              </h2>
-              <p className="work-blurb">
-                Built for the owner of Wahoo's fish tacos in my marketing
-                class. I learned Pygame and pixel art (using paint.net) for
-                this project, and gained valuable knowledge about UX through
-                the feedback I received on my game.
-              </p>
-              <div className="work-tech">
-                Python <DotPx /> Pygame <DotPx /> paint.net
+              <div className="work-copy">
+                <h2 className="work-title">
+                  Niobium <span className="nowrap">Mac-Agent</span>
+                </h2>
+                <p className="work-blurb">
+                  A Claude agent built on Anthropic's Agent SDK: streaming tool
+                  use, model aliasing, and a custom in-process MCP registry that
+                  exposes vault search, lead scoring, and content tools to the
+                  model. It runs as the agent backend for a Convex and Next.js
+                  dashboard.
+                </p>
+                <div className="work-tech">
+                  Claude Agent SDK <DotPx /> TypeScript <DotPx /> MCP <DotPx />{" "}
+                  Convex
+                </div>
+                <span className="work-link plain">Private repo</span>
               </div>
-              <a
-                className="work-link"
-                href="https://github.com/ollie88skwda/wahoosfishing"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View on GitHub ↗
-              </a>
-            </div>
-            <TiltCard className="work-shot">
-              <div className="shot-frame">
-                <img
-                  src={wahoosfishing}
-                  alt="Wahoo's Fishing Game screenshot"
-                  loading="lazy"
-                  decoding="async"
-                />
-              </div>
-            </TiltCard>
+              <TiltCard className="work-shot">
+                <div className="shot-frame artifact">
+                  <div className="art-head">mac-agent / mcp / registry.ts</div>
+                  <pre>{`vault_read         vault_write
+vault_search       lead_lookup
+rescore_leads      generate_dm_batch
+generate_audit_pdf tasks`}</pre>
+                </div>
+              </TiltCard>
             </div>
           </Reveal>
 
           <Reveal as="article" className="work-row rev" delay={0.05}>
             <div className="work-head">
               <span className="wh-index">02</span>
-              <span className="wh-type">Chrome Extension</span>
-              <span className="wh-status">WIP</span>
+              <span className="wh-type">Autonomous Claude Code loop</span>
+              <span className="wh-status">Ran 7 days</span>
             </div>
             <span className="work-rail" aria-hidden="true">
               Project / 02
             </span>
             <div className="work-body">
-            <div className="work-copy">
-              <h2 className="work-title">
+              <div className="work-copy">
+                <h2 className="work-title">Voice / Operator</h2>
+                <p className="work-blurb">
+                  A Claude Code loop that built and operated a project on its
+                  own for a week, logging every judgment call to an append-only
+                  decisions file. A small Python script reads the operator
+                  state and emails me a summary of what it did each morning.
+                </p>
+                <div className="work-tech">
+                  Claude Code <DotPx /> Python <DotPx /> LaunchAgent
+                </div>
+                <span className="work-link plain">Private repo</span>
+              </div>
+              <TiltCard className="work-shot">
+                <div className="shot-frame artifact">
+                  <div className="art-head">decisions.html · operator log</div>
+                  <pre>{`257 decision entries
+2026-05-21 to 2026-05-27
+operator-state.js  · live state
+morning_summary.py · 8 AM daily`}</pre>
+                </div>
+              </TiltCard>
+            </div>
+          </Reveal>
+
+          <Reveal as="article" className="work-row">
+            <div className="work-head">
+              <span className="wh-index">03</span>
+              <span className="wh-type">Chrome MV3 · zero-LLM by design</span>
+              <span className="wh-status shipped">v0.4.0 beta</span>
+            </div>
+            <span className="work-rail" aria-hidden="true">
+              Project / 03
+            </span>
+            <div className="work-body">
+              <div className="work-copy">
+                <h2 className="work-title">
+                  <a
+                    href="https://github.com/ollie88skwda/scopecreep"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    ScopeCreep Notary
+                  </a>
+                </h2>
+                <p className="work-blurb">
+                  A Chrome extension that scans client messages for
+                  scope-expanding language and drafts the change-order email in
+                  one click. Detection is a hand-curated weighted lexicon with
+                  no model at runtime. Knowing when not to use an LLM was the
+                  point.
+                </p>
+                <div className="work-tech">
+                  JavaScript <DotPx /> Chrome MV3 <DotPx /> Vercel
+                </div>
                 <a
-                  href="https://github.com/ollie88skwda/khanclock"
+                  className="work-link"
+                  href="https://github.com/ollie88skwda/scopecreep"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  Khanclock (WIP)
+                  View on GitHub ↗
                 </a>
-              </h2>
-              <p className="work-blurb">
-                A good introduction to Chrome extensions. With Khanclock, I
-                aimed to create a better practice environment for SAT studiers,
-                so they would feel the pressure of a timer while going through
-                Khan Academy questions.
-              </p>
-              <div className="work-tech">
-                HTML <DotPx /> CSS <DotPx /> JavaScript
               </div>
-              <a
-                className="work-link"
-                href="https://github.com/ollie88skwda/khanclock"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View on GitHub ↗
-              </a>
+              <TiltCard className="work-shot">
+                <div className="shot-frame artifact">
+                  <div className="art-head">detection · lexicon</div>
+                  <pre>{`15 phrase categories
+severity x category weights
+runtime LLM calls: 0
+Chrome Web Store: pending`}</pre>
+                </div>
+              </TiltCard>
             </div>
-            <TiltCard className="work-shot">
-              <div className="shot-frame">
-                <img
-                  src={khanclock}
-                  alt="Khanclock screenshot"
-                  loading="lazy"
-                  decoding="async"
-                />
+          </Reveal>
+
+          <Reveal as="article" className="work-row rev" delay={0.05}>
+            <div className="work-head">
+              <span className="wh-index">04</span>
+              <span className="wh-type">OpenAI pipeline · FastAPI</span>
+              <span className="wh-status">2024</span>
+            </div>
+            <span className="work-rail" aria-hidden="true">
+              Project / 04
+            </span>
+            <div className="work-body">
+              <div className="work-copy">
+                <h2 className="work-title">Articlewriter</h2>
+                <p className="work-blurb">
+                  A multi-stage LLM pipeline: three task-specific prompts
+                  decompose the job — rank the ten best products in a category,
+                  write the full article, tag it — with structured output
+                  gluing the stages. Product data comes from the Amazon PA-API;
+                  images are composited with PIL and OpenCV behind a FastAPI
+                  endpoint.
+                </p>
+                <div className="work-tech">
+                  Python <DotPx /> gpt-4o-mini <DotPx /> FastAPI <DotPx />{" "}
+                  OpenCV
+                </div>
+                <span className="work-link plain">Private repo</span>
               </div>
-            </TiltCard>
+              <TiltCard className="work-shot">
+                <div className="shot-frame">
+                  <img
+                    src={articleshot}
+                    alt="Composited product collage generated by the Articlewriter pipeline"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </div>
+              </TiltCard>
             </div>
           </Reveal>
 
           <div className="work-end" aria-hidden="true">
             <span>{"// end U2"}</span>
-            <span>02 builds logged</span>
+            <span>04 builds logged</span>
           </div>
         </div>
       </section>
@@ -262,12 +364,26 @@ export const Home = () => {
       <div className="skills-band">
         <Marquee
           speed={46}
-          items={["JavaScript", "Python", "C++", "React", "Pygame", "Framer Motion"]}
+          items={[
+            "Claude Agent SDK",
+            "MCP servers",
+            "OpenAI API",
+            "Agent pipelines",
+            "Rapid prototyping",
+            "CAD · Fusion + Inventor",
+          ]}
         />
         <Marquee
           speed={52}
           reverse
-          items={["Chrome Extensions", "Supabase", "Git", "HTML", "CSS", "Pixel Art"]}
+          items={[
+            "Mentoring 15+ students",
+            "Robotics coaching",
+            "Team leadership",
+            "Teaching & tutoring",
+            "Communication",
+            "Entrepreneurship",
+          ]}
         />
       </div>
 

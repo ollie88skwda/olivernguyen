@@ -83,23 +83,27 @@ export const TopBar = () => {
       <div
         className={`top-bar ${showTopBar ? "show-bar" : "hide-bar"} ${isInitialLoad ? "initial-load" : ""}`}
       >
-        <a href="/" className="on-logo">
-          <img
-            src={process.env.PUBLIC_URL + "/on_logo_mark.png"}
-            alt="Oliver Nguyen, home"
-          />
+        <a href="/" className="on-logo wordmark">
+          oN.c
         </a>
         <div className="top-bar-right">
           <span className="topbar-status">
             <span className="status-dot" aria-hidden="true" />
             College-bound · open to opportunities
           </span>
-          <button onClick={toggleSidebar} className="sidebar-toggle-btn" aria-label="Open menu">
+          <button
+            onClick={toggleSidebar}
+            className="sidebar-toggle-btn"
+            aria-label="Open menu"
+            aria-expanded={isSidebarOpen}
+            aria-controls="site-sidebar"
+          >
             ☰
           </button>
         </div>
       </div>
       <div
+        id="site-sidebar"
         className={`sidebar ${isSidebarOpen ? "open" : ""}`}
         aria-label="Site navigation"
       >
@@ -120,7 +124,7 @@ export const TopBar = () => {
             </a>
           </li>
           <li className={`dropdown ${isDrivingOpen ? 'open' : ''}`}>
-            <button onClick={toggleDriving} className="dropdown-toggle">
+            <button onClick={toggleDriving} className="dropdown-toggle" aria-expanded={isDrivingOpen}>
               Driving
               <span className="dropdown-icon">+</span>
             </button>
@@ -138,7 +142,7 @@ export const TopBar = () => {
             </div>
           </li>
           <li className={`dropdown ${isSATOpen ? 'open' : ''}`}>
-            <button onClick={toggleSAT} className="dropdown-toggle">
+            <button onClick={toggleSAT} className="dropdown-toggle" aria-expanded={isSATOpen}>
               SAT
               <span className="dropdown-icon">+</span>
             </button>

@@ -8,7 +8,7 @@
   align-items: center;
   padding: 0 24px;
   height: 64px;
-  background-color: rgba(6, 22, 41, 0.72);
+  background-color: rgba(245, 238, 221, 0.82);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border);
@@ -33,6 +33,13 @@
   display: flex;
   align-items: center;
   height: 100%;
+}
+.on-logo.wordmark {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+  color: var(--text);
 }
 .on-logo img {
   height: 38px;
@@ -97,7 +104,7 @@
 }
 .sidebar-toggle-btn:hover {
   color: var(--accent);
-  background: rgba(232, 183, 101, 0.08);
+  background: rgba(9, 36, 65, 0.08);
 }
 
 /* ── Sidebar ──────────────────────────────────────────────────────────────── */
@@ -107,13 +114,15 @@
   position: fixed;
   top: 0;
   right: -300px;
-  background-color: rgba(9, 36, 65, 0.96);
+  background-color: rgba(249, 243, 229, 0.97);
   -webkit-backdrop-filter: blur(12px);
   backdrop-filter: blur(12px);
   border-left: 1px solid var(--border);
   color: var(--text);
   z-index: 999;
-  transition: right 0.32s var(--ease-out), top 0.2s ease-in-out;
+  visibility: hidden; /* closed: out of tab order + a11y tree */
+  transition: right 0.32s var(--ease-out), top 0.2s ease-in-out,
+    visibility 0s linear 0.32s;
   padding-top: 80px;
   text-align: right;
 }
@@ -132,17 +141,19 @@
   .top-bar {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-    background-color: rgba(6, 22, 41, 0.94);
+    background-color: rgba(245, 238, 221, 0.96);
   }
   .sidebar {
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-    background-color: rgba(9, 36, 65, 0.99);
+    background-color: rgba(249, 243, 229, 0.99);
   }
 }
 
 .sidebar.open {
   right: 0;
+  visibility: visible;
+  transition: right 0.32s var(--ease-out), top 0.2s ease-in-out;
 }
 
 .sidebar ul {

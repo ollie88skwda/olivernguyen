@@ -89,8 +89,3 @@ a {
   outline-offset: 3px;
   border-radius: 3px;
 }
-
-a:link,
-a:visited {
-  color: inherit;
-}
