@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
 import { TopBar } from "./top_bar";
 import "../styles/Home.css";
 import Reveal from "../components/Reveal";
@@ -32,8 +33,10 @@ const LocalClock = () => {
 };
 
 const Px = () => <span className="px" aria-hidden="true" />;
+const DotPx = () => <i className="dot-px" aria-hidden="true" />;
 
 export const Home = () => {
+  const reduce = useReducedMotion();
   return (
     <div className="home">
       <CircuitTrace />
@@ -81,7 +84,7 @@ export const Home = () => {
         ]}
       />
 
-      {/* ── About bento ────────────────────────────────────────────────── */}
+      {/* ── About: lead + signal path (chronology as a routed trace) ───── */}
       <section id="about" className="sec sec-about">
         <SectionHeading eyebrow="U1 / About" title="The Short Version" />
         <Reveal as="p" className="about-lead">
@@ -90,74 +93,93 @@ export const Home = () => {
           something other people end up using too. I care about the details
           that make software feel good.
         </Reveal>
-        {/* datasheet rows: the PCB-world information format, no boxes */}
-        <dl className="specs">
-          <Reveal as="div" className="spec-row spec-now" delay={0.05}>
-            <dt>Now</dt>
-            <dd>
-              Deep in college applications, and building with my robotics team.
-            </dd>
+
+        <div className="sig-path">
+          <motion.span
+            className="sig-line"
+            aria-hidden="true"
+            initial={reduce ? { scaleY: 1 } : { scaleY: 0 }}
+            whileInView={{ scaleY: 1 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          />
+          <Reveal className="sig-node">
+            <span className="sig-px" aria-hidden="true" />
+            <div className="sig-row">
+              <span className="sig-year">2020</span>
+              <span className="sig-name">Legacy Magnet Academy</span>
+              <span className="sig-meta">MS + HS</span>
+            </div>
           </Reveal>
-          <Reveal as="div" className="spec-row" delay={0.1}>
-            <dt>Based in</dt>
-            <dd>
-              California <span className="spec-meta"><LocalClock /></span>
-            </dd>
+          <Reveal className="sig-node" delay={0.08}>
+            <span className="sig-px" aria-hidden="true" />
+            <div className="sig-row">
+              <span className="sig-year">2022</span>
+              <span className="sig-name">Irvine Valley College</span>
+              <span className="sig-meta">Dual enrolled</span>
+            </div>
           </Reveal>
-          <Reveal as="div" className="spec-row" delay={0.15}>
-            <dt>Education</dt>
-            <dd>
-              <div className="spec-line">
-                Legacy Magnet Academy
-                <span className="spec-meta">MS + HS · Class of 2027</span>
-              </div>
-              <div className="spec-line">
-                Irvine Valley College
-                <span className="spec-meta">Dual enrolled · Jan 2022 to 2027</span>
-              </div>
-            </dd>
+          <Reveal className="sig-node sig-now" delay={0.16}>
+            <span className="sig-px" aria-hidden="true" />
+            <div className="sig-row">
+              <span className="sig-year">Now</span>
+              <span className="sig-name">
+                College applications, and building with my robotics team
+              </span>
+              <span className="sig-meta">
+                California · <LocalClock />
+              </span>
+            </div>
           </Reveal>
-        </dl>
+          <Reveal className="sig-node sig-future" delay={0.24}>
+            <span className="sig-px" aria-hidden="true" />
+            <div className="sig-row">
+              <span className="sig-year">2027</span>
+              <span className="sig-name">Graduation</span>
+              <span className="sig-meta">Predicted</span>
+            </div>
+          </Reveal>
+        </div>
       </section>
 
-      {/* ── Work ───────────────────────────────────────────────────────── */}
+      {/* ── Work: editorial rows, no cards ─────────────────────────────── */}
       <section id="work" className="sec sec-work">
         <SectionHeading eyebrow="U2 / Selected work" title="Things I've Built" />
-        <div className="projects">
-          <Reveal>
-            <TiltCard className="project-card">
-              <div className="pnum">01</div>
-              <div className="project-content">
-                <h2 className="project-title">
-                  <a
-                    href="https://github.com/ollie88skwda/wahoosfishing"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Wahoo's Fishing Game
-                  </a>
-                </h2>
-                <p className="project-description">
-                  Built for the owner of Wahoo's fish tacos in my marketing
-                  class. I learned Pygame and pixel art (using paint.net) for
-                  this project, and gained valuable knowledge about UX through
-                  the feedback I received on my game.
-                </p>
-                <div className="project-tech">
-                  <span>Python</span>
-                  <span>Pygame</span>
-                  <span>paint.net</span>
-                </div>
+        <div className="work-list">
+          <Reveal as="article" className="work-row">
+            <span className="ghost-num" aria-hidden="true">
+              01
+            </span>
+            <div className="work-copy">
+              <h2 className="work-title">
                 <a
                   href="https://github.com/ollie88skwda/wahoosfishing"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="github-button"
                 >
-                  View on GitHub
+                  Wahoo's Fishing Game
                 </a>
+              </h2>
+              <p className="work-blurb">
+                Built for the owner of Wahoo's fish tacos in my marketing
+                class. I learned Pygame and pixel art (using paint.net) for
+                this project, and gained valuable knowledge about UX through
+                the feedback I received on my game.
+              </p>
+              <div className="work-tech">
+                Python <DotPx /> Pygame <DotPx /> paint.net
               </div>
-              <div className="project-image">
+              <a
+                className="work-link"
+                href="https://github.com/ollie88skwda/wahoosfishing"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View on GitHub ↗
+              </a>
+            </div>
+            <TiltCard className="work-shot">
+              <div className="shot-frame">
                 <img
                   src={wahoosfishing}
                   alt="Wahoo's Fishing Game screenshot"
@@ -168,40 +190,40 @@ export const Home = () => {
             </TiltCard>
           </Reveal>
 
-          <Reveal delay={0.05}>
-            <TiltCard className="project-card">
-              <div className="pnum">02</div>
-              <div className="project-content">
-                <h2 className="project-title">
-                  <a
-                    href="https://github.com/ollie88skwda/khanclock"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Khanclock (WIP)
-                  </a>
-                </h2>
-                <p className="project-description">
-                  A good introduction to Chrome extensions. With Khanclock, I
-                  aimed to create a better practice environment for SAT
-                  studiers, so they would feel the pressure of a timer while
-                  going through Khan Academy questions.
-                </p>
-                <div className="project-tech">
-                  <span>HTML</span>
-                  <span>CSS</span>
-                  <span>JavaScript</span>
-                </div>
+          <Reveal as="article" className="work-row rev" delay={0.05}>
+            <span className="ghost-num" aria-hidden="true">
+              02
+            </span>
+            <div className="work-copy">
+              <h2 className="work-title">
                 <a
                   href="https://github.com/ollie88skwda/khanclock"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="github-button"
                 >
-                  View on GitHub
+                  Khanclock (WIP)
                 </a>
+              </h2>
+              <p className="work-blurb">
+                A good introduction to Chrome extensions. With Khanclock, I
+                aimed to create a better practice environment for SAT studiers,
+                so they would feel the pressure of a timer while going through
+                Khan Academy questions.
+              </p>
+              <div className="work-tech">
+                HTML <DotPx /> CSS <DotPx /> JavaScript
               </div>
-              <div className="project-image">
+              <a
+                className="work-link"
+                href="https://github.com/ollie88skwda/khanclock"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View on GitHub ↗
+              </a>
+            </div>
+            <TiltCard className="work-shot">
+              <div className="shot-frame">
                 <img
                   src={khanclock}
                   alt="Khanclock screenshot"
