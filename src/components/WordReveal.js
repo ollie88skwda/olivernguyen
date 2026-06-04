@@ -38,6 +38,10 @@ export const WordReveal = ({
             display: "inline-block",
             overflow: "hidden",
             paddingBottom: "0.1em",
+            /* line-height < 1 leaves cap tops outside the line box; give the
+               clip headroom without shifting layout */
+            paddingTop: "0.12em",
+            marginTop: "-0.12em",
           }}
         >
           <motion.span
