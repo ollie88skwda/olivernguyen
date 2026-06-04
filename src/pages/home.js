@@ -147,9 +147,15 @@ export const Home = () => {
         <SectionHeading eyebrow="U2 / Selected work" title="Things I've Built" />
         <div className="work-list">
           <Reveal as="article" className="work-row">
-            <span className="ghost-num" aria-hidden="true">
-              01
+            <div className="work-head">
+              <span className="wh-index">01</span>
+              <span className="wh-type">Game · Pygame</span>
+              <span className="wh-status shipped">Shipped</span>
+            </div>
+            <span className="work-rail" aria-hidden="true">
+              Project / 01
             </span>
+            <div className="work-body">
             <div className="work-copy">
               <h2 className="work-title">
                 <a
@@ -188,12 +194,19 @@ export const Home = () => {
                 />
               </div>
             </TiltCard>
+            </div>
           </Reveal>
 
           <Reveal as="article" className="work-row rev" delay={0.05}>
-            <span className="ghost-num" aria-hidden="true">
-              02
+            <div className="work-head">
+              <span className="wh-index">02</span>
+              <span className="wh-type">Chrome Extension</span>
+              <span className="wh-status">WIP</span>
+            </div>
+            <span className="work-rail" aria-hidden="true">
+              Project / 02
             </span>
+            <div className="work-body">
             <div className="work-copy">
               <h2 className="work-title">
                 <a
@@ -232,7 +245,13 @@ export const Home = () => {
                 />
               </div>
             </TiltCard>
+            </div>
           </Reveal>
+
+          <div className="work-end" aria-hidden="true">
+            <span>{"// end U2"}</span>
+            <span>02 builds logged</span>
+          </div>
         </div>
       </section>
 
