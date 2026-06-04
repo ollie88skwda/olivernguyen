@@ -9,6 +9,7 @@ import SectionHeading from "../components/SectionHeading";
 import Marquee from "../components/Marquee";
 import MagneticButton from "../components/MagneticButton";
 import articleshot from "../article_writer_stuff/images/processed_image0.png";
+import oliverPhoto from "../assets/oliver.jpg";
 
 const EMAIL = "oliverdnguyen@gmail.com";
 
@@ -87,13 +88,24 @@ export const Home = () => {
       {/* ── About: lead + signal path (chronology as a routed trace) ───── */}
       <section id="about" className="sec sec-about">
         <SectionHeading eyebrow="U1 / About" title="The Short Version" />
-        <Reveal as="p" className="about-lead">
-          I build with LLMs and autonomous agents: Claude agents with custom
-          MCP tools, an operator loop that ran a project by itself for a week,
-          and pipelines that ship real output. Off the keyboard I mentor
-          robotics — 15+ students, three rookie teams, one Worlds
-          qualification — and spent two years tutoring competition math.
-        </Reveal>
+        <div className="about-grid">
+          <Reveal as="p" className="about-lead">
+            I build with LLMs and autonomous agents: Claude agents with custom
+            MCP tools, an operator loop that ran a project by itself for a
+            week, and pipelines that ship real output. Off the keyboard I
+            mentor robotics — 15+ students, three rookie teams, one Worlds
+            qualification — and spent two years tutoring competition math.
+          </Reveal>
+          <Reveal className="about-photo" delay={0.12}>
+            <img
+              src={oliverPhoto}
+              alt="Oliver Nguyen"
+              loading="lazy"
+              decoding="async"
+            />
+            <span className="about-photo-cap">Fig. 01 · Oliver</span>
+          </Reveal>
+        </div>
 
         <div className="sig-path">
           <motion.span

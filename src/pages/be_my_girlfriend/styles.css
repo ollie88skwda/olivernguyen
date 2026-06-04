@@ -62,6 +62,16 @@
   .bmgf-section { padding: 3rem 1.5rem; }
 }
 
+/* gate (joke login) */
+.bmgf-gate-label {
+  margin: 0 0 1.25rem;
+  font-family: var(--bmgf-font-body);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(143, 160, 181, 0.75);
+}
+
 /* headline */
 .bmgf-headline {
   font-family: var(--bmgf-font-display);

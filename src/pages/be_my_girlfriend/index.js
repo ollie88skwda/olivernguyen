@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { useHistory } from "react-router-dom";
 import "@fontsource-variable/bricolage-grotesque";
 import "@fontsource-variable/inter";
 import EvasiveNoButton from "./EvasiveNoButton";
@@ -64,6 +65,87 @@ function FloatingSixtySevens({ reduce }) {
         </motion.span>
       ))}
     </div>
+  );
+}
+
+/* joke login gate: only iris gets in */
+function GateScreen({ onYes, onNo, reduce }) {
+  return (
+    <motion.section
+      initial={reduce ? false : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={reduce ? { opacity: 0 } : { opacity: 0, scale: 0.92, filter: "blur(8px)" }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className="bmgf-section"
+    >
+      <motion.p
+        initial={reduce ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6 }}
+        className="bmgf-gate-label"
+      >
+        identity verification required
+      </motion.p>
+      <motion.h1
+        initial={reduce ? false : { y: 28, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        className="bmgf-headline"
+      >
+        are you <span className="bmgf-headline-accent">iris</span>?
+      </motion.h1>
+      <motion.div
+        initial={reduce ? false : { y: 24, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.7, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        className="bmgf-buttons"
+      >
+        <button type="button" onClick={onYes} aria-label="Yes, I am Iris" className="bmgf-yes">
+          <span style={{ position: "relative", zIndex: 10 }}>yes</span>
+          <span aria-hidden className="bmgf-yes-grad" />
+        </button>
+        <button type="button" onClick={onNo} aria-label="No, I am not Iris" className="bmgf-no">
+          no
+        </button>
+      </motion.div>
+      <motion.p
+        initial={reduce ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 1.4 }}
+        className="bmgf-hint"
+      >
+        this is a very secure login
+      </motion.p>
+    </motion.section>
+  );
+}
+
+function RejectedScreen({ reduce }) {
+  return (
+    <motion.section
+      initial={reduce ? false : { opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.4 }}
+      className="bmgf-section"
+    >
+      <motion.h1
+        initial={reduce ? false : { y: 20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        className="bmgf-headline"
+      >
+        this isn't for you
+      </motion.h1>
+      <motion.p
+        initial={reduce ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 0.4 }}
+        className="bmgf-subtitle"
+      >
+        sending you home...
+      </motion.p>
+    </motion.section>
   );
 }
 
@@ -143,8 +225,15 @@ function AskScreen({ onYes, reduce }) {
 }
 
 export default function BeMyGirlfriend() {
-  const [phase, setPhase] = useState("asking");
+  const [phase, setPhase] = useState("gate");
   const reduce = useReducedMotion();
+  const history = useHistory();
+
+  useEffect(() => {
+    if (phase !== "rejected") return undefined;
+    const id = setTimeout(() => history.push("/"), 1600);
+    return () => clearTimeout(id);
+  }, [phase, history]);
 
   useEffect(() => {
     const prevTitle = document.title;
@@ -171,7 +260,16 @@ export default function BeMyGirlfriend() {
       <div aria-hidden className="bmgf-glow" />
       <div aria-hidden className="bmgf-grain" />
       <AnimatePresence mode="wait">
-        {phase === "asking" ? (
+        {phase === "gate" ? (
+          <GateScreen
+            key="gate"
+            onYes={() => setPhase("asking")}
+            onNo={() => setPhase("rejected")}
+            reduce={!!reduce}
+          />
+        ) : phase === "rejected" ? (
+          <RejectedScreen key="rejected" reduce={!!reduce} />
+        ) : phase === "asking" ? (
           <AskScreen key="ask" onYes={() => setPhase("accepted")} reduce={!!reduce} />
         ) : (
           <YesCelebration key="celebrate" reduce={!!reduce} />

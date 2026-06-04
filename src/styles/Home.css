@@ -193,7 +193,14 @@
   margin-top: 16px;
 }
 
-/* ── About: lead + signal path ────────────────────────────────────────────── */
+/* ── About: lead + portrait + signal path ─────────────────────────────────── */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1.5fr auto;
+  gap: 48px;
+  align-items: center;
+  margin-bottom: 56px;
+}
 .about-lead {
   font-family: var(--font-sans);
   font-size: clamp(1.35rem, 2.4vw, 1.8rem);
@@ -201,7 +208,40 @@
   line-height: 1.5;
   color: var(--text);
   max-width: 46ch;
-  margin: 0 0 56px;
+  margin: 0;
+}
+/* portrait as a pinned figure on the drafting sheet */
+.about-photo {
+  justify-self: end;
+}
+.about-photo img {
+  display: block;
+  width: 230px;
+  height: auto;
+  border-radius: 12px;
+  transform: rotate(1.6deg);
+  box-shadow: 0 26px 60px -28px rgba(18, 34, 49, 0.35);
+  transition: transform 0.3s var(--ease-out);
+}
+.about-photo:hover img { transform: rotate(0deg); }
+.about-photo-cap {
+  display: block;
+  margin-top: 12px;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+@media (max-width: 760px) {
+  .about-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  .about-photo { justify-self: start; }
+  .about-photo img { width: 200px; }
+  .about-photo-cap { text-align: left; }
 }
 /* chronology routed like a trace: vertical gold line, square vias as nodes */
 .sig-path {
@@ -665,6 +705,7 @@
   .marquee-track { animation: none !important; }
   .sig-now .sig-px { animation: none; }
   .shot-frame,
+  .about-photo img,
   .contact-link {
     transition: none !important;
   }
