@@ -8,7 +8,6 @@ import TiltCard from "../components/TiltCard";
 import SectionHeading from "../components/SectionHeading";
 import Marquee from "../components/Marquee";
 import MagneticButton from "../components/MagneticButton";
-import CircuitTrace from "../components/CircuitTrace";
 import articleshot from "../article_writer_stuff/images/processed_image0.png";
 
 const EMAIL = "oliverdnguyen@gmail.com";
@@ -38,7 +37,6 @@ export const Home = () => {
   const reduce = useReducedMotion();
   return (
     <div className="home">
-      <CircuitTrace />
       {/* ── Hero ───────────────────────────────────────────────────────── */}
       <section className="hero">
         <div className="hero-grid">
@@ -50,11 +48,7 @@ export const Home = () => {
               <WordReveal text="Oliver Nguyen." accentPeriod />
             </h1>
             <Reveal as="p" className="hero-sub" delay={0.45}>
-              I turn ideas into things people actually use. I love to{" "}
-              <a className="hero-link" href="#work">
-                build
-              </a>
-              .
+              I turn ideas into things people actually use.
             </Reveal>
           </div>
           <Reveal className="hero-meta" delay={0.55}>

@@ -52,19 +52,6 @@
   margin: 22px 0 0;
   max-width: 36ch;
 }
-.hero-link {
-  color: var(--text);
-  background-image: linear-gradient(var(--accent), var(--accent));
-  background-position: 0% 100%;
-  background-repeat: no-repeat;
-  background-size: 100% 0.1em;
-  padding-bottom: 0.04em;
-  transition: background-size 0.28s var(--ease-out), color 0.28s var(--ease-out);
-}
-.hero-link:hover {
-  color: var(--on-accent);
-  background-size: 100% 0.9em;
-}
 .hero-meta {
   font-family: var(--font-mono);
   font-size: 0.78rem;
@@ -664,7 +651,6 @@
 }
 
 /* ── Keyboard focus ───────────────────────────────────────────────────────── */
-.hero-link:focus-visible,
 .contact-link:focus-visible,
 .contact-cta:focus-visible,
 .work-link:focus-visible,

@@ -9,6 +9,7 @@ import SATResources from "./pages/sat/sat_resources.js";
 import SATSignup from "./pages/sat/sat_signup.js";
 import { Pull } from "./pages/pull.js";
 import { EmojiPage } from "./pages/emoji.js";
+import { Girlfriend } from "./pages/girlfriend.js";
 
 export const Routes = () => {
   return (
@@ -37,6 +38,9 @@ export const Routes = () => {
         </Route>
         <Route path="/emoji">
           <EmojiPage />
+        </Route>
+        <Route path={["/be-my-girlfriend", "/bemygirlfriend", "/girlfriend"]}>
+          <Girlfriend />
         </Route>
         <Route>
           <NotFoundPage />
