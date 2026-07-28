@@ -11,6 +11,7 @@ import { Pull } from "./pages/pull.js";
 import { EmojiPage } from "./pages/emoji.js";
 
 const BeMyGirlfriend = lazy(() => import("./pages/be_my_girlfriend/index.js"));
+const Major = lazy(() => import("./pages/major/index.js"));
 
 export const Routes = () => {
   return (
@@ -43,6 +44,11 @@ export const Routes = () => {
         <Route path={["/be-my-girlfriend", "/bemygirlfriend", "/girlfriend"]}>
           <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#092441" }} />}>
             <BeMyGirlfriend />
+          </Suspense>
+        </Route>
+        <Route path="/major">
+          <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
+            <Major />
           </Suspense>
         </Route>
         <Route>
