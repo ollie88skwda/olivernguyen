@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Split Auth + College Hub — Design Spec</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@400;700;800;900&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;1,400&family=Martian+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+/* tokens from src/styles/theme.css */
+:root{
+  --bg-base:#f1e9d4; --surface:#f9f3e5; --surface-2:#fcf8ee;
+  --border:rgba(18,34,49,.16);
+  --text:#122231; --text-muted:#45576a; --text-faint:#51637a;
+  --accent:#092441; --accent-hi:#15406b; --on-accent:#f9f3e5;
+  --warn:#8a3b12; --good:#1d5b3a;
+  --font-display:"Big Shoulders",sans-serif;
+  --font-mono:"Martian Mono",ui-monospace,monospace;
+  --font-sans:"Hanken Grotesk",-apple-system,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg-base);color:var(--text);font-family:var(--font-sans);line-height:1.65}
+main{max-width:820px;margin:0 auto;padding:64px 24px 120px}
+h1{font-family:var(--font-display);text-transform:uppercase;font-weight:900;font-size:clamp(2.2rem,7vw,3.4rem);line-height:.9;margin:0}
+.eyebrow{font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.18em;font-size:.66rem;color:var(--text-muted);margin:0 0 16px}
+.summary{font-size:1.14rem;color:var(--text-muted);max-width:60ch;margin:22px 0 0}
+.rule{height:2px;width:104px;background:rgba(18,34,49,.3);margin:22px 0 0}
+h2{font-family:var(--font-display);text-transform:uppercase;font-weight:900;font-size:1.75rem;letter-spacing:.01em;margin:64px 0 6px}
+h3{font-family:var(--font-display);text-transform:uppercase;font-weight:800;font-size:1.1rem;letter-spacing:.02em;margin:34px 0 8px}
+p{margin:0 0 12px}
+ul{margin:0 0 12px;padding-left:20px}
+li{margin:0 0 6px}
+code{font-family:var(--font-mono);font-size:.82em;background:var(--surface-2);border:1px solid var(--border);padding:1px 5px}
+pre{background:var(--accent);color:var(--on-accent);padding:14px 16px;overflow-x:auto;margin:14px 0;border-radius:2px}
+pre code{background:none;border:0;padding:0;color:inherit;font-size:.78rem;line-height:1.7}
+a{color:var(--accent-hi)}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:18px 0 0}
+ol.steps>li{counter-increment:s;position:relative;padding:0 0 20px 44px;border-left:1px solid var(--border);margin-left:12px}
+ol.steps>li::before{content:counter(s);position:absolute;left:-13px;top:0;width:25px;height:25px;background:var(--accent);color:var(--on-accent);font-family:var(--font-mono);font-size:.66rem;display:grid;place-items:center;border-radius:50%}
+ol.steps>li:last-child{border-left-color:transparent}
+ol.steps b{color:var(--text)}
+.tw{overflow-x:auto;margin:18px 0 0;border:1px solid var(--border);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:560px}
+th{font-family:var(--font-mono);font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint);text-align:left;padding:10px 12px;background:var(--surface-2);border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:11px 12px;border-bottom:1px solid var(--border);font-size:.88rem;color:var(--text-muted);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td:first-child{color:var(--text)}
+.callout{border-left:3px solid var(--warn);background:rgba(138,59,18,.07);padding:13px 16px;margin:20px 0 0}
+.callout p{margin:0;font-size:.93rem;color:var(--warn)}
+.callout p+p{margin-top:8px}
+.ok{border-left-color:var(--good);background:rgba(29,91,58,.07)}
+.ok p{color:var(--good)}
+.note{border-left-color:var(--accent);background:var(--surface-2)}
+.note p{color:var(--text-muted)}
+.add{font-family:var(--font-mono);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border:1px solid rgba(29,91,58,.4);color:var(--good);white-space:nowrap}
+.del{font-family:var(--font-mono);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border:1px solid rgba(138,59,18,.45);color:var(--warn);white-space:nowrap}
+.mod{font-family:var(--font-mono);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border:1px solid var(--border);color:var(--text-faint);white-space:nowrap}
+.keep{font-family:var(--font-mono);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border:1px dashed var(--border);color:var(--text-faint);white-space:nowrap}
+.foot{margin-top:80px;border-top:1px solid var(--border);padding-top:18px;font-family:var(--font-mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint)}
+</style>
+</head>
+<body>
+<main>
+
+<p class="eyebrow">olivernguyen.com · design spec · 2026-07-29 · final</p>
+<h1>Split Auth<br />+ College Hub</h1>
+<div class="rule"></div>
+<p class="summary">Clerk on <code>/studio</code>, a shared passphrase on <code>/major</code> and
+<code>/apply</code>, and a public <code>/college</code> hub in the sidebar. Two gates because the two
+surfaces need different things, not because of drift.</p>
+
+<h2>The shape</h2>
+
+<div class="tw">
+<table>
+<thead><tr><th>Route</th><th>Gate</th><th>Why that one</th></tr></thead>
+<tbody>
+<tr><td><code>/college</code></td><td>None — public</td><td>The shop window. Links to the other three.</td></tr>
+<tr><td><code>/major</code></td><td>Passphrase, server-verified</td><td>Low friction, no account needed, shareable if you decide to.</td></tr>
+<tr><td><code>/apply</code></td><td>Passphrase, server-verified</td><td>Same. Shares one cookie with <code>/major</code>.</td></tr>
+<tr><td><code>/studio</code></td><td>Clerk</td><td>Real identity, revocable sessions, no shared secret. This is the one whose API routes hold <code>GITHUB_TOKEN</code>.</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="callout ok">
+<p><b>The split fixes the problem the earlier designs had.</b> When one passphrase covered all three, the
+<code>/major</code> passphrase <em>was</em> the <code>/studio</code> passphrase, which is GitHub write access
+to the vault repo. Giving <code>/studio</code> its own identity provider removes that coupling entirely.
+Sharing the passphrase now costs you nothing but the two decision tools.</p>
+</div>
+
+<h2>Honest security posture</h2>
+
+<div class="tw">
+<table>
+<thead><tr><th>Surface</th><th>Protection</th><th>Real?</th></tr></thead>
+<tbody>
+<tr><td><code>/studio</code> vault reads and writes</td><td>Every <code>api/vault/*</code> and <code>api/exemplars/*</code> call verifies a Clerk session server-side, then checks the user ID against an allowlist</td><td>Yes. Genuine.</td></tr>
+<tr><td>The passphrase itself</td><td>bcrypt hash in server env, compared server-side</td><td>Yes. Never reaches the browser.</td></tr>
+<tr><td><code>/major</code> and <code>/apply</code> page access</td><td>Gate blocks render until the cookie exists</td><td>Page-level only.</td></tr>
+<tr><td><code>/major</code> and <code>/apply</code> <em>data</em></td><td>None</td><td><b>No.</b> See below.</td></tr>
+</tbody>
+</table>
+</div>
+
+<p><code>src/pages/apply/data.generated.js</code> is 515 KB of school and program data compiled into the JS
+bundle, and <code>REACT_APP_SUPABASE_ANON_KEY</code> ships with it — it is already committed in
+<code>.env</code>, which is fine, because <code>REACT_APP_</code> vars are public by definition. Anyone with a
+bundle chunk has the data and a working key for the <code>major_decision</code> and
+<code>apply_decision</code> tables. <b>Row Level Security on those two tables is the only real control.</b>
+The passphrase keeps the pages out of casual sight and nothing more.</p>
+
+<div class="callout note">
+<p>RLS on those tables is a separate job, out of scope here, but it is the thing that would actually protect
+that data. Flagged, not fixed.</p>
+</div>
+
+<div class="callout">
+<p><b>This GitHub repo is public</b> (<code>ollie88skwda/olivernguyen</code>). The passphrase and its bcrypt
+hash appear in no tracked file, including this spec, and must stay that way.</p>
+</div>
+
+<h2>Architecture</h2>
+
+<h3>Server: two libs, cleanly divided</h3>
+
+<p>All five existing <code>requireSession()</code> call sites are vault or exemplar routes — every one of
+them <code>/studio</code>. So <code>api/_lib/auth.mjs</code> becomes Clerk's, and the passphrase moves to its
+own file with its own cookie. Nothing shares state.</p>
+
+<div class="tw">
+<table>
+<thead><tr><th>Lib</th><th>Guards</th><th>Cookie</th></tr></thead>
+<tbody>
+<tr><td><code>api/_lib/auth.mjs</code> (rewritten)</td><td><code>api/vault/*</code>, <code>api/exemplars/*</code></td><td>Clerk's <code>__session</code></td></tr>
+<tr><td><code>api/_lib/passphrase.mjs</code> (new)</td><td><code>api/auth/login</code>, <code>api/auth/session</code></td><td><code>gate_session</code> — renamed from <code>studio_session</code>, which is now a misnomer</td></tr>
+</tbody>
+</table>
+</div>
+
+<p><code>requireSession(req, res)</code> keeps its exact name and signature in the rewritten
+<code>auth.mjs</code>, so the five call sites are <b>not edited</b> — only the verification behind them
+changes:</p>
+
+<pre><code>import { verifyToken } from "@clerk/backend";
+
+// 1. read the __session cookie
+// 2. verifyToken(token, { secretKey: CLERK_SECRET_KEY, authorizedParties })  -> 401
+// 3. payload.sub must be in CLERK_ALLOWED_USER_IDS                           -> 403
+//    the 403 body echoes the rejected userId, so setup is one round trip
+</code></pre>
+
+<p><code>api/auth/login.mjs</code> keeps its bcrypt logic unchanged; only its import moves to
+<code>passphrase.mjs</code>. <code>api/auth/session.mjs</code> is new — a cheap <code>GET</code> returning
+200 or 401, needed because <code>/major</code> and <code>/apply</code> have no data call to probe auth
+with.</p>
+
+<div class="callout note">
+<p><b>To confirm against the installed package, not assumed:</b> <code>verifyToken</code>'s return shape. The
+docs show a <code>try/catch</code> example but type it as <code>JwtReturnType</code>, which is a
+<code>{ data, errors }</code> object in newer releases. The installed version gets read before this is
+written.</p>
+</div>
+
+<h3>Client</h3>
+
+<p>Package is <code>@clerk/react</code>. Two things changed recently and contradict older tutorials: it is no
+longer <code>@clerk/clerk-react</code>, and <code>&lt;SignedIn&gt;</code> / <code>&lt;SignedOut&gt;</code> are
+deprecated in favour of <code>&lt;Show when="signed-in"&gt;</code>. Under CRA the key is read from
+<code>REACT_APP_CLERK_PUBLISHABLE_KEY</code> automatically and is <b>not</b> passed as a prop.</p>
+
+<p><code>ClerkProvider</code> sits inside <code>&lt;Router&gt;</code>, since router integration needs
+<code>useHistory()</code>:</p>
+
+<pre><code>&lt;ClerkProvider
+  afterSignOutUrl="/college"
+  routerPush={(to) =&gt; history.push(to)}
+  routerReplace={(to) =&gt; history.replace(to)}
+/&gt;</code></pre>
+
+<div class="callout">
+<p><b>Guard against the missing-key crash.</b> <code>ClerkProvider</code> throws when the publishable key is
+absent, which would take down <code>/college</code>, <code>/major</code> and <code>/apply</code> too. So it
+mounts only when the key exists; without it those three work normally and <code>/studio</code> shows a
+"Clerk not configured" explainer. That means <b>the passphrase half ships and works before you touch the
+Clerk dashboard</b> — you are not blocked.</p>
+</div>
+
+<h3>Gate components</h3>
+
+<ul>
+<li><code>src/auth/passphrase/store.js</code> — zustand: <code>checking</code>, <code>authed</code>, <code>error</code>, <code>apiMissing</code>, <code>check()</code>, <code>login()</code>. Lifted from the studio store's auth half.</li>
+<li><code>src/auth/passphrase/PassphraseGate.js</code> — the form, moved from <code>essay_studio/AuthGate.js</code>, plus a <code>label</code> prop so the eyebrow reads <code>Route /major · private</code>.</li>
+<li><code>src/auth/RequirePassphrase.js</code> — checking → cream placeholder; <code>apiMissing</code> → the existing <code>vercel dev</code> explainer; else <code>authed ? children : gate</code>.</li>
+<li><code>src/auth/RequireClerk.js</code> — no key → "not configured" explainer; <code>!isLoaded</code> → placeholder; signed out → redirect to <code>/sign-in</code>; signed in → children.</li>
+</ul>
+
+<h2>File changes</h2>
+
+<div class="tw">
+<table>
+<thead><tr><th>File</th><th></th><th>Change</th></tr></thead>
+<tbody>
+<tr><td><code>api/_lib/auth.mjs</code></td><td><span class="mod">rewrite</span></td><td>jose JWT → Clerk <code>verifyToken</code> + user-ID allowlist. Same export and signature.</td></tr>
+<tr><td><code>api/_lib/passphrase.mjs</code></td><td><span class="add">new</span></td><td>The old jose sign/verify logic, cookie renamed <code>gate_session</code>.</td></tr>
+<tr><td><code>api/auth/login.mjs</code></td><td><span class="mod">edit</span></td><td>Import moves to <code>passphrase.mjs</code>. bcrypt logic untouched.</td></tr>
+<tr><td><code>api/auth/session.mjs</code></td><td><span class="add">new</span></td><td>200/401 probe for the passphrase gate.</td></tr>
+<tr><td><code>api/vault/*</code>, <code>api/exemplars/*</code></td><td><span class="keep">untouched</span></td><td>Five files. Signature preserved deliberately.</td></tr>
+<tr><td><code>src/auth/passphrase/store.js</code></td><td><span class="add">new</span></td><td>Auth state lifted out of the studio store.</td></tr>
+<tr><td><code>src/auth/passphrase/PassphraseGate.js</code></td><td><span class="add">new</span></td><td>Moved from <code>AuthGate.js</code>, plus <code>label</code>.</td></tr>
+<tr><td><code>src/auth/RequirePassphrase.js</code></td><td><span class="add">new</span></td><td>Wrapper for <code>/major</code> and <code>/apply</code>.</td></tr>
+<tr><td><code>src/auth/RequireClerk.js</code></td><td><span class="add">new</span></td><td>Wrapper for <code>/studio</code>, safe when the key is absent.</td></tr>
+<tr><td><code>src/pages/sign_in.js</code></td><td><span class="add">new</span></td><td><code>&lt;SignIn /&gt;</code> themed to the navy/cream tokens.</td></tr>
+<tr><td><code>src/pages/college/index.js</code></td><td><span class="add">new</span></td><td>Hub: TopBar + hero + 3 cards.</td></tr>
+<tr><td><code>src/styles/College.css</code></td><td><span class="add">new</span></td><td>Hub styles from existing tokens.</td></tr>
+<tr><td><code>src/styles/Gate.css</code></td><td><span class="add">new</span></td><td><code>.es-gate*</code> moved out of <code>EssayStudio.css</code>, renamed <code>.gate*</code>.</td></tr>
+<tr><td><code>src/Routes.js</code></td><td><span class="mod">edit</span></td><td><code>ClerkBridge</code>, <code>/sign-in</code>, <code>/college</code>; wrap major/apply in <code>RequirePassphrase</code> and studio in <code>RequireClerk</code>.</td></tr>
+<tr><td><code>src/pages/top_bar.js</code></td><td><span class="mod">edit</span></td><td>College entry: link to <code>/college</code> plus a separate <code>+</code> toggle. Children Major / Apply / Studio.</td></tr>
+<tr><td><code>src/pages/major/index.js</code></td><td><span class="mod">edit</span></td><td>Delete the <code>GATE_KEY</code> / <code>GATE_PASS = 'go-fish'</code> block. Add back-link.</td></tr>
+<tr><td><code>src/pages/apply/index.js</code></td><td><span class="mod">edit</span></td><td>Same.</td></tr>
+<tr><td><code>src/pages/essay_studio/store.js</code></td><td><span class="mod">edit</span></td><td>Drop <code>authed</code>, <code>checkingAuth</code>, <code>authError</code>, <code>login()</code>, <code>apiMissing</code>. <code>init()</code> becomes "load the vault" only.</td></tr>
+<tr><td><code>src/pages/essay_studio/index.js</code></td><td><span class="mod">edit</span></td><td>Remove AuthGate and ApiMissing branches. Add back-link and <code>&lt;UserButton /&gt;</code>.</td></tr>
+<tr><td><code>src/styles/EssayStudio.css</code></td><td><span class="mod">edit</span></td><td>Remove <code>.es-gate*</code> rules (~520–605 plus the ~1319 media query).</td></tr>
+<tr><td><code>src/pages/essay_studio/AuthGate.js</code></td><td><span class="del">delete</span></td><td>Superseded.</td></tr>
+<tr><td><code>package.json</code></td><td><span class="mod">edit</span></td><td>Add <code>@clerk/react</code> and <code>@clerk/backend</code>. <code>bcryptjs</code> and <code>jose</code> stay — the passphrase still uses both.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Environment</h2>
+
+<div class="tw">
+<table>
+<thead><tr><th>Variable</th><th>Scope</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td><code>AUTH_PASSPHRASE_HASH</code></td><td>server</td><td>Set in all three Vercel environments.</td></tr>
+<tr><td><code>JWT_SECRET</code></td><td>server</td><td>Already present. Now signs <code>gate_session</code>.</td></tr>
+<tr><td><code>REACT_APP_CLERK_PUBLISHABLE_KEY</code></td><td>client, build-time</td><td>Needed. Public by design.</td></tr>
+<tr><td><code>CLERK_SECRET_KEY</code></td><td>server</td><td>Needed. Never <code>REACT_APP_</code> prefixed.</td></tr>
+<tr><td><code>CLERK_ALLOWED_USER_IDS</code></td><td>server</td><td>Comma-separated. Starts empty, filled after first sign-in via the 403 body.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>Build order</h2>
+
+<p>Sequenced so nothing is blocked on the Clerk dashboard.</p>
+
+<ol class="steps">
+<li><b>Passphrase half</b> — split the libs, lift the gate, wrap <code>/major</code> and <code>/apply</code>, delete both <code>go-fish</code> blocks. Fully testable today.</li>
+<li><b>Hub and sidebar</b> — <code>/college</code>, the College nav entry, back-links. No auth dependency.</li>
+<li><b>Clerk half</b> — provider, <code>/sign-in</code>, <code>RequireClerk</code>, rewritten <code>auth.mjs</code>. Ships inert until the keys exist, then switches on.</li>
+</ol>
+
+<h2>Verification</h2>
+
+<p>Real browser, real <code>vercel dev</code>, per the project's E2E rule.</p>
+
+<ol class="steps">
+<li><b>Signed out, <code>/college</code> loads</b> — hero and three cards, no gate.</li>
+<li><b>Signed out, <code>/major</code> gates</b> — box reads <code>Route /major · private</code>. Clear localStorage and reload: must still gate, proving <code>go-fish</code> is gone.</li>
+<li><b>Grep the built bundle and the tracked tree for the passphrase</b> — must return nothing. The check the server-side decision rests on.</li>
+<li><b>Wrong passphrase</b> — "Not it. Try again."</li>
+<li><b>Correct passphrase on <code>/major</code></b> — renders, Supabase doc loads, and <code>/apply</code> is open on the same cookie. <code>/studio</code> is <b>not</b> — that is the whole point of the split.</li>
+<li><b>No Clerk keys set</b> — <code>/college</code>, <code>/major</code>, <code>/apply</code> all work; <code>/studio</code> shows the explainer rather than a white screen.</li>
+<li><b>Clerk keys set, signed out</b> — <code>/studio</code> redirects to <code>/sign-in</code>; <code>curl</code> on <code>/api/vault/list</code> returns 401.</li>
+<li><b>Clerk signed in, not yet allowlisted</b> — <code>/api/vault/list</code> returns 403 with the userId in the body. Both a test and the setup step.</li>
+<li><b>Allowlisted</b> — vault loads, a file opens, an edit autosaves and lands a real commit.</li>
+<li><b>Sidebar</b> — College entry navigates on click, expands on <code>+</code>, at desktop and mobile widths.</li>
+<li><b>Hygiene</b> — <code>yarn build</code> clean, no new lint warnings, existing Jest suites (<code>model.test.js</code>, <code>portfolio.test.js</code>, <code>seed.test.js</code>, <code>vaultModel.test.js</code>) pass.</li>
+</ol>
+
+<h2>Tradeoffs accepted</h2>
+
+<ul>
+<li><b>Two auth systems.</b> Justified here — different surfaces, different privacy needs — but it is two things to maintain, and <code>bcryptjs</code>, <code>jose</code>, <code>@clerk/react</code> and <code>@clerk/backend</code> all stay in the tree.</li>
+<li><b><code>/major</code> and <code>/apply</code> now need <code>vercel dev</code> locally.</b> They run on <code>react-scripts start</code> today. With <code>/studio</code> on Clerk, the original security reason for server-verifying the passphrase is gone, so a client-side gate would now be defensible and would keep <code>react-scripts start</code> working. Server-side is kept anyway because the env is already configured and it keeps the passphrase out of the bundle — say the word to flip it.</li>
+<li><b>CRA 5 and modern package exports.</b> <code>@clerk/react</code> targets modern bundlers; webpack 5 should resolve it, but source-map warnings from <code>node_modules</code> are likely. Cosmetic if so; a real resolution failure would be a blocker and would change the approach.</li>
+<li><b>Clerk appearance API drift.</b> Theming maps to Clerk's internal element keys. A Clerk update can change them. Failure mode is ugly, not broken.</li>
+</ul>
+
+<h2>The /college hub</h2>
+
+<p>Hero, then three cards. Each carries a lock chip, and clicking through lands on whichever gate applies.</p>
+
+<div class="callout">
+<p><b>Copy is left as visible placeholders.</b> The headline and the three card descriptions are your words.
+They render as obvious <code>[…]</code> markers so nothing invented ships by accident.</p>
+</div>
+
+<h2>Out of scope</h2>
+
+<ul>
+<li><b>RLS on the Supabase tables</b> — the real access control for <code>/major</code> and <code>/apply</code> data. Flagged above, not touched.</li>
+<li><b>The <code>/debt</code> sidebar link is dead</b> — points at a route that does not exist in <code>Routes.js</code>. Pre-existing and unrelated; flagged, not fixed.</li>
+<li>No logout for the passphrase gate. The cookie expires in 7 days. Clerk brings its own via <code>&lt;UserButton /&gt;</code>.</li>
+</ul>
+
+<h2>Your steps</h2>
+
+<ol class="steps">
+<li><b>Done</b> — <code>AUTH_PASSPHRASE_HASH</code> set in all three Vercel environments.</li>
+<li><b>Create a Clerk application</b> at <a href="https://dashboard.clerk.com">dashboard.clerk.com</a>. Email sign-in.</li>
+<li><b>Turn sign-up off</b> — Configure → Restrictions. Clerk allows open registration by default; this is the lock that matters most.</li>
+<li><b>Create your user manually</b> — Users → Create user.</li>
+<li><b>Add both Clerk keys</b> to Vercel, and add your production domain to the Clerk instance so cookies work on olivernguyen.com.</li>
+<li><b>Sign in once, read the userId</b> from the 403, set <code>CLERK_ALLOWED_USER_IDS</code>.</li>
+<li><b>Write the hub copy</b> — headline plus three card descriptions.</li>
+</ol>
+
+<p class="foot">Spec · olivernguyen.com · split auth + college hub</p>
+
+</main>
+</body>
+</html>
