@@ -33,6 +33,7 @@ const ClerkBridge = ({ children }) => {
   if (!clerkKey()) return children;
   return (
     <ClerkProvider
+      publishableKey={clerkKey()}
       afterSignOutUrl="/college"
       routerPush={(to) => history.push(to)}
       routerReplace={(to) => history.replace(to)}

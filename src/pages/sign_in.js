@@ -17,7 +17,10 @@ const appearance = {
     fontFamily: '"Hanken Grotesk", -apple-system, sans-serif',
   },
   elements: {
-    card: { border: '1px solid rgba(18,34,49,.16)', boxShadow: 'none' },
+    // v6 wraps `card` in `cardBox`, and the shadow lives on the wrapper — setting
+    // it on `card` alone leaves the drop shadow visible.
+    cardBox: { border: '1px solid rgba(18,34,49,.16)', boxShadow: 'none', borderRadius: '2px' },
+    card: { boxShadow: 'none' },
     headerTitle: {
       fontFamily: '"Big Shoulders", sans-serif',
       textTransform: 'uppercase',
