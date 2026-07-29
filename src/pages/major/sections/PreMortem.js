@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import SectionHeading from '../../../components/SectionHeading';
 import Reveal from '../../../components/Reveal';
-import Tip from '../Tooltip';
+import Tip from '../../../components/Tooltip';
 
 const LIKELIHOODS = [
   { id: 'low', label: 'Long shot' },

@@ -1,12 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { TopBar } from "./top_bar";
 import "../styles/Pull.css";
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.REACT_APP_SUPABASE_URL,
-  process.env.REACT_APP_SUPABASE_ANON_KEY
-);
+import { supabase } from "../lib/supabase";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 

@@ -2,7 +2,7 @@ import React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import SectionHeading from '../../../components/SectionHeading';
 import Reveal from '../../../components/Reveal';
-import Tip from '../Tooltip';
+import Tip from '../../../components/Tooltip';
 
 // Under this much of a weight shift, one ordinary change of heart flips the answer.
 const FRAGILE = 0.1;

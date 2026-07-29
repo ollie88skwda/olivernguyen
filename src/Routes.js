@@ -9,9 +9,11 @@ import SATResources from "./pages/sat/sat_resources.js";
 import SATSignup from "./pages/sat/sat_signup.js";
 import { Pull } from "./pages/pull.js";
 import { EmojiPage } from "./pages/emoji.js";
+import RequirePassphrase from "./auth/RequirePassphrase";
 
 const BeMyGirlfriend = lazy(() => import("./pages/be_my_girlfriend/index.js"));
 const Major = lazy(() => import("./pages/major/index.js"));
+const Apply = lazy(() => import("./pages/apply/index.js"));
 const EssayStudio = lazy(() => import("./pages/essay_studio/index.js"));
 const WritingRoom = lazy(() => import("./pages/essay_studio/room/index.js"));
 
@@ -49,9 +51,18 @@ export const Routes = () => {
           </Suspense>
         </Route>
         <Route path="/major">
-          <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
-            <Major />
-          </Suspense>
+          <RequirePassphrase label="Route /major · private" route="/major">
+            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
+              <Major />
+            </Suspense>
+          </RequirePassphrase>
+        </Route>
+        <Route path="/apply">
+          <RequirePassphrase label="Route /apply · private" route="/apply">
+            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
+              <Apply />
+            </Suspense>
+          </RequirePassphrase>
         </Route>
         <Route path="/studio/:schoolSlug/:promptSlug/:versionKey">
           <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>

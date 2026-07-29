@@ -1,8 +1,12 @@
 import { create } from 'zustand';
 import { supabase } from '../../lib/supabase';
 import { createSeed } from './seed';
+import { stripProfile } from './profile';
 
-const TABLE = 'major_decision';
+// Same shape and same failure behaviour as /major's store, against its own row. Kept as a
+// sibling rather than a shared abstraction: the two pages have one table each and no
+// shared state, so factoring this out would add indirection without removing a decision.
+const TABLE = 'apply_decision';
 const ROW_ID = 'v1';
 const SAVE_DEBOUNCE_MS = 800;
 
@@ -14,7 +18,10 @@ let lastWriteAt = null;
 
 async function writeDoc(doc) {
   const updatedAt = new Date().toISOString();
-  const next = { ...doc, updatedAt };
+  // Belt and braces: the seed no longer produces a profile and the page never puts one
+  // here, but this is the single choke point through which anything reaches the shared
+  // row, so it is the right place to make the guarantee unconditional.
+  const next = { ...stripProfile(doc), updatedAt };
   lastWriteAt = updatedAt;
   const { error } = await supabase
     .from(TABLE)
@@ -23,7 +30,7 @@ async function writeDoc(doc) {
   return { doc: next, updatedAt };
 }
 
-export const useMajorStore = create((set, get) => ({
+export const useApplyStore = create((set, get) => ({
   doc: null,
   loading: true,
   offline: false,
@@ -45,20 +52,21 @@ export const useMajorStore = create((set, get) => ({
         if (error) throw error;
 
         if (data && data.doc) {
-          set({ doc: data.doc, loading: false, savedAt: data.updated_at });
+          // Rows written before profile.js existed can still carry personal fields.
+          set({ doc: stripProfile(data.doc), loading: false, savedAt: data.updated_at });
           return;
         }
 
         const bootstrapped = await writeDoc(createSeed());
         set({ doc: bootstrapped.doc, loading: false, savedAt: bootstrapped.updatedAt });
       } catch (err) {
-        console.warn('[major] falling back to local seed:', err.message || err);
+        console.warn('[apply] falling back to local seed:', err.message || err);
         set({ doc: createSeed(), loading: false, offline: true });
       }
     })();
 
     const channel = supabase
-      .channel('major_decision_changes')
+      .channel('apply_decision_changes')
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: TABLE, filter: `id=eq.${ROW_ID}` },
@@ -66,7 +74,7 @@ export const useMajorStore = create((set, get) => ({
           const row = payload.new;
           if (!row || !row.doc) return;
           if (lastWriteAt && row.updated_at && row.updated_at <= lastWriteAt) return;
-          set({ doc: row.doc, savedAt: row.updated_at });
+          set({ doc: stripProfile(row.doc), savedAt: row.updated_at });
         }
       )
       .subscribe();
@@ -98,10 +106,10 @@ export const useMajorStore = create((set, get) => ({
       const written = await writeDoc(doc);
       set({ doc: written.doc, savedAt: written.updatedAt, offline: false });
     } catch (err) {
-      console.warn('[major] save failed, keeping local changes:', err.message || err);
+      console.warn('[apply] save failed, keeping local changes:', err.message || err);
       set({ offline: true });
     }
   },
 }));
 
-export default useMajorStore;
+export default useApplyStore;

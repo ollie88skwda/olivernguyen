@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import SectionHeading from '../../../components/SectionHeading';
 import Reveal from '../../../components/Reveal';
-import Tip from '../Tooltip';
+import Tip from '../../../components/Tooltip';
 
 const W = 800;
 const H = 176;

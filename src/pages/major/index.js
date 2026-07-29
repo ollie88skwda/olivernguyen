@@ -2,6 +2,9 @@ import React, { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { useReducedMotion } from 'framer-motion';
 import Reveal from '../../components/Reveal';
 import WordReveal from '../../components/WordReveal';
+import { GlossaryProvider } from '../../components/Tooltip';
+import BackLink from '../../auth/BackLink';
+import { GLOSSARY } from './glossary';
 import useMajorStore from './store';
 import {
   computeAHP,
@@ -25,11 +28,6 @@ import Glossary from './sections/Glossary';
 import '../../styles/Major.css';
 import '../../styles/MajorB.css';
 import '../../styles/MajorC.css';
-
-// UI privacy only, not security. The passphrase and the Supabase anon key both ship in the
-// bundle, so this keeps the page out of casual sight and nothing more.
-const GATE_KEY = 'major_gate';
-const GATE_PASS = 'go-fish';
 
 // Land just past the tipping point rather than exactly on it, so the previewed board
 // actually re-sorts instead of showing a dead heat.
@@ -86,53 +84,8 @@ function shiftWeights(criteria, weights, criterionId, delta, direction) {
   return shifted;
 }
 
-const Gate = ({ onPass }) => {
-  const [value, setValue] = useState('');
-  const [wrong, setWrong] = useState(false);
-
-  const submit = (event) => {
-    event.preventDefault();
-    if (value.trim().toLowerCase() !== GATE_PASS) {
-      setWrong(true);
-      return;
-    }
-    localStorage.setItem(GATE_KEY, 'true');
-    onPass();
-  };
-
-  return (
-    <main className="mj-gate">
-      <div className="grain" aria-hidden="true" />
-      <form className={wrong ? 'mj-gate-card mj-gate-wrong' : 'mj-gate-card'} onSubmit={submit}>
-        <p className="mj-gate-eyebrow">Route /major · private</p>
-        <h1 className="mj-gate-title">Passphrase</h1>
-        <input
-          className="mj-gate-in"
-          type="password"
-          value={value}
-          autoFocus
-          autoComplete="off"
-          aria-label="Passphrase"
-          aria-invalid={wrong}
-          onChange={(event) => {
-            setValue(event.target.value);
-            setWrong(false);
-          }}
-        />
-        <button className="mj-gate-go" type="submit">
-          Enter
-        </button>
-        <p className="mj-gate-err" role="alert">
-          {wrong ? 'Not it. Try again.' : ''}
-        </p>
-      </form>
-    </main>
-  );
-};
-
 export const Major = () => {
   const reduce = useReducedMotion();
-  const [unlocked, setUnlocked] = useState(() => localStorage.getItem(GATE_KEY) === 'true');
   const [editing, setEditing] = useState(false);
   const [preview, setPreview] = useState(null);
 
@@ -176,12 +129,11 @@ export const Major = () => {
     };
   }, [preview, doc, derived]);
 
-  if (!unlocked) return <Gate onPass={() => setUnlocked(true)} />;
-
   if (loading || !doc || !derived) {
     return (
       <main className="mj-page mj-loading">
         <div className="grain" aria-hidden="true" />
+        <BackLink />
         <p>LOADING THE DOC</p>
       </main>
     );
@@ -202,8 +154,10 @@ export const Major = () => {
   const sectionProps = { doc, derived, editing, updateDoc };
 
   return (
+    <GlossaryProvider value={GLOSSARY}>
     <main className="mj-page">
       <div className="grain" aria-hidden="true" />
+      <BackLink />
 
       <header className="mj-hero">
         <Reveal as="p" className="mj-hero-eyebrow">
@@ -264,6 +218,7 @@ export const Major = () => {
         </button>
       </div>
     </main>
+    </GlossaryProvider>
   );
 };
 

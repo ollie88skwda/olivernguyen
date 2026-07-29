@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import SectionHeading from '../../../components/SectionHeading';
 import Reveal from '../../../components/Reveal';
-import Tip from '../Tooltip';
+import Tip from '../../../components/Tooltip';
 
 // Saaty 1 to 9 read in both directions. Index 8 is "they matter the same"; left of it the
 // first criterion wins by that much, right of it the second one does.

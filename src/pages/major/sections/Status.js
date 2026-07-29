@@ -1,7 +1,7 @@
 import React from 'react';
 import SectionHeading from '../../../components/SectionHeading';
 import Reveal from '../../../components/Reveal';
-import Tip from '../Tooltip';
+import Tip from '../../../components/Tooltip';
 
 const DIAL_RADIUS = 70;
 const DIAL_LENGTH = 2 * Math.PI * DIAL_RADIUS;
