@@ -2,42 +2,17 @@ import React, { useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import Reveal from '../../components/Reveal';
 import WordReveal from '../../components/WordReveal';
+import { UserButton } from '@clerk/react';
 import useStudioStore from './store';
-import AuthGate from './AuthGate';
+import BackLink from '../../auth/BackLink';
 import Status from './sections/Status';
 import Board from './sections/Board';
 import Archive from './sections/Archive';
 import { versionPath } from './vaultModel';
 import '../../styles/EssayStudio.css';
 
-// Only reachable in local development: `react-scripts start` answers /api/* with
-// index.html, so the vault can never load. Say that plainly instead of showing a
-// hero over an empty page or a passphrase box that will never open.
-const ApiMissing = () => (
-  <main className="es-page">
-    <div className="grain" aria-hidden="true" />
-    <header className="es-hero">
-      <p className="es-hero-eyebrow">Route /studio · backend not running</p>
-      <h1 className="es-hero-title">No Vault</h1>
-      <div className="es-hero-rule" aria-hidden="true" />
-    </header>
-    <p className="es-hint">
-      The <code>/api/*</code> routes are Vercel serverless functions.{' '}
-      <code>react-scripts start</code> does not run them — it answers every path with{' '}
-      <code>index.html</code>, so there is nothing to read the vault with.
-    </p>
-    <p className="es-hint">
-      Start the site with <code>vercel dev</code> instead. It serves the same React app and runs{' '}
-      <code>api/</code> alongside it, using the values already in <code>.env.local</code>.
-    </p>
-  </main>
-);
-
 export const EssayStudio = () => {
   const history = useHistory();
-  const checkingAuth = useStudioStore((s) => s.checkingAuth);
-  const apiMissing = useStudioStore((s) => s.apiMissing);
-  const authed = useStudioStore((s) => s.authed);
   const init = useStudioStore((s) => s.init);
   const vault = useStudioStore((s) => s.vault);
   const docs = useStudioStore((s) => s.docs);
@@ -97,21 +72,13 @@ export const EssayStudio = () => {
     if (created) history.push(versionPath(refreshed, created));
   };
 
-  if (checkingAuth) {
-    return (
-      <main className="es-page es-page-center">
-        <div className="grain" aria-hidden="true" />
-        <p className="es-readout">Checking…</p>
-      </main>
-    );
-  }
-
-  if (apiMissing) return <ApiMissing />;
-  if (!authed) return <AuthGate />;
-
   return (
     <main className="es-page">
       <div className="grain" aria-hidden="true" />
+      <BackLink />
+      <div className="es-user">
+        <UserButton afterSignOutUrl="/college" />
+      </div>
 
       <header className="es-hero">
         <Reveal as="p" className="es-hero-eyebrow">

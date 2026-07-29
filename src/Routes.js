@@ -1,5 +1,6 @@
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, useHistory } from "react-router-dom";
 import React, { Suspense, lazy } from "react";
+import { ClerkProvider } from "@clerk/react";
 import { Permit } from "./pages/driving/permit.js";
 import { NotFoundPage } from "./pages/not_found_page.js";
 import { Home } from "./pages/home.js";
@@ -10,7 +11,9 @@ import SATSignup from "./pages/sat/sat_signup.js";
 import { Pull } from "./pages/pull.js";
 import { EmojiPage } from "./pages/emoji.js";
 import College from "./pages/college/index.js";
+import SignInPage from "./pages/sign_in.js";
 import RequirePassphrase from "./auth/RequirePassphrase";
+import RequireClerk, { clerkKey } from "./auth/RequireClerk";
 
 const BeMyGirlfriend = lazy(() => import("./pages/be_my_girlfriend/index.js"));
 const Major = lazy(() => import("./pages/major/index.js"));
@@ -18,12 +21,37 @@ const Apply = lazy(() => import("./pages/apply/index.js"));
 const EssayStudio = lazy(() => import("./pages/essay_studio/index.js"));
 const WritingRoom = lazy(() => import("./pages/essay_studio/room/index.js"));
 
+// ClerkProvider needs router functions, and those need useHistory, which only
+// works inside <Router>. Hence a component between Router and Switch rather than
+// wrapping the app in index.js. routerPush and routerReplace are a union in
+// Clerk's types: both or neither.
+//
+// Mounted only when a key exists. ClerkProvider throws on construction without
+// one, which would take /college, /major and /apply down with it.
+const ClerkBridge = ({ children }) => {
+  const history = useHistory();
+  if (!clerkKey()) return children;
+  return (
+    <ClerkProvider
+      afterSignOutUrl="/college"
+      routerPush={(to) => history.push(to)}
+      routerReplace={(to) => history.replace(to)}
+    >
+      {children}
+    </ClerkProvider>
+  );
+};
+
 export const Routes = () => {
   return (
     <Router>
+      <ClerkBridge>
       <Switch>
         <Route path="/" exact>
           <Home />
+        </Route>
+        <Route path="/sign-in">
+          <SignInPage />
         </Route>
         <Route path="/permit">
           <Permit />
@@ -69,19 +97,24 @@ export const Routes = () => {
           </RequirePassphrase>
         </Route>
         <Route path="/studio/:schoolSlug/:promptSlug/:versionKey">
-          <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
-            <WritingRoom />
-          </Suspense>
+          <RequireClerk>
+            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
+              <WritingRoom />
+            </Suspense>
+          </RequireClerk>
         </Route>
         <Route path="/studio">
-          <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
-            <EssayStudio />
-          </Suspense>
+          <RequireClerk>
+            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
+              <EssayStudio />
+            </Suspense>
+          </RequireClerk>
         </Route>
         <Route>
           <NotFoundPage />
         </Route>
       </Switch>
+      </ClerkBridge>
     </Router>
   );
 };

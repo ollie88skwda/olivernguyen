@@ -515,25 +515,6 @@
   font-size: 0.86rem;
 }
 
-/* ══ the gate ═════════════════════════════════════════════════════════════ */
-
-.es-gate {
-  position: relative;
-  z-index: 2;
-  min-height: 100dvh;
-  display: grid;
-  place-items: center;
-  padding: 28px;
-}
-.es-gate-card {
-  width: min(360px, 100%);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  padding: 30px 26px 22px;
-}
-.es-gate-wrong {
-  animation: es-shake 0.36s var(--ease-out);
-}
 @keyframes es-shake {
   20% {
     transform: translateX(-7px);
@@ -545,68 +526,6 @@
     transform: translateX(-3px);
   }
 }
-.es-gate-eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin: 0 0 10px;
-}
-.es-gate-title {
-  font-family: var(--font-display);
-  text-transform: uppercase;
-  font-weight: 900;
-  font-size: 2.6rem;
-  line-height: 0.9;
-  letter-spacing: 0.01em;
-  color: var(--text);
-  margin: 0 0 20px;
-}
-.es-gate-in {
-  width: 100%;
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
-  letter-spacing: 0.14em;
-  color: var(--text);
-  background: var(--bg);
-  border: 1px solid var(--border);
-  padding: 11px 12px;
-}
-.es-gate-in:focus {
-  outline: 2px solid var(--accent-hi);
-  outline-offset: 1px;
-}
-.es-gate-go {
-  width: 100%;
-  margin-top: 12px;
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--on-accent);
-  background: var(--accent);
-  border: 1px solid var(--accent);
-  padding: 11px 12px;
-  cursor: pointer;
-}
-.es-gate-go:hover {
-  background: var(--accent-hi);
-}
-.es-gate-go:disabled {
-  opacity: 0.6;
-  cursor: default;
-}
-.es-gate-err {
-  min-height: 1.2em;
-  margin: 10px 0 0;
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--es-warn);
-}
-
 /* ══ the Writing Room ═════════════════════════════════════════════════════ */
 
 .es-room {
@@ -1315,8 +1234,11 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .es-gate-wrong {
-    animation: none;
-  }
+
+/* Clerk's user menu. Fixed so it clears the hero without entering its flow. */
+.es-user {
+  position: fixed;
+  top: 14px;
+  right: 20px;
+  z-index: 40;
 }

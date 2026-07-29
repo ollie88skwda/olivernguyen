@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { apiFetch as api } from '../../auth/api';
 import { buildVault } from './vaultModel';
 
 // Long enough that a normal typing pause does not fire a commit, short enough that
@@ -13,40 +14,6 @@ export function splitFrontmatter(raw) {
   return match ? { prefix: match[1], body: match[2] } : { prefix: '', body: String(raw ?? '') };
 }
 
-async function api(path, options = {}) {
-  const res = await fetch(path, {
-    credentials: 'same-origin',
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
-  });
-  if (res.status === 401) {
-    const err = new Error('unauthenticated');
-    err.status = 401;
-    throw err;
-  }
-
-  // `react-scripts start` does not serve api/*, it serves index.html for every
-  // path with a 200. Swallowing that as an empty object made the Desk render a
-  // hero over nothing, so an HTML body is a hard error rather than "no files".
-  const contentType = res.headers.get('content-type') || '';
-  if (!contentType.includes('application/json')) {
-    const err = new Error(
-      'The /api routes are not running. Start the site with `vercel dev` — `react-scripts start` cannot serve them.'
-    );
-    err.status = res.status;
-    err.noApi = true;
-    throw err;
-  }
-
-  const body = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    const err = new Error(body.error || 'Request failed');
-    err.status = res.status;
-    throw err;
-  }
-  return body;
-}
-
 // Debounce handles live outside the store: they are timers, not rendered state.
 const autosaveTimers = new Map();
 
@@ -59,10 +26,6 @@ function clearTimer(path) {
 }
 
 export const useStudioStore = create((set, get) => ({
-  authed: false,
-  checkingAuth: true,
-  authError: null,
-
   files: [],
   vault: { schools: [], prompts: [], archive: [], guides: [] },
   loadingFiles: false,
@@ -82,31 +45,10 @@ export const useStudioStore = create((set, get) => ({
   exemplarsLoaded: false,
   exemplarsError: null,
 
-  apiMissing: false,
-
+  // Auth is RequireClerk's job now — by the time this store runs, the session
+  // already exists. Anything that still fails surfaces through filesError.
   async init() {
-    set({ checkingAuth: true, apiMissing: false });
-    try {
-      await get().fetchList();
-      set({ authed: true, checkingAuth: false });
-    } catch (err) {
-      // A missing backend is not a failed login; sending someone to a
-      // passphrase box they can never get past is the wrong error.
-      set({ authed: false, checkingAuth: false, apiMissing: Boolean(err.noApi) });
-    }
-  },
-
-  async login(passphrase) {
-    set({ authError: null });
-    try {
-      await api('/api/auth/login', { method: 'POST', body: JSON.stringify({ passphrase }) });
-      await get().fetchList();
-      set({ authed: true });
-      return true;
-    } catch (err) {
-      set({ authError: err.status === 401 ? 'Not it. Try again.' : 'Something went wrong.' });
-      return false;
-    }
+    await get().fetchList();
   },
 
   async fetchList() {

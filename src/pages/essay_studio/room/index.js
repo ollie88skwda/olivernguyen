@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import useStudioStore from '../store';
-import AuthGate from '../AuthGate';
 import { findVersion, versionSlug } from '../vaultModel';
 import { registerVimCommands, setVimHandlers } from './vimCommands';
 import { proseWordCount } from '../wordcount';
@@ -19,9 +18,6 @@ export const WritingRoom = () => {
   const history = useHistory();
   const { schoolSlug, promptSlug, versionKey } = useParams();
 
-  const checkingAuth = useStudioStore((s) => s.checkingAuth);
-  const apiMissing = useStudioStore((s) => s.apiMissing);
-  const authed = useStudioStore((s) => s.authed);
   const init = useStudioStore((s) => s.init);
   const vault = useStudioStore((s) => s.vault);
   const docs = useStudioStore((s) => s.docs);
@@ -166,26 +162,6 @@ export const WritingRoom = () => {
       return next;
     });
   };
-
-  if (checkingAuth) {
-    return (
-      <main className="es-room es-room-center">
-        <p className="es-readout">Checking…</p>
-      </main>
-    );
-  }
-
-  if (apiMissing) {
-    return (
-      <main className="es-room es-room-center">
-        <p className="es-readout">
-          The /api routes are not running. Start the site with `vercel dev`.
-        </p>
-      </main>
-    );
-  }
-
-  if (!authed) return <AuthGate />;
 
   if (!prompt || !version) {
     const loading = vault.prompts.length === 0;
