@@ -1,1 +1,7 @@
 node_modules
+.env.local
+.env*.local
+.env*
+
+# yarn is the source of truth (see vercel.json installCommand + packageManager)
+package-lock.json

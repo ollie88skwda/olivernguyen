@@ -12,6 +12,8 @@ import { EmojiPage } from "./pages/emoji.js";
 
 const BeMyGirlfriend = lazy(() => import("./pages/be_my_girlfriend/index.js"));
 const Major = lazy(() => import("./pages/major/index.js"));
+const EssayStudio = lazy(() => import("./pages/essay_studio/index.js"));
+const WritingRoom = lazy(() => import("./pages/essay_studio/room/index.js"));
 
 export const Routes = () => {
   return (
@@ -49,6 +51,16 @@ export const Routes = () => {
         <Route path="/major">
           <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
             <Major />
+          </Suspense>
+        </Route>
+        <Route path="/studio/:schoolSlug/:promptSlug/:versionKey">
+          <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
+            <WritingRoom />
+          </Suspense>
+        </Route>
+        <Route path="/studio">
+          <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
+            <EssayStudio />
           </Suspense>
         </Route>
         <Route>
