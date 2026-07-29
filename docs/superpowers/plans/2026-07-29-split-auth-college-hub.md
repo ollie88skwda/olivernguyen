@@ -203,9 +203,17 @@ curl -s -b /tmp/cj.txt -o /dev/null -w '%{http_code}\n' http://localhost:3000/ap
 
 Export `GATE_PASSPHRASE` in your shell first so the passphrase never lands in a tracked file or in this plan. `rm /tmp/cj.txt` afterwards.
 
-- [ ] **Step 5: Confirm `/studio` still works**
+- [ ] **Step 5: Confirm the vault fails closed during the transition**
 
-`api/_lib/auth.mjs` is untouched, so the studio's existing `studio_session` flow is unaffected. Load `/studio`, enter the passphrase, confirm the vault lists. This proves the split did not disturb the old path.
+`login.mjs` now issues `gate_session`, while `api/_lib/auth.mjs` still expects `studio_session`. So `/studio`'s passphrase login is deliberately broken from here until Task 7 replaces it with Clerk. The property that matters is that this breaks *closed*:
+
+```bash
+# with a freshly issued gate cookie -> still 401, the gate cookie is not a vault key
+curl -s -b /tmp/cj.txt -o /dev/null -w '%{http_code}\n' http://localhost:3000/api/vault/list
+# with no cookie -> 401
+curl -s -o /dev/null -w '%{http_code}\n' http://localhost:3000/api/vault/list
+```
+Expected: `401` both times. Anything else means the vault opened up mid-migration — stop.
 
 - [ ] **Step 6: Commit**
 

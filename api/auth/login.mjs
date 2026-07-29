@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs";
-import { signSession, sessionCookie } from "../_lib/auth.mjs";
+import { signGate, gateCookie } from "../_lib/passphrase.mjs";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -28,7 +28,7 @@ export default async function handler(req, res) {
     return;
   }
 
-  const token = await signSession();
-  res.setHeader("Set-Cookie", sessionCookie(token));
+  const token = await signGate();
+  res.setHeader("Set-Cookie", gateCookie(token));
   res.status(200).json({ ok: true });
 }
