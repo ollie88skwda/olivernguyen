@@ -14,7 +14,7 @@
     "@replit/codemirror-vim": "^6.4.0",
     "@supabase/supabase-js": "^2.100.1",
     "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
+    "@testing-library/react": "^16",
     "@testing-library/user-event": "^13.5.0",
     "@uiw/react-codemirror": "^4.23.7",
     "bcryptjs": "^2.4.3",
@@ -61,7 +61,8 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11"
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@testing-library/dom": "^10"
   },
   "packageManager": "yarn@1.22.22"
 }
