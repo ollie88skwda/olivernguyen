@@ -39,7 +39,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "dev": "set -a; . ./.env.local; set +a; vercel dev"
+    "dev": "react-scripts start",
+    "dev:vercel": "set -a; . ./.env.local; set +a; vercel dev"
   },
   "eslintConfig": {
     "extends": [
