@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Moving olivernguyen.com to Vercel</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@400;700;800;900&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;1,400&family=Martian+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+/* tokens from src/styles/theme.css */
+:root{
+  --bg-base:#f1e9d4; --surface:#f9f3e5; --surface-2:#fcf8ee;
+  --border:rgba(18,34,49,.16);
+  --text:#122231; --text-muted:#45576a; --text-faint:#51637a;
+  --accent:#092441; --accent-hi:#15406b; --on-accent:#f9f3e5;
+  --warn:#8a3b12; --good:#1d5b3a;
+  --font-display:"Big Shoulders",sans-serif;
+  --font-mono:"Martian Mono",ui-monospace,monospace;
+  --font-sans:"Hanken Grotesk",-apple-system,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg-base);color:var(--text);font-family:var(--font-sans);line-height:1.65}
+main{max-width:760px;margin:0 auto;padding:64px 24px 120px}
+h1{font-family:var(--font-display);text-transform:uppercase;font-weight:900;font-size:clamp(2.2rem,7vw,3.4rem);line-height:.9;margin:0}
+.eyebrow{font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.18em;font-size:.66rem;color:var(--text-muted);margin:0 0 16px}
+.summary{font-size:1.14rem;color:var(--text-muted);max-width:58ch;margin:22px 0 0}
+.rule{height:2px;width:104px;background:rgba(18,34,49,.3);margin:22px 0 0}
+h2{font-family:var(--font-display);text-transform:uppercase;font-weight:900;font-size:1.75rem;letter-spacing:.01em;margin:64px 0 6px}
+h3{font-family:var(--font-display);text-transform:uppercase;font-weight:800;font-size:1.1rem;letter-spacing:.02em;margin:34px 0 8px}
+p{margin:0 0 12px}
+code{font-family:var(--font-mono);font-size:.82em;background:var(--surface-2);border:1px solid var(--border);padding:1px 5px}
+pre{background:var(--accent);color:var(--on-accent);padding:14px 16px;overflow-x:auto;margin:14px 0;border-radius:2px}
+pre code{background:none;border:0;padding:0;color:inherit;font-size:.8rem;line-height:1.7}
+a{color:var(--accent-hi)}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:18px 0 0}
+ol.steps>li{counter-increment:s;position:relative;padding:0 0 20px 44px;border-left:1px solid var(--border);margin-left:12px}
+ol.steps>li::before{content:counter(s);position:absolute;left:-13px;top:0;width:25px;height:25px;background:var(--accent);color:var(--on-accent);font-family:var(--font-mono);font-size:.66rem;display:grid;place-items:center;border-radius:50%}
+ol.steps>li:last-child{border-left-color:transparent}
+ol.steps b{color:var(--text)}
+.tw{overflow-x:auto;margin:18px 0 0;border:1px solid var(--border);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:520px}
+th{font-family:var(--font-mono);font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint);text-align:left;padding:10px 12px;background:var(--surface-2);border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:11px 12px;border-bottom:1px solid var(--border);font-size:.9rem;color:var(--text-muted);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td:first-child{color:var(--text)}
+.callout{border-left:3px solid var(--warn);background:rgba(138,59,18,.07);padding:13px 16px;margin:20px 0 0}
+.callout p{margin:0;font-size:.93rem;color:var(--warn)}
+.callout p+p{margin-top:8px}
+.ok{border-left-color:var(--good);background:rgba(29,91,58,.07)}
+.ok p{color:var(--good)}
+.note{border-left-color:var(--accent);background:var(--surface-2)}
+.note p{color:var(--text-muted)}
+.done{font-family:var(--font-mono);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border:1px solid rgba(29,91,58,.4);color:var(--good);white-space:nowrap}
+.todo{font-family:var(--font-mono);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border:1px solid rgba(138,59,18,.45);color:var(--warn);white-space:nowrap}
+.foot{margin-top:80px;border-top:1px solid var(--border);padding-top:18px;font-family:var(--font-mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint)}
+</style>
+</head>
+<body>
+<main>
+
+<p class="eyebrow">olivernguyen.com · Cloudflare → Vercel</p>
+<h1>Moving The Site<br />To Vercel</h1>
+<div class="rule"></div>
+<p class="summary">Yes — the <code>/api</code> routes start working by themselves on Vercel. There is no code to
+port. This is a DNS change plus merging the studio branch.</p>
+
+<h2>Why the API just works</h2>
+
+<p>Your <code>api/*.mjs</code> files are already written in Vercel's zero-config format: one file per route,
+default-exported <code>handler(req, res)</code>. Vercel finds them automatically. That is why the studio
+worked under <code>vercel dev</code> and nowhere else.</p>
+
+<p>Cloudflare Pages does not use that format. It wants a <code>functions/</code> folder with
+<code>onRequest(context)</code> handlers. You don't have one, so on Cloudflare
+<code>/api/vault/list</code> falls through to the SPA and returns HTML.</p>
+
+<div class="callout ok">
+  <p><b>Already true, nothing to do:</b> the Vercel project <code>olivernguyen</code> exists and has working
+  production deployments, the domain is already on your Vercel account, and all five studio secrets
+  (<code>GITHUB_TOKEN</code>, <code>GITHUB_OWNER</code>, <code>GITHUB_REPO</code>, <code>JWT_SECRET</code>,
+  <code>AUTH_PASSPHRASE_HASH</code>) are already set for Production.</p>
+</div>
+
+<h2>Where things stand</h2>
+
+<div class="tw">
+<table>
+  <thead><tr><th>Thing</th><th>Now</th><th></th></tr></thead>
+  <tbody>
+    <tr><td>Registrar</td><td>Squarespace Domains</td><td><span class="done">fine</span></td></tr>
+    <tr><td>Nameservers</td><td>Cloudflare (<code>gail</code> / <code>hayes</code>)</td><td><span class="done">fine</span></td></tr>
+    <tr><td>Apex DNS</td><td>Cloudflare proxy IPs, orange-clouded</td><td><span class="todo">change</span></td></tr>
+    <tr><td>Email (MX)</td><td>None</td><td><span class="done">nothing to break</span></td></tr>
+    <tr><td>TXT records</td><td>None</td><td><span class="done">nothing to break</span></td></tr>
+    <tr><td>Serving the site</td><td>Cloudflare Pages</td><td><span class="todo">disconnect</span></td></tr>
+    <tr><td>Vercel env vars</td><td>All 5 set for Production</td><td><span class="done">done</span></td></tr>
+    <tr><td>Studio code</td><td>On branch <code>redesign/essay-studio</code>, unpushed</td><td><span class="todo">merge</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<p style="margin-top:16px">The zone holds nothing but the website. No email, no verification records. That makes this
+about as low-risk as a domain move gets.</p>
+
+<h2>The steps</h2>
+
+<h3>Part 1 — Point the domain at Vercel</h3>
+
+<ol class="steps">
+  <li><b>Open the Vercel project</b> → <code>olivernguyen</code> → Settings → Domains. <b>Add
+    <code>olivernguyen.com</code></b> and <code>www.olivernguyen.com</code>.
+    <p>Vercel will show you the exact DNS records it wants. <b>Use the values it shows you</b>, not values
+    from a blog post — Vercel has changed its recommended apex IP before.</p></li>
+
+  <li><b>In Cloudflare</b> → DNS → Records, <b>replace the apex <code>A</code> record</b> with the one
+    Vercel gave you, and point <code>www</code> at the Vercel target (usually a
+    <code>CNAME</code> to <code>cname.vercel-dns.com</code>).</li>
+
+  <li><b>Set both records to "DNS only"</b> — click the orange cloud so it turns grey.
+    <p>This is the step people miss. If Cloudflare keeps proxying, Vercel cannot issue an SSL certificate
+    and the site breaks with a cert error.</p></li>
+
+  <li><b>Wait for Vercel to say "Valid Configuration"</b> on the Domains page. Usually a few minutes.
+    Vercel issues the certificate on its own once it can see the records.</li>
+</ol>
+
+<h3>Part 2 — Stop Cloudflare from serving the site</h3>
+
+<ol class="steps">
+  <li><b>Cloudflare dashboard</b> → Workers &amp; Pages → your Pages project → Settings.
+    <b>Remove <code>olivernguyen.com</code> from its custom domains.</b></li>
+  <li><b>Disconnect the GitHub integration</b> on that Pages project, or delete the project.
+    <p>Otherwise every push builds twice — once on Cloudflare, once on Vercel — and the two can fight over
+    the domain.</p></li>
+</ol>
+
+<h3>Part 3 — Ship the studio</h3>
+
+<ol class="steps">
+  <li><b>Merge the branch and push.</b> Vercel builds on push, same as Cloudflare did.
+    <pre><code>cd ~/Documents/Code/olivernguyen
+git checkout main
+git merge redesign/essay-studio
+git push origin main</code></pre></li>
+  <li><b>Watch the deploy</b> in the Vercel dashboard, or run <code>vercel ls</code>.</li>
+</ol>
+
+<h2>Check it worked</h2>
+
+<p>Run these once DNS has moved and the deploy is green. The second one is the real test — it is the one
+that fails today.</p>
+
+<pre><code># should be Vercel, not Cloudflare
+curl -sI https://olivernguyen.com | grep -i '^server:'
+
+# should be JSON 401, NOT html
+curl -s https://olivernguyen.com/api/vault/list</code></pre>
+
+<div class="tw">
+<table>
+  <thead><tr><th>Command</th><th>Broken (today)</th><th>Working</th></tr></thead>
+  <tbody>
+    <tr><td><code>server:</code> header</td><td><code>cloudflare</code></td><td><code>Vercel</code></td></tr>
+    <tr><td><code>/api/vault/list</code></td><td><code>&lt;!doctype html&gt;…</code></td><td><code>{"error":"Not authenticated"}</code></td></tr>
+    <tr><td><code>/studio</code></td><td>Shows "No Vault"</td><td>Passphrase screen</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Two things to watch</h2>
+
+<div class="callout">
+  <p><b>Deployment Protection is on.</b> Your <code>*.vercel.app</code> URLs currently redirect to a Vercel
+  login (302). That is normally fine — custom production domains stay public — but if
+  <code>olivernguyen.com</code> asks you to log in after the move, turn it off under
+  Settings → Deployment Protection.</p>
+</div>
+
+<div class="callout note">
+  <p><b>The studio is private by passphrase only.</b> Once it is on a public domain, <code>/studio</code> is
+  reachable by anyone who knows the URL, and the only thing in front of your essays is the passphrase.
+  It is unlinked from the site nav, and the API checks a signed cookie on every call — but it is worth
+  knowing that "not linked" is not the same as "not reachable".</p>
+</div>
+
+<h2>Optional: move DNS to Vercel too</h2>
+
+<p>The steps above leave DNS at Cloudflare, which is the fastest route and is fully "hosted on Vercel".
+If you want DNS there as well, change the nameservers at Squarespace to Vercel's, then re-add the records
+in Vercel. Since the zone has no email and no TXT records, nothing else has to be recreated. Do it after
+the site is confirmed working, not at the same time — one change at a time makes it obvious what broke.</p>
+
+<p class="foot">olivernguyen.com · migration guide · 07/29</p>
+
+</main>
+</body>
+</html>
