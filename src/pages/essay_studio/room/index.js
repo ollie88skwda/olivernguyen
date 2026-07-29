@@ -32,6 +32,10 @@ export const WritingRoom = () => {
   const reloadDoc = useStudioStore((s) => s.reloadDoc);
   const saveAllDirty = useStudioStore((s) => s.saveAllDirty);
   const dirtyPaths = useStudioStore((s) => s.dirtyPaths);
+  const loadDoc = useStudioStore((s) => s.loadDoc);
+  const loadExemplars = useStudioStore((s) => s.loadExemplars);
+  const exemplars = useStudioStore((s) => s.exemplars);
+  const exemplarsError = useStudioStore((s) => s.exemplarsError);
 
   // On a phone the rail is a bottom sheet, and an open sheet leaves about three
   // lines of prose visible. Start it closed there until the user says otherwise.
@@ -55,6 +59,10 @@ export const WritingRoom = () => {
     registerVimCommands();
   }, []);
 
+  useEffect(() => {
+    loadExemplars();
+  }, [loadExemplars]);
+
   const { school, prompt, version } = useMemo(
     () => findVersion(vault, schoolSlug, promptSlug, versionKey),
     [vault, schoolSlug, promptSlug, versionKey]
@@ -64,6 +72,9 @@ export const WritingRoom = () => {
   const notesPath = version ? version.notesPath : null;
   const changelogPath = version ? version.changelogPath : null;
   const overviewPath = prompt ? prompt.overviewPath : null;
+  // The corpus keys exemplars by the prompt's directory name ("1_Leadership"),
+  // which is the one identifier shared between the vault and _Exemplars/.
+  const promptKey = prompt ? prompt.dir.slice(prompt.dir.lastIndexOf('/') + 1) : null;
 
   const paths = useMemo(
     () => [draftPath, notesPath, changelogPath, overviewPath],
@@ -301,6 +312,11 @@ export const WritingRoom = () => {
         changelogPath={changelogPath}
         changelogDoc={changelogPath ? docs[changelogPath] : null}
         changelogEditor={changelogPath ? editors[changelogPath] : null}
+        promptKey={promptKey}
+        exemplars={exemplars}
+        exemplarsError={exemplarsError}
+        docs={docs}
+        onLoad={loadDoc}
         onChange={setBody}
         onSave={saveDoc}
         onReload={reloadDoc}

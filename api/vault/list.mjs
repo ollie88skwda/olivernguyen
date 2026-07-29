@@ -21,11 +21,15 @@ export default async function handler(req, res) {
     recursive: "true",
   });
 
+  // Every match here costs one getBlob below, so the corpus is excluded by path:
+  // it is dozens of files that the desk never renders, and it is served instead
+  // by /api/exemplars/list from a single pre-built index.
   const mdEntries = tree.tree.filter(
     (entry) =>
       entry.type === "blob" &&
       entry.path.endsWith(".md") &&
-      !entry.path.startsWith(".obsidian/")
+      !entry.path.startsWith(".obsidian/") &&
+      !entry.path.startsWith("_Exemplars/")
   );
 
   const files = await Promise.all(

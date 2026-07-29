@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Markdown, parseNotes, parseOverview } from '../markdown';
 import ProseEditor from './ProseEditor';
+import ExemplarPane from './ExemplarPane';
 
 const TABS = [
   { id: 'prompt', label: 'Prompt' },
   { id: 'notes', label: 'Notes' },
   { id: 'changes', label: 'Changes' },
+  { id: 'exemplars', label: 'Exemplars' },
 ];
 
 // Notes and Changelog are real vault files, so the rail can write them back
@@ -65,6 +67,11 @@ export const ContextRail = ({
   changelogPath,
   changelogDoc,
   changelogEditor,
+  promptKey,
+  exemplars,
+  exemplarsError,
+  docs,
+  onLoad,
   onChange,
   onSave,
   onReload,
@@ -208,6 +215,16 @@ export const ContextRail = ({
               />
             )}
           </EditablePane>
+        )}
+
+        {tab === 'exemplars' && (
+          <ExemplarPane
+            promptKey={promptKey}
+            exemplars={exemplars}
+            error={exemplarsError}
+            docs={docs}
+            onLoad={onLoad}
+          />
         )}
       </div>
     </aside>

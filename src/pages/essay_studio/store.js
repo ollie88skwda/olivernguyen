@@ -76,6 +76,12 @@ export const useStudioStore = create((set, get) => ({
   creatingDraft: false,
   draftError: null,
 
+  // The corpus of admitted essays under _Exemplars/. Excluded from the vault
+  // listing on purpose, so it arrives as its own pre-built index.
+  exemplars: [],
+  exemplarsLoaded: false,
+  exemplarsError: null,
+
   apiMissing: false,
 
   async init() {
@@ -112,6 +118,23 @@ export const useStudioStore = create((set, get) => ({
     } catch (err) {
       set({ loadingFiles: false, filesError: err.message });
       throw err;
+    }
+  },
+
+  // Only the writing room shows exemplars, so this is loaded on demand rather
+  // than in init(), and only once per session.
+  async loadExemplars() {
+    if (get().exemplarsLoaded) return get().exemplars;
+    try {
+      const data = await api('/api/exemplars/list');
+      const exemplars = Array.isArray(data.exemplars) ? data.exemplars : [];
+      set({ exemplars, exemplarsLoaded: true, exemplarsError: null });
+      return exemplars;
+    } catch (err) {
+      // An empty corpus is served as an empty list, so reaching here means the
+      // request itself failed. Say so in the rail rather than showing "none yet".
+      set({ exemplarsLoaded: true, exemplarsError: err.message });
+      return [];
     }
   },
 
