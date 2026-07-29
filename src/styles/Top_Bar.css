@@ -184,8 +184,11 @@
 }
 
 /* Dropdowns */
+/* A <ul>, not a <div>: it holds <li> children, and a <div> between an <li> and
+   its nested <li>s is invalid nesting that React warns about on every render. */
 .dropdown-content {
   display: none;
+  list-style: none;
   padding-left: 18px;
   margin: 0;
   border-top: 1px solid var(--border);
@@ -235,4 +238,28 @@
 }
 .dropdown.open .dropdown-content {
   display: block;
+}
+
+/* College is the one dropdown whose parent is also a destination, so the label
+   and the expand control are separate hit targets rather than one button. The
+   row stays right-aligned to match every other sidebar entry. */
+.dropdown.split .dropdown-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.dropdown.split .dropdown-row .sidebar-link {
+  padding: 14px 0;
+}
+
+/* 44px is the touch-target floor: this button sits directly beside a link and
+   must not be tappable by accident on a phone. */
+.dropdown-toggle.icon-only {
+  width: auto;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  justify-content: center;
 }

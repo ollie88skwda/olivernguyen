@@ -9,6 +9,7 @@ import SATResources from "./pages/sat/sat_resources.js";
 import SATSignup from "./pages/sat/sat_signup.js";
 import { Pull } from "./pages/pull.js";
 import { EmojiPage } from "./pages/emoji.js";
+import College from "./pages/college/index.js";
 import RequirePassphrase from "./auth/RequirePassphrase";
 
 const BeMyGirlfriend = lazy(() => import("./pages/be_my_girlfriend/index.js"));
@@ -49,6 +50,9 @@ export const Routes = () => {
           <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#092441" }} />}>
             <BeMyGirlfriend />
           </Suspense>
+        </Route>
+        <Route path="/college">
+          <College />
         </Route>
         <Route path="/major">
           <RequirePassphrase label="Route /major · private" route="/major">

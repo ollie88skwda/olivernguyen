@@ -7,6 +7,7 @@ export const TopBar = () => {
   const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [lastScrollTop, setLastScrollTop] = useState(0);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCollegeOpen, setIsCollegeOpen] = useState(false);
   const [isDrivingOpen, setIsDrivingOpen] = useState(false);
   const [isSATOpen, setIsSATOpen] = useState(false);
   const SCROLL_TOP_THRESHOLD = 25;
@@ -68,6 +69,10 @@ export const TopBar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
+  const toggleCollege = () => {
+    setIsCollegeOpen(!isCollegeOpen);
+  };
+
   const toggleDriving = () => {
     setIsDrivingOpen(!isDrivingOpen);
   };
@@ -123,12 +128,44 @@ export const TopBar = () => {
               Debt Tracker
             </a>
           </li>
+          <li className={`dropdown split ${isCollegeOpen ? 'open' : ''}`}>
+            <div className="dropdown-row">
+              <a href="/college" className="sidebar-link">
+                College
+              </a>
+              <button
+                onClick={toggleCollege}
+                className="dropdown-toggle icon-only"
+                aria-expanded={isCollegeOpen}
+                aria-label="Show college pages"
+              >
+                <span className="dropdown-icon">+</span>
+              </button>
+            </div>
+            <ul className="dropdown-content">
+              <li>
+                <a href="/major" className="sidebar-link">
+                  Major
+                </a>
+              </li>
+              <li>
+                <a href="/apply" className="sidebar-link">
+                  Apply
+                </a>
+              </li>
+              <li>
+                <a href="/studio" className="sidebar-link">
+                  Studio
+                </a>
+              </li>
+            </ul>
+          </li>
           <li className={`dropdown ${isDrivingOpen ? 'open' : ''}`}>
             <button onClick={toggleDriving} className="dropdown-toggle" aria-expanded={isDrivingOpen}>
               Driving
               <span className="dropdown-icon">+</span>
             </button>
-            <div className="dropdown-content">
+            <ul className="dropdown-content">
               <li>
                 <a href="/permit" className="sidebar-link">
                   Permit
@@ -139,14 +176,14 @@ export const TopBar = () => {
                   License
                 </a>
               </li>
-            </div>
+            </ul>
           </li>
           <li className={`dropdown ${isSATOpen ? 'open' : ''}`}>
             <button onClick={toggleSAT} className="dropdown-toggle" aria-expanded={isSATOpen}>
               SAT
               <span className="dropdown-icon">+</span>
             </button>
-            <div className="dropdown-content">
+            <ul className="dropdown-content">
               <li>
                 <a href="/sat-resources" className="sidebar-link">
                   Resources
@@ -157,7 +194,7 @@ export const TopBar = () => {
                   Sign Up
                 </a>
               </li>
-            </div>
+            </ul>
           </li>
         </ul>
       </div>
