@@ -95,8 +95,10 @@ move the write somewhere the passphrase <em>is</em> known.</p>
 <tr><td>Gated write endpoint</td><td><span class="done">done</span></td><td><code>api/decision/save.mjs</code>. Requires the passphrase cookie, uses the service-role key, allowlists the table name.</td></tr>
 <tr><td>Client rewired</td><td><span class="done">done</span></td><td><code>src/lib/decisions.js</code> plus a one-line change in each store. Reads and live-sync still go direct to Supabase.</td></tr>
 <tr><td>Tested</td><td><span class="done">done</span></td><td>No cookie → 401. Unknown table → 400. Bad input → 400. Missing key → 500. 105 tests pass, build clean.</td></tr>
+<tr><td><code>/pull</code> write endpoint</td><td><span class="done">done</span></td><td><code>api/pull/pick.mjs</code> plus a rewire of <code>src/pages/pull.js</code>. Not gated — <code>/pull</code> has no login — but the weekend and amount are validated and both branches are scoped server-side to one <code>(player, weekend)</code>. This is what makes it safe to revoke all three <code>pull_picks</code> write policies in step 4.</td></tr>
+<tr><td>Git entanglement</td><td><span class="done">done</span></td><td>Resolved 2026-07-30. Oliver approved <code>/apply</code> entering public history. <code>main</code> fast-forwarded to the auth work; no rebase was needed. <code>feat/split-auth-college-hub</code> deleted. Nothing pushed yet.</td></tr>
 <tr><td>Service-role key</td><td><span class="todo">you</span></td><td>Step 1 below. I cannot read it — the tooling only exposes publishable keys.</td></tr>
-<tr><td>Deploy</td><td><span class="todo">you</span></td><td>Step 3. Blocked on the separate <code>/apply</code> git question.</td></tr>
+<tr><td>Deploy</td><td><span class="todo">you</span></td><td>Step 3. No longer blocked by git — blocked only on step 2, because a deploy before the key is set makes saving return 500.</td></tr>
 <tr><td>Drop the bad policies</td><td><span class="todo">you</span></td><td>Step 4. <b>Must come last.</b></td></tr>
 </tbody>
 </table>
@@ -137,9 +139,26 @@ anything under <code>src/</code>, and never be committed — your repo is public
 <pre><code>vercel env add SUPABASE_SERVICE_ROLE_KEY production  --value "PASTE_KEY_HERE" --yes --force
 vercel env add SUPABASE_SERVICE_ROLE_KEY preview     --value "PASTE_KEY_HERE" --yes --force
 vercel env add SUPABASE_SERVICE_ROLE_KEY development --value "PASTE_KEY_HERE" --yes --force</code></pre>
-<p><b>Check it worked:</b></p>
-<pre><code>vercel env ls | grep SUPABASE_SERVICE_ROLE_KEY</code></pre>
-<p>You should see three lines. If you see none, the command failed — look for an error above it.</p>
+
+<div class="callout crit">
+<p><b>A second variable is needed, and this guide originally missed it.</b> Both routes also read
+<code>process.env.REACT_APP_SUPABASE_URL</code>. That currently lives only in the committed
+<code>.env</code>, which Create React App reads <em>at build time</em> to bake into the browser bundle.
+Vercel does <b>not</b> feed a committed <code>.env</code> to functions at runtime, and
+<code>vercel.json</code> has no <code>env</code> block, so in production the value would be
+<code>undefined</code> and <code>createClient()</code> would throw before it ever reached your database.</p>
+<p>The URL is not a secret — it is already in the public bundle — so paste it literally:</p>
+</div>
+<pre><code>vercel env add REACT_APP_SUPABASE_URL production  --value "https://lhiwhmcdqqwwurectxos.supabase.co" --yes --force
+vercel env add REACT_APP_SUPABASE_URL preview     --value "https://lhiwhmcdqqwwurectxos.supabase.co" --yes --force
+vercel env add REACT_APP_SUPABASE_URL development --value "https://lhiwhmcdqqwwurectxos.supabase.co" --yes --force</code></pre>
+<p><b>Check both worked:</b></p>
+<pre><code>vercel env ls | grep -E 'SUPABASE_SERVICE_ROLE_KEY|REACT_APP_SUPABASE_URL'</code></pre>
+<p>You should see six lines — three for each. If you see none, the command failed — look for an error
+above it.</p>
+<p>While you are in there: the two <code>NEXT_PUBLIC_SUPABASE_*</code> variables on Production are
+124 days old, left over from when this project was assumed to be Next.js. Nothing reads them. Harmless,
+but safe to delete.</p>
 </li>
 
 <li>
@@ -152,10 +171,15 @@ passphrase, turn on EDIT and change something.</p>
 change should still be there. That proves the write went through the new endpoint.</p>
 <p><b>If it fails</b>, open the browser console. <code>500 SUPABASE_SERVICE_ROLE_KEY is missing</code> means
 step 2 did not take — check the spelling in <code>.env.local</code> and restart the server.</p>
-<div class="callout">
-<p><b>Deploying is blocked right now.</b> Your <code>/apply</code> page has never been committed to git, and
-the auth branch depends on it — see <code>docs/handoff-apply.html</code>. That question has to be settled
-before anything reaches production. Do not skip ahead to step 4 until a deploy has actually gone out.</p>
+<div class="callout ok">
+<p><b>The git blocker is gone.</b> Oliver approved <code>/apply</code> entering public history on
+2026-07-30, so <code>main</code> has been fast-forwarded onto the auth work — 18 commits, 78 files, verified
+free of junk paths and secrets, 105 tests passing, build clean. <code>feat/split-auth-college-hub</code> is
+deleted. No rebase was needed: <code>main</code> was already a strict ancestor.</p>
+<p><b>Nothing has been pushed, deliberately.</b> Pushing triggers a production deploy, and the deployed
+<code>/major</code> would then save through the new endpoint — which returns 500 until step 2 is done. So
+step 2 gates the push, and the push gates step 4. Do not skip ahead to step 4 until a deploy has actually
+gone out.</p>
 </div>
 </li>
 
@@ -163,15 +187,22 @@ before anything reaches production. Do not skip ahead to step 4 until a deploy h
 <span class="stepname">Only after deploying — close the hole</span>
 <p><b>Open</b> <a href="https://supabase.com/dashboard/project/lhiwhmcdqqwwurectxos/sql/new">the SQL editor</a>.
 <b>Paste this and run it:</b></p>
-<pre><code>drop policy "anon can write apply_decision" on public.apply_decision;
-drop policy "anon can write major_decision" on public.major_decision;</code></pre>
+<pre><code>-- decision docs: writes now go through /api/decision/save (service role + passphrase gate)
+drop policy "anon can write apply_decision" on public.apply_decision;
+drop policy "anon can write major_decision" on public.major_decision;
+
+-- pull picks: writes now go through /api/pull/pick (service role + validation)
+drop policy "Public write"  on public.pull_picks;   -- INSERT
+drop policy "Public update" on public.pull_picks;   -- UPDATE
+drop policy "Public delete" on public.pull_picks;   -- DELETE</code></pre>
 <p><b>Then check what is left:</b></p>
 <pre><code>select tablename, policyname, cmd, roles::text
 from pg_policies
 where schemaname = 'public'
-  and tablename in ('apply_decision','major_decision');</code></pre>
-<p><b>You should see exactly two rows</b>, both <code>SELECT</code>, both <code>{anon}</code>. If any row
-still says <code>ALL</code>, that table is still writable by anyone — stop and fix it.</p>
+  and tablename in ('apply_decision','major_decision','pull_picks');</code></pre>
+<p><b>You should see exactly three rows</b>, all <code>SELECT</code>. If any row still says
+<code>ALL</code>, <code>INSERT</code>, <code>UPDATE</code> or <code>DELETE</code>, that table is still
+writable by anyone — stop and fix it.</p>
 <p>Keeping the two <code>SELECT</code> policies is deliberate: page loading and live-sync need them, and the
 data is already inside your public JavaScript bundle, so reading adds nothing new. What you have removed is
 the ability for a stranger to <em>change</em> anything.</p>
@@ -200,19 +231,37 @@ something, watch for <code>SAVED</code>, reload.</p>
 
 </ol>
 
-<h2>One more table to decide about</h2>
+<h2>The third table — decided, and handled in code</h2>
 
-<p><code>pull_picks</code>, behind your <code>/pull</code> page, is open to the <code>public</code> role for
-<code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code> <b>and <code>DELETE</code></b>.</p>
+<p><code>pull_picks</code>, behind your <code>/pull</code> page, was open to the <code>public</code> role for
+<code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code> <b>and <code>DELETE</code></b>. Oliver
+confirmed on 2026-07-30 that this was not intentional, so its drops are folded into step 4 above rather
+than left as an optional extra.</p>
 
-<p>Public insert is probably deliberate — that is how friends submit picks. Public delete almost certainly is
-not: anyone can erase everyone's votes. If you agree, run:</p>
+<div class="callout crit">
+<p><b>Correcting this guide's earlier advice.</b> It previously said dropping <code>Public delete</code> was
+&ldquo;safe to run immediately — nothing in your code deletes from that table&rdquo;. That was wrong.
+<code>src/pages/pull.js</code> <em>did</em> delete: clearing your own pick ran
+<code>.delete().eq("player", …).eq("weekend", …)</code>. Dropping that policy on its own would have silently
+broken the clear-your-pick button.</p>
+</div>
 
-<pre><code>drop policy "Public delete" on public.pull_picks;</code></pre>
+<p>The reason all three write policies can now go is <code>api/pull/pick.mjs</code>.
+<code>/pull</code> has no login — identity is just a name typed into <code>localStorage</code> — so unlike
+the decision routes there is no cookie to require. What the route does instead is remove every write
+primitive except the single one the page needs:</p>
 
-<p>This one is safe to run immediately — nothing in your code deletes from that table, so nothing breaks.
-Public <code>UPDATE</code> is also worth a thought later: it currently lets anyone rewrite someone else's
-pick.</p>
+<ul>
+<li>the weekend must parse, be a <b>Saturday</b>, and fall in 2025&ndash;2027;</li>
+<li>the amount must be one of the five <code>LEVELS</code> values, or <code>null</code> to clear;</li>
+<li>the player name must be non-empty and at most 40 characters;</li>
+<li>both the upsert and the delete are scoped <b>server-side</b> to one <code>(player, weekend)</code> pair —
+the client never gets to say which rows are affected.</li>
+</ul>
+
+<p><b>What is still possible, stated plainly:</b> someone who knows a player's name can still change that
+player's pick. That is inherent to a page with no accounts. It is a far smaller blast radius than
+<code>DELETE</code> on the whole table, which is what anyone reading your JavaScript bundle had before.</p>
 
 <h2>If something goes wrong</h2>
 
@@ -222,6 +271,7 @@ pick.</p>
 <tbody>
 <tr><td>Saving stopped working after step 4</td><td>Policies dropped before the new code deployed</td><td>Deploy, or temporarily re-add: <code>create policy "anon can write major_decision" on public.major_decision for all to anon using (true) with check (true);</code></td></tr>
 <tr><td><code>500 SUPABASE_SERVICE_ROLE_KEY is missing</code></td><td>Key absent from that environment</td><td>Redo step 2 for the environment you are in, then restart the dev server or redeploy.</td></tr>
+<tr><td><code>500 REACT_APP_SUPABASE_URL is missing</code>, or <code>supabaseUrl is required</code> in the function log</td><td>The URL was set only in the committed <code>.env</code>, which functions do not read at runtime</td><td>Run the three <code>REACT_APP_SUPABASE_URL</code> commands in step 2, then redeploy. Works locally under <code>vercel dev</code> even when it is missing, because <code>vercel dev</code> <em>does</em> read <code>.env</code> — so this fails in production only.</td></tr>
 <tr><td><code>401 Not authenticated</code> when saving</td><td>Passphrase cookie missing or expired</td><td>Reload the page and enter the passphrase again. The cookie lasts 7 days.</td></tr>
 <tr><td><code>400 Unknown table</code></td><td>A table name outside the allowlist</td><td>Expected — only <code>major_decision</code> and <code>apply_decision</code> are permitted. That guard is deliberate.</td></tr>
 <tr><td>Page loads empty after step 4</td><td>A <code>SELECT</code> policy was dropped too</td><td>Re-add: <code>create policy "anon can read major_decision" on public.major_decision for select to anon using (true);</code></td></tr>
@@ -236,8 +286,9 @@ pick.</p>
 <thead><tr><th>Concern</th><th>After this</th></tr></thead>
 <tbody>
 <tr><td>A stranger overwriting or deleting your documents</td><td><b>Fixed.</b> Writes require the passphrase cookie.</td></tr>
-<tr><td>A stranger deleting your <code>/pull</code> votes</td><td>Fixed only if you run the optional drop above.</td></tr>
-<tr><td>A stranger <em>reading</em> your school list and scores</td><td><b>Not fixed, by design.</b> That data is compiled into the public JavaScript bundle regardless of any database policy. Fixing it means moving the data out of the bundle and behind an authenticated API — a much larger job.</td></tr>
+<tr><td>A stranger deleting your <code>/pull</code> votes</td><td><b>Fixed</b> by the step 4 drops, which are no longer optional. Writes go through <code>api/pull/pick.mjs</code>. Someone who knows a player's name can still change that one pick — unavoidable on a page with no accounts.</td></tr>
+<tr><td>A stranger <em>reading</em> your school research</td><td><b>Not fixed, by design</b> — but it matters less than it sounds. The 515 KB in <code>data.generated.js</code> is scraped public <code>.edu</code> catalogue data with source URLs attached, across 35 schools, i.e. essentially every major US engineering programme. It is not a private shortlist.</td></tr>
+<tr><td>A stranger reading your <b>GPA or test scores</b></td><td><b>Not a risk at all</b>, and worth being precise about. No score is in the bundle or the database. <code>src/pages/apply/profile.js</code> keeps them in <code>localStorage</code> on one browser, stores <em>percentiles only</em> rather than raw numbers, and <code>stripProfile()</code> removes any that a pre-existing row still carries. <code>premortem</code> is an empty array.</td></tr>
 <tr><td>The anon key being public</td><td>Unchanged, and fine. Anon keys are meant to be public; the policies are what is supposed to constrain them.</td></tr>
 </tbody>
 </table>
