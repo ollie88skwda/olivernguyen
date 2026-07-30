@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '../../lib/supabase';
+import { saveDecision } from '../../lib/decisions';
 import { createSeed } from './seed';
 import { stripProfile } from './profile';
 
@@ -23,10 +24,7 @@ async function writeDoc(doc) {
   // row, so it is the right place to make the guarantee unconditional.
   const next = { ...stripProfile(doc), updatedAt };
   lastWriteAt = updatedAt;
-  const { error } = await supabase
-    .from(TABLE)
-    .upsert({ id: ROW_ID, doc: next, updated_at: updatedAt });
-  if (error) throw error;
+  await saveDecision({ table: TABLE, id: ROW_ID, doc: next, updatedAt });
   return { doc: next, updatedAt };
 }
 

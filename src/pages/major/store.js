@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '../../lib/supabase';
+import { saveDecision } from '../../lib/decisions';
 import { createSeed } from './seed';
 
 const TABLE = 'major_decision';
@@ -16,10 +17,7 @@ async function writeDoc(doc) {
   const updatedAt = new Date().toISOString();
   const next = { ...doc, updatedAt };
   lastWriteAt = updatedAt;
-  const { error } = await supabase
-    .from(TABLE)
-    .upsert({ id: ROW_ID, doc: next, updated_at: updatedAt });
-  if (error) throw error;
+  await saveDecision({ table: TABLE, id: ROW_ID, doc: next, updatedAt });
   return { doc: next, updatedAt };
 }
 
