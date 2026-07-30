@@ -262,11 +262,14 @@ export const Pull = () => {
       return [...without, { id: `optimistic-${weekend}`, player: playerName, weekend, amount, created_at: new Date().toISOString() }];
     });
 
-    if (amount === null) {
-      await supabase.from("pull_picks").delete().eq("player", playerName).eq("weekend", weekend);
-    } else {
-      await supabase.from("pull_picks").upsert({ player: playerName, weekend, amount }, { onConflict: "player,weekend" });
-    }
+    // Writes go through our own route, which holds the service-role key and validates the
+    // weekend and amount. The browser has no write access to pull_picks at all. Reads and
+    // the realtime subscription above still go direct, on anon SELECT.
+    await fetch("/api/pull/pick", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ player: playerName, weekend, amount }),
+    });
   }, [playerName]);
 
   if (playerName === null) {
