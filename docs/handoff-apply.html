@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hand-off: /apply is untracked and entangled with the auth branch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@400;700;800;900&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;1,400&family=Martian+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg-base:#f1e9d4; --surface:#f9f3e5; --surface-2:#fcf8ee;
+  --border:rgba(18,34,49,.16);
+  --text:#122231; --text-muted:#45576a; --text-faint:#51637a;
+  --accent:#092441; --accent-hi:#15406b; --on-accent:#f9f3e5;
+  --warn:#8a3b12; --good:#1d5b3a; --crit:#7a1220;
+  --font-display:"Big Shoulders",sans-serif;
+  --font-mono:"Martian Mono",ui-monospace,monospace;
+  --font-sans:"Hanken Grotesk",-apple-system,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg-base);color:var(--text);font-family:var(--font-sans);line-height:1.65}
+main{max-width:860px;margin:0 auto;padding:64px 24px 120px}
+h1{font-family:var(--font-display);text-transform:uppercase;font-weight:900;font-size:clamp(2.1rem,6.5vw,3.2rem);line-height:.9;margin:0}
+.eyebrow{font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.18em;font-size:.66rem;color:var(--text-muted);margin:0 0 16px}
+.summary{font-size:1.14rem;color:var(--text-muted);max-width:62ch;margin:22px 0 0}
+.rule{height:2px;width:104px;background:rgba(18,34,49,.3);margin:22px 0 0}
+h2{font-family:var(--font-display);text-transform:uppercase;font-weight:900;font-size:1.7rem;margin:60px 0 6px}
+h3{font-family:var(--font-display);text-transform:uppercase;font-weight:800;font-size:1.05rem;letter-spacing:.02em;margin:32px 0 8px}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 12px;padding-left:20px}
+li{margin:0 0 7px}
+code{font-family:var(--font-mono);font-size:.82em;background:var(--surface-2);border:1px solid var(--border);padding:1px 5px}
+pre{background:var(--accent);color:var(--on-accent);padding:14px 16px;overflow-x:auto;margin:14px 0;border-radius:2px}
+pre code{background:none;border:0;padding:0;color:inherit;font-size:.78rem;line-height:1.7}
+a{color:var(--accent-hi)}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:18px 0 0}
+ol.steps>li{counter-increment:s;position:relative;padding:0 0 22px 44px;border-left:1px solid var(--border);margin-left:12px}
+ol.steps>li::before{content:counter(s);position:absolute;left:-13px;top:0;width:25px;height:25px;background:var(--accent);color:var(--on-accent);font-family:var(--font-mono);font-size:.66rem;display:grid;place-items:center;border-radius:50%}
+ol.steps>li:last-child{border-left-color:transparent}
+.tw{overflow-x:auto;margin:18px 0 0;border:1px solid var(--border);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:560px}
+th{font-family:var(--font-mono);font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint);text-align:left;padding:10px 12px;background:var(--surface-2);border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:11px 12px;border-bottom:1px solid var(--border);font-size:.88rem;color:var(--text-muted);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td:first-child{color:var(--text)}
+.callout{border-left:3px solid var(--warn);background:rgba(138,59,18,.07);padding:13px 16px;margin:20px 0 0}
+.callout p{margin:0;font-size:.93rem;color:var(--warn)}
+.callout p+p{margin-top:8px}
+.crit{border-left-color:var(--crit);background:rgba(122,18,32,.08)}
+.crit p{color:var(--crit)}
+.ok{border-left-color:var(--good);background:rgba(29,91,58,.07)}
+.ok p{color:var(--good)}
+.note{border-left-color:var(--accent);background:var(--surface-2)}
+.note p{color:var(--text-muted)}
+.foot{margin-top:80px;border-top:1px solid var(--border);padding-top:18px;font-family:var(--font-mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint)}
+</style>
+</head>
+<body>
+<main>
+
+<p class="eyebrow">olivernguyen.com · hand-off · 2026-07-29</p>
+<h1>/apply Is Untracked<br />And Entangled</h1>
+<div class="rule"></div>
+<p class="summary">The whole <code>/apply</code> page has never been committed to git. An auth branch now
+depends on it, so neither can be pushed without the other. Separately, the Supabase tables behind
+<code>/apply</code> and <code>/major</code> are world-writable. Nothing has been pushed.</p>
+
+<h2>Read this first</h2>
+
+<div class="callout crit">
+<p><b>The most urgent item has nothing to do with git.</b> <code>apply_decision</code> and
+<code>major_decision</code> in Supabase have RLS enabled but with policies granting the
+<code>anon</code> role <code>ALL</code> commands, <code>USING (true) WITH CHECK (true)</code>.</p>
+<p>The anon key is committed in <code>.env</code> in a <b>public</b> GitHub repo and also ships in the JS
+bundle. So anyone can read, overwrite, or delete Oliver's entire college decision document today.
+Fix this first; it is independent of every other item here.</p>
+</div>
+
+<h2>Current state — nothing is pushed</h2>
+
+<div class="tw">
+<table>
+<thead><tr><th>Ref</th><th>Commit</th><th>What it is</th></tr></thead>
+<tbody>
+<tr><td><code>origin/main</code></td><td><code>ff5dd920</code></td><td>The published site. Untouched. Has no <code>/apply</code>, no auth work.</td></tr>
+<tr><td><code>main</code> (local)</td><td><code>a006049b</code></td><td>2 unpushed doc commits: the auth design spec and its implementation plan.</td></tr>
+<tr><td><code>clean-auth</code></td><td><code>d0073b64</code></td><td><b>The good branch.</b> 8 commits of auth work on top of <code>a006049b</code>. Builds, 105 tests pass.</td></tr>
+<tr><td><code>feat/split-auth-college-hub</code></td><td><code>1ddf986c</code></td><td><b>Delete this.</b> Superseded. One commit in it swept in ~300 junk files (<code>.next/</code>, <code>.playwright-mcp/</code>, <code>.DS_Store</code>, <code>.vercel/</code>, stray PNGs).</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="callout ok">
+<p>The working tree is intact. 317 untracked files were briefly deleted by a <code>git reset --hard</code>
+and have all been restored from the object store, including <code>CLAUDE.md</code>,
+<code>.vercel/project.json</code>, <code>scripts/build-apply-seed.mjs</code> and
+<code>skills-lock.json</code>. Verified present.</p>
+</div>
+
+<h2>The actual problem</h2>
+
+<p><code>src/pages/apply/</code> — 22 files, 688 KB — <b>has never been committed to any branch, local or
+remote</b>. Neither have <code>src/styles/Apply.css</code>, <code>src/styles/ApplyB.css</code>, or
+<code>scripts/build-apply-seed.mjs</code>. They exist only in the working tree.</p>
+
+<p><code>origin/main</code>'s <code>Routes.js</code> does not import <code>/apply</code>, so the published
+site is self-consistent. But the working-tree <code>Routes.js</code> <em>does</em> import it — and the
+<code>clean-auth</code> branch commits that import. So:</p>
+
+<ul>
+<li>Push <code>clean-auth</code> without <code>/apply</code> → production build fails on a missing import.</li>
+<li>Push <code>clean-auth</code> with <code>/apply</code> → Oliver's real school list, scores and pre-mortem notes enter permanent public git history.</li>
+</ul>
+
+<p>They are coupled and cannot be separated by editing history alone.</p>
+
+<h3>What else rode along</h3>
+
+<p>Beyond <code>/apply</code>, the <code>clean-auth</code> commits also contain pre-existing uncommitted work
+that is <b>Oliver's, not the auth work's</b>:</p>
+
+<div class="tw">
+<table>
+<thead><tr><th>Path</th><th>State before</th><th>Why it is in there</th></tr></thead>
+<tbody>
+<tr><td><code>src/pages/apply/**</code> (22 files)</td><td>untracked</td><td>Swept in by an unscoped <code>git add -A src/</code>; also required for the build.</td></tr>
+<tr><td><code>src/styles/Apply.css</code>, <code>ApplyB.css</code></td><td>untracked</td><td>Same.</td></tr>
+<tr><td><code>src/pages/major/sections/*.js</code> (7 files)</td><td>modified</td><td>Oliver's in-progress edits, swept in.</td></tr>
+<tr><td><code>src/styles/theme.css</code></td><td>modified</td><td>Same.</td></tr>
+<tr><td><code>src/pages/major/Tooltip.js</code></td><td>deleted</td><td>Oliver's pending deletion, swept in.</td></tr>
+<tr><td><code>src/Routes.js</code>, <code>src/pages/major/index.js</code></td><td>modified</td><td><b>Both</b> Oliver and the auth work edited these. Cannot be untangled — the original working tree was overwritten.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>How to fix it</h2>
+
+<p>Recommended order. Steps 1 and 2 are independent and can be done in either order.</p>
+
+<ol class="steps">
+<li>
+<b>Lock down Supabase.</b> Replace the permissive policies on both tables. The pages talk to Supabase
+directly from the browser with the anon key, so there is no session to key off — the practical fix is to
+stop trusting <code>anon</code> and move these reads/writes behind an authenticated path, or scope the
+policies to a real Supabase auth user. As a stopgap that at least stops anonymous <em>writes</em>:
+<pre><code>drop policy "anon can write apply_decision" on public.apply_decision;
+drop policy "anon can write major_decision" on public.major_decision;</code></pre>
+Note this breaks saving on both pages until reads/writes are re-plumbed. Decide with Oliver before running it.
+</li>
+
+<li>
+<b>Ask Oliver whether <code>/apply</code> may enter public git history.</b> This is the decision the whole
+hand-off hangs on, and it is his to make, not yours. The live site already serves this data publicly, but
+git history is permanent and indexed. If the answer is no, the options are: make the repo private, or move
+the school data out of the bundle and behind an authenticated API.
+</li>
+
+<li>
+<b>If yes — let Oliver commit his own work first.</b> Do not fold it into the auth commits.
+<pre><code>git checkout main            # a006049b
+git add src/pages/apply src/styles/Apply.css src/styles/ApplyB.css \
+        scripts/build-apply-seed.mjs
+git commit -m "Add the /apply portfolio page"
+git add src/pages/major/sections src/styles/theme.css
+git rm src/pages/major/Tooltip.js
+git commit -m "&lt;Oliver's own message for his major/ edits&gt;"</code></pre>
+</li>
+
+<li>
+<b>Rebase the auth work on top.</b>
+<pre><code>git rebase --onto main a006049b clean-auth</code></pre>
+Expect conflicts in <code>src/Routes.js</code> and <code>src/pages/major/index.js</code> — those are the two
+files both parties edited. Resolve by keeping Oliver's content plus the auth changes described below.
+</li>
+
+<li>
+<b>Verify before pushing.</b>
+<pre><code>CI=true npx react-scripts test          # expect 8 suites, 105 tests
+npx -y yarn@1.22.22 build              # expect "Compiled successfully"
+grep -ri "&lt;the passphrase&gt;" build/ ; git grep -i "&lt;the passphrase&gt;"   # both must be empty
+git diff --name-only origin/main..HEAD | grep -E '^\.(next|playwright-mcp|vercel|lavish|agents|claude)/' # must be empty</code></pre>
+</li>
+
+<li>
+<b>Delete the polluted branch.</b>
+<pre><code>git branch -D feat/split-auth-college-hub</code></pre>
+</li>
+</ol>
+
+<h2>What the auth work does (so you can resolve conflicts)</h2>
+
+<p>Eight commits on <code>clean-auth</code>, all verified end-to-end against a live Clerk instance.</p>
+
+<div class="tw">
+<table>
+<thead><tr><th>Area</th><th>Change</th></tr></thead>
+<tbody>
+<tr><td><code>/major</code>, <code>/apply</code></td><td>Gated by a shared server-verified passphrase. The old <code>GATE_PASS = 'go-fish'</code> blocks — which shipped the passphrase in the bundle — are deleted from both pages.</td></tr>
+<tr><td><code>/studio</code></td><td>Gated by Clerk (<code>@clerk/react</code> v6). Its old passphrase gate and <code>AuthGate.js</code> are deleted.</td></tr>
+<tr><td><code>/college</code></td><td>New public hub page plus a College entry in the sidebar. <b>All its copy is intentional <code>[ … ]</code> placeholders</b> — Oliver writes his own words. Do not invent copy.</td></tr>
+<tr><td><code>api/_lib/auth.mjs</code></td><td>Rewritten to verify Clerk's <code>__session</code> cookie plus a <code>CLERK_ALLOWED_USER_IDS</code> allowlist. Its export name and signature are unchanged, so the five vault/exemplar routes were not edited.</td></tr>
+<tr><td><code>api/_lib/passphrase.mjs</code></td><td>New. Owns the <code>gate_session</code> cookie (jose HS256) for <code>/major</code> and <code>/apply</code> only.</td></tr>
+<tr><td><code>src/Routes.js</code></td><td>Adds <code>ClerkBridge</code> (must sit inside <code>&lt;Router&gt;</code>), <code>/sign-in</code>, <code>/college</code>; wraps major/apply in <code>RequirePassphrase</code> and studio in <code>RequireClerk</code>.</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3>Traps worth knowing</h3>
+
+<ul>
+<li><b>This is Create React App with <code>react-router-dom</code> v5</b>, not Next.js and not v6. Use <code>useHistory</code>, <code>&lt;Redirect&gt;</code>, <code>&lt;Switch&gt;</code>. The Vercel project's framework preset says "Next.js" — that is stale and wrong.</li>
+<li><b>Pass <code>publishableKey</code> to <code>ClerkProvider</code> explicitly.</b> Clerk's docs say to let it read the env var; that auto-detection is Vite-oriented and silently fails under CRA — the provider mounts, injects no script, and <code>isLoaded</code> stays false forever with no error anywhere.</li>
+<li><b><code>verifyToken</code> from <code>@clerk/backend</code> v3 throws</b> and resolves to the payload. It does not return <code>{ data, errors }</code> — that is the internal <code>verifyJwt</code>.</li>
+<li><b><code>vercel dev</code> is required</b> for anything touching <code>/api/*</code>. Run <code>npm run dev:vercel</code>; plain <code>npm run dev</code> is CRA only.</li>
+<li><b>Never commit the passphrase or its bcrypt hash.</b> The repo is public. The hash lives only in <code>.env.local</code> and Vercel env.</li>
+</ul>
+
+<h2>Do not do these</h2>
+
+<ul>
+<li><b>Do not <code>git add -A</code> at the repo root.</b> That is exactly what caused this. <code>.next/</code>, <code>.playwright-mcp/</code>, <code>.lavish/</code>, <code>.agents/</code>, <code>.claude/</code>, <code>.vercel/</code>, <code>.DS_Store</code> and ~45 loose PNGs are all untracked and unignored. Consider adding a <code>.gitignore</code> for them as a separate commit.</li>
+<li><b>Do not <code>git reset --hard</code> while untracked files are staged.</b> It deletes them from disk. That happened here; recovery was only possible because they were still reachable in a commit object.</li>
+<li><b>Do not push anything</b> until Oliver has answered step 2.</li>
+<li><b>Do not write the <code>/college</code> copy.</b> The placeholders are deliberate.</li>
+</ul>
+
+<h2>Environment, for reference</h2>
+
+<div class="tw">
+<table>
+<thead><tr><th>Variable</th><th>Dev</th><th>Preview</th><th>Prod</th></tr></thead>
+<tbody>
+<tr><td><code>AUTH_PASSPHRASE_HASH</code></td><td>set</td><td>set</td><td>set</td></tr>
+<tr><td><code>JWT_SECRET</code></td><td>set</td><td>set</td><td>set</td></tr>
+<tr><td><code>REACT_APP_CLERK_PUBLISHABLE_KEY</code></td><td><code>pk_test_</code></td><td><code>pk_test_</code></td><td><code>pk_live_</code></td></tr>
+<tr><td><code>CLERK_SECRET_KEY</code></td><td><code>sk_test_</code></td><td><code>sk_test_</code></td><td><code>sk_live_</code></td></tr>
+<tr><td><code>CLERK_ALLOWED_USER_IDS</code></td><td><code>user_3HCJgn1…</code></td><td><code>user_3HCJgn1…</code></td><td><code>user_3HD0Do2…</code></td></tr>
+</tbody>
+</table>
+</div>
+
+<p>Clerk production is fully deployed and verified on <code>olivernguyen.com</code> — DNS, SSL and mail all
+complete. Dev and production are separate user databases, hence the two different allowlist IDs. Sign-up mode
+is <code>restricted</code> on both instances.</p>
+
+<div class="callout note">
+<p><b>One unverified item.</b> Vercel marks production values write-only, so <code>AUTH_PASSPHRASE_HASH</code>
+on production could not be read back and compared. It was re-pushed from the known-good local value, so it
+should be correct — but confirm by entering the passphrase on production <code>/major</code> after the first
+deploy.</p>
+</div>
+
+<p class="foot">Hand-off · olivernguyen.com · /apply untracked + auth branch entanglement</p>
+
+</main>
+</body>
+</html>
