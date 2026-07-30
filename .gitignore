@@ -5,3 +5,22 @@ node_modules
 
 # yarn is the source of truth (see vercel.json installCommand + packageManager)
 package-lock.json
+
+.DS_Store
+
+# Agent and tooling scratch output. All of this was untracked and unignored, which is
+# how an unscoped `git add -A` once swept ~300 junk files into a commit.
+.agents/
+.claude/
+.lavish/
+.playwright-mcp/
+.vercel/
+
+# Stale Next.js artifacts. This project is Create React App; nothing here reads them.
+.next/
+next-env.d.ts
+
+# Screenshots and one-off exports dropped at the repo root during UI review.
+/*.png
+/*.b64
+/*.zone
