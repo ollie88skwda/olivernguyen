@@ -70,6 +70,22 @@ td:first-child{color:var(--text)}
 <code>/apply</code> documents. The code fix is written and committed. What is left is four things only
 you can do, in a specific order.</p>
 
+<div class="callout ok">
+<p><b>Closed and verified 2026-07-30.</b> Every step below has been carried out. The results, measured
+against production with the public anon key — exactly what an attacker holds:</p>
+<p><code>INSERT</code>, <code>UPSERT</code> and <code>DELETE</code> on all three tables → <b>401</b>.
+<code>PATCH</code> and unfiltered <code>DELETE</code> → <b>204 affecting zero rows</b> (PostgREST returns
+204 when RLS leaves nothing visible to modify — this is a pass, not a hole). Confirmed against the data
+rather than the status codes: <code>pull_picks</code> still holds 7 rows, neither document gained a
+<code>hacked</code> key, both <code>updated_at</code> values are unchanged, and no probe row survived
+anywhere. <code>SELECT</code> still returns 200 on all three, so the pages still load.</p>
+<p><b>One thing remains unverified and only you can do it:</b> enter the passphrase on production
+<code>/major</code>, edit something, and confirm it reaches <code>SAVED</code>. That exercises the
+passphrase cookie path, which no automated check here can reach. It also settles the open question from
+<code>docs/handoff-apply.html</code> — <code>AUTH_PASSPHRASE_HASH</code> on production is write-only in
+Vercel, so it was re-pushed from the known-good local value but never read back and compared.</p>
+</div>
+
 <h2>What is wrong, in one paragraph</h2>
 
 <p>Your two decision tables have Row Level Security switched on, which sounds safe. But the policies say
@@ -97,9 +113,9 @@ move the write somewhere the passphrase <em>is</em> known.</p>
 <tr><td>Tested</td><td><span class="done">done</span></td><td>No cookie → 401. Unknown table → 400. Bad input → 400. Missing key → 500. 105 tests pass, build clean.</td></tr>
 <tr><td><code>/pull</code> write endpoint</td><td><span class="done">done</span></td><td><code>api/pull/pick.mjs</code> plus a rewire of <code>src/pages/pull.js</code>. Not gated — <code>/pull</code> has no login — but the weekend and amount are validated and both branches are scoped server-side to one <code>(player, weekend)</code>. This is what makes it safe to revoke all three <code>pull_picks</code> write policies in step 4.</td></tr>
 <tr><td>Git entanglement</td><td><span class="done">done</span></td><td>Resolved 2026-07-30. Oliver approved <code>/apply</code> entering public history. <code>main</code> fast-forwarded to the auth work; no rebase was needed. <code>feat/split-auth-college-hub</code> deleted. Nothing pushed yet.</td></tr>
-<tr><td>Service-role key</td><td><span class="todo">you</span></td><td>Step 1 below. I cannot read it — the tooling only exposes publishable keys.</td></tr>
-<tr><td>Deploy</td><td><span class="todo">you</span></td><td>Step 3. No longer blocked by git — blocked only on step 2, because a deploy before the key is set makes saving return 500.</td></tr>
-<tr><td>Drop the bad policies</td><td><span class="todo">you</span></td><td>Step 4. <b>Must come last.</b></td></tr>
+<tr><td>Service-role key</td><td><span class="done">done</span></td><td>Oliver set <code>SUPABASE_SERVICE_ROLE_KEY</code> on all three environments. <code>REACT_APP_SUPABASE_URL</code> was added alongside it — public value, so no secret was handled.</td></tr>
+<tr><td>Deploy</td><td><span class="done">done</span></td><td>19 commits pushed, <code>ff5dd920..66003c14</code>. Production Ready. <code>/apply</code>, <code>/college</code> and <code>/studio</code> all 200.</td></tr>
+<tr><td>Drop the bad policies</td><td><span class="done">done</span></td><td>Migration <code>revoke_anonymous_write_access</code>. All five write policies gone; exactly three <code>SELECT</code> policies remain.</td></tr>
 </tbody>
 </table>
 </div>
