@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Locking down Supabase — step by step</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@400;700;800;900&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;1,400&family=Martian+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --bg-base:#f1e9d4; --surface:#f9f3e5; --surface-2:#fcf8ee;
+  --border:rgba(18,34,49,.16);
+  --text:#122231; --text-muted:#45576a; --text-faint:#51637a;
+  --accent:#092441; --accent-hi:#15406b; --on-accent:#f9f3e5;
+  --warn:#8a3b12; --good:#1d5b3a; --crit:#7a1220;
+  --font-display:"Big Shoulders",sans-serif;
+  --font-mono:"Martian Mono",ui-monospace,monospace;
+  --font-sans:"Hanken Grotesk",-apple-system,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg-base);color:var(--text);font-family:var(--font-sans);line-height:1.68}
+main{max-width:820px;margin:0 auto;padding:64px 24px 120px}
+h1{font-family:var(--font-display);text-transform:uppercase;font-weight:900;font-size:clamp(2.1rem,6.5vw,3.2rem);line-height:.9;margin:0}
+.eyebrow{font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.18em;font-size:.66rem;color:var(--text-muted);margin:0 0 16px}
+.summary{font-size:1.14rem;color:var(--text-muted);max-width:62ch;margin:22px 0 0}
+.rule{height:2px;width:104px;background:rgba(18,34,49,.3);margin:22px 0 0}
+h2{font-family:var(--font-display);text-transform:uppercase;font-weight:900;font-size:1.7rem;margin:60px 0 6px}
+h3{font-family:var(--font-display);text-transform:uppercase;font-weight:800;font-size:1.05rem;letter-spacing:.02em;margin:30px 0 8px}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 12px;padding-left:20px}
+li{margin:0 0 7px}
+code{font-family:var(--font-mono);font-size:.82em;background:var(--surface-2);border:1px solid var(--border);padding:1px 5px}
+pre{background:var(--accent);color:var(--on-accent);padding:14px 16px;overflow-x:auto;margin:14px 0;border-radius:2px}
+pre code{background:none;border:0;padding:0;color:inherit;font-size:.78rem;line-height:1.75}
+a{color:var(--accent-hi)}
+ol.steps{counter-reset:s;list-style:none;padding:0;margin:22px 0 0}
+ol.steps>li{counter-increment:s;position:relative;padding:0 0 26px 46px;border-left:1px solid var(--border);margin-left:12px}
+ol.steps>li::before{content:counter(s);position:absolute;left:-13px;top:0;width:25px;height:25px;background:var(--accent);color:var(--on-accent);font-family:var(--font-mono);font-size:.66rem;display:grid;place-items:center;border-radius:50%}
+ol.steps>li:last-child{border-left-color:transparent}
+ol.steps b{color:var(--text)}
+.stepname{font-family:var(--font-display);text-transform:uppercase;font-weight:800;font-size:1.02rem;letter-spacing:.02em;display:block;margin:0 0 6px}
+.tw{overflow-x:auto;margin:18px 0 0;border:1px solid var(--border);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:520px}
+th{font-family:var(--font-mono);font-size:.56rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-faint);text-align:left;padding:10px 12px;background:var(--surface-2);border-bottom:1px solid var(--border);white-space:nowrap}
+td{padding:11px 12px;border-bottom:1px solid var(--border);font-size:.88rem;color:var(--text-muted);vertical-align:top}
+tr:last-child td{border-bottom:0}
+td:first-child{color:var(--text)}
+.callout{border-left:3px solid var(--warn);background:rgba(138,59,18,.07);padding:13px 16px;margin:18px 0 0}
+.callout p{margin:0;font-size:.93rem;color:var(--warn)}
+.callout p+p{margin-top:8px}
+.crit{border-left-color:var(--crit);background:rgba(122,18,32,.08)}
+.crit p{color:var(--crit)}
+.ok{border-left-color:var(--good);background:rgba(29,91,58,.07)}
+.ok p{color:var(--good)}
+.note{border-left-color:var(--accent);background:var(--surface-2)}
+.note p{color:var(--text-muted)}
+.done{font-family:var(--font-mono);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border:1px solid rgba(29,91,58,.4);color:var(--good);white-space:nowrap}
+.todo{font-family:var(--font-mono);font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;padding:2px 7px;border:1px solid rgba(138,59,18,.45);color:var(--warn);white-space:nowrap}
+.foot{margin-top:80px;border-top:1px solid var(--border);padding-top:18px;font-family:var(--font-mono);font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-faint)}
+</style>
+</head>
+<body>
+<main>
+
+<p class="eyebrow">olivernguyen.com · supabase lockdown · 2026-07-30</p>
+<h1>Closing The<br />Supabase Hole</h1>
+<div class="rule"></div>
+<p class="summary">Right now anyone can overwrite or delete your <code>/major</code> and
+<code>/apply</code> documents. The code fix is written and committed. What is left is four things only
+you can do, in a specific order.</p>
+
+<h2>What is wrong, in one paragraph</h2>
+
+<p>Your two decision tables have Row Level Security switched on, which sounds safe. But the policies say
+<code>USING (true)</code> for the <code>anon</code> role, on <code>ALL</code> commands. That means the
+anonymous role can read, update and delete every row. Your anon key is printed in <code>.env</code> in a
+<b>public</b> GitHub repo and also shipped inside your JavaScript bundle. So the key is not a secret, and
+the policy grants that non-secret key full write access. Anyone who views source can wipe your college
+document.</p>
+
+<div class="callout note">
+<p><b>Why the passphrase does not help.</b> The passphrase lives in a cookie on <em>your</em> API. Supabase
+has never heard of it. From Supabase's point of view your browser is just an anonymous visitor — exactly
+like everyone else's. There is no way to write a policy that tells you apart, which is why the fix has to
+move the write somewhere the passphrase <em>is</em> known.</p>
+</div>
+
+<h2>What has already been done</h2>
+
+<div class="tw">
+<table>
+<thead><tr><th>Item</th><th></th><th>Detail</th></tr></thead>
+<tbody>
+<tr><td>Gated write endpoint</td><td><span class="done">done</span></td><td><code>api/decision/save.mjs</code>. Requires the passphrase cookie, uses the service-role key, allowlists the table name.</td></tr>
+<tr><td>Client rewired</td><td><span class="done">done</span></td><td><code>src/lib/decisions.js</code> plus a one-line change in each store. Reads and live-sync still go direct to Supabase.</td></tr>
+<tr><td>Tested</td><td><span class="done">done</span></td><td>No cookie → 401. Unknown table → 400. Bad input → 400. Missing key → 500. 105 tests pass, build clean.</td></tr>
+<tr><td>Service-role key</td><td><span class="todo">you</span></td><td>Step 1 below. I cannot read it — the tooling only exposes publishable keys.</td></tr>
+<tr><td>Deploy</td><td><span class="todo">you</span></td><td>Step 3. Blocked on the separate <code>/apply</code> git question.</td></tr>
+<tr><td>Drop the bad policies</td><td><span class="todo">you</span></td><td>Step 4. <b>Must come last.</b></td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>The order matters</h2>
+
+<div class="callout crit">
+<p><b>Do not run the SQL first.</b> Your live site today writes to Supabase directly with the anon key.
+The moment you drop those policies, saving breaks on the deployed <code>/major</code> — and it stays broken
+until the new code is deployed. Deploy first, then drop.</p>
+<p>If you would rather be safe than functional for a day, that is a legitimate choice — just make it
+knowingly. Read-only for a day beats losing the document.</p>
+</div>
+
+<h2>Step by step</h2>
+
+<ol class="steps">
+
+<li>
+<span class="stepname">Get the service-role key</span>
+<p><b>Open</b> <a href="https://supabase.com/dashboard/project/lhiwhmcdqqwwurectxos/settings/api-keys">your project's API keys page</a>.</p>
+<p><b>Find</b> the key labelled <code>service_role</code> (older projects) or one starting
+<code>sb_secret_</code> (newer). Either works. <b>Click reveal, then copy it.</b></p>
+<div class="callout">
+<p><b>This key ignores every security rule in your database.</b> Treat it like a password. It goes only
+into <code>.env.local</code> and Vercel. It must never start with <code>REACT_APP_</code>, never appear in
+anything under <code>src/</code>, and never be committed — your repo is public.</p>
+</div>
+</li>
+
+<li>
+<span class="stepname">Put the key where the server can read it</span>
+<p><b>Add it to your local file.</b> In Terminal, from the project folder — replace
+<code>PASTE_KEY_HERE</code> with what you copied:</p>
+<pre><code>echo 'SUPABASE_SERVICE_ROLE_KEY="PASTE_KEY_HERE"' &gt;&gt; .env.local</code></pre>
+<p><b>Then add it to Vercel</b>, all three environments:</p>
+<pre><code>vercel env add SUPABASE_SERVICE_ROLE_KEY production  --value "PASTE_KEY_HERE" --yes --force
+vercel env add SUPABASE_SERVICE_ROLE_KEY preview     --value "PASTE_KEY_HERE" --yes --force
+vercel env add SUPABASE_SERVICE_ROLE_KEY development --value "PASTE_KEY_HERE" --yes --force</code></pre>
+<p><b>Check it worked:</b></p>
+<pre><code>vercel env ls | grep SUPABASE_SERVICE_ROLE_KEY</code></pre>
+<p>You should see three lines. If you see none, the command failed — look for an error above it.</p>
+</li>
+
+<li>
+<span class="stepname">Test locally, then deploy</span>
+<p><b>Start the site:</b></p>
+<pre><code>npm run dev:vercel</code></pre>
+<p>Wait for <code>Compiled successfully</code>, then open <code>http://localhost:3000/major</code>, enter the
+passphrase, turn on EDIT and change something.</p>
+<p><b>It worked if</b> the timestamp in the corner updates to <code>SAVED HH:MM</code>. Reload the page — your
+change should still be there. That proves the write went through the new endpoint.</p>
+<p><b>If it fails</b>, open the browser console. <code>500 SUPABASE_SERVICE_ROLE_KEY is missing</code> means
+step 2 did not take — check the spelling in <code>.env.local</code> and restart the server.</p>
+<div class="callout">
+<p><b>Deploying is blocked right now.</b> Your <code>/apply</code> page has never been committed to git, and
+the auth branch depends on it — see <code>docs/handoff-apply.html</code>. That question has to be settled
+before anything reaches production. Do not skip ahead to step 4 until a deploy has actually gone out.</p>
+</div>
+</li>
+
+<li>
+<span class="stepname">Only after deploying — close the hole</span>
+<p><b>Open</b> <a href="https://supabase.com/dashboard/project/lhiwhmcdqqwwurectxos/sql/new">the SQL editor</a>.
+<b>Paste this and run it:</b></p>
+<pre><code>drop policy "anon can write apply_decision" on public.apply_decision;
+drop policy "anon can write major_decision" on public.major_decision;</code></pre>
+<p><b>Then check what is left:</b></p>
+<pre><code>select tablename, policyname, cmd, roles::text
+from pg_policies
+where schemaname = 'public'
+  and tablename in ('apply_decision','major_decision');</code></pre>
+<p><b>You should see exactly two rows</b>, both <code>SELECT</code>, both <code>{anon}</code>. If any row
+still says <code>ALL</code>, that table is still writable by anyone — stop and fix it.</p>
+<p>Keeping the two <code>SELECT</code> policies is deliberate: page loading and live-sync need them, and the
+data is already inside your public JavaScript bundle, so reading adds nothing new. What you have removed is
+the ability for a stranger to <em>change</em> anything.</p>
+</li>
+
+<li>
+<span class="stepname">Confirm it is actually fixed</span>
+<p><b>Prove a stranger cannot write.</b> Paste this in Terminal — it uses only your public anon key, exactly
+what an attacker has:</p>
+<pre><code>ANON=$(grep '^REACT_APP_SUPABASE_ANON_KEY=' .env | cut -d= -f2- | tr -d '"')
+curl -s -o /dev/null -w 'anon write -> HTTP %{http_code}\n' \
+  -X POST 'https://lhiwhmcdqqwwurectxos.supabase.co/rest/v1/major_decision' \
+  -H "apikey: $ANON" -H "Authorization: Bearer $ANON" \
+  -H 'Content-Type: application/json' -H 'Prefer: resolution=merge-duplicates' \
+  -d '{"id":"v1","doc":{"hacked":true},"updated_at":"2030-01-01T00:00:00Z"}'</code></pre>
+<p><b>Expect <code>401</code> or <code>403</code>.</b> If you get <code>200</code> or <code>201</code>, the
+policy did not drop — go back to step 4.</p>
+<div class="callout crit">
+<p>If that command returns 200 <em>before</em> you have done step 4, that is not a test failure — that is the
+live vulnerability, and it just overwrote your document with <code>{"hacked":true}</code>. Only run this
+check after step 4.</p>
+</div>
+<p><b>Then confirm you can still save</b> on the deployed <code>/major</code>: enter the passphrase, edit
+something, watch for <code>SAVED</code>, reload.</p>
+</li>
+
+</ol>
+
+<h2>One more table to decide about</h2>
+
+<p><code>pull_picks</code>, behind your <code>/pull</code> page, is open to the <code>public</code> role for
+<code>SELECT</code>, <code>INSERT</code>, <code>UPDATE</code> <b>and <code>DELETE</code></b>.</p>
+
+<p>Public insert is probably deliberate — that is how friends submit picks. Public delete almost certainly is
+not: anyone can erase everyone's votes. If you agree, run:</p>
+
+<pre><code>drop policy "Public delete" on public.pull_picks;</code></pre>
+
+<p>This one is safe to run immediately — nothing in your code deletes from that table, so nothing breaks.
+Public <code>UPDATE</code> is also worth a thought later: it currently lets anyone rewrite someone else's
+pick.</p>
+
+<h2>If something goes wrong</h2>
+
+<div class="tw">
+<table>
+<thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead>
+<tbody>
+<tr><td>Saving stopped working after step 4</td><td>Policies dropped before the new code deployed</td><td>Deploy, or temporarily re-add: <code>create policy "anon can write major_decision" on public.major_decision for all to anon using (true) with check (true);</code></td></tr>
+<tr><td><code>500 SUPABASE_SERVICE_ROLE_KEY is missing</code></td><td>Key absent from that environment</td><td>Redo step 2 for the environment you are in, then restart the dev server or redeploy.</td></tr>
+<tr><td><code>401 Not authenticated</code> when saving</td><td>Passphrase cookie missing or expired</td><td>Reload the page and enter the passphrase again. The cookie lasts 7 days.</td></tr>
+<tr><td><code>400 Unknown table</code></td><td>A table name outside the allowlist</td><td>Expected — only <code>major_decision</code> and <code>apply_decision</code> are permitted. That guard is deliberate.</td></tr>
+<tr><td>Page loads empty after step 4</td><td>A <code>SELECT</code> policy was dropped too</td><td>Re-add: <code>create policy "anon can read major_decision" on public.major_decision for select to anon using (true);</code></td></tr>
+</tbody>
+</table>
+</div>
+
+<h2>What this does and does not fix</h2>
+
+<div class="tw">
+<table>
+<thead><tr><th>Concern</th><th>After this</th></tr></thead>
+<tbody>
+<tr><td>A stranger overwriting or deleting your documents</td><td><b>Fixed.</b> Writes require the passphrase cookie.</td></tr>
+<tr><td>A stranger deleting your <code>/pull</code> votes</td><td>Fixed only if you run the optional drop above.</td></tr>
+<tr><td>A stranger <em>reading</em> your school list and scores</td><td><b>Not fixed, by design.</b> That data is compiled into the public JavaScript bundle regardless of any database policy. Fixing it means moving the data out of the bundle and behind an authenticated API — a much larger job.</td></tr>
+<tr><td>The anon key being public</td><td>Unchanged, and fine. Anon keys are meant to be public; the policies are what is supposed to constrain them.</td></tr>
+</tbody>
+</table>
+</div>
+
+<p class="foot">Guide · olivernguyen.com · supabase lockdown</p>
+
+</main>
+</body>
+</html>
