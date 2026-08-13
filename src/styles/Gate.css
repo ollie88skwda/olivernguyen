@@ -126,29 +126,6 @@
   padding: 1px 4px;
 }
 
-/* The tool pages are full-bleed and mount no TopBar, so this is their only way
-   back. Fixed rather than in-flow to avoid disturbing their existing layouts. */
-.back-link {
-  position: fixed;
-  top: 18px;
-  left: 20px;
-  z-index: 40;
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  text-decoration: none;
-  padding: 6px 10px;
-  border: 1px solid var(--border);
-  background: var(--surface-2);
-}
-
-.back-link:hover {
-  color: var(--text);
-  border-color: var(--text-faint);
-}
-
 @media (prefers-reduced-motion: reduce) {
   .gate-wrong {
     animation: none;

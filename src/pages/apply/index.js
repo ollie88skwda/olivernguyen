@@ -2,7 +2,6 @@ import React, { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import Reveal from '../../components/Reveal';
 import WordReveal from '../../components/WordReveal';
 import { GlossaryProvider } from '../../components/Tooltip';
-import BackLink from '../../auth/BackLink';
 import { GLOSSARY } from './glossary';
 import useApplyStore from './store';
 import { computeAHP, computeWSM, normalizeScores } from '../major/model';
@@ -101,8 +100,6 @@ export const Apply = () => {
   if (loading || !doc || !derived) {
     return (
       <main className="ap-page ap-loading">
-        <div className="grain" aria-hidden="true" />
-        <BackLink />
         <p>LOADING THE BOARD</p>
       </main>
     );
@@ -120,8 +117,6 @@ export const Apply = () => {
   return (
     <GlossaryProvider value={GLOSSARY}>
       <main className="ap-page">
-        <div className="grain" aria-hidden="true" />
-        <BackLink />
 
         <header className="ap-hero">
           <Reveal as="p" className="ap-hero-eyebrow">

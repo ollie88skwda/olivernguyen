@@ -1,5 +1,6 @@
-import { BrowserRouter as Router, Switch, Route, useHistory } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, useHistory, useLocation } from "react-router-dom";
 import React, { Suspense, lazy } from "react";
+import { TopBar } from "./pages/top_bar";
 import { ClerkProvider } from "@clerk/react";
 import { Permit } from "./pages/driving/permit.js";
 import { NotFoundPage } from "./pages/not_found_page.js";
@@ -20,6 +21,7 @@ const Major = lazy(() => import("./pages/major/index.js"));
 const Apply = lazy(() => import("./pages/apply/index.js"));
 const EssayStudio = lazy(() => import("./pages/essay_studio/index.js"));
 const WritingRoom = lazy(() => import("./pages/essay_studio/room/index.js"));
+const Transfer = lazy(() => import("./pages/transfer/index.js"));
 
 // ClerkProvider needs router functions, and those need useHistory, which only
 // works inside <Router>. Hence a component between Router and Switch rather than
@@ -43,9 +45,21 @@ const ClerkBridge = ({ children }) => {
   );
 };
 
+// Site chrome (top bar, sidebar, grain, scroll progress) is mounted once here so
+// every route carries it, instead of each page importing TopBar itself.
+// /be-my-girlfriend is full-bleed with its own art direction and opts out.
+const NO_CHROME = ["/be-my-girlfriend", "/bemygirlfriend", "/girlfriend"];
+
+const SiteChrome = () => {
+  const { pathname } = useLocation();
+  if (NO_CHROME.some((route) => pathname.startsWith(route))) return null;
+  return <TopBar />;
+};
+
 export const Routes = () => {
   return (
     <Router>
+      <SiteChrome />
       <ClerkBridge>
       <Switch>
         <Route path="/" exact>
@@ -108,6 +122,13 @@ export const Routes = () => {
           <RequireClerk>
             <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
               <EssayStudio />
+            </Suspense>
+          </RequireClerk>
+        </Route>
+        <Route path="/transfer">
+          <RequireClerk>
+            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
+              <Transfer />
             </Suspense>
           </RequireClerk>
         </Route>

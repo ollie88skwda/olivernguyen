@@ -41,7 +41,6 @@ export const SignInPage = () => {
 
   return (
     <main className="gate">
-      <div className="grain" aria-hidden="true" />
       <SignIn routing="path" path="/sign-in" forceRedirectUrl={redirect} appearance={appearance} />
     </main>
   );

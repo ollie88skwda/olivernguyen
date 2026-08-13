@@ -14,7 +14,6 @@ export const clerkKey = () => process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
 // white-screen exactly like the studio would.
 export const NotConfigured = ({ route = '/studio' }) => (
   <main className="gate">
-    <div className="grain" aria-hidden="true" />
     <div className="gate-card">
       <p className="gate-eyebrow">Route {route} · unavailable</p>
       <h1 className="gate-title">Not Configured</h1>

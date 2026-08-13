@@ -158,6 +158,11 @@ export const TopBar = () => {
                   Studio
                 </a>
               </li>
+              <li>
+                <a href="/transfer" className="sidebar-link">
+                  Transfer
+                </a>
+              </li>
             </ul>
           </li>
           <li className={`dropdown ${isDrivingOpen ? 'open' : ''}`}>

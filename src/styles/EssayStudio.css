@@ -531,7 +531,9 @@
 .es-room {
   position: relative;
   z-index: 2;
-  height: 100dvh;
+  /* Full-height editor, offset by the fixed 64px site top bar. */
+  margin-top: 64px;
+  height: calc(100dvh - 64px);
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
   grid-template-rows: auto minmax(0, 1fr) auto;
@@ -1235,10 +1237,11 @@
 }
 
 
-/* Clerk's user menu. Fixed so it clears the hero without entering its flow. */
+/* Clerk's user menu. Fixed so it clears the hero without entering its flow,
+   and sat below the 64px site top bar. */
 .es-user {
   position: fixed;
-  top: 14px;
+  top: 78px;
   right: 20px;
   z-index: 40;
 }

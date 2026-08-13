@@ -46,9 +46,10 @@
 
 /* 1px gap over a border-coloured background gives hairline rules between cards
    without doubling them where cards meet. */
+/* Two per row so an even set of tools fills the grid with no orphan cell. */
 .cl-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1px;
   background: var(--border);
   border: 1px solid var(--border);
@@ -124,6 +125,7 @@
   }
 
   .cl-cards {
+    grid-template-columns: minmax(0, 1fr);
     margin-top: 44px;
   }
 }

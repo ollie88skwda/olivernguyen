@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { TopBar } from "./top_bar";
 import "../styles/Pull.css";
 import { supabase } from "../lib/supabase";
 
@@ -278,7 +277,6 @@ export const Pull = () => {
 
   return (
     <div className="pull-page">
-      <TopBar />
       <div className="pull-content">
         <div className="pull-page-header">
           <div>

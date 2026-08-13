@@ -3,7 +3,6 @@ import { useReducedMotion } from 'framer-motion';
 import Reveal from '../../components/Reveal';
 import WordReveal from '../../components/WordReveal';
 import { GlossaryProvider } from '../../components/Tooltip';
-import BackLink from '../../auth/BackLink';
 import { GLOSSARY } from './glossary';
 import useMajorStore from './store';
 import {
@@ -132,8 +131,6 @@ export const Major = () => {
   if (loading || !doc || !derived) {
     return (
       <main className="mj-page mj-loading">
-        <div className="grain" aria-hidden="true" />
-        <BackLink />
         <p>LOADING THE DOC</p>
       </main>
     );
@@ -156,8 +153,6 @@ export const Major = () => {
   return (
     <GlossaryProvider value={GLOSSARY}>
     <main className="mj-page">
-      <div className="grain" aria-hidden="true" />
-      <BackLink />
 
       <header className="mj-hero">
         <Reveal as="p" className="mj-hero-eyebrow">

@@ -17,7 +17,6 @@ export const PassphraseGate = ({ label }) => {
 
   return (
     <main className="gate">
-      <div className="grain" aria-hidden="true" />
       <form className={error ? 'gate-card gate-wrong' : 'gate-card'} onSubmit={submit}>
         <p className="gate-eyebrow">{label}</p>
         <h1 className="gate-title">Passphrase</h1>

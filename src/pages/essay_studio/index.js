@@ -4,7 +4,6 @@ import Reveal from '../../components/Reveal';
 import WordReveal from '../../components/WordReveal';
 import { UserButton } from '@clerk/react';
 import useStudioStore from './store';
-import BackLink from '../../auth/BackLink';
 import Status from './sections/Status';
 import Board from './sections/Board';
 import Archive from './sections/Archive';
@@ -74,8 +73,6 @@ export const EssayStudio = () => {
 
   return (
     <main className="es-page">
-      <div className="grain" aria-hidden="true" />
-      <BackLink />
       <div className="es-user">
         <UserButton afterSignOutUrl="/college" />
       </div>

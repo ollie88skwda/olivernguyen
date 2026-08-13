@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { TopBar } from "./top_bar";
 import "../styles/Home.css";
 import Reveal from "../components/Reveal";
 import WordReveal from "../components/WordReveal";
@@ -448,8 +447,6 @@ Chrome Web Store: pending`}</pre>
         <span>© {new Date().getFullYear()} Oliver Nguyen</span>
         <span>oN.c · REV 2027</span>
       </footer>
-
-      <TopBar />
     </div>
   );
 };

@@ -1,0 +1,238 @@
+/* ── /transfer ────────────────────────────────────────────────────────────────
+   One column: hero, composer, live list. Same vocabulary as /studio — cream
+   paper, Big Shoulders title, mono readouts — but the list ticks down on its
+   own clock instead of waiting for a poll. Tokens come from theme.css; only the
+   warn colour is local, same as EssayStudio's. */
+
+:root {
+  --tr-warn: #8a3b12;
+}
+
+.tr-page {
+  position: relative;
+  z-index: 2;
+  min-height: 100dvh;
+  background: var(--bg-base);
+  padding: 120px 24px 96px;
+}
+.tr-page *,
+.tr-page *::before,
+.tr-page *::after {
+  box-sizing: border-box;
+}
+.tr-page :where(p, h1, h2, h3, h4, li, dd, td, th) {
+  overflow-wrap: anywhere;
+}
+
+.tr-hero,
+.tr-composer,
+.tr-list,
+.tr-sync {
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tr-eyebrow {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  margin: 0 0 18px;
+}
+.tr-title {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  font-weight: 900;
+  font-size: clamp(2.6rem, 8vw, 4.4rem);
+  line-height: 0.88;
+  letter-spacing: 0.01em;
+  color: var(--text);
+  margin: 0;
+}
+.tr-rule {
+  height: 2px;
+  width: 104px;
+  background: rgba(18, 34, 49, 0.3);
+  margin: 24px 0 0;
+}
+.tr-sub {
+  font-size: 1.02rem;
+  color: var(--text-muted);
+  max-width: 56ch;
+  margin: 22px 0 0;
+}
+
+.tr-composer {
+  margin-top: 56px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.tr-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  resize: vertical;
+  min-height: 140px;
+  padding: 16px 18px;
+  outline: none;
+}
+.tr-input::placeholder {
+  color: var(--text-faint);
+  opacity: 0.75;
+}
+.tr-composer-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 18px 16px;
+}
+.tr-count {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.tr-send {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--on-accent);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  padding: 10px 22px;
+  cursor: pointer;
+}
+.tr-send:hover:not(:disabled) {
+  background: var(--accent-hi);
+}
+.tr-send:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.tr-err {
+  max-width: 640px;
+  margin: 18px auto 0;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--tr-warn);
+}
+
+.tr-list {
+  margin-top: 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.tr-empty {
+  font-family: var(--font-sans);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--text-faint);
+  margin: 0;
+}
+.tr-item {
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.tr-item-body {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  margin: 0;
+  padding: 16px 18px 12px;
+  max-height: 260px;
+  overflow-y: auto;
+}
+.tr-item-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 18px 14px;
+}
+.tr-item-expires {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.tr-item-expires.soon {
+  color: var(--tr-warn);
+}
+.tr-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tr-copy {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-hi);
+  background: transparent;
+  border: 1px solid var(--accent);
+  padding: 7px 14px;
+  cursor: pointer;
+}
+.tr-copy:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.tr-del {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  line-height: 1;
+  color: var(--text-faint);
+  background: transparent;
+  border: 1px solid var(--border);
+  padding: 7px 12px;
+  cursor: pointer;
+}
+.tr-del:hover {
+  color: var(--tr-warn);
+  border-color: var(--tr-warn);
+}
+
+.tr-sync {
+  margin-top: 40px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+
+/* Clerk's user menu. Fixed so it clears the hero without entering its flow,
+   and sat below the 64px site top bar. */
+.tr-user {
+  position: fixed;
+  top: 78px;
+  right: 20px;
+  z-index: 40;
+}
+
+@media (max-width: 640px) {
+  .tr-page {
+    padding: 96px 16px 72px;
+  }
+}

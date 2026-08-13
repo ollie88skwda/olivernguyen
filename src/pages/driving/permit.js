@@ -1,6 +1,5 @@
 import "../../styles/App.css";
 import perm_reqs from "../../assets/permitrequirements.png";
-import { TopBar } from "../top_bar";
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
@@ -272,7 +271,6 @@ export const Permit = () => {
             </div>
           </motion.div>
         )}
-        <TopBar />
       </AnimatePresence>
     </div>
   );

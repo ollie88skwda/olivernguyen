@@ -5,7 +5,6 @@ import React from 'react';
 // passphrase box that will never accept anything.
 export const ApiMissing = ({ route }) => (
   <main className="gate">
-    <div className="grain" aria-hidden="true" />
     <div className="gate-card">
       <p className="gate-eyebrow">{route} · backend not running</p>
       <h1 className="gate-title">No API</h1>

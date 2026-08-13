@@ -1,6 +1,5 @@
 import React from 'react';
 import "../../styles/App.css";
-import { TopBar } from "../top_bar";
 
 const SATSignup = () => {
   return (
@@ -15,7 +14,6 @@ const SATSignup = () => {
           </div>
         </main>
       </div>
-      <TopBar />
     </div>
   );
 };

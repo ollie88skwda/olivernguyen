@@ -1,6 +1,5 @@
 import React from "react";
 import "../styles/App.css";
-import { TopBar } from "./top_bar";
 
 export const NotFoundPage = () => {
   return (
@@ -13,7 +12,6 @@ export const NotFoundPage = () => {
             <a href="/">Home</a>
           </h3>
         </div>
-        <TopBar />
       </div>
     </div>
   );

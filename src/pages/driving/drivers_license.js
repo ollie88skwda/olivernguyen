@@ -1,5 +1,4 @@
 import "../../styles/App.css";
-import { TopBar } from "../top_bar";
 import React from "react";
 
 export const DriversLicense = () => {
@@ -18,7 +17,6 @@ export const DriversLicense = () => {
           </p>
         </div>
       </div>
-      <TopBar />
     </div>
   );
 };

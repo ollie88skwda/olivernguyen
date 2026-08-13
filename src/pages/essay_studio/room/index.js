@@ -186,7 +186,6 @@ export const WritingRoom = () => {
 
   return (
     <main className={contextOpen ? 'es-room' : 'es-room es-room-wide'}>
-      <div className="grain" aria-hidden="true" />
       <TopRail
         school={school}
         prompt={prompt}

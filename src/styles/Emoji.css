@@ -3,6 +3,9 @@
 .emoji-page {
   min-height: 100vh;
   min-height: 100svh;
+  /* Clears the fixed 64px site top bar without overflowing the viewport. */
+  box-sizing: border-box;
+  padding-top: 64px;
   background: #ffffff;
   font-family: "GeistSans", "Geist", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   color: #131313;
@@ -45,7 +48,8 @@
 
 .emoji-canvas {
   position: relative;
-  width: min(70vmin, calc(100vh - 260px), 640px);
+  /* 260px of chrome below the stage, plus the 64px site top bar. */
+  width: min(70vmin, calc(100vh - 324px), 640px);
   aspect-ratio: 1 / 1;
   overflow: hidden;
   touch-action: none;

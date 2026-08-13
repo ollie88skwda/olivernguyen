@@ -1,6 +1,5 @@
 import React from 'react';
 import "../../styles/App.css";
-import { TopBar } from "../top_bar";
 
 const SATResources = () => {
   return (
@@ -13,7 +12,6 @@ const SATResources = () => {
           <p>Coming soon.</p>
         </main>
       </div>
-      <TopBar />
     </div>
   );
 };

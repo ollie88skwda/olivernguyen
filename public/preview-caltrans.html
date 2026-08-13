@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CALTRANS preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders:opsz,wght@10..72,400;10..72,700;10..72,900&family=Hanken+Grotesk:wght@400;500;600&family=Martian+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{ --bg-base:#EDE7D9;--bg:#F2EDE1;--surface:#F7F2E8;--surface-2:#FBF7EE;--border:rgba(35,48,42,.16);--text:#23302A;--text-muted:#4E6155;--text-faint:#6E7E72;--accent:#2E6B4E;--accent-hi:#3C8662;--accent-deep:#1F4E39;--on-accent:#F7F2E8;--scribe:#1F4E39;--crossc:rgba(35,48,42,.45) }
+*{box-sizing:border-box} html,body{margin:0}
+body{background:var(--bg-base);color:var(--text);font-family:'Hanken Grotesk',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.05;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.scribe{position:fixed;left:30px;top:0;bottom:0;width:2px;background:var(--scribe);opacity:.5;z-index:1}
+.scribe::after{content:"";position:absolute;left:-3px;top:38%;width:8px;height:8px;background:var(--accent)}
+.wrap{max-width:960px;margin:0 auto;padding:0 28px;position:relative;z-index:2}
+.nav{display:flex;justify-content:space-between;align-items:center;padding:16px 28px;border-bottom:1px solid var(--border);font-family:'Martian Mono';font-size:11px;letter-spacing:.08em;color:var(--text-muted);position:relative;z-index:2}
+.nav b{color:var(--text)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#46d18a;margin-right:7px}
+.eyebrow{font-family:'Martian Mono';font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-muted);margin:54px 0 14px}
+h1.name{font-family:'Big Shoulders';font-weight:900;font-size:clamp(64px,12vw,124px);line-height:.85;margin:0;letter-spacing:.005em}
+h1 .acc{color:var(--accent)}
+.sub{font-size:clamp(18px,2.4vw,24px);font-weight:500;color:var(--text-muted);max-width:34ch;margin:18px 0 0}
+.sub u{color:var(--text);text-decoration-color:var(--accent);text-decoration-thickness:3px;text-underline-offset:4px}
+.meta{font-family:'Martian Mono';font-size:11px;color:var(--text-muted);margin-top:10px}
+.meta b{color:var(--accent);font-weight:500}
+.marq{border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin-top:44px;padding:13px 0;white-space:nowrap;overflow:hidden;font-family:'Big Shoulders';font-weight:700;font-size:26px;letter-spacing:.04em;position:relative;z-index:2}
+.marq .pxa,.marq .pxb{display:inline-block;width:8px;height:8px;margin:0 18px;vertical-align:middle}
+.pxa{background:var(--accent)} .pxb{background:var(--scribe)}
+.kick{font-family:'Martian Mono';font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin:56px 0 10px}
+.kick::before{content:"";display:inline-block;width:7px;height:7px;background:var(--accent-deep);margin-right:10px;vertical-align:1px}
+h2.sec{font-family:'Big Shoulders';font-weight:900;font-size:clamp(34px,5.4vw,52px);line-height:.92;margin:0 0 26px}
+.lead{font-size:clamp(17px,2vw,21px);font-weight:500;max-width:46ch;margin:0 0 36px}
+.sig{position:relative;padding-left:42px;max-width:640px}
+.sigline{position:absolute;left:10px;top:8px;bottom:8px;width:2px;background:var(--scribe);opacity:.6}
+.node{position:relative;padding:13px 0}
+.node i{position:absolute;left:-37px;top:21px;width:10px;height:10px;background:var(--accent-deep)}
+.node.now i{background:var(--accent)} .node.fut i{background:transparent;border:2px solid var(--accent-deep)}
+.yr{font-family:'Big Shoulders';font-weight:700;font-size:22px;margin-right:14px;min-width:62px;display:inline-block}
+.nm{font-weight:600;font-size:15.5px}
+.node.now .yr,.node.now .nm{color:var(--accent)}
+.node.fut .yr,.node.fut .nm{color:var(--text-muted)}
+.mt{font-family:'Martian Mono';font-size:11px;color:var(--text-muted);margin-left:12px}
+.row{position:relative;border-top:1px solid var(--border);padding:0 0 56px;margin-top:46px}
+.row::before,.row::after{content:"";position:absolute;top:-6px;width:11px;height:11px;background:linear-gradient(var(--crossc),var(--crossc)) center/11px 1px no-repeat,linear-gradient(var(--crossc),var(--crossc)) center/1px 11px no-repeat}
+.row::before{left:-5px}.row::after{right:-5px}
+.rhead{display:flex;align-items:baseline;gap:24px;padding:14px 0 0;font-family:'Martian Mono';font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted)}
+.rhead .ix{font-family:'Big Shoulders';font-weight:900;font-size:24px;letter-spacing:0;color:var(--text)}
+.rhead .st{margin-left:auto;color:var(--accent)}
+.rbody{display:grid;grid-template-columns:1fr 1.05fr;gap:44px;align-items:center;padding-top:26px}
+.rtitle{font-family:'Big Shoulders';font-weight:900;font-size:clamp(30px,4.4vw,44px);line-height:.95;margin:0 0 12px}
+.rblurb{color:var(--text-muted);max-width:44ch;margin:0 0 14px;font-size:15.5px}
+.rtech{font-family:'Martian Mono';font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px}
+.rlink{font-family:'Martian Mono';font-size:13px;color:var(--accent);text-decoration:none}
+.shot{border-radius:12px;overflow:hidden;transform:rotate(-1.8deg);box-shadow:0 28px 60px -28px rgba(0,0,0,0.35)}
+.shot img{display:block;width:100%;height:250px;object-fit:cover}
+.chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
+.chip{font-family:'Martian Mono';font-size:12.5px;color:var(--text-muted);border:1px solid var(--border);border-radius:999px;padding:9px 16px;background:var(--surface)}
+.big{font-family:'Big Shoulders';font-weight:900;font-size:clamp(54px,10vw,104px);line-height:.86;margin:70px 0 0}
+.big .stroke{color:transparent;-webkit-text-stroke:1.5px var(--accent)}
+.cta{display:inline-block;background:var(--accent);color:var(--on-accent);font-family:'Martian Mono';font-size:14px;font-weight:500;border-radius:999px;padding:15px 24px;text-decoration:none;margin:26px 12px 0 0}
+.ghost{display:inline-block;color:var(--text);font-family:'Martian Mono';font-size:13px;border:1px solid var(--border);border-radius:999px;padding:14px 20px;text-decoration:none;margin-top:26px;margin-right:10px}
+footer{border-top:1px solid var(--border);margin-top:64px;padding:24px 0 70px;display:flex;justify-content:space-between;font-family:'Martian Mono';font-size:11px;color:var(--text-faint)}
+@media(max-width:760px){.rbody{grid-template-columns:1fr}.shot{transform:none}}
+</style></head><body>
+<div class="grain"></div><div class="scribe"></div>
+<div class="nav"><b>OLIVER NGUYEN</b><span><span class="dot"></span>COLLEGE-BOUND · OPEN TO OPPORTUNITIES</span></div>
+<div class="wrap">
+<p class="eyebrow">Hi, my name is</p>
+<h1 class="name">OLIVER NGUYEN<span class="acc">.</span></h1>
+<p class="sub">I turn ideas into things people actually use. I love to <u>build</u>.</p>
+<p class="meta"><b>2 PROJECTS SHIPPED</b> · DEVELOPER / MAKER · COLLEGE-BOUND</p>
+</div>
+<div class="marq">GAMES<span class="pxa"></span>BROWSER TOOLS<span class="pxb"></span>WEB APPS<span class="pxa"></span>ROBOTICS<span class="pxb"></span>PIXEL ART<span class="pxa"></span>GAMES<span class="pxb"></span>BROWSER TOOLS<span class="pxa"></span>WEB APPS</div>
+<div class="wrap">
+<p class="kick">U1 / About</p>
+<h2 class="sec">THE SHORT VERSION</h2>
+<p class="lead">I build games, browser extensions, and small web apps. Most of what I make starts as a problem I personally ran into, then grows into something other people end up using too.</p>
+<div class="sig"><span class="sigline"></span>
+<div class="node"><i></i><span class="yr">2020</span><span class="nm">Legacy Magnet Academy</span><span class="mt">MS + HS</span></div>
+<div class="node"><i></i><span class="yr">2022</span><span class="nm">Irvine Valley College</span><span class="mt">DUAL ENROLLED</span></div>
+<div class="node now"><i></i><span class="yr">NOW</span><span class="nm">College apps + robotics team</span><span class="mt">CALIFORNIA · 4:12 PM PT</span></div>
+<div class="node fut"><i></i><span class="yr">2027</span><span class="nm">Graduation</span><span class="mt">PREDICTED</span></div>
+</div>
+<p class="kick" style="margin-top:64px">U2 / Selected work</p>
+<h2 class="sec">THINGS I'VE BUILT</h2>
+<div class="row">
+  <div class="rhead"><span class="ix">01</span><span>Game · Pygame</span><span class="st">Shipped</span></div>
+  <div class="rbody">
+    <div><h3 class="rtitle">WAHOO'S FISHING GAME</h3>
+    <p class="rblurb">Built for the owner of Wahoo's fish tacos in my marketing class. I learned Pygame and pixel art for this project.</p>
+    <p class="rtech">PYTHON · PYGAME · PAINT.NET</p>
+    <a class="rlink" href="#">VIEW ON GITHUB ↗</a></div>
+    <div class="shot"><img src="/preview-wahoo.png" alt=""></div>
+  </div>
+</div>
+<p class="kick" style="margin-top:56px">U3 / Toolkit</p>
+<div class="chips"><span class="chip">JavaScript</span><span class="chip">Python</span><span class="chip">C++</span><span class="chip">React</span><span class="chip">Pygame</span><span class="chip">Chrome Extensions</span><span class="chip">Supabase</span></div>
+<h2 class="big">LET'S BUILD<br><span class="stroke">SOMETHING.</span></h2>
+<a class="cta" href="#">oliverdnguyen@gmail.com</a><a class="ghost" href="#">GitHub ↗</a><a class="ghost" href="#">Resume ↗</a>
+<footer><span>© 2026 Oliver Nguyen</span><span>oN.c · REV 2027 · DISTRICT 12</span></footer>
+</div></body></html>

@@ -62,5 +62,8 @@ export async function requireSession(req, res) {
     return false;
   }
 
+  // Attached so routes can scope data to the caller. The payload.sub is the
+  // Clerk user id, and everything /transfer stores is named under it.
+  req.userId = payload.sub;
   return true;
 }
