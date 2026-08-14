@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.30db201f.css",
-    "main.js": "/static/js/main.0b365511.js",
+    "main.css": "/static/css/main.a32ada3a.css",
+    "main.js": "/static/js/main.68ead34d.js",
     "static/css/782.cb956e7c.chunk.css": "/static/css/782.cb956e7c.chunk.css",
     "static/js/782.13d970b8.chunk.js": "/static/js/782.13d970b8.chunk.js",
     "static/css/495.c153321c.chunk.css": "/static/css/495.c153321c.chunk.css",
@@ -30,8 +30,8 @@
     "static/media/inter-vietnamese-wght-normal.woff2": "/static/media/inter-vietnamese-wght-normal.ab4bb8dcda024fe6eff2.woff2",
     "static/media/bricolage-grotesque-vietnamese-wght-normal.woff2": "/static/media/bricolage-grotesque-vietnamese-wght-normal.64dc6fafb7b762f28353.woff2",
     "index.html": "/index.html",
-    "main.30db201f.css.map": "/static/css/main.30db201f.css.map",
-    "main.0b365511.js.map": "/static/js/main.0b365511.js.map",
+    "main.a32ada3a.css.map": "/static/css/main.a32ada3a.css.map",
+    "main.68ead34d.js.map": "/static/js/main.68ead34d.js.map",
     "782.cb956e7c.chunk.css.map": "/static/css/782.cb956e7c.chunk.css.map",
     "782.13d970b8.chunk.js.map": "/static/js/782.13d970b8.chunk.js.map",
     "495.c153321c.chunk.css.map": "/static/css/495.c153321c.chunk.css.map",
@@ -48,7 +48,7 @@
     "672.20adbb2d.chunk.js.map": "/static/js/672.20adbb2d.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.30db201f.css",
-    "static/js/main.0b365511.js"
+    "static/css/main.a32ada3a.css",
+    "static/js/main.68ead34d.js"
   ]
 }

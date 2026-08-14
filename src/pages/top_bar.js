@@ -128,6 +128,11 @@ export const TopBar = () => {
               Debt Tracker
             </a>
           </li>
+          <li>
+            <a href="/transfer" className="sidebar-link">
+              Transfer
+            </a>
+          </li>
           <li className={`dropdown split ${isCollegeOpen ? 'open' : ''}`}>
             <div className="dropdown-row">
               <a href="/college" className="sidebar-link">
@@ -156,11 +161,6 @@ export const TopBar = () => {
               <li>
                 <a href="/studio" className="sidebar-link">
                   Studio
-                </a>
-              </li>
-              <li>
-                <a href="/transfer" className="sidebar-link">
-                  Transfer
                 </a>
               </li>
             </ul>

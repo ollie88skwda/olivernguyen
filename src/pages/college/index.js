@@ -2,7 +2,7 @@ import React from 'react';
 import '../../styles/College.css';
 
 // Copy is deliberately unwritten. Oliver supplies the headline, the lede and the
-// card descriptions; shipping invented prose under his name is worse than a
+// three descriptions; shipping invented prose under his name is worse than a
 // visible gap, so these render as obvious placeholders.
 const TOOLS = [
   {
@@ -22,12 +22,6 @@ const TOOLS = [
     route: '/studio',
     gate: 'Sign in',
     desc: '[ one line on what /studio is for ]',
-  },
-  {
-    name: 'Transfer',
-    route: '/transfer',
-    gate: 'Sign in',
-    desc: '[ one line on what /transfer is for ]',
   },
 ];
 
