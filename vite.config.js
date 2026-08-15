@@ -31,12 +31,15 @@ export default defineConfig(({ mode }) => {
       },
     },
     envPrefix: ['VITE_', 'REACT_APP_'],
-    define: Object.fromEntries(
-      REACT_APP_VARS.map((key) => [
-        `process.env.${key}`,
-        key in env ? JSON.stringify(env[key]) : 'undefined',
-      ])
-    ),
+    define:
+      mode === 'test'
+        ? {}
+        : Object.fromEntries(
+            REACT_APP_VARS.map((key) => [
+              `process.env.${key}`,
+              key in env ? JSON.stringify(env[key]) : 'undefined',
+            ])
+          ),
     // 63 files in src/ ship JSX with a plain .js extension (CRA/Babel handled
     // this; esbuild does not by default). Treat every .js under src/ as JSX
     // rather than mass-renaming the files.
