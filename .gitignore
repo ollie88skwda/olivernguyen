@@ -17,7 +17,7 @@ package-lock.json
 .playwright-mcp/
 .vercel/
 
-# Stale Next.js artifacts. This project is Create React App; nothing here reads them.
+# Stale Next.js artifacts. This project is Vite, not Next.js; nothing here reads them.
 .next/
 next-env.d.ts
 
