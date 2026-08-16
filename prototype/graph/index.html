@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Oliver Nguyen — graph mode · prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="stage" role="application"
+       aria-label="Interactive graph of Oliver Nguyen's work. Tab cycles nodes, slash filters, command-K opens commands, Escape goes back.">
+    <div id="world"></div>
+  </div>
+
+  <div id="legend" class="ui">
+    <div class="brand"><span class="logo">oN.c</span><span class="mode">GRAPH MODE</span></div>
+    <div class="sub">flagship · sakura paper</div>
+    <div class="chips">
+      <button class="chip" data-group="agents">Agents</button>
+      <button class="chip" data-group="robotics">Robotics</button>
+      <button class="chip" data-group="leadership">Leadership</button>
+      <button class="chip" data-group="pages">Pages</button>
+      <button class="chip" data-group="contact">Contact</button>
+    </div>
+    <button class="chip tour" id="tourbtn">▸ guided tour</button>
+  </div>
+
+  <div id="modebar" class="ui">
+    <button id="mk-cmdk" class="mchip" title="command palette">⌘K</button>
+    <div id="modetoggle">
+      <button id="m-term">TERM</button><button id="m-graph" class="on">GRAPH</button>
+    </div>
+  </div>
+
+  <div id="filterbar" class="ui">
+    <span class="slash">/</span>
+    <input id="f-input" type="text" spellcheck="false" autocomplete="off"
+           placeholder="filter nodes… try “operator” or “day 4”">
+    <span id="f-count"></span>
+  </div>
+
+  <div id="tourhud" class="ui">
+    <span id="t-step"></span><span id="t-cap"></span>
+    <span class="t-keys">← → move · esc ends</span>
+  </div>
+
+  <div id="promptwrap" class="ui">
+    <div id="p-suggest"></div>
+    <div id="promptbar">
+      <span class="p-glyph">▸</span>
+      <input id="p-input" type="text" spellcheck="false" autocomplete="off" aria-label="command prompt">
+      <span class="p-hint">↵</span>
+    </div>
+  </div>
+
+  <div id="hintbar" class="ui">
+    drag pan · scroll zoom · double-click fit · <b>/</b> filter · <b>⌘K</b> commands · <b>⇥</b> cycle · <b>esc</b> back
+  </div>
+
+  <div id="zoomctl" class="ui">
+    <button id="z-out" aria-label="zoom out">−</button>
+    <span id="z-label">100%</span>
+    <button id="z-in" aria-label="zoom in">+</button>
+    <button id="z-fit" aria-label="fit view" title="fit view">⛶</button>
+  </div>
+
+  <aside id="dossier" class="ui" aria-hidden="true">
+    <button id="d-close" aria-label="close dossier">×</button>
+    <div id="d-body"></div>
+  </aside>
+
+  <div id="palette" class="ui">
+    <div id="p-backdrop"></div>
+    <div id="p-panel">
+      <input id="pal-input" type="text" spellcheck="false" autocomplete="off"
+             placeholder="type a command… “replay the week”, “day 4”, “tour”">
+      <ul id="pal-list"></ul>
+    </div>
+  </div>
+
+  <div id="toast" class="ui"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="app.js"></script>
+</body>
+</html>
