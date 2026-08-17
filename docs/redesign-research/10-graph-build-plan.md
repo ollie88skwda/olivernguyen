@@ -8,17 +8,20 @@ This doc is restart-safe: any fresh agent must be able to resume from it alone.
 ## CURRENT STATUS / NEXT TASK  ← executors MUST keep this block updated
 
 ```
-Last updated : 2026-08-17 (exec-graph) — Gate G1 passed
-exec-infra   : not started · next task = I-0.1 (branch + Vite scaffold)
-exec-graph   : GATE G1 ✅ — G-1.1..G-1.4 done, 67 vitest units green (commit dc74c481).
-               Pre-gate prep ALSO done: pure camera math (lib/camera.js, 15 units)
-               + graph.css token/font port (initial §3.1 retune, G-2.6 finishes it).
-               next task = G-2.1 (dev harness) — BLOCKED on Gate 0 tick.
+Last updated : 2026-08-17 later session (exec-graph) — Gate G1 re-verified, G3 prep done
+exec-infra   : APPEARS STALLED mid-Phase-0 — last commit I-0.1 (2696aef4); uncommitted
+               in tree: vite.config.js (react+tailwind+vitest+env-compat), package.json,
+               vercel.json, index.html rename. No §8 boxes ticked. Next = finish I-0.1..I-0.6.
+exec-graph   : GATE G1 ✅ (dc74c481, re-verified this session). ALL pre-gate work done:
+               pure camera math (camera.js) · graph.css token/font port · G3 groundwork
+               (filter.js, pulse.js, tour.js, keys.js — 86b155cb). Suite: 111 units green
+               (`npx vitest run src/content src/graph src/intents`).
+               next task = G-2.1 (dev harness) — HARD-BLOCKED on Gate 0 tick (§5 rule).
                REQUEST → exec-infra: when touching vite.config, add `graph-dev.html`
                as a second, DEV-ONLY input (excluded from prod build) — needed for
                G-2.1; files graph-dev.html + src/graph/dev.jsx are exec-graph's.
 Integration  : blocked until Phase 1 gate + Phase G4 gate both pass
-Blockers     : none
+Blockers     : exec-graph fully blocked on Gate 0 (exec-infra stalled — needs restart)
 Preview URL  : —
 Notes for Oliver :
   - (exec-graph) Day beats are still the prototype's curated-fiction set (P5/L6).
