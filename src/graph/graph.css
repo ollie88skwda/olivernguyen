@@ -1,0 +1,647 @@
+/* ============================================================
+   graph mode — production stylesheet (port of prototype/graph/style.css)
+
+   Rules (build-plan P2 / §5 contract):
+   - Everything scoped under .graph-root (GraphHome's own wrapper, which
+     also carries .sakura). Nothing leaks into legacy pages.
+   - Colors: token variables from src/styles/sakura.css ONLY — no hex.
+     Alpha'd colors are color-mix() over tokens.
+   - Fonts: --font-display (Big Shoulders) / --font-sans (Hanken Grotesk)
+     / --font-mono (Martian Mono) per §3.1. Initial retune here (Martian
+     Mono is wider than the prototype's JetBrains: tracking cut roughly in
+     half, key max-widths widened); the screenshot-driven type pass is
+     G-2.6 and may adjust further.
+   - Top bar + TERM|GRAPH toggle + Search ⌘K button are exec-infra chrome
+     (05 §6.4) — their prototype styles are intentionally NOT ported.
+   ============================================================ */
+
+.graph-root {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;              /* the canvas IS the app — no page scroll */
+  overscroll-behavior: none;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  --g-shadow-1: 0 1px 2px color-mix(in srgb, var(--text) 5%, transparent),
+                0 6px 18px color-mix(in srgb, var(--text) 6%, transparent);
+  --g-shadow-2: 0 2px 4px color-mix(in srgb, var(--text) 6%, transparent),
+                0 14px 34px color-mix(in srgb, var(--text) 10%, transparent);
+}
+
+.graph-root ::selection { background: var(--selection); }
+
+.graph-root button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+.graph-root button:focus-visible,
+.graph-root input:focus-visible,
+.graph-root [role="button"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ------------------------------- stage ------------------------------- */
+
+.g-stage {
+  position: absolute;
+  inset: 0;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  background-image: radial-gradient(var(--dot-grid) 1.2px, transparent 1.3px);
+  background-size: 26px 26px;
+}
+.g-stage.grabbing { cursor: grabbing; }
+
+.g-world {
+  position: absolute;
+  left: 0; top: 0;
+  width: 0; height: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+/* ------------------------------- edges ------------------------------- */
+
+.g-edges {
+  position: absolute;
+  left: -2500px; top: -2500px;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.graph-root .edge {
+  fill: none;
+  stroke: var(--edge);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-dasharray: 1;           /* pathLength=1 → whole path */
+  stroke-dashoffset: 0;
+  transition: opacity .3s ease, stroke .25s ease, stroke-width .25s ease;
+}
+.graph-root .edge.hot { stroke: var(--node-border); stroke-width: 2.25; }
+.graph-root .edge.routing { stroke: var(--routing-pulse); stroke-width: 2.25; opacity: 1 !important; }
+
+.graph-root .bead {
+  fill: var(--routing-pulse);
+  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--routing-pulse) 50%, transparent));
+}
+
+/* instant dim in, eased return */
+.g-stage.hovering  .edge:not(.hot) { opacity: .16; transition: none; }
+.g-stage.filtering .edge           { opacity: .16; transition: none; }
+
+.g-stage.ready .edge { animation: g-draw .7s ease var(--d, 0s) backwards; }
+@keyframes g-draw { from { stroke-dashoffset: 1; } }
+
+/* ------------------------------- nodes ------------------------------- */
+
+.graph-root .node { position: absolute; left: 0; top: 0; }
+
+.graph-root .drift { animation: g-drift 7.5s ease-in-out infinite; }
+
+@keyframes g-drift {              /* ±2-3px idle garnish */
+  0%, 100% { transform: translate(0, 0); }
+  25%      { transform: translate(1.9px, -2.5px); }
+  50%      { transform: translate(-1.6px, 1.9px); }
+  75%      { transform: translate(2.3px, 1.3px); }
+}
+
+.graph-root .card {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  background: var(--node-fill);
+  border: 1px solid var(--node-border);
+  border-radius: 11px;
+  padding: 10px 14px 11px;
+  width: max-content;
+  max-width: 244px;              /* +12px: Martian Mono runs wider */
+  box-shadow: var(--g-shadow-1);
+  cursor: pointer;
+  transition: opacity .3s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.graph-root .card:hover { border-color: var(--node-border-active); box-shadow: var(--g-shadow-2); }
+
+.graph-root .node.active .card {
+  border-color: var(--node-border-active);
+  box-shadow: 0 0 0 3px var(--selection), var(--g-shadow-2);
+}
+
+/* jade arrival flash when a routed pulse lands */
+.graph-root .node.arrived .card {
+  border-color: var(--routing-pulse);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--routing-pulse) 16%, transparent),
+              var(--g-shadow-2);
+}
+
+.graph-root .card .k {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: .07em;         /* was .14em on JetBrains */
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 3px;
+  transition: opacity .25s ease;
+}
+.graph-root .card .t { font-size: 14px; font-weight: 600; letter-spacing: -.01em; line-height: 1.25; }
+.graph-root .card .m {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.35;
+  margin-top: 2px;
+  transition: opacity .25s ease;
+}
+
+/* root card — display face (Big Shoulders is condensed: bigger, tracking open) */
+.graph-root .kind-root .card { padding: 16px 22px 17px; max-width: 320px; border-width: 1.5px; }
+.graph-root .kind-root .card .t {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: .01em;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+.graph-root .kind-root .card .m { font-size: 12.5px; margin-top: 6px; }
+
+/* group pills */
+.graph-root .kind-group .card {
+  border-radius: 999px;
+  padding: 7px 16px 8px;
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.graph-root .kind-group .card .t {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .09em;         /* was .16em */
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.graph-root .g-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex: none;
+}
+
+/* day nodes — the operator week ring */
+.graph-root .kind-day .card {
+  border-radius: 8px;
+  padding: 5px 10px 6px;
+  border-style: dashed;
+}
+.graph-root .kind-day .card .t {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .07em;         /* was .14em */
+  color: var(--text-muted);
+}
+
+/* hover: instant 1-hop highlight, dim the rest (no transition in, ease out) */
+.g-stage.hovering .node:not(.hot) .card { opacity: .15; transition: opacity 0s; }
+
+/* / filter dimming */
+.g-stage.filtering .node:not(.match) .card { opacity: .12; transition: opacity 0s; }
+.g-stage.filtering .node.match .card { border-color: var(--node-border-active); }
+
+/* semantic zoom garnish: fade leaf detail when far out */
+.g-stage.far .node.leaf .m, .g-stage.far .node.leaf .k { opacity: .15; }
+
+/* ---------------------------- chrome (ui) ---------------------------- */
+
+.graph-root .ui { position: absolute; z-index: 10; }
+
+.graph-root .legend {
+  top: 18px; left: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 13px;
+  padding: 14px 16px 15px;
+  box-shadow: var(--g-shadow-1);
+  width: 224px;                  /* +12px for Martian Mono chips */
+}
+.graph-root .brand { display: flex; align-items: baseline; gap: 8px; }
+.graph-root .logo { font-family: var(--font-mono); font-weight: 600; font-size: 15px; color: var(--accent-hi); }
+.graph-root .mode-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .1em;          /* was .18em */
+  color: var(--text-faint);
+}
+.graph-root .legend-sub {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  margin: 3px 0 11px;
+}
+.graph-root .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.graph-root .chip {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 11px 5px;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.graph-root .chip:hover { color: var(--accent-hi); border-color: var(--node-border); }
+.graph-root .chip.tour {
+  margin-top: 8px;
+  color: var(--accent-hi);
+  background: var(--surface);
+  border-color: var(--node-border);
+  width: 100%;
+  text-align: center;
+}
+.graph-root .chip.tour:hover { background: var(--surface-2); }
+
+.graph-root .hintbar {
+  bottom: 14px; left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+.graph-root .hintbar b { color: var(--text-muted); font-weight: 600; }
+
+.graph-root .zoomctl {
+  bottom: 16px; right: 16px;
+  display: flex;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  box-shadow: var(--g-shadow-1);
+  overflow: hidden;
+}
+.graph-root .zoomctl button {
+  width: 34px; height: 34px;
+  font-size: 15px;
+  color: var(--text-muted);
+  transition: background .15s, color .15s;
+}
+.graph-root .zoomctl button:hover { background: var(--surface-2); color: var(--accent-hi); }
+.graph-root .z-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-faint);
+  min-width: 48px;
+  text-align: center;
+}
+
+.graph-root .filterbar {
+  top: 18px; left: 50%;
+  transform: translate(-50%, -8px);
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  padding: 9px 14px;
+  box-shadow: var(--g-shadow-2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease;
+}
+.graph-root .filterbar.open { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); }
+.graph-root .filterbar .slash { font-family: var(--font-mono); font-weight: 600; color: var(--accent-hi); }
+.graph-root .f-input {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  color: var(--text);
+  background: none;
+  border: none;
+  outline: none;
+  width: 250px;
+}
+.graph-root .f-input::placeholder { color: var(--text-faint); }
+.graph-root .f-count { font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); white-space: nowrap; }
+
+/* ----------------------------- prompt bar ----------------------------- */
+
+.graph-root .promptwrap {
+  bottom: 40px; left: 50%;
+  transform: translateX(-50%);
+  width: min(540px, 62vw);       /* +20px for the wider mono */
+}
+.graph-root .promptbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--node-border);
+  border-radius: 13px;
+  padding: 12px 16px;
+  box-shadow: var(--g-shadow-2);
+  transition: border-color .15s, box-shadow .15s;
+}
+.graph-root .promptbar:focus-within { border-color: var(--node-border-active); }
+.graph-root .p-glyph { font-family: var(--font-mono); font-weight: 600; color: var(--accent-hi); }
+.graph-root .p-input {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text);
+  background: none;
+  border: none;
+  outline: none;
+}
+.graph-root .p-input::placeholder { color: var(--text-faint); }
+.graph-root .p-hint {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-faint);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 2px 6px 3px;
+}
+
+.graph-root .p-suggest {
+  margin-bottom: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  box-shadow: var(--g-shadow-2);
+  overflow: hidden;
+  display: none;
+}
+.graph-root .p-suggest.open { display: block; }
+.graph-root .sug {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 9px 14px 10px;
+  cursor: pointer;
+  font-size: 12.5px;
+}
+.graph-root .sug .sk { font-family: var(--font-mono); font-size: 9.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; }
+.graph-root .sug.sel, .graph-root .sug:hover { background: var(--surface-2); }
+.graph-root .sug.sel .sl, .graph-root .sug:hover .sl { color: var(--accent-hi); }
+
+/* ------------------------------ ⌘K palette ----------------------------- */
+
+.graph-root .palette { position: absolute; inset: 0; z-index: 30; display: none; }
+.graph-root .palette.open { display: block; }
+.graph-root .p-backdrop {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--text) 18%, transparent);
+}
+.graph-root .p-panel {
+  position: absolute;
+  top: 18vh; left: 50%;
+  transform: translateX(-50%);
+  width: min(560px, 88vw);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--g-shadow-2);
+  overflow: hidden;
+}
+.graph-root .pal-input {
+  width: 100%;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  color: var(--text);
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  outline: none;
+  padding: 15px 18px;
+}
+.graph-root .pal-input::placeholder { color: var(--text-faint); }
+.graph-root .pal-list { list-style: none; margin: 0; padding: 6px; max-height: 46vh; overflow-y: auto; }
+.graph-root .pal-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 10px 12px 11px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.graph-root .pal-list li .pk { font-family: var(--font-mono); font-size: 9.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; }
+.graph-root .pal-list li.sel, .graph-root .pal-list li:hover { background: var(--surface-2); }
+.graph-root .pal-list li.sel .pl, .graph-root .pal-list li:hover .pl { color: var(--accent-hi); }
+.graph-root .pal-list .empty { color: var(--text-faint); font-family: var(--font-mono); font-size: 11.5px; cursor: default; }
+
+/* ------------------------------- tour hud ------------------------------ */
+
+.graph-root .tourhud {
+  top: 18px; left: 50%;
+  transform: translate(-50%, -8px);
+  display: none;
+  align-items: baseline;
+  gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--node-border);
+  border-radius: 999px;
+  padding: 9px 18px 10px;
+  box-shadow: var(--g-shadow-2);
+  white-space: nowrap;
+}
+.graph-root .tourhud.on { display: flex; transform: translate(-50%, 0); }
+.graph-root .t-step { font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; color: var(--accent-hi); }
+.graph-root .t-cap { font-size: 12.5px; color: var(--text); }
+.graph-root .t-keys { font-family: var(--font-mono); font-size: 9.5px; color: var(--text-faint); }
+
+/* -------------------------------- toast -------------------------------- */
+
+.graph-root .toast {
+  bottom: 96px; left: 50%;
+  transform: translate(-50%, 6px);
+  z-index: 40;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--node-border);
+  border-radius: 999px;
+  padding: 9px 18px 10px;
+  box-shadow: var(--g-shadow-2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .22s ease, transform .22s ease;
+}
+.graph-root .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* ------------------------------ dossier ------------------------------ */
+
+.graph-root .dossier {
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  z-index: 20;
+  width: min(430px, 34vw);
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  box-shadow: -18px 0 56px color-mix(in srgb, var(--text) 8%, transparent);
+  transform: translateX(106%);
+  transition: transform .38s cubic-bezier(.32, .72, .28, 1);
+  padding: 30px 30px 24px;
+  overflow-y: auto;
+  user-select: text;
+}
+.graph-root.dossier-open .dossier { transform: none; }
+
+.graph-root .d-close {
+  position: absolute;
+  top: 14px; right: 16px;
+  width: 30px; height: 30px;
+  font-size: 19px;
+  line-height: 1;
+  color: var(--text-faint);
+  border-radius: 8px;
+  transition: background .15s, color .15s;
+}
+.graph-root .d-close:hover { background: var(--surface-2); color: var(--accent-hi); }
+
+.graph-root .d-kind {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .09em;         /* was .16em */
+  text-transform: uppercase;
+  color: var(--text-faint);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.graph-root .d-status {
+  font-size: 9px;
+  letter-spacing: .07em;         /* was .12em */
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 3px 9px;
+}
+.graph-root .d-title {
+  font-family: var(--font-display);
+  font-size: 34px;               /* condensed display face: 26 → 34 */
+  font-weight: 700;
+  letter-spacing: .005em;
+  line-height: 1.05;
+  text-transform: uppercase;
+  margin: 12px 0 4px;
+}
+.graph-root .d-type { font-size: 13px; color: var(--text-muted); }
+.graph-root .d-blurb { font-size: 13.5px; line-height: 1.65; color: var(--text); margin: 18px 0 0; }
+
+.graph-root .d-beats {
+  margin-top: 20px;
+  background: var(--surface-2);
+  border-radius: 10px;
+  padding: 13px 15px;
+}
+.graph-root .d-beats div {
+  font-family: var(--font-mono);
+  font-size: 10.5px;             /* wider mono: 11 → 10.5 to keep one line */
+  line-height: 1.9;
+  color: var(--text-muted);
+}
+
+.graph-root .d-stats {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+}
+.graph-root .d-stat {
+  flex: 1;
+  background: var(--surface-2);
+  border-radius: 10px;
+  padding: 11px 12px 12px;
+}
+.graph-root .d-stat .v {
+  font-family: var(--font-display);
+  font-size: 24px;               /* display face: 19 → 24 */
+  font-weight: 700;
+  letter-spacing: .01em;
+  color: var(--accent-hi);
+}
+.graph-root .d-stat .l {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: .05em;         /* was .08em */
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+.graph-root .d-tech { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 20px; }
+.graph-root .d-tech span {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 11px 5px;
+}
+
+.graph-root .d-rel { margin-top: 24px; }
+.graph-root .d-rel-h {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: .08em;         /* was .14em */
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: 8px;
+}
+.graph-root .d-rel button {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 5px 12px 6px;
+  margin: 0 6px 6px 0;
+  transition: color .15s, border-color .15s, background .15s;
+}
+.graph-root .d-rel button:hover { color: var(--accent-hi); border-color: var(--node-border); background: var(--surface-2); }
+
+.graph-root .d-link, .graph-root .d-stub {
+  display: inline-block;
+  margin-top: 22px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+.graph-root .d-link { color: var(--accent); text-decoration-color: var(--edge); text-underline-offset: 3px; }
+.graph-root .d-link:hover { color: var(--accent-hi); }
+.graph-root .d-stub { color: var(--text-faint); }
+
+.graph-root .d-esc {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: .07em;         /* was .12em */
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-top: 34px;
+}
+
+/* --------------------------- reduced motion --------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .graph-root .drift, .g-stage.ready .edge { animation: none; }
+  .graph-root .card, .graph-root .edge, .graph-root .dossier,
+  .graph-root .filterbar, .graph-root .toast { transition: none; }
+}
