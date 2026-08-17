@@ -1,4 +1,8 @@
 node_modules
+
+# Vite build output (Vercel builds it; never committed)
+dist/
+
 .env.local
 .env*.local
 .env*
