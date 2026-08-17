@@ -8,13 +8,23 @@ This doc is restart-safe: any fresh agent must be able to resume from it alone.
 ## CURRENT STATUS / NEXT TASK  ← executors MUST keep this block updated
 
 ```
-Last updated : 2026-02-?? (planner) — no implementation started
+Last updated : 2026-08-17 (exec-graph) — Gate G1 passed
 exec-infra   : not started · next task = I-0.1 (branch + Vite scaffold)
-exec-graph   : not started · next task = G-1.1 (content model)
+exec-graph   : GATE G1 ✅ — G-1.1..G-1.4 done, 67 vitest units green (commit dc74c481)
+               next task = G-2.1 (dev harness) — WAITING on Gate 0 tick; meanwhile
+               prepping pure camera math (lib/, allowed pre-gate)
 Integration  : blocked until Phase 1 gate + Phase G4 gate both pass
 Blockers     : none
 Preview URL  : —
-Notes for Oliver : —
+Notes for Oliver :
+  - (exec-graph) Day beats are still the prototype's curated-fiction set (P5/L6).
+    Real redacted beats drop into src/content/site.js `week` — data-only swap.
+  - (exec-graph) Content deltas vs prototype, all making stubs real: scopecreep
+    links its real repo; articlewriter + page nodes link their real routes;
+    github/linkedin/resume channels use real URLs (public/resume.pdf verified);
+    email-node blurb reworded for production ("real even in the prototype" line).
+  - (exec-graph) Intent matcher now ignores trailing punctuation — the prototype's
+    own placeholder "what runs on this mac?" dead-ended when typed verbatim.
 ```
 
 Update rules: tick checkboxes in §8 as you complete tasks; rewrite this block at the end
@@ -259,10 +269,10 @@ gate actually passes before building on it (`npx playwright test`, `npx vitest r
 - [ ] **I-1.6** Playwright: toggle/persist/URL + legacy screenshot diff ×3 → **GATE 1 ✅**
 
 ### exec-graph
-- [ ] **G-1.1** `src/content/site.js` — 05 §2.2 schema, all 30 nodes + week ring, prototype copy (P5)
-- [ ] **G-1.2** `src/graph/lib/edges.js` — arc / elbow / weighted (§3.2) + invariants
-- [ ] **G-1.3** `src/graph/lib/layout.js` — authored positions; `src/intents/registry.js` + matcher
-- [ ] **G-1.4** Vitest units for all of the above → **GATE G1 ✅**
+- [x] **G-1.1** `src/content/site.js` — 05 §2.2 schema, all 30 nodes + week ring, prototype copy (P5)
+- [x] **G-1.2** `src/graph/lib/edges.js` — arc / elbow / weighted (§3.2) + invariants
+- [x] **G-1.3** `src/graph/lib/layout.js` — authored positions; `src/intents/registry.js` + matcher (+ `lib/structure.js`: edge list/adjacency/root-paths derived from content)
+- [x] **G-1.4** Vitest units for all of the above → **GATE G1 ✅** (5 suites · 67 tests · `npx vitest run src/content src/graph src/intents`)
 - [ ] **G-2.1** Dev harness (`graph-dev.html` + `dev.jsx`, DEV-only Vite input)
 - [ ] **G-2.2** `useCamera` — d3-zoom, inertia, van Wijk fly-to, bounds, fit
 - [ ] **G-2.3** Node components per kind (root/group/day/leaf) on world div
