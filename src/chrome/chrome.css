@@ -36,22 +36,6 @@
   color: var(--accent);
 }
 
-.sc-links {
-  display: flex;
-  gap: 22px;
-  margin-right: auto;
-  margin-left: 28px;
-}
-.sc-link {
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-.sc-link:hover {
-  color: var(--accent);
-}
-
 .sc-right {
   display: flex;
   align-items: center;
