@@ -9,15 +9,18 @@
  * — exactly the wiring core replicates at X-1 (applyAction below is the
  * reference implementation; harness-local on purpose, core owns its copy).
  *
- * window.__panes = { send(e), act(id, act), getState(), reset() } — DEV hook
- * only, mirrors core's window.__term pattern.
+ * window.__panes = { send(e), act(id, act), open(program, opts), day(n),
+ * getState(), reset() } — DEV hook only, mirrors core's window.__term
+ * pattern. open()/day() are the reference `panes.open` / replay-follows-day
+ * implementations core replicates at X-1 (§5 commands→panes surface).
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { flushSync } from 'react-dom';
 import '../../styles/sakura.css';
 import '../terminal.css';
-import PaneGrid from './PaneGrid.jsx';
+import PaneGrid, { paneStatus, toastText } from './PaneGrid.jsx';
+import PROGRAMS from './programs.jsx';
 import {
   createTree,
   split,
@@ -26,6 +29,7 @@ import {
   cycle,
   zoom,
   resizeStep,
+  setLeaf,
   leaves,
   layoutRects,
 } from './tree.js';
@@ -48,7 +52,12 @@ const initial = () => ({
   prefix: createPrefixState(),
   lastErr: '',
   helpOpen: false,
+  toast: null,
 });
+
+/** P9 mobile flatten breakpoint (§2): below ~880px → single pane. */
+const FLAT_MQ = '(max-width: 880px)';
+const isFlat = () => window.matchMedia(FLAT_MQ).matches;
 
 /**
  * Action executor — the §5 "core executes actions via tree ops + setState"
@@ -95,13 +104,13 @@ const BTN_ACTIONS = {
   close: { type: 'close' },
 };
 
-/** Harness-only placeholder program (real adapters land at N-3.1). Reuses
- * .term-buffer so each pane scrolls independently with the real chrome. */
-function Pager({ id, title }) {
+/** Harness-only stand-in for core's session-buffer slot (X-1). Manual `^G v`
+ * splits also land here via `fallback` (their leaves carry program:null). */
+function MainSlot({ id = 'main' }) {
   const rows = Array.from({ length: 36 }, (_, i) => i + 1);
   return (
-    <div className="term-buffer" tabIndex={0} aria-label={`${title ?? id} placeholder content`}>
-      <p className="ln mut">placeholder pager — program adapters land at N-3.1</p>
+    <div className="term-buffer" tabIndex={0} aria-label={`${id} placeholder content`}>
+      <p className="ln mut">placeholder — core's session slot mounts here at X-1</p>
       {rows.map((n) => (
         <p className="ln dim" key={n}>
           {String(n).padStart(2, '0')} · pane {id} scrollback row
@@ -115,6 +124,21 @@ function Harness() {
   const [st, setSt] = useState(initial);
   const stRef = useRef(st);
   stRef.current = st;
+  const [flat, setFlat] = useState(isFlat);
+
+  useEffect(() => {
+    const mq = window.matchMedia(FLAT_MQ);
+    const onChange = () => setFlat(mq.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
+  // auto-split toast expires on its own (info, not motion — not RM-gated)
+  useEffect(() => {
+    if (!st.toast) return undefined;
+    const t = setTimeout(() => setSt((s) => ({ ...s, toast: null })), 4000);
+    return () => clearTimeout(t);
+  }, [st.toast]);
 
   // prefix pending expiry — the timer feed core owns in prod (§5): clears
   // the '^G‥' indicator even when no further key arrives.
@@ -142,11 +166,68 @@ function Harness() {
       setSt((s) => {
         const r = prefixStep(s.prefix, ev);
         let next = { ...s, prefix: r.state };
-        if (r.action) next = applyAction(next, r.action, next.focusedId);
+        // P9: splits disabled below the breakpoint (auto-splits print
+        // in-buffer instead — core's panes.open handles that side)
+        if (r.action && !(isFlat() && r.action.type === 'split'))
+          next = applyAction(next, r.action, next.focusedId);
         // Esc cascade tail (core's at C-2.1/X-1): … → zoom → …
         else if (!r.handled && ev.key === 'Escape' && next.zoomedId)
           next = { ...next, zoomedId: null };
         return next;
+      });
+    });
+  }, []);
+
+  /**
+   * Reference `panes.open(program, {entity, title, day, split})` (§5).
+   * Ranger-style reuse: an existing pane running `program` is retargeted
+   * (setLeaf) instead of stacking new panes until the limit refuses.
+   * Fresh panes split off MAIN — right by default, so main stays LEFT (P7)
+   * — with the `^G x` toast. Flat/split:false → caller prints in-buffer.
+   */
+  const open = useCallback((program, opts = {}) => {
+    const { entity, title, day, split: dir = 'right' } = opts;
+    let out;
+    flushSync(() => {
+      setSt((s) => {
+        if (isFlat() || dir === false) {
+          out = { ok: false, inBuffer: true };
+          return s;
+        }
+        const existing = leaves(s.tree).find(
+          (l) => l.program === program && l.id !== 'main',
+        );
+        if (existing) {
+          const r = setLeaf(s.tree, existing.id, { entity, title, day });
+          out = { ok: true, id: existing.id, reused: true };
+          return { ...s, tree: r.tree, focusedId: existing.id, zoomedId: null, lastErr: '' };
+        }
+        const r = split(s.tree, 'main', dir, { program, entity, title, day, dims: DIMS });
+        if (!r.ok) {
+          out = { ok: false, err: r.err };
+          return { ...s, lastErr: r.err };
+        }
+        out = { ok: true, id: r.id };
+        return {
+          ...s,
+          tree: r.tree,
+          focusedId: r.id,
+          zoomedId: null,
+          lastErr: '',
+          toast: toastText(leaves(r.tree).length),
+        };
+      });
+    });
+    return out;
+  }, []);
+
+  /** Reference "replay follows the last `day N`" (§3.2). */
+  const setDay = useCallback((n) => {
+    flushSync(() => {
+      setSt((s) => {
+        const replay = leaves(s.tree).find((l) => l.program === 'replay');
+        if (!replay) return s;
+        return { ...s, tree: setLeaf(s.tree, replay.id, { day: Number(n) }).tree };
       });
     });
   }, []);
@@ -168,6 +249,8 @@ function Harness() {
     window.__panes = {
       send,
       act,
+      open,
+      day: setDay,
       reset: () => flushSync(() => setSt(initial())),
       getState: () => {
         const s = stRef.current;
@@ -182,16 +265,17 @@ function Harness() {
           indicator: indicator(s.prefix),
           lastErr: s.lastErr,
           helpOpen: s.helpOpen,
+          toast: s.toast,
+          flat: isFlat(),
         };
       },
     };
     return () => {
       delete window.__panes;
     };
-  }, [send, act]);
+  }, [send, act, open, setDay]);
 
-  const ind = indicator(st.prefix);
-  const count = leaves(st.tree).length;
+  const sb = paneStatus({ tree: st.tree, zoomedId: st.zoomedId, prefix: st.prefix });
 
   return (
     <main className="sakura term-screen" data-testid="panes-harness">
@@ -201,27 +285,30 @@ function Harness() {
           focusedId={st.focusedId}
           zoomedId={st.zoomedId}
           programs={{
-            // element entry (core's session-slot pattern) + component fallback
-            main: <Pager id="main" title="main" />,
-            fallback: Pager,
+            // element entry (core's session-slot pattern) + real N-3 adapters
+            ...PROGRAMS,
+            main: <MainSlot />,
+            fallback: MainSlot,
           }}
           onPaneClick={focusPane}
           onPaneAction={act}
+          toast={st.toast}
+          flat={flat}
         />
       </div>
       <footer className="term-statusbar" data-testid="panes-statusbar">
         <span className="sb-sess">[panes-dev]</span>
         <span className="sb-panes" data-testid="sb-panes">
-          {count} pane{count === 1 ? '' : 's'}
+          {sb.paneCount} pane{sb.paneCount === 1 ? '' : 's'}
         </span>
-        {st.zoomedId && (
+        {sb.zoomed && (
           <span className="sb-zoom" data-testid="sb-zoom">
             [Z]
           </span>
         )}
-        {ind && (
+        {sb.prefix && (
           <span className="sb-prefix" data-testid="sb-prefix">
-            {ind}
+            {sb.prefix}
           </span>
         )}
         {st.helpOpen && <span className="sb-dim">?help (core's sheet at C-2.2)</span>}

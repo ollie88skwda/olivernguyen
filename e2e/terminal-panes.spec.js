@@ -206,3 +206,132 @@ test.describe("terminal panes — Gate N2 (PaneGrid components in the harness)",
     assertClean(errors);
   });
 });
+
+test.describe("terminal panes — Gate N3 (programs, auto-split, limits, a11y)", () => {
+  test("open artifact → auto-split RIGHT with main LEFT + toast; reuse retargets", async ({ page }) => {
+    const errors = collectErrors(page);
+    await openHarness(page);
+
+    const r = await page.evaluate(() =>
+      window.__panes.open("artifact", { entity: "mac-agent", title: "mac-agent" }),
+    );
+    expect(r).toEqual({ ok: true, id: "p2" });
+
+    // main stays LEFT: root split right, main in the a slot
+    const s = await getState(page);
+    expect(s.leaves).toEqual(["main", "p2"]);
+    expect(s.focusedId).toBe("p2");
+    const root = page.locator('[data-testid="pane-grid"] > .pane-split');
+    await expect(root).toHaveClass(/dir-right/);
+    await expect(root.locator('> .split-a > [data-pane="main"]')).toHaveCount(1);
+
+    // toast advertises the close key (09 §C copy)
+    await expect(page.locator(".pane-toast")).toHaveText("opened in pane 2 · ^G x closes");
+    await expect(page.locator(".pane-toast")).toHaveAttribute("role", "status");
+
+    // dossier content is real site.js data, printed into the pane's own log
+    const pane = page.locator('[data-pane="p2"]');
+    await expect(pane).toContainText("Mac-Agent");
+    await expect(pane).toContainText("MCP toolbelt for macOS");
+    await expect(pane).toContainText("[ACTIVE]");
+
+    // ranger-style reuse: a second open retargets the SAME pane
+    const r2 = await page.evaluate(() =>
+      window.__panes.open("artifact", { entity: "articlewriter", title: "articlewriter" }),
+    );
+    expect(r2).toEqual({ ok: true, id: "p2", reused: true });
+    expect((await getState(page)).paneCount).toBe(2);
+    await expect(pane).toContainText("Articlewriter");
+    await expect(pane).toContainText("research → draft → composite");
+
+    assertClean(errors);
+  });
+
+  test("replay pane follows the last `day N`", async ({ page }) => {
+    const errors = collectErrors(page);
+    await openHarness(page);
+
+    await page.evaluate(() => window.__panes.open("replay", { day: 2 }));
+    const pane = page.locator('[data-pane="p2"]');
+    await expect(pane).toContainText("operator · day 2/7");
+    await expect(pane).toContainText("2026-05-22");
+
+    await page.evaluate(() => window.__panes.day(5));
+    await expect(pane).toContainText("operator · day 5/7");
+    await expect(pane).toContainText("2026-05-25");
+    await expect(pane).not.toContainText("day 2/7"); // reprint, not append
+
+    assertClean(errors);
+  });
+
+  test("limits surface as statusbar E-errors: 5th pane refused, main refuses close", async ({ page }) => {
+    const errors = collectErrors(page);
+    await openHarness(page);
+
+    // 4 panes: main | (p2 / (p3 / p4)) — the herdr layout
+    await send(page, ["C-g", "v", "C-g", "-", "C-g", "-"]);
+    expect((await getState(page)).paneCount).toBe(4);
+
+    // 5th refused with the statusbar error (count limit)
+    await send(page, ["C-g", "v"]);
+    await expect(page.getByTestId("sb-err")).toHaveText("E94: pane limit reached (max 4)");
+    expect((await getState(page)).paneCount).toBe(4);
+
+    // main refuses close — via keyboard on the focused main pane
+    await page.locator('[data-pane="main"] .pane-body').click();
+    await send(page, ["C-g", "x"]);
+    await expect(page.getByTestId("sb-err")).toHaveText("E97: 'main' refuses close");
+    expect((await getState(page)).paneCount).toBe(4);
+
+    // a successful op clears the error
+    await send(page, ["C-g", "l"]);
+    await expect(page.getByTestId("sb-err")).toHaveCount(0);
+
+    assertClean(errors);
+  });
+
+  test("a11y: every pane is a labeled region; program buffers are labeled logs", async ({ page }) => {
+    const errors = collectErrors(page);
+    await openHarness(page);
+
+    await page.evaluate(() => window.__panes.open("artifact", { entity: "mac-agent", title: "mac-agent" }));
+    await page.evaluate(() => window.__panes.open("help", { title: "help" }));
+
+    await expect(page.getByRole("region", { name: "main" })).toBeVisible();
+    await expect(page.getByRole("region", { name: "mac-agent" })).toBeVisible();
+    await expect(page.getByRole("region", { name: "help" })).toBeVisible();
+    expect(await page.getByRole("region").count()).toBe(3);
+
+    // program adapters render real role=log buffers with labels
+    await expect(page.getByRole("log", { name: "mac-agent" })).toBeVisible();
+    await expect(page.getByRole("log", { name: "help" })).toBeVisible();
+    // help pane carries the ^G bindings (09 §C: adds pane keys to 07's table)
+    await expect(page.getByRole("log", { name: "help" })).toContainText("^G v split right");
+
+    // DOM focus followed the last open for AT (focused pane is the section)
+    await expect(page.locator("section.pane.focused")).toHaveCount(1);
+
+    assertClean(errors);
+  });
+
+  test("mobile flatten (P9): single pane rendered, splits disabled, open falls back in-buffer", async ({ page }) => {
+    const errors = collectErrors(page);
+    await page.setViewportSize({ width: 480, height: 800 });
+    await openHarness(page);
+
+    // splits via the grammar are ignored below the breakpoint
+    await send(page, ["C-g", "v"]);
+    expect((await getState(page)).paneCount).toBe(1);
+    await expect(page.locator("section.pane")).toHaveCount(1);
+
+    // panes.open declines — the command layer prints in-buffer instead (P9)
+    const r = await page.evaluate(() =>
+      window.__panes.open("artifact", { entity: "mac-agent", title: "mac-agent" }),
+    );
+    expect(r).toEqual({ ok: false, inBuffer: true });
+    expect((await getState(page)).paneCount).toBe(1);
+    await expect(page.locator(".pane-toast")).toHaveCount(0);
+
+    assertClean(errors);
+  });
+});

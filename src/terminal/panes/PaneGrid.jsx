@@ -24,6 +24,19 @@ import React, { isValidElement, useEffect, useRef } from 'react';
 import './panes.css';
 import Pane from './Pane.jsx';
 import { findLeaf, leaves } from './tree.js';
+import { indicator } from './prefix.js';
+
+/** Auto-split toast copy (P7/09 §C — advertises the close key). */
+export const toastText = (paneNumber) => `opened in pane ${paneNumber} · ^G x closes`;
+
+/** StatusBar props feed (§5: core renders; panes state arrives as props). */
+export function paneStatus({ tree, zoomedId, prefix }) {
+  return {
+    paneCount: leaves(tree).length,
+    zoomed: Boolean(zoomedId),
+    prefix: indicator(prefix),
+  };
+}
 
 function paneContent(programs, leaf) {
   const entry = programs?.[leaf.program] ?? programs?.fallback;
@@ -40,6 +53,7 @@ export default function PaneGrid({
   programs,
   onPaneClick,
   onPaneAction,
+  toast = null,
   flat = false,
 }) {
   const rootRef = useRef(null);
@@ -89,6 +103,11 @@ export default function PaneGrid({
       ref={rootRef}
     >
       {root}
+      {toast && !flat && (
+        <div className="pane-toast" role="status">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }

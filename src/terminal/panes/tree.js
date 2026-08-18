@@ -186,6 +186,23 @@ export function focusDir(tree, id, key) {
   return best ? best.id : null;
 }
 
+/**
+ * Update a leaf's program props in place (N-3 ranger-style reuse: `open X`
+ * retargets an existing artifact pane instead of stacking panes until the
+ * limit refuses). Merges { program, title, entity, day }; undefined keys
+ * keep their value. → { ok:true, tree } | { ok:false, err }
+ */
+export function setLeaf(tree, id, props) {
+  const path = pathTo(tree, id);
+  if (!path) return { ok: false, err: ERR.NOT_FOUND };
+  const leaf = path[path.length - 1];
+  const next = { ...leaf };
+  for (const k of ['program', 'title', 'entity', 'day']) {
+    if (props[k] !== undefined) next[k] = props[k];
+  }
+  return { ok: true, tree: replaceNode(tree, leaf, next) };
+}
+
 /** Cycle focus through leaves in order (dir ±1, wraps). → leaf id. */
 export function cycle(tree, id, dir = 1) {
   const ids = leaves(tree).map((l) => l.id);

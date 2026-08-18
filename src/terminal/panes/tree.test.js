@@ -7,6 +7,7 @@ import {
   createTree,
   leaves,
   findLeaf,
+  setLeaf,
   layoutRects,
   split,
   close,
@@ -287,6 +288,31 @@ describe('resizeStep', () => {
     const before = JSON.parse(JSON.stringify(t));
     resizeStep(t, 'main', 'x', +RESIZE_STEP);
     expect(t).toEqual(before);
+  });
+});
+
+describe('setLeaf', () => {
+  it('merges program props onto a leaf immutably', () => {
+    const t = herdrLayout();
+    const before = JSON.parse(JSON.stringify(t));
+    const r = setLeaf(t, 'p2', { program: 'artifact', entity: 'mac-agent', title: 'mac-agent' });
+    expect(r.ok).toBe(true);
+    expect(findLeaf(r.tree, 'p2')).toEqual({
+      type: 'leaf',
+      id: 'p2',
+      program: 'artifact',
+      entity: 'mac-agent',
+      title: 'mac-agent',
+    });
+    expect(t).toEqual(before);
+    // undefined keys keep their value; defined ones overwrite
+    const r2 = setLeaf(r.tree, 'p2', { entity: 'articlewriter' });
+    expect(findLeaf(r2.tree, 'p2').program).toBe('artifact');
+    expect(findLeaf(r2.tree, 'p2').entity).toBe('articlewriter');
+  });
+
+  it('unknown id → E-not-found', () => {
+    expect(setLeaf(createTree(), 'nope', { day: 2 })).toEqual({ ok: false, err: ERR.NOT_FOUND });
   });
 });
 

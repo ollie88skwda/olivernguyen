@@ -21,16 +21,25 @@ Last updated   : exec-term-core — ALL C-PHASES DONE: GATES T0+C1+C2+C3 PASSED 
 exec-term-core : next — X-2 EARLY (Home.jsx swap is panes-independent; plan orders it
                  after N3 but nothing in it touches panes — deviation logged), then
                  mode-roundtrip spec prep; X-1 waits on panes' N2/N3.
-exec-term-panes: GATE N2 PASSED ✅ (N-2.1..N-2.3: PaneGrid/Pane nested flex + chrome,
-                 zoom CSS, motion-gated resize, panes harness at /terminal-panes-dev.html,
-                 5 e2e green in e2e/terminal-panes.spec.js). Contract notes for core (X-1):
-                 prefixStep returns extra field `handled` (true → preventDefault + skip own
-                 handling); PaneGrid takes additive prop onPaneAction(id, act) for title-row
-                 buttons — act on THAT id, focus it first (reference executor: applyAction
-                 in panes/dev.jsx — also shows zoom-drop-on-layout-change + Esc→unzoom
-                 cascade tail). tree.split opts now carry entity/day onto the leaf.
-                 Next: N-3.1 program adapters (imports core's WIP sections.jsx — will
-                 track its exports).
+exec-term-panes: CHECKLIST COMPLETE — GATE N3 PASSED ✅ (N-3.1..N-3.3: programs.jsx
+                 adapters over core's sections/model, ranger-style artifact reuse,
+                 auto-split toast, paneStatus feed, mobile flatten; 10/10 e2e green in
+                 terminal-panes.spec.js, 71 unit tests). ON CALL for Integration.
+                 X-1 crib sheet for core: panes/dev.jsx holds the REFERENCE impls of
+                 applyAction + panes.open (reuse→setLeaf, split off main RIGHT, toast via
+                 toastText(), flat→{ok:false,inBuffer:true}) and replay day-follow (setLeaf
+                 day on the replay leaf). PaneGrid extras beyond §5: onPaneAction(id,act)
+                 (title buttons — act on THAT id), toast + flat props, paneStatus() export;
+                 prefixStep returns `handled` (true → preventDefault + skip own handling).
+                 Program adapters defer prints one microtask (engine flushSync × lifecycle).
+                 FYI core: 2 flaky-looking fails seen in YOUR WIP surface across full runs
+                 (integration.spec TERM cases once, mode-roundtrip once) — panes + T0 + N
+                 suites green both runs; untouched. ⚠ SHARED-INDEX INCIDENT: your staged
+                 `git rm src/home/home.css` got swept into my N-3 commit (broke that commit
+                 in isolation — HEAD Home.jsx still imported it); I amended to RESTORE
+                 home.css. It is back on disk + in HEAD — re-run `git rm src/home/home.css`
+                 as part of your X-2 commit. Suggest we both keep the index clean between
+                 commits (stage only at commit time).
 Blockers       : none.
 Preview URL    : — (graph-v1 preview: see doc 10 status header)
 Notes for Oliver : —
@@ -327,9 +336,9 @@ status block, commit (`terminal-v1(<executor>): <task-id> <summary>`).
 - [x] **N-2.1** `PaneGrid.jsx`/`Pane.jsx` — nested flex, pane chrome, focus/dim, gaps (after GATE T0)
 - [x] **N-2.2** Zoom (CSS), resize transition (motion-gated), panes dev harness
 - [x] **N-2.3** Harness verification: 3-pane build, focus, zoom, clamps → **GATE N2 ✅**
-- [ ] **N-3.1** `programs.jsx` — replay / section pagers / artifact / help adapters (§3.2)
-- [ ] **N-3.2** Auto-split rules + toast; statusbar props ({paneCount, zoomed, prefix}); mobile flatten
-- [ ] **N-3.3** Playwright `terminal-panes.spec.js`: grammar, limits, a11y roles → **GATE N3 ✅**
+- [x] **N-3.1** `programs.jsx` — replay / section pagers / artifact / help adapters (§3.2)
+- [x] **N-3.2** Auto-split rules + toast; statusbar props ({paneCount, zoomed, prefix}); mobile flatten
+- [x] **N-3.3** Playwright `terminal-panes.spec.js`: grammar, limits, a11y roles → **GATE N3 ✅**
 
 ### Integration (exec-term-core leads, exec-term-panes on call)
 - [ ] **X-1** PaneGrid into TerminalHome: main slot, `panes.open`, prefix reducer wired, statusbar live
