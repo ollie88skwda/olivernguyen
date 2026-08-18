@@ -12,13 +12,17 @@ Last updated : 2026-08-17 (exec-infra) — GATE 0 ✅ (23f83210). exec-graph UNB
 exec-infra   : I-0.1..I-0.6 DONE. Gate 0: 16/16 Playwright routes clean (2x stable),
                vitest 216/216, vite build green. I-0.7 preview deployed + /api
                verified. Next = Phase 1 (I-1.1 sakura.css …).
-exec-graph   : GATE G3 ✅ (157a41e9) — full interaction layer live in the harness
-               (http://localhost:3200/graph-dev.html · bg-vite-dev pane w2Y:pN).
-               e2e/graph.spec.js 5/5. next task = G-4.1 (mobile dossier-list fallback).
+exec-graph   : ALL PHASES DONE — GATES G1–G4 ✅ (last: 9cbea665). Harness:
+               http://localhost:3200/graph-dev.html (bg-vite-dev pane w2Y:pN).
+               Full check this session: vitest 216/216 · playwright 26 passed.
+               Standing by for INTEGRATION (X-1..X-4, exec-infra leads — I'm on call).
                NOTE for X-2 (exec-infra): the graph's ⌘K/prompt "switch to terminal"
                intent dispatches cancelable CustomEvent 'on:set-mode' (detail =
                'terminal'|'graph') on window; ModeProvider should listen +
                preventDefault. Uncaught → graph shows a holding-screen toast.
+               X-1 note: GraphHome imports graph.css itself; lazy-import it and the
+               d3 deps ride in its chunk. Dev harness (graph-dev.html) is already
+               excluded from prod (build input pinned to index.html).
 Integration  : blocked until Phase 1 gate + Phase G4 gate both pass
 Blockers     : none
 Preview URL  : https://olivernguyen-pdsyq4d2u-ollie88skwdas-projects.vercel.app (Phase-0 state)
@@ -40,6 +44,11 @@ Notes for Oliver :
     email-node blurb reworded for production ("real even in the prototype" line).
   - (exec-graph) Intent matcher now ignores trailing punctuation — the prototype's
     own placeholder "what runs on this mac?" dead-ended when typed verbatim.
+  - (exec-graph) Far-zoom card detail lines (kind label + meta) now hide fully
+    instead of ghosting at 15% opacity — the ghost failed WCAG contrast (axe,
+    34×). Visually near-identical at that zoom; revert = graph.css far-fade rule.
+  - (exec-graph) Tour: auto-started runs advance every 4s; manual arrows take
+    over (arrows/Esc always work). RM/still → no autostart, instant steps.
 ```
 
 Update rules: tick checkboxes in §8 as you complete tasks; rewrite this block at the end
@@ -302,10 +311,10 @@ gate actually passes before building on it (`npx playwright test`, `npx vitest r
 - [x] **G-3.5** Guided tour (8 stops, 6s-idle autostart + any-input cancel, 4s auto-dwell)
 - [x] **G-3.6** Entry animation + keyboard model + never-trap rules
 - [x] **G-3.7** Playwright: click-crawl every entity, pulse assertions, keyboard specs → **GATE G3 ✅** (e2e/graph.spec.js 5/5; incl. mouse-only crawl of all 30 nodes + occlusion drag-recovery)
-- [ ] **G-4.1** Mobile dossier-list fallback; graph chunk never fetched on mobile
-- [ ] **G-4.2** Reduced-motion fallbacks throughout; `?still` kept
-- [ ] **G-4.3** SR layer: role=application + hidden entity list; axe pass
-- [ ] **G-4.4** Playwright: mobile/RM/network/axe specs → **GATE G4 ✅**
+- [x] **G-4.1** Mobile dossier-list fallback; graph chunk never fetched on mobile (9cbea665; network-asserted)
+- [x] **G-4.2** Reduced-motion fallbacks throughout; `?still` kept (RM: no entry/drift/draw-in/typewriter/autostart, instant camera, pulse → static route highlight)
+- [x] **G-4.3** SR layer: role=application + hidden entity list; axe pass (GraphList doubles as mobile view + SR layer)
+- [x] **G-4.4** Playwright: mobile/RM/network/axe specs → **GATE G4 ✅** (e2e/graph-a11y.spec.js 3/3; axe via CDN-injected axe-core — no dep change needed; full suite 26 passed / 4 env-gated skips)
 
 ### Integration (exec-infra leads, exec-graph on call)
 - [ ] **X-1** Mount lazy GraphHome in Home; old home unmounted + flagged (P4); harness excluded from prod
