@@ -238,6 +238,16 @@ export default function TerminalHome({ devHook, autoboot = true }) {
 
   return (
     <main className="sakura term-screen" data-testid="terminal-home">
+      <a
+        className="term-skip"
+        href="#term-prompt-input"
+        onClick={(e) => {
+          e.preventDefault(); // deliver focus directly (fragment-focus varies)
+          promptRef.current?.focus();
+        }}
+      >
+        Skip to prompt
+      </a>
       {/* click delegation over printed output — not a keyboard surface */}
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
       <div className="term-main" onClick={onMainClick}>
@@ -257,6 +267,7 @@ export default function TerminalHome({ devHook, autoboot = true }) {
         windows={WINDOWS}
         active={activeWindow}
         onWindow={(n) => runner.run(windowByN(n).cmd, { autotype: true })}
+        onPalette={() => setPaletteOpen(true)}
         mode={sbOverride || sbMode}
       />
       <Palette open={paletteOpen} onClose={closeOverlays} onRun={runIntent} />

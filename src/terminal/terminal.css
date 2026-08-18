@@ -50,6 +50,22 @@
   white-space: nowrap;
 }
 
+/* skip link (C-3.3): hidden until keyboard-focused */
+.term-skip {
+  position: absolute;
+  left: 2ch;
+  top: -100px;
+  z-index: 90;
+  padding: 4px 1ch;
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: 3px;
+  text-decoration: none;
+}
+.term-skip:focus-visible {
+  top: 6px;
+}
+
 /* ---------- main row (buffer now; PaneGrid replaces its content at X-1) --- */
 
 .term-main {
@@ -227,6 +243,11 @@
 .term-statusbar .sb-tabs {
   display: flex;
   gap: 1ch;
+  overflow-x: auto; /* 5 tabs still reachable on narrow screens (P9) */
+  scrollbar-width: none;
+}
+.term-statusbar .sb-tabs::-webkit-scrollbar {
+  display: none;
 }
 .term-statusbar .tab {
   color: var(--text-faint);
@@ -256,9 +277,38 @@
   color: var(--warning);
 }
 
+.term-statusbar .sb-cmdk {
+  color: var(--text-faint);
+  padding: 0 1ch;
+  border-radius: 2px;
+}
+.term-statusbar .sb-cmdk:hover {
+  color: var(--accent);
+}
+
 @media (max-width: 760px) {
   .term-statusbar .sb-right {
     display: none;
+  }
+}
+
+/* ---------- touch (P9): ≥44px targets; keyboard never pops uninvited ----- */
+
+@media (pointer: coarse) {
+  .term-screen .obtn,
+  .term-statusbar .tab,
+  .term-statusbar .sb-cmdk {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .term-statusbar {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .term-screen .promptline {
+    min-height: 44px;
+    align-items: center;
   }
 }
 .term-statusbar .sb-mode {
@@ -297,12 +347,13 @@
   margin: 10vh auto 0;
   padding: var(--row) 3ch;
 }
-.term-overlay .help-panel h3 {
+.term-overlay .help-panel h2 {
   margin: 0 0 8px;
   color: var(--accent);
   font-size: var(--term-fs);
+  font-weight: 700;
 }
-.term-overlay .help-panel h3 + table {
+.term-overlay .help-panel h2 + table {
   margin-bottom: var(--row);
 }
 .term-overlay .help-panel table {
@@ -366,7 +417,7 @@
   cursor: pointer;
 }
 .term-overlay .palette-list li .hint {
-  color: var(--text-faint);
+  color: var(--text-muted); /* text-faint fails 4.5:1 at 13px (axe C-3.3) */
   font-size: 13px;
 }
 .term-overlay .palette-list li.sel {

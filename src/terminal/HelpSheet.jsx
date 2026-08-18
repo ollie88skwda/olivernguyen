@@ -59,9 +59,9 @@ export default function HelpSheet({ open, onClose }) {
         aria-modal="true"
         aria-label="Keyboard help"
       >
-        <h3>keys</h3>
+        <h2>keys</h2>
         <KeyTable rows={KEYS} />
-        <h3>commands</h3>
+        <h2>commands</h2>
         <KeyTable rows={CMDS} />
         <button ref={closeRef} type="button" className="obtn" onClick={onClose}>
           [ close ]

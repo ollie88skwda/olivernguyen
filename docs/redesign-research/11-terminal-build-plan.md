@@ -8,13 +8,19 @@ This doc is restart-safe: any fresh agent must be able to resume from it alone.
 ## CURRENT STATUS / NEXT TASK  ← executors MUST keep this block updated
 
 ```
-Last updated   : exec-term-core — GATES T0 + C1 + C2 PASSED ✅ (C-0.1..C-2.4 done;
-                 terminal.spec 20/20; intents wrapper drops graph-only tour/fit rows
-                 (L7: every palette row must do something real — flag if unwanted).
+Last updated   : exec-term-core — ALL C-PHASES DONE: GATES T0+C1+C2+C3 PASSED ✅
+                 (25 terminal e2e green; full suites: 341 vitest + 66 e2e incl. graph —
+                 no regressions). C-3.4 type pass: harness vs prototype screenshots
+                 compared; cell metrics near-identical (Martian Mono 14px/22px → ch
+                 9.80px vs proto 9.63px); accepted.
                  Impl notes: runner has its OWN queue, prints ride the buffer queue (a
                  command awaiting its own queue deadlocked — fixed + regression-tested);
-                 harness supports ?noboot (T0 engine specs) and ?still (instant cadence).
-exec-term-core : next task C-3.1..C-3.5 (mobile touch story, RM pass, SR layer, type pass).
+                 harness supports ?noboot (T0 engine specs) and ?still (instant cadence);
+                 intents wrapper drops graph-only tour/fit rows (L7: every palette row
+                 must do something real); statusbar grew a ⌘K chip (P9 palette entry).
+exec-term-core : next — X-2 EARLY (Home.jsx swap is panes-independent; plan orders it
+                 after N3 but nothing in it touches panes — deviation logged), then
+                 mode-roundtrip spec prep; X-1 waits on panes' N2/N3.
 exec-term-panes: GATE N2 PASSED ✅ (N-2.1..N-2.3: PaneGrid/Pane nested flex + chrome,
                  zoom CSS, motion-gated resize, panes harness at /terminal-panes-dev.html,
                  5 e2e green in e2e/terminal-panes.spec.js). Contract notes for core (X-1):
@@ -308,11 +314,11 @@ status block, commit (`terminal-v1(<executor>): <task-id> <summary>`).
 - [x] **C-2.2** `lib/intents.js` wrapper (P4) + `Palette.jsx` (⌘K, suggestions) + `HelpSheet.jsx`
 - [x] **C-2.3** `mode graph|term` → cancelable `'on:set-mode'` dispatch + printErr fallback
 - [x] **C-2.4** Playwright: never-trap, palette, mode-dispatch, key table → **GATE C2 ✅**
-- [ ] **C-3.1** P9 mobile touch story (no autofocus, tap targets, palette chip, single-pane ctx)
-- [ ] **C-3.2** Reduced-motion full pass + `?still` param
-- [ ] **C-3.3** SR layer: role=log, dialog semantics, skip link; axe
-- [ ] **C-3.4** Type pass: Martian Mono cell-grid retune vs prototype screenshots (§3.3)
-- [ ] **C-3.5** Playwright: mobile/RM/axe/screenshots → **GATE C3 ✅**
+- [x] **C-3.1** P9 mobile touch story (no autofocus, tap targets, palette chip, single-pane ctx)
+- [x] **C-3.2** Reduced-motion full pass + `?still` param
+- [x] **C-3.3** SR layer: role=log, dialog semantics, skip link; axe
+- [x] **C-3.4** Type pass: Martian Mono cell-grid retune vs prototype screenshots (§3.3)
+- [x] **C-3.5** Playwright: mobile/RM/axe/screenshots → **GATE C3 ✅**
 
 ### exec-term-panes
 - [x] **N-1.1** `panes/tree.js` — split tree ops, limits, focusDir geometry (pure)

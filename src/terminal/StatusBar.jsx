@@ -1,7 +1,8 @@
 /**
  * src/terminal/StatusBar.jsx — tmux statusbar (C-1.5): `[oN.c]` + window tabs
- * (click = run that window's command) + mode indicator + pos% + clock.
- * Pane props ({paneCount, zoomed, prefix}) are stubbed defaults until X-1.
+ * (click = run that window's command) + ⌘K chip (P9: the palette's tappable
+ * entry point — the only palette affordance on touch) + mode indicator +
+ * pos% + clock. Pane props ({paneCount, zoomed, prefix}) stubbed until X-1.
  */
 import React, { useEffect, useState } from 'react';
 
@@ -17,6 +18,7 @@ export default function StatusBar({
   windows = [],
   active = 1,
   onWindow,
+  onPalette,
   mode = '-- NORMAL --',
   paneCount = 1,
   zoomed = false,
@@ -49,6 +51,17 @@ export default function StatusBar({
             </button>
           ))}
         </nav>
+      )}
+      {onPalette && (
+        <button
+          type="button"
+          className="sb-cmdk"
+          data-testid="sb-cmdk"
+          aria-label="Open command palette"
+          onClick={onPalette}
+        >
+          ⌘K
+        </button>
       )}
       <span className="sb-right">
         {paneCount > 1 && <span className="sb-panes">{paneCount} panes</span>}
