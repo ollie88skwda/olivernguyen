@@ -30,7 +30,7 @@ test.describe("integrated / — FINAL GATE", () => {
     expect(errors).toEqual([]);
   });
 
-  test("TERM shows the holding screen; toggling back restores a working graph", async ({
+  test("TERM mounts the real terminal; toggling back restores a working graph", async ({
     page,
   }) => {
     const errors = watchErrors(page);
@@ -38,7 +38,12 @@ test.describe("integrated / — FINAL GATE", () => {
     await page.waitForSelector(".g-stage");
 
     await page.getByRole("button", { name: "TERM" }).click();
-    await expect(page.getByTestId("terminal-holding")).toBeVisible();
+    // X-2: the doc-10 holding screen is gone — the lazy terminal mounts + boots
+    await expect(page.getByTestId("terminal-home")).toBeVisible();
+    await expect(page.locator(".ln.echo .cmdtext").first()).toHaveText(
+      "operator --replay --day 3",
+      { timeout: 15_000 },
+    );
     await expect(page.locator(".graph-root")).toHaveCount(0); // unmounted — no key hijack
     await expect(page.locator("html")).toHaveAttribute("data-mode", "terminal");
 
@@ -65,8 +70,8 @@ test.describe("integrated / — FINAL GATE", () => {
     await page.keyboard.press("Enter");
 
     // ModeProvider preventDefaults 'on:set-mode' and swaps the mode — the
-    // graph must NOT show its "holding screen for now" fallback toast.
-    await expect(page.getByTestId("terminal-holding")).toBeVisible();
+    // graph must NOT show its fallback toast; the real terminal mounts (X-2).
+    await expect(page.getByTestId("terminal-home")).toBeVisible();
     await expect(page.locator("html")).toHaveAttribute("data-mode", "terminal");
     await expect(page).toHaveURL(/[?&]mode=terminal/);
     expect(errors).toEqual([]);

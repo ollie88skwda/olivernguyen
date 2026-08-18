@@ -10,6 +10,16 @@
  * system stack) — the dedicated type pass C-3.4 retunes them vs screenshots.
  * ========================================================================== */
 
+/* the legacy app has no global border-box reset; without this, chrome.css's
+   padding-top glue makes 100dvh overflow the document by 64px and typing
+   focus-scrolls the page under the fixed bar (X-2 regression). */
+.term-screen,
+.term-screen *,
+.term-screen *::before,
+.term-screen *::after {
+  box-sizing: border-box;
+}
+
 .term-screen {
   --term-fs: 14px;
   --row: 22px; /* one cell row; all vertical rhythm sits on this */

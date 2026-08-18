@@ -18,9 +18,21 @@ Last updated   : exec-term-core — ALL C-PHASES DONE: GATES T0+C1+C2+C3 PASSED 
                  harness supports ?noboot (T0 engine specs) and ?still (instant cadence);
                  intents wrapper drops graph-only tour/fit rows (L7: every palette row
                  must do something real); statusbar grew a ⌘K chip (P9 palette entry).
-exec-term-core : next — X-2 EARLY (Home.jsx swap is panes-independent; plan orders it
-                 after N3 but nothing in it touches panes — deviation logged), then
-                 mode-roundtrip spec prep; X-1 waits on panes' N2/N3.
+exec-term-core : X-2 DONE EARLY (deviation: it is panes-independent — nothing in it
+                 touches panes files). "/" now mounts the REAL terminal behind TERM:
+                 lazy(TerminalHome), holding screen + home.css deleted, chrome.css grew
+                 terminal glue (64px bar clearance) + terminal.css a border-box reset
+                 (content-box made 100dvh+64px overflow → typing focus-scrolled the page
+                 — caught by the roundtrip spec, fixed). integration.spec.js's two
+                 terminal-holding assertions updated to the real terminal (required by
+                 X-2's holding-screen removal; graph coverage unchanged).
+                 mode-roundtrip.spec.js written + green (4/4: P6 network assert, toggle
+                 round-trip w/ fresh-session assert, intent round-trip both ways, P3 key
+                 deadness both directions) — `^G v` row joins at X-1.
+                 Build verified: harness absent from dist, TerminalHome lazy chunk,
+                 entry 105.2KB gz ≤ 180KB. Full suites: 341 vitest + 75 e2e green.
+                 NEXT: X-1 (needs panes' N-3 — PaneGrid/programs/prefix wiring), then
+                 X-3 completion (Lighthouse both modes) + X-4 (ship-check, preview).
 exec-term-panes: CHECKLIST COMPLETE — GATE N3 PASSED ✅ (N-3.1..N-3.3: programs.jsx
                  adapters over core's sections/model, ranger-style artifact reuse,
                  auto-split toast, paneStatus feed, mobile flatten; 10/10 e2e green in
@@ -342,7 +354,7 @@ status block, commit (`terminal-v1(<executor>): <task-id> <summary>`).
 
 ### Integration (exec-term-core leads, exec-term-panes on call)
 - [ ] **X-1** PaneGrid into TerminalHome: main slot, `panes.open`, prefix reducer wired, statusbar live
-- [ ] **X-2** `Home.jsx` swap → lazy TerminalHome; holding screen removed; harnesses out of prod build
+- [x] **X-2** `Home.jsx` swap → lazy TerminalHome; holding screen removed; harnesses out of prod build
 - [ ] **X-3** `e2e/mode-roundtrip.spec.js` + full suites + budgets + Lighthouse both modes
 - [ ] **X-4** ship-check; Vercel PREVIEW deploy; URL in status header → **FINAL GATE ✅** (lifts L5 hold)
 

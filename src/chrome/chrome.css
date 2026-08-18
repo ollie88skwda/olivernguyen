@@ -214,3 +214,11 @@ html[data-mode="graph"] .graph-root .tourhud {
 html[data-mode="graph"] .graph-root .dossier {
   top: 64px;
 }
+
+/* Terminal glue (X-2): same problem, other mode — the fixed 64px bar sits
+   over the top of the 100dvh terminal screen on "/". Clear it with padding
+   (the buffer row shrinks; the page still never scrolls). The dev harness
+   never loads this file, so the bare-viewport screen stays untouched. */
+html[data-mode="terminal"] .term-screen {
+  padding-top: 64px;
+}
