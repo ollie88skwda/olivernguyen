@@ -20,6 +20,15 @@ const SVG_NS = 'http://www.w3.org/2000/svg';
 export default function runPulse(svg, chain, keys, { reducedMotion, onDone }) {
   const segs = planPulseSegments(chain, keys);
   if (reducedMotion || segs.length === 0 || !svg) {
+    // reduced motion: no traveling bead — instant static highlight of the
+    // whole route instead (05 §4.4), then proceed
+    if (reducedMotion && segs.length && svg) {
+      const els = segs
+        .map((s) => svg.querySelector(`[data-edge="${s.from}|${s.to}"]`))
+        .filter(Boolean);
+      els.forEach((el) => el.classList.add('routing'));
+      setTimeout(() => els.forEach((el) => el.classList.remove('routing')), 600);
+    }
     onDone();
     return () => {};
   }

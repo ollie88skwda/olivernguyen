@@ -217,8 +217,14 @@
 .g-stage.filtering .node:not(.match) .card { opacity: .12; transition: opacity 0s; }
 .g-stage.filtering .node.match .card { border-color: var(--node-border-active); }
 
-/* semantic zoom garnish: fade leaf detail when far out */
-.g-stage.far .node.leaf .m, .g-stage.far .node.leaf .k { opacity: .15; }
+/* semantic zoom garnish: fade leaf detail out entirely when far.
+   (prototype ghosted at opacity .15 — fully hiding instead keeps WCAG/axe
+   clean; at k<0.45 the ghost was illegible anyway. Flagged for Oliver.) */
+.g-stage.far .node.leaf .m, .g-stage.far .node.leaf .k {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .25s ease, visibility 0s linear .25s;
+}
 
 /* ---------------------------- chrome (ui) ---------------------------- */
 
@@ -637,6 +643,144 @@
   text-transform: uppercase;
   color: var(--text-faint);
   margin-top: 34px;
+}
+
+/* -------------------- dossier-list fallback (G-4.1) -------------------- */
+
+.graph-root.listing { overflow-y: auto; overscroll-behavior: auto; }
+
+.graph-root .g-list {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 28px 20px 48px;
+}
+.graph-root .gl-brand {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--accent-hi);
+}
+.graph-root .gl-brand span {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-left: 6px;
+}
+.graph-root .gl-name {
+  font-family: var(--font-display);
+  font-size: 44px;
+  font-weight: 800;
+  letter-spacing: .01em;
+  line-height: 1;
+  text-transform: uppercase;
+  margin: 18px 0 6px;
+}
+.graph-root .gl-tagline { font-size: 14px; color: var(--text-muted); margin: 0 0 26px; }
+.graph-root .gl-group {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  color: var(--accent-hi);
+  border-top: 1px solid var(--border);
+  padding-top: 22px;
+  margin: 34px 0 4px;
+}
+.graph-root .gl-group-sub { font-size: 13px; color: var(--text-muted); margin: 0 0 14px; }
+.graph-root .gl-entry {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 18px;
+  margin: 12px 0;
+  box-shadow: var(--g-shadow-1);
+}
+.graph-root .gl-kind {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 500;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.graph-root .gl-status {
+  font-size: 8.5px;
+  letter-spacing: .06em;
+  color: var(--text-muted);
+  background: var(--surface-2);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.graph-root .gl-title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: .005em;
+  text-transform: uppercase;
+  line-height: 1.1;
+  margin: 8px 0 2px;
+}
+.graph-root .gl-type { font-size: 12.5px; color: var(--text-muted); }
+.graph-root .gl-blurb { font-size: 13px; line-height: 1.6; margin: 10px 0 0; }
+.graph-root .gl-beats {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border-radius: 8px;
+}
+.graph-root .gl-beats li {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.9;
+  color: var(--text-muted);
+}
+.graph-root .gl-stats { list-style: none; display: flex; flex-wrap: wrap; gap: 14px; margin: 12px 0 0; padding: 0; }
+.graph-root .gl-stats li { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-faint); }
+.graph-root .gl-stats b {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--accent-hi);
+  margin-right: 4px;
+}
+.graph-root .gl-tech { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-muted); margin-top: 10px; }
+.graph-root .gl-link {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--accent);
+  text-underline-offset: 3px;
+  margin-top: 10px;
+}
+.graph-root .gl-foot {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-faint);
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+  margin-top: 36px;
+}
+.graph-root .gl-foot a { color: var(--accent); }
+
+/* SR-only layer (desktop): real DOM, zero paint */
+.graph-root .visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* --------------------------- reduced motion --------------------------- */

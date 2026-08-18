@@ -364,11 +364,15 @@ export default function GraphCanvas() {
       <div
         ref={stageRef}
         className={stageCls}
+        role="application"
+        aria-label={`Interactive graph of ${meta.name}'s work — ${allEntities.length} nodes. A full text listing follows for screen readers.`}
         onPointerDown={onStagePointerDown}
         onClick={onStageClick}
         onDoubleClick={onStageDblClick}
       >
-        <div ref={worldRef} className="g-world">
+        {/* 05 §8: canvas content is invisible to AT — the visually-hidden
+            entity list (GraphList srOnly) is the SR surface */}
+        <div ref={worldRef} className="g-world" aria-hidden="true">
           <GraphEdges
             ref={edgesRef}
             edges={EDGES}

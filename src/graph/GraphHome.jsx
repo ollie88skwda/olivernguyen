@@ -7,6 +7,7 @@
  * Runs standalone in the graph-dev harness.
  */
 import React, { lazy, Suspense, useEffect, useState } from 'react';
+import GraphList from './components/GraphList.jsx';
 import './graph.css';
 
 const GraphCanvas = lazy(() => import('./components/GraphCanvas.jsx'));
@@ -27,23 +28,19 @@ function useDesktop() {
 export default function GraphHome() {
   const desktop = useDesktop();
   return (
-    <div className="sakura graph-root">
+    <main className={`sakura graph-root${desktop ? '' : ' listing'}`}>
       {desktop ? (
-        <Suspense fallback={null}>
-          <GraphCanvas />
-        </Suspense>
+        <>
+          <Suspense fallback={null}>
+            <GraphCanvas />
+          </Suspense>
+          {/* SR parity: same entity list, visually hidden (05 §8, G-4.3) */}
+          <GraphList srOnly />
+        </>
       ) : (
-        /* real dossier-list fallback lands in G-4.1 */
-        <GraphListFallback />
+        /* coarse pointer / small viewport: canvas + d3 never load (P6) */
+        <GraphList />
       )}
-    </div>
-  );
-}
-
-function GraphListFallback() {
-  return (
-    <div style={{ padding: '24px', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)', fontSize: '12px' }}>
-      graph list fallback — built in G-4.1
-    </div>
+    </main>
   );
 }
