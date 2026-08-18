@@ -3,9 +3,14 @@
 // Changes vs the old bar: sakura tokens (chrome only — page bodies keep their
 // stylesheets), TERM|GRAPH mode toggle, Search ⌘K button, dead /debt link
 // dropped, grain overlay retired, ScrollProgress kept terminal-mode only.
+//
+// X-3 deviation from 05 §6.4 ("rebuilt with Motion"): chrome motion is CSS
+// (transform transitions), not framer-motion — the chrome is the only EAGER
+// framer consumer post-X-1, and its ~35KB gz in the entry chunk cost the
+// mobile Lighthouse ≥ 90 perf gate (10-doc §6 wins on conflict). Same
+// easing/durations; legacy pages still lazy-load framer for themselves.
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import ScrollProgress from "../components/ScrollProgress";
 import { useMode } from "../mode/ModeProvider";
 import "../styles/sakura.css";
@@ -64,11 +69,8 @@ export const SiteChrome = () => {
   return (
     <div className="site-chrome">
       {mode === "terminal" && <ScrollProgress />}
-      <motion.header
-        className="site-chrome-bar sakura"
-        initial={{ y: -80 }}
-        animate={{ y: visible ? 0 : -80 }}
-        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      <header
+        className={`site-chrome-bar sakura${visible ? "" : " sc-hidden"}`}
       >
         <a href="/" className="sc-logo">oN.c</a>
         {/* X-1: the Work/About/Contact anchors died with the old home's
@@ -76,7 +78,12 @@ export const SiteChrome = () => {
             focus-intent API yet — dropped rather than left dead. Pages menu +
             the graph's own nav (⌘K, legend, prompt) cover navigation. */}
         <div className="sc-right">
-          <div className="sc-mode-toggle" role="group" aria-label="Site mode">
+          <div
+            className={`sc-mode-toggle mode-${mode}`}
+            role="group"
+            aria-label="Site mode"
+          >
+            <span className="sc-mode-thumb" aria-hidden="true" />
             {["terminal", "graph"].map((m) => (
               <button
                 key={m}
@@ -85,16 +92,7 @@ export const SiteChrome = () => {
                 aria-pressed={mode === m}
                 onClick={() => setMode(m)}
               >
-                {mode === m && (
-                  <motion.span
-                    layoutId="sc-mode-thumb"
-                    className="sc-mode-thumb"
-                    transition={{ type: "spring", stiffness: 500, damping: 40 }}
-                  />
-                )}
-                <span style={{ position: "relative", zIndex: 1 }}>
-                  {m === "terminal" ? "TERM" : "GRAPH"}
-                </span>
+                {m === "terminal" ? "TERM" : "GRAPH"}
               </button>
             ))}
           </div>
@@ -127,17 +125,12 @@ export const SiteChrome = () => {
             ☰
           </button>
         </div>
-      </motion.header>
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.nav
+      </header>
+      {menuOpen && (
+          <nav
             id="sc-pages-menu"
             className="sc-menu sakura"
             aria-label="Site pages"
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.18 }}
           >
             <ul>
               {MENU.map((entry) =>
@@ -159,9 +152,8 @@ export const SiteChrome = () => {
                 ),
               )}
             </ul>
-          </motion.nav>
-        )}
-      </AnimatePresence>
+          </nav>
+      )}
     </div>
   );
 };

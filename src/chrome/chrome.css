@@ -22,6 +22,11 @@
   border-bottom: 1px solid var(--border);
   color: var(--text);
   font-family: var(--font-sans);
+  /* hide-on-scroll (was framer-motion — X-3 entry-chunk diet) */
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.site-chrome-bar.sc-hidden {
+  transform: translateY(-80px);
 }
 
 .sc-logo {
@@ -42,7 +47,9 @@
   gap: 14px;
 }
 
-/* TERM | GRAPH segmented toggle (05 §6.1) */
+/* TERM | GRAPH segmented toggle (05 §6.1). The thumb is one absolutely-
+   positioned pill sliding between two equal-width buttons via CSS transform
+   (mode-terminal = left, mode-graph = right). */
 .sc-mode-toggle {
   position: relative;
   display: flex;
@@ -61,19 +68,29 @@
   font-family: var(--font-mono);
   font-size: 0.6rem;
   letter-spacing: 0.12em;
-  padding: 6px 12px;
+  width: 64px;
+  padding: 6px 0;
+  text-align: center;
   border-radius: 999px;
   color: var(--text-muted);
+  transition: color 0.2s ease;
 }
 .sc-mode-btn[aria-pressed="true"] {
   color: var(--on-accent);
 }
 .sc-mode-thumb {
   position: absolute;
-  inset: 0;
+  top: 2px;
+  bottom: 2px;
+  left: 2px;
+  width: 64px;
   z-index: 0;
   border-radius: 999px;
   background: var(--accent);
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.sc-mode-toggle.mode-graph .sc-mode-thumb {
+  transform: translateX(100%);
 }
 
 .sc-cmdk {
@@ -107,6 +124,15 @@
 }
 
 /* Pages menu (hamburger) */
+.sc-menu {
+  animation: sc-menu-in 0.18s ease both;
+}
+@keyframes sc-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
 .sc-menu {
   position: fixed;
   top: 72px;
@@ -151,4 +177,15 @@
   padding-left: 20px;
   font-size: 0.84rem;
   color: var(--text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-chrome-bar,
+  .sc-mode-thumb,
+  .sc-mode-btn {
+    transition: none;
+  }
+  .sc-menu {
+    animation: none;
+  }
 }
