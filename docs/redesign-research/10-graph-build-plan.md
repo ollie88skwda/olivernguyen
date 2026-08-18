@@ -8,22 +8,30 @@ This doc is restart-safe: any fresh agent must be able to resume from it alone.
 ## CURRENT STATUS / NEXT TASK  ← executors MUST keep this block updated
 
 ```
-Last updated : 2026-08-17 later session (exec-graph) — Gate G1 re-verified, G3 prep done
-exec-infra   : APPEARS STALLED mid-Phase-0 — last commit I-0.1 (2696aef4); uncommitted
-               in tree: vite.config.js (react+tailwind+vitest+env-compat), package.json,
-               vercel.json, index.html rename. No §8 boxes ticked. Next = finish I-0.1..I-0.6.
-exec-graph   : GATE G1 ✅ (dc74c481, re-verified this session). ALL pre-gate work done:
-               pure camera math (camera.js) · graph.css token/font port · G3 groundwork
-               (filter.js, pulse.js, tour.js, keys.js — 86b155cb). Suite: 111 units green
-               (`npx vitest run src/content src/graph src/intents`).
-               next task = G-2.1 (dev harness) — HARD-BLOCKED on Gate 0 tick (§5 rule).
-               REQUEST → exec-infra: when touching vite.config, add `graph-dev.html`
-               as a second, DEV-ONLY input (excluded from prod build) — needed for
-               G-2.1; files graph-dev.html + src/graph/dev.jsx are exec-graph's.
+Last updated : 2026-08-17 (exec-infra) — GATE 0 ✅ (23f83210). exec-graph UNBLOCKED.
+exec-infra   : I-0.1..I-0.6 DONE. Gate 0: 16/16 Playwright routes clean (2x stable),
+               vitest 216/216, vite build green. Next = I-0.7 (Vercel preview) then
+               Phase 1 (I-1.1 sakura.css …).
+exec-graph   : GATE G1 ✅ (dc74c481). G2 groundwork done (camera.js, graph.css port,
+               filter/pulse/tour/keys pure modules — 111 units green).
+               next task = G-2.1 (dev harness) — NOW UNBLOCKED: Gate 0 ticked.
+               REQUEST HONORED: graph-dev.html needs NO vite.config change — the dev
+               server serves any root *.html automatically; prod build input is pinned
+               to index.html only (vite.config build.rollupOptions.input), so the
+               harness can never ship. Just create graph-dev.html + src/graph/dev.jsx.
 Integration  : blocked until Phase 1 gate + Phase G4 gate both pass
-Blockers     : exec-graph fully blocked on Gate 0 (exec-infra stalled — needs restart)
+Blockers     : none
 Preview URL  : —
 Notes for Oliver :
+  - (exec-infra) Authed E2E flows NOT exercised — .env.local has the Clerk
+    publishable key but no test-user credentials. Gate 0 verifies /studio and
+    /transfer redirect to /sign-in, /major + /apply to their passphrase gate.
+    Full Clerk sign-in + essay-studio editor/vim need a test account from you.
+  - (exec-infra) Pre-existing legacy hygiene, surfaced by Gate 0 but NOT fixed
+    (Gate 1 screenshot-freezes legacy pages): /permit + /articlewriter author
+    <ol>/<h4>/<p> inside <p> (React validateDOMNesting dev warning);
+    react-helmet fires UNSAFE_componentWillMount under StrictMode. Allow-listed
+    in e2e/routes.spec.js with tight regexes; recommend post-launch cleanup.
   - (exec-graph) Day beats are still the prototype's curated-fiction set (P5/L6).
     Real redacted beats drop into src/content/site.js `week` — data-only swap.
   - (exec-graph) Content deltas vs prototype, all making stubs real: scopecreep
@@ -261,12 +269,12 @@ gate actually passes before building on it (`npx playwright test`, `npx vitest r
 ## 8 · LIVE TASK CHECKLIST — tick as you go
 
 ### exec-infra
-- [ ] **I-0.1** Create branch `redesign/graph-v1`; Vite + plugin-react scaffold, .js-as-JSX; app boots
-- [ ] **I-0.2** Root `index.html` w/ font links; env vars incl. dynamic access; `vercel.json` → vite/dist
-- [ ] **I-0.3** Jest→Vitest, all 8 existing test files green
-- [ ] **I-0.4** Tailwind v4 (`@tailwindcss/vite`) + `shadcn init`; legacy CSS coexists
-- [ ] **I-0.5** Install Playwright + d3 micro-modules (§5 contract)
-- [ ] **I-0.6** Playwright spec: all routes of §6 Gate 0 + console-error assertions → **GATE 0 ✅**
+- [x] **I-0.1** Create branch `redesign/graph-v1`; Vite + plugin-react scaffold, .js-as-JSX; app boots
+- [x] **I-0.2** Root `index.html` w/ font links; env vars incl. dynamic access; `vercel.json` → vite/dist
+- [x] **I-0.3** Jest→Vitest, all 8 existing test files green (18 files/216 tests incl. exec-graph's)
+- [x] **I-0.4** Tailwind v4 (`@tailwindcss/vite`) + `shadcn init`; legacy CSS coexists (no preflight)
+- [x] **I-0.5** Install Playwright + d3 micro-modules (§5 contract)
+- [x] **I-0.6** Playwright spec: all routes of §6 Gate 0 + console-error assertions → **GATE 0 ✅** (23f83210, 16/16 2x)
 - [ ] **I-0.7** Vercel preview deploy; `/api` verified; authed flows tested or flagged
 - [ ] **I-1.1** `src/styles/sakura.css` — 04 §5 both token sets, `.sakura` scoping (P2), font vars
 - [ ] **I-1.2** Contrast-check script over 04's pairs (CI-runnable)
