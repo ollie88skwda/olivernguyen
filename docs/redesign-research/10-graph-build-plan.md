@@ -276,8 +276,8 @@ gate actually passes before building on it (`npx playwright test`, `npx vitest r
 - [x] **I-0.5** Install Playwright + d3 micro-modules (§5 contract)
 - [x] **I-0.6** Playwright spec: all routes of §6 Gate 0 + console-error assertions → **GATE 0 ✅** (23f83210, 16/16 2x)
 - [x] **I-0.7** Vercel preview deploy; `/api` verified (session fn + SPA rewrite + statics); authed flows flagged (no creds)
-- [ ] **I-1.1** `src/styles/sakura.css` — 04 §5 both token sets, `.sakura` scoping (P2), font vars
-- [ ] **I-1.2** Contrast-check script over 04's pairs (CI-runnable)
+- [x] **I-1.1** `src/styles/sakura.css` — 04 §5 both token sets, `.sakura` scoping (P2), font vars (4531b14a)
+- [x] **I-1.2** Contrast-check script over 04's pairs (CI-runnable: `yarn contrast`, 63 pairs, negative-tested)
 - [ ] **I-1.3** `ModeProvider` (P3 default, persistence, URL sync, `data-mode`, theme-color)
 - [ ] **I-1.4** `src/home/Home.jsx` — mode switch, graph placeholder, terminal holding screen (P4)
 - [ ] **I-1.5** Top bar + TERM|GRAPH toggle on chromed routes; `/debt` dropped; `NO_CHROME` intact
