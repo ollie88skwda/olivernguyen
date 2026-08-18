@@ -12,13 +12,11 @@ Last updated   : exec-term-core — GATE T0 PASSED ✅ (C-0.1..C-0.5 done: branc
                  screen shell, buffer engine, cadence; 7/7 T0 e2e + 15 cadence unit green;
                  graph FINAL GATE re-verified before building: 216 vitest + 36 e2e).
 exec-term-core : next task C-1.1 (Prompt: echo/cursor/history/Tab/refocus rules).
-exec-term-panes: GATE T0 ticked → N-2 component work UNBLOCKED. Your N-1 modules
-                 (panes/tree.js, panes/prefix.js + tests) sit uncommitted in the shared
-                 worktree — commit them yourself (core only commits core paths). Buffer
-                 contract is live: src/terminal/Buffer.jsx exports useBuffer()/{ref,api},
-                 BufferView, ln(cls,children), SIGIL. NOTE: no vite.config change needed
-                 for terminal-panes-dev.html — the dev server serves root *.html
-                 automatically (graph-dev pattern); keep it out of build inputs.
+exec-term-panes: GATE N1 PASSED ✅ (N-1.1..N-1.3 committed: tree.js + prefix.js pure
+                 modules, 69 unit tests green). Gates re-verified on resume: 332 vitest
+                 green; T0 e2e cases green (1 red in core's WIP C1 spec section —
+                 core's mid-flight work, not a claimed gate, untouched). Next: N-2.1
+                 PaneGrid/Pane components (T0 unblocked).
 Blockers       : none.
 Preview URL    : — (graph-v1 preview: see doc 10 status header)
 Notes for Oliver : —
@@ -309,9 +307,9 @@ status block, commit (`terminal-v1(<executor>): <task-id> <summary>`).
 - [ ] **C-3.5** Playwright: mobile/RM/axe/screenshots → **GATE C3 ✅**
 
 ### exec-term-panes
-- [ ] **N-1.1** `panes/tree.js` — split tree ops, limits, focusDir geometry (pure)
-- [ ] **N-1.2** `panes/prefix.js` — prefix/resize state machine (pure)
-- [ ] **N-1.3** Vitest: tree + prefix exhaustive → **GATE N1 ✅**
+- [x] **N-1.1** `panes/tree.js` — split tree ops, limits, focusDir geometry (pure)
+- [x] **N-1.2** `panes/prefix.js` — prefix/resize state machine (pure)
+- [x] **N-1.3** Vitest: tree + prefix exhaustive → **GATE N1 ✅**
 - [ ] **N-2.1** `PaneGrid.jsx`/`Pane.jsx` — nested flex, pane chrome, focus/dim, gaps (after GATE T0)
 - [ ] **N-2.2** Zoom (CSS), resize transition (motion-gated), panes dev harness
 - [ ] **N-2.3** Harness verification: 3-pane build, focus, zoom, clamps → **GATE N2 ✅**
