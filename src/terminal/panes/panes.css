@@ -1,0 +1,167 @@
+/* ============================================================================
+ * src/terminal/panes/panes.css — pane chrome (N-2.1/N-2.2, 09 §C grammar).
+ * ALL color from sakura.css tokens — zero hexes (terminal.css rule). Herdr
+ * chrome grammar: panes are separated cards (gaps + 1px borders), accent
+ * border marks focus, unfocused content dims to .85. Box-drawing stays inside
+ * title rows — CSS borders span flex edges, box glyphs don't (09 §B).
+ * Zoom = CSS visibility only; the tree is untouched (P7).
+ * ========================================================================== */
+
+.term-panes {
+  --pane-gap: 6px;
+  flex: 1;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  position: relative; /* zoom's containing block */
+  padding: var(--pane-gap);
+  gap: var(--pane-gap);
+}
+
+/* ---------- recursive nested flex (DOM mirrors the tree 1:1) ---------- */
+
+.pane-split {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  gap: var(--pane-gap);
+}
+.pane-split.dir-right {
+  flex-direction: row;
+}
+.pane-split.dir-down {
+  flex-direction: column;
+}
+
+/* child a carries the ratio as flex-basis; b takes the rest */
+.split-a {
+  flex: 0 0 auto;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+}
+.split-b {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+}
+.split-a > *,
+.split-b > * {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* resize: ratio changes animate — motion-gated (09 §C sketch) */
+@media (prefers-reduced-motion: no-preference) {
+  .split-a {
+    transition: flex-basis 120ms ease;
+  }
+}
+
+/* ---------- pane card ---------- */
+
+.pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+}
+.pane.focused {
+  border-color: var(--accent);
+}
+.pane:not(.focused) > .pane-body {
+  opacity: 0.85; /* tmux window-style dim */
+}
+
+/* ---------- title row (one cell row tall; the box-drawing zone) ---------- */
+
+.pane-title {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+  height: var(--row);
+  padding: 0 1ch;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.pane.focused > .pane-title {
+  color: var(--text);
+}
+.pane.focused > .pane-title .pane-name {
+  color: var(--accent);
+}
+.pane-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pane-btns {
+  margin-left: auto;
+  display: flex;
+  gap: 1ch;
+  flex: none;
+}
+.pane-btns button {
+  color: var(--text-faint);
+  white-space: pre;
+}
+.pane-btns button:hover {
+  color: var(--accent-hi);
+  background: var(--selection);
+}
+
+/* ---------- body (program content scrolls itself, never the pane) ------- */
+
+.pane-body {
+  flex: 1;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+}
+.pane-body > * {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* ---------- zoom (CSS visibility only — tree + layout untouched) -------- */
+
+.term-panes.has-zoom .pane {
+  visibility: hidden;
+}
+.term-panes.has-zoom .pane.zoomed {
+  visibility: visible;
+  position: absolute;
+  inset: var(--pane-gap);
+  z-index: 2;
+}
+
+/* ---------- auto-split toast (bottom-right, Herdr grammar) -------------- */
+
+.pane-toast {
+  position: absolute;
+  right: calc(var(--pane-gap) + 2ch);
+  bottom: calc(var(--pane-gap) + 6px);
+  z-index: 3;
+  padding: 4px 2ch;
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: 2px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.pane-toast .acc {
+  color: var(--accent);
+}

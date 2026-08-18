@@ -15,11 +15,16 @@ Last updated   : exec-term-core — GATES T0 + C1 + C2 PASSED ✅ (C-0.1..C-2.4 
                  command awaiting its own queue deadlocked — fixed + regression-tested);
                  harness supports ?noboot (T0 engine specs) and ?still (instant cadence).
 exec-term-core : next task C-3.1..C-3.5 (mobile touch story, RM pass, SR layer, type pass).
-exec-term-panes: GATE N1 PASSED ✅ (N-1.1..N-1.3 committed: tree.js + prefix.js pure
-                 modules, 69 unit tests green). Gates re-verified on resume: 332 vitest
-                 green; T0 e2e cases green (1 red in core's WIP C1 spec section —
-                 core's mid-flight work, not a claimed gate, untouched). Next: N-2.1
-                 PaneGrid/Pane components (T0 unblocked).
+exec-term-panes: GATE N2 PASSED ✅ (N-2.1..N-2.3: PaneGrid/Pane nested flex + chrome,
+                 zoom CSS, motion-gated resize, panes harness at /terminal-panes-dev.html,
+                 5 e2e green in e2e/terminal-panes.spec.js). Contract notes for core (X-1):
+                 prefixStep returns extra field `handled` (true → preventDefault + skip own
+                 handling); PaneGrid takes additive prop onPaneAction(id, act) for title-row
+                 buttons — act on THAT id, focus it first (reference executor: applyAction
+                 in panes/dev.jsx — also shows zoom-drop-on-layout-change + Esc→unzoom
+                 cascade tail). tree.split opts now carry entity/day onto the leaf.
+                 Next: N-3.1 program adapters (imports core's WIP sections.jsx — will
+                 track its exports).
 Blockers       : none.
 Preview URL    : — (graph-v1 preview: see doc 10 status header)
 Notes for Oliver : —
@@ -313,9 +318,9 @@ status block, commit (`terminal-v1(<executor>): <task-id> <summary>`).
 - [x] **N-1.1** `panes/tree.js` — split tree ops, limits, focusDir geometry (pure)
 - [x] **N-1.2** `panes/prefix.js` — prefix/resize state machine (pure)
 - [x] **N-1.3** Vitest: tree + prefix exhaustive → **GATE N1 ✅**
-- [ ] **N-2.1** `PaneGrid.jsx`/`Pane.jsx` — nested flex, pane chrome, focus/dim, gaps (after GATE T0)
-- [ ] **N-2.2** Zoom (CSS), resize transition (motion-gated), panes dev harness
-- [ ] **N-2.3** Harness verification: 3-pane build, focus, zoom, clamps → **GATE N2 ✅**
+- [x] **N-2.1** `PaneGrid.jsx`/`Pane.jsx` — nested flex, pane chrome, focus/dim, gaps (after GATE T0)
+- [x] **N-2.2** Zoom (CSS), resize transition (motion-gated), panes dev harness
+- [x] **N-2.3** Harness verification: 3-pane build, focus, zoom, clamps → **GATE N2 ✅**
 - [ ] **N-3.1** `programs.jsx` — replay / section pagers / artifact / help adapters (§3.2)
 - [ ] **N-3.2** Auto-split rules + toast; statusbar props ({paneCount, zoomed, prefix}); mobile flatten
 - [ ] **N-3.3** Playwright `terminal-panes.spec.js`: grammar, limits, a11y roles → **GATE N3 ✅**

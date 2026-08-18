@@ -58,9 +58,11 @@ describe('split', () => {
     expect(r.tree.b.id).toBe('p2');
   });
 
-  it('carries program + title options onto the new leaf', () => {
-    const r = split(createTree(), 'main', 'right', { program: 'artifact', title: 'mac-agent' });
-    expect(r.tree.b).toEqual({ type: 'leaf', id: 'p2', program: 'artifact', title: 'mac-agent' });
+  it('carries program + title + entity + day options onto the new leaf', () => {
+    const r = split(createTree(), 'main', 'right', { program: 'artifact', title: 'mac-agent', entity: 'mac-agent' });
+    expect(r.tree.b).toEqual({ type: 'leaf', id: 'p2', program: 'artifact', title: 'mac-agent', entity: 'mac-agent' });
+    const r2 = split(createTree(), 'main', 'right', { program: 'replay', day: 3 });
+    expect(r2.tree.b.day).toBe(3);
   });
 
   it('generates unique incrementing ids', () => {

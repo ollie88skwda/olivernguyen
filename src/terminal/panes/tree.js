@@ -112,8 +112,10 @@ function tooSmall(tree, leaf, dir, { cols, rows }) {
 /**
  * Split leaf `id` in `dir` ('right'|'down') at ratio .5. Old content keeps
  * slot `a` (left/top — main stays LEFT on auto-split), new pane is `b`.
- * opts: { program, title, dims:{cols,rows} } — dims (the screen's usable
- * cell size) enables the min-size refusal; omitted = skip that check.
+ * opts: { program, title, entity, day, dims:{cols,rows} } — program/title/
+ * entity/day land on the new leaf (PaneGrid feeds them to the program
+ * component); dims (the screen's usable cell size) enables the min-size
+ * refusal; omitted = skip that check.
  * → { ok:true, tree, id:<new pane id> } | { ok:false, err }
  */
 export function split(tree, id, dir, opts = {}) {
@@ -127,6 +129,8 @@ export function split(tree, id, dir, opts = {}) {
   const freshId = nextId(tree);
   const fresh = { type: 'leaf', id: freshId, program: opts.program ?? null };
   if (opts.title) fresh.title = opts.title;
+  if (opts.entity != null) fresh.entity = opts.entity;
+  if (opts.day != null) fresh.day = opts.day;
   const node = { type: 'split', dir, ratio: 0.5, a: leaf, b: fresh };
   return { ok: true, tree: replaceNode(tree, leaf, node), id: freshId };
 }
