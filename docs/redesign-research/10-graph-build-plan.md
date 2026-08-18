@@ -10,8 +10,8 @@ This doc is restart-safe: any fresh agent must be able to resume from it alone.
 ```
 Last updated : 2026-08-17 (exec-infra) — GATE 0 ✅ (23f83210). exec-graph UNBLOCKED.
 exec-infra   : I-0.1..I-0.6 DONE. Gate 0: 16/16 Playwright routes clean (2x stable),
-               vitest 216/216, vite build green. Next = I-0.7 (Vercel preview) then
-               Phase 1 (I-1.1 sakura.css …).
+               vitest 216/216, vite build green. I-0.7 preview deployed + /api
+               verified. Next = Phase 1 (I-1.1 sakura.css …).
 exec-graph   : GATE G1 ✅ (dc74c481). G2 groundwork done (camera.js, graph.css port,
                filter/pulse/tour/keys pure modules — 111 units green).
                next task = G-2.1 (dev harness) — NOW UNBLOCKED: Gate 0 ticked.
@@ -21,7 +21,7 @@ exec-graph   : GATE G1 ✅ (dc74c481). G2 groundwork done (camera.js, graph.css 
                harness can never ship. Just create graph-dev.html + src/graph/dev.jsx.
 Integration  : blocked until Phase 1 gate + Phase G4 gate both pass
 Blockers     : none
-Preview URL  : —
+Preview URL  : https://olivernguyen-pdsyq4d2u-ollie88skwdas-projects.vercel.app (Phase-0 state)
 Notes for Oliver :
   - (exec-infra) Authed E2E flows NOT exercised — .env.local has the Clerk
     publishable key but no test-user credentials. Gate 0 verifies /studio and
@@ -275,7 +275,7 @@ gate actually passes before building on it (`npx playwright test`, `npx vitest r
 - [x] **I-0.4** Tailwind v4 (`@tailwindcss/vite`) + `shadcn init`; legacy CSS coexists (no preflight)
 - [x] **I-0.5** Install Playwright + d3 micro-modules (§5 contract)
 - [x] **I-0.6** Playwright spec: all routes of §6 Gate 0 + console-error assertions → **GATE 0 ✅** (23f83210, 16/16 2x)
-- [ ] **I-0.7** Vercel preview deploy; `/api` verified; authed flows tested or flagged
+- [x] **I-0.7** Vercel preview deploy; `/api` verified (session fn + SPA rewrite + statics); authed flows flagged (no creds)
 - [ ] **I-1.1** `src/styles/sakura.css` — 04 §5 both token sets, `.sakura` scoping (P2), font vars
 - [ ] **I-1.2** Contrast-check script over 04's pairs (CI-runnable)
 - [ ] **I-1.3** `ModeProvider` (P3 default, persistence, URL sync, `data-mode`, theme-color)
