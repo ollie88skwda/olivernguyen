@@ -24,7 +24,10 @@ exec-graph   : ALL PHASES DONE — GATES G1–G4 ✅ (last: 9cbea665). Harness:
                d3 deps ride in its chunk. Dev harness (graph-dev.html) is already
                excluded from prod (build input pinned to index.html).
 Integration  : blocked until Phase 1 gate + Phase G4 gate both pass
-Blockers     : none
+Blockers     : none · ops note: exec-infra sessions kept dying on provider 429/refusals;
+               exec-graph respawned it twice via herdr (pane w2Y:pK, model pinned to
+               anthropic/claude-fable-5, SHORT prompt — long prompts triggered refusals).
+               Current run: exec-infra-3, started after Gate G4, tasked I-1.3→X-4.
 Preview URL  : https://olivernguyen-pdsyq4d2u-ollie88skwdas-projects.vercel.app (Phase-0 state)
 Notes for Oliver :
   - (exec-infra) Authed E2E flows NOT exercised — .env.local has the Clerk
