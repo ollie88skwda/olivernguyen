@@ -269,12 +269,139 @@
   color: var(--text-faint);
 }
 
+/* ---------- overlays: help sheet + ⌘K palette (C-2.2) ---------- */
+
+.term-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  font: 400 var(--term-fs, 14px) / var(--row, 22px) var(--font-mono);
+}
+.term-overlay .backdrop {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--bg) 65%, transparent);
+}
+
+.term-overlay .panel {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+  color: var(--text);
+}
+
+.term-overlay .help-panel {
+  max-width: 60ch;
+  margin: 10vh auto 0;
+  padding: var(--row) 3ch;
+}
+.term-overlay .help-panel h3 {
+  margin: 0 0 8px;
+  color: var(--accent);
+  font-size: var(--term-fs);
+}
+.term-overlay .help-panel h3 + table {
+  margin-bottom: var(--row);
+}
+.term-overlay .help-panel table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.term-overlay .help-panel td {
+  padding: 2px 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.term-overlay .help-panel .key {
+  color: var(--accent);
+  white-space: nowrap;
+  padding-right: 3ch;
+}
+
+.term-overlay .palette-panel {
+  width: min(640px, 92vw);
+  margin: 12vh auto 0;
+  overflow: hidden;
+}
+.term-overlay .prow {
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+  padding: 10px 2ch;
+  border-bottom: 1px solid var(--border);
+}
+.term-overlay .prow .psigil {
+  color: var(--term-prompt);
+  font-weight: 700;
+}
+.term-overlay .palette-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font: inherit;
+  caret-color: var(--term-cursor);
+}
+.term-overlay .palette-input::placeholder {
+  color: var(--text-faint);
+}
+
+.term-overlay .palette-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  max-height: 336px;
+  overflow-y: auto;
+}
+.term-overlay .palette-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 2ch;
+  padding: 5px 2ch;
+  border-radius: 3px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.term-overlay .palette-list li .hint {
+  color: var(--text-faint);
+  font-size: 13px;
+}
+.term-overlay .palette-list li.sel {
+  background: var(--selection);
+  color: var(--accent);
+}
+.term-overlay .palette-list li.empty {
+  color: var(--text-faint);
+  cursor: default;
+}
+
+.term-overlay button {
+  font: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.term-overlay .obtn {
+  color: var(--accent);
+}
+.term-overlay .obtn:hover {
+  color: var(--accent-hi);
+  background: var(--selection);
+}
+
 /* ---------- reduced motion (scoped — this chunk lazily joins graph pages) - */
 
 @media (prefers-reduced-motion: reduce) {
   .term-screen *,
   .term-screen *::before,
-  .term-screen *::after {
+  .term-screen *::after,
+  .term-overlay *,
+  .term-overlay *::before,
+  .term-overlay *::after {
     animation: none !important;
     transition: none !important;
   }

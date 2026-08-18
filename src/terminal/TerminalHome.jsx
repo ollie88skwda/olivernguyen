@@ -21,6 +21,8 @@ import './terminal.css';
 import { useBuffer, BufferView, ln } from './Buffer.jsx';
 import Prompt from './Prompt.jsx';
 import StatusBar from './StatusBar.jsx';
+import Palette from './Palette.jsx';
+import HelpSheet from './HelpSheet.jsx';
 import { complete, createRunner } from './lib/commands.js';
 import { EMAIL, FILES, WINDOWS, windowByN } from './lib/terminalModel.js';
 import {
@@ -35,12 +37,22 @@ import {
   sectionLinesByFile,
 } from './sections.jsx';
 
+const isPaletteCombo = (e) =>
+  (e.metaKey || e.ctrlKey) && !e.altKey && e.key.toLowerCase() === 'k';
+
 export default function TerminalHome({ devHook, autoboot = true }) {
   const { ref, api } = useBuffer();
   const promptRef = useRef(null);
   const bootedRef = useRef(false);
   const [activeWindow, setActiveWindow] = useState(1);
   const [sbMode, setSbMode] = useState('-- NORMAL --');
+  const [sbOverride, setSbOverride] = useState(''); // g‥ pending etc.
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const pendingG = useRef(0);
+  // overlay state mirrored into a ref so stable callbacks can read it
+  const overlayRef = useRef(false);
+  overlayRef.current = paletteOpen || helpOpen;
 
   // §3.1.1 — the page NEVER scrolls while the terminal is mounted; only the
   // buffer does. Restored on unmount so graph mode is untouched (P3).
@@ -108,19 +120,104 @@ export default function TerminalHome({ devHook, autoboot = true }) {
     runner.run(windowByN(1).cmd, { autotype: true });
   }, [api, runner, autoboot]);
 
-  /* ---- empty-prompt keys (digits now; vim motions land at C-2.1) ---- */
+  /* ---- overlays (C-2.2): focus returns to the prompt on close ---- */
+  const closeOverlays = useCallback(() => {
+    setPaletteOpen(false);
+    setHelpOpen(false);
+    promptRef.current?.focus();
+  }, []);
+
+  const openHelp = useCallback(() => {
+    setPaletteOpen(false);
+    setHelpOpen(true);
+  }, []);
+
+  const runIntent = useCallback(
+    (it) => {
+      setPaletteOpen(false);
+      if (it.act === 'help') {
+        openHelp();
+        return;
+      }
+      promptRef.current?.focus();
+      if (it.cmd) runner.run(it.cmd, { autotype: true });
+    },
+    [runner, openHelp],
+  );
+
+  /* ---- vim motions in the empty prompt (C-2.1, §3.1.3) ---- */
+  const clearPendingG = useCallback(() => {
+    pendingG.current = 0;
+    setSbOverride('');
+  }, []);
+
   const onBareKey = useCallback(
     (key) => {
+      if (key !== 'g' && pendingG.current) clearPendingG();
       if (/^[1-5]$/.test(key)) {
         runner.run(windowByN(key).cmd, { autotype: true });
         return true;
       }
-      return false;
+      switch (key) {
+        case 'j':
+          api.scrollRows(2);
+          return true;
+        case 'k':
+          api.scrollRows(-2);
+          return true;
+        case 'G':
+          api.scrollEnd('bottom');
+          return true;
+        case 'g': {
+          const now = Date.now();
+          if (now - pendingG.current < 1200) {
+            clearPendingG();
+            api.scrollEnd('top');
+          } else {
+            pendingG.current = now;
+            setSbOverride('g‥');
+            setTimeout(() => {
+              if (pendingG.current && Date.now() - pendingG.current >= 1150)
+                clearPendingG();
+            }, 1250);
+          }
+          return true;
+        }
+        case '?':
+          openHelp();
+          return true;
+        default:
+          return false;
+      }
     },
-    [runner],
+    [runner, api, openHelp, clearPendingG],
   );
 
-  /* ---- printed [data-cmd] buttons run commands (§3.1.2 affordances) ---- */
+  /* ---- THE ONE window keydown listener (P3): ⌘K + Esc cascade.
+     Bound in an effect with cleanup — dies with the component. The prefix
+     reducer (panes) joins this handler at X-1. ---- */
+  useEffect(() => {
+    const onKey = (e) => {
+      if (isPaletteCombo(e)) {
+        e.preventDefault();
+        setHelpOpen(false);
+        setPaletteOpen((o) => {
+          if (o) promptRef.current?.focus();
+          return !o;
+        });
+        return;
+      }
+      if (e.key === 'Escape' && overlayRef.current) {
+        // cascade: overlay → (resize → zoom at X-1) → clear prompt (input's own Esc)
+        e.preventDefault();
+        closeOverlays();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [closeOverlays]);
+
+  /* ---- printed [data-cmd]/[data-act] buttons (§3.1.2 affordances) ---- */
   const onMainClick = useCallback(
     (e) => {
       const cmdEl = e.target.closest('[data-cmd]');
@@ -128,10 +225,12 @@ export default function TerminalHome({ devHook, autoboot = true }) {
         runner.run(cmdEl.dataset.cmd, { autotype: true });
         return;
       }
-      // [data-act="palette"] → ⌘K palette (C-2.2)
+      if (e.target.closest('[data-act="palette"]')) setPaletteOpen(true);
     },
     [runner],
   );
+
+  const canRefocus = useCallback(() => !overlayRef.current, []);
 
   useEffect(() => {
     if (devHook) devHook({ api, bufferRef: ref, run: runner.run });
@@ -151,15 +250,17 @@ export default function TerminalHome({ devHook, autoboot = true }) {
         history={runner.history}
         onModeChange={setSbMode}
         onBareKey={onBareKey}
-        canRefocus={() => true /* C-2.2: overlays veto */}
+        canRefocus={canRefocus}
       />
       <StatusBar
         api={api}
         windows={WINDOWS}
         active={activeWindow}
         onWindow={(n) => runner.run(windowByN(n).cmd, { autotype: true })}
-        mode={sbMode}
+        mode={sbOverride || sbMode}
       />
+      <Palette open={paletteOpen} onClose={closeOverlays} onRun={runIntent} />
+      <HelpSheet open={helpOpen} onClose={closeOverlays} />
     </main>
   );
 }

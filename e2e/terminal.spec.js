@@ -451,3 +451,194 @@ test.describe("terminal core — Gate C1 (prompt, commands, sections, boot)", ()
     assertClean(errors);
   });
 });
+
+/* ------------------------------- GATE C2 -------------------------------- */
+
+const openStill = async (page) => {
+  await page.goto(STILL);
+  await page.waitForFunction(() => !!window.__term);
+  await bootDone(page);
+};
+
+const bufScrollTop = (page) =>
+  page.evaluate(() => document.querySelector(".term-buffer").scrollTop);
+
+test.describe("terminal core — Gate C2 (vim keys, palette, mode dispatch, never-trap)", () => {
+  test("never-trap: j mid-command is just text; modifiers pass through (05 §5.4.2)", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await openStill(page);
+    // overflow the buffer, then park at the top so any leaked j would move it
+    await page.evaluate(() =>
+      window.__term.api.print(
+        Array.from({ length: 120 }, (_, i) => `filler ${i}`),
+        { stagger: 0 },
+      ),
+    );
+    await page.evaluate(() => window.__term.api.scrollEnd("top"));
+    await page.keyboard.type("xj");
+    await expect(page.getByTestId("term-pecho")).toContainText("xj");
+    expect(await bufScrollTop(page)).toBe(0);
+    await page.keyboard.press("Escape"); // clears the prompt
+    await expect(page.getByTestId("sb-mode")).toHaveText("-- NORMAL --");
+    // modifier chords are not vim keys and are not swallowed
+    await page.keyboard.press("Control+j");
+    expect(await bufScrollTop(page)).toBe(0);
+    await expect(page.getByTestId("term-pecho")).not.toContainText("j");
+    assertClean(errors);
+  });
+
+  test("empty-prompt motions: j/k rows, G/gg ends, g‥ pending + expiry (§3.1.3)", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await openStill(page);
+    await page.evaluate(() =>
+      window.__term.api.print(
+        Array.from({ length: 120 }, (_, i) => `filler ${i}`),
+        { stagger: 0 },
+      ),
+    );
+    await page.evaluate(() => window.__term.api.scrollEnd("top"));
+
+    await page.keyboard.press("j");
+    const afterJ = await bufScrollTop(page);
+    expect(afterJ).toBeGreaterThan(0);
+    await page.keyboard.press("k");
+    expect(await bufScrollTop(page)).toBeLessThan(afterJ);
+
+    await page.keyboard.press("G");
+    await expect(page.getByTestId("sb-pos")).toHaveText("100%");
+
+    // gg → top (pending indicator between the two g's)
+    await page.keyboard.press("g");
+    await expect(page.getByTestId("sb-mode")).toHaveText("g‥");
+    await page.keyboard.press("g");
+    await expect(page.getByTestId("sb-pos")).toHaveText("0%");
+    await expect(page.getByTestId("sb-mode")).toHaveText("-- NORMAL --");
+
+    // single g expires after ~1.2s
+    await page.keyboard.press("g");
+    await expect(page.getByTestId("sb-mode")).toHaveText("g‥");
+    await expect(page.getByTestId("sb-mode")).toHaveText("-- NORMAL --", {
+      timeout: 3000,
+    });
+    assertClean(errors);
+  });
+
+  test("⌘K palette: suggestions on empty query, input swallows nothing, day 4 runs", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await openStill(page);
+    await page.keyboard.press("ControlOrMeta+k");
+    const palette = page.getByTestId("term-palette");
+    await expect(palette).toBeVisible();
+    // suggestions on empty query (§6 C2)
+    expect(
+      await palette.locator('[role="option"]').count(),
+    ).toBeGreaterThanOrEqual(4);
+    // typing vim letters goes INTO the palette input, never the buffer
+    await page.evaluate(() => window.__term.api.scrollEnd("top"));
+    await palette.locator(".palette-input").pressSequentially("jk");
+    await expect(palette.locator(".palette-input")).toHaveValue("jk");
+    expect(await bufScrollTop(page)).toBe(0);
+    // fuzzy → day 4 → Enter runs the real command
+    await palette.locator(".palette-input").fill("day 4");
+    await expect(palette.locator('[role="option"]').first()).toContainText(
+      "Jump to day 4",
+    );
+    await page.keyboard.press("Enter");
+    await expect(palette).toBeHidden();
+    await expect(page.locator(".ln.echo .cmdtext").last()).toHaveText("day 4");
+    await expect(page.locator(".blk").last()).toContainText(DAY4_BEAT);
+    // focus returned to the prompt
+    expect(
+      await page.evaluate(() => document.activeElement?.id),
+    ).toBe("term-prompt-input");
+    assertClean(errors);
+  });
+
+  test("palette intents map to terminal commands (robotics → cat robotics.log)", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await openStill(page);
+    await page.keyboard.press("ControlOrMeta+k");
+    await page
+      .getByTestId("term-palette")
+      .locator(".palette-input")
+      .fill("robotics");
+    await page.keyboard.press("Enter");
+    await expect(page.locator(".ln.echo .cmdtext").last()).toHaveText(
+      "cat robotics.log",
+    );
+    await expect(page.locator(".blk").last()).toContainText("TechX Robotics");
+    // ⌘K toggles: open then Esc closes, prompt refocused
+    await page.keyboard.press("ControlOrMeta+k");
+    await expect(page.getByTestId("term-palette")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("term-palette")).toBeHidden();
+    expect(
+      await page.evaluate(() => document.activeElement?.id),
+    ).toBe("term-prompt-input");
+    assertClean(errors);
+  });
+
+  test("? opens the help sheet; Esc closes and refocuses the prompt", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await openStill(page);
+    await page.keyboard.press("?");
+    const help = page.getByTestId("term-help");
+    await expect(help).toBeVisible();
+    await expect(
+      help.getByRole("dialog", { name: "Keyboard help" }),
+    ).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(help).toBeHidden();
+    expect(
+      await page.evaluate(() => document.activeElement?.id),
+    ).toBe("term-prompt-input");
+    assertClean(errors);
+  });
+
+  test("mode graph dispatches cancelable 'on:set-mode'; uncaught → printErr fallback (C-2.3)", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await openStill(page);
+
+    // uncaught first: the bare harness has no ModeProvider → fallback line
+    await page.keyboard.type("mode graph");
+    await page.keyboard.press("Enter");
+    await expect(page.locator(".ln.err").last()).toContainText(
+      "mode graph: no handler",
+    );
+
+    // handled: a listener preventDefaults → no new fallback line
+    await page.evaluate(() => {
+      window.__modeEvents = [];
+      window.addEventListener("on:set-mode", (ev) => {
+        window.__modeEvents.push({
+          detail: ev.detail,
+          cancelable: ev.cancelable,
+        });
+        ev.preventDefault();
+      });
+    });
+    const errsBefore = await page.locator(".ln.err").count();
+    await page.keyboard.type("mode graph");
+    await page.keyboard.press("Enter");
+    await expect(page.locator(".ln.echo .cmdtext").last()).toHaveText(
+      "mode graph",
+    );
+    await expect
+      .poll(async () => page.evaluate(() => window.__modeEvents))
+      .toEqual([{ detail: "graph", cancelable: true }]);
+    expect(await page.locator(".ln.err").count()).toBe(errsBefore);
+    assertClean(errors);
+  });
+});
