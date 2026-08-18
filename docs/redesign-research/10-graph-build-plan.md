@@ -12,13 +12,10 @@ Last updated : 2026-08-17 (exec-infra) — GATE 0 ✅ (23f83210). exec-graph UNB
 exec-infra   : I-0.1..I-0.6 DONE. Gate 0: 16/16 Playwright routes clean (2x stable),
                vitest 216/216, vite build green. I-0.7 preview deployed + /api
                verified. Next = Phase 1 (I-1.1 sakura.css …).
-exec-graph   : GATE G1 ✅ (dc74c481). G2 groundwork done (camera.js, graph.css port,
-               filter/pulse/tour/keys pure modules — 111 units green).
-               next task = G-2.1 (dev harness) — NOW UNBLOCKED: Gate 0 ticked.
-               REQUEST HONORED: graph-dev.html needs NO vite.config change — the dev
-               server serves any root *.html automatically; prod build input is pinned
-               to index.html only (vite.config build.rollupOptions.input), so the
-               harness can never ship. Just create graph-dev.html + src/graph/dev.jsx.
+exec-graph   : GATE G2 ✅ (90a3a5c5) — canvas/camera/nodes/edges live in the harness
+               (http://localhost:3200/graph-dev.html · bg-vite-dev pane w2Y:pN ·
+               ?edges= + ?still work; screenshots in /tmp/graph-shots).
+               next task = G-3.1 (dossier) then G-3.2..G-3.7.
 Integration  : blocked until Phase 1 gate + Phase G4 gate both pass
 Blockers     : none
 Preview URL  : https://olivernguyen-pdsyq4d2u-ollie88skwdas-projects.vercel.app (Phase-0 state)
@@ -288,13 +285,13 @@ gate actually passes before building on it (`npx playwright test`, `npx vitest r
 - [x] **G-1.2** `src/graph/lib/edges.js` — arc / elbow / weighted (§3.2) + invariants
 - [x] **G-1.3** `src/graph/lib/layout.js` — authored positions; `src/intents/registry.js` + matcher (+ `lib/structure.js`: edge list/adjacency/root-paths derived from content)
 - [x] **G-1.4** Vitest units for all of the above → **GATE G1 ✅** (5 suites · 67 tests · `npx vitest run src/content src/graph src/intents`)
-- [ ] **G-2.1** Dev harness (`graph-dev.html` + `dev.jsx`, DEV-only Vite input)
-- [ ] **G-2.2** `useCamera` — d3-zoom, inertia, van Wijk fly-to, bounds, fit
-- [ ] **G-2.3** Node components per kind (root/group/day/leaf) on world div
-- [ ] **G-2.4** SVG edge underlay w/ §3.2 geometry, `?edges=` switch, draw-in
-- [ ] **G-2.5** Hover 1-hop highlight, semantic-zoom fade, dot-grid sync
-- [ ] **G-2.6** Type pass: Big Shoulders/Hanken/Martian mapped + retuned (§3.1), screenshots vs prototype
-- [ ] **G-2.7** Manual + screenshot review vs prototype → **GATE G2 ✅**
+- [x] **G-2.1** Dev harness (`graph-dev.html` + `dev.jsx`, DEV-only Vite input) (90a3a5c5)
+- [x] **G-2.2** `useCamera` — d3-zoom, inertia, van Wijk fly-to, bounds, fit (drag/inertia/wheel/dblclick-fit browser-verified)
+- [x] **G-2.3** Node components per kind (root/group/day/leaf) on world div
+- [x] **G-2.4** SVG edge underlay w/ §3.2 geometry, `?edges=` switch, draw-in (all 3 styles screenshot-verified)
+- [x] **G-2.5** Hover 1-hop highlight, semantic-zoom fade, dot-grid sync
+- [x] **G-2.6** Type pass: Big Shoulders/Hanken/Martian mapped + retuned (§3.1), screenshots vs prototype (canvas elements done; dossier titles re-checked in G-3.1)
+- [x] **G-2.7** Manual + screenshot review vs prototype → **GATE G2 ✅** (side-by-side /tmp/graph-shots; e2e/graph-shots.spec.js env-gated harness shots; pinch = stock d3-zoom touch, not emulatable headless — same code path as prototype)
 - [ ] **G-3.1** Dossier: focus fly, panel, linked chips, close cascade, focus trap
 - [ ] **G-3.2** Pulse routing on reworked edges: bead, `.routing`, arrival flash
 - [ ] **G-3.3** Prompt bar + typewriter placeholder + suggestions
