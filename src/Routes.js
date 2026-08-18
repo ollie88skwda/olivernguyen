@@ -3,20 +3,35 @@ import React, { Suspense, lazy } from "react";
 import { SiteChrome as ChromeBar } from "./chrome/SiteChrome";
 import { ModeProvider } from "./mode/ModeProvider";
 import { ClerkProvider } from "@clerk/react";
-import { Permit } from "./pages/driving/permit.js";
 import { NotFoundPage } from "./pages/not_found_page.js";
-import { Home } from "./pages/home.js";
-import { ArticleWriter } from "./pages/archive/article_writer.js";
-import { DriversLicense } from "./pages/driving/drivers_license.js";
-import SATResources from "./pages/sat/sat_resources.js";
-import SATSignup from "./pages/sat/sat_signup.js";
-import { Pull } from "./pages/pull.js";
-import { EmojiPage } from "./pages/emoji.js";
-import College from "./pages/college/index.js";
-import SignInPage from "./pages/sign_in.js";
+// X-1 (P4): src/pages/home.js is unmounted but left in the tree, flagged.
+import Home from "./home/Home.jsx";
 import RequirePassphrase from "./auth/RequirePassphrase";
 import RequireClerk, { clerkKey } from "./auth/RequireClerk";
 
+// X-3 perf budget (plan §6 FINAL GATE): "/" route JS ≤ 180KB gz pre-graph-
+// chunk. Legacy routes are lazy so their page code never rides in the entry
+// chunk; each renders under Suspense with a full-height blank (page CSS +
+// theme bg paint on chunk arrival — legacy bodies themselves are unchanged).
+const Permit = lazy(() =>
+  import("./pages/driving/permit.js").then((m) => ({ default: m.Permit })),
+);
+const ArticleWriter = lazy(() =>
+  import("./pages/archive/article_writer.js").then((m) => ({ default: m.ArticleWriter })),
+);
+const DriversLicense = lazy(() =>
+  import("./pages/driving/drivers_license.js").then((m) => ({ default: m.DriversLicense })),
+);
+const SATResources = lazy(() => import("./pages/sat/sat_resources.js"));
+const SATSignup = lazy(() => import("./pages/sat/sat_signup.js"));
+const Pull = lazy(() =>
+  import("./pages/pull.js").then((m) => ({ default: m.Pull })),
+);
+const EmojiPage = lazy(() =>
+  import("./pages/emoji.js").then((m) => ({ default: m.EmojiPage })),
+);
+const College = lazy(() => import("./pages/college/index.js"));
+const SignInPage = lazy(() => import("./pages/sign_in.js"));
 const BeMyGirlfriend = lazy(() => import("./pages/be_my_girlfriend/index.js"));
 const Major = lazy(() => import("./pages/major/index.js"));
 const Apply = lazy(() => import("./pages/apply/index.js"));
@@ -59,12 +74,15 @@ const SiteChrome = () => {
   return <ChromeBar />;
 };
 
+const Blank = () => <div style={{ minHeight: "100dvh" }} />;
+
 export const Routes = () => {
   return (
     <Router>
       <ModeProvider>
       <SiteChrome />
       <ClerkBridge>
+      <Suspense fallback={<Blank />}>
       <Switch>
         <Route path="/" exact>
           <Home />
@@ -140,6 +158,7 @@ export const Routes = () => {
           <NotFoundPage />
         </Route>
       </Switch>
+      </Suspense>
       </ClerkBridge>
       </ModeProvider>
     </Router>
