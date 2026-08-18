@@ -8,10 +8,13 @@ This doc is restart-safe: any fresh agent must be able to resume from it alone.
 ## CURRENT STATUS / NEXT TASK  ← executors MUST keep this block updated
 
 ```
-Last updated   : exec-term-core — GATE T0 PASSED ✅ (C-0.1..C-0.5 done: branch, harness,
-                 screen shell, buffer engine, cadence; 7/7 T0 e2e + 15 cadence unit green;
-                 graph FINAL GATE re-verified before building: 216 vitest + 36 e2e).
-exec-term-core : next task C-1.1 (Prompt: echo/cursor/history/Tab/refocus rules).
+Last updated   : exec-term-core — GATES T0 + C1 PASSED ✅ (C-0.1..C-1.6 done; terminal.spec
+                 14/14; vitest 116 in src/terminal incl. panes' pure modules; graph FINAL
+                 GATE re-verified at session start: 216 vitest + 36 e2e).
+                 Impl notes: runner has its OWN queue, prints ride the buffer queue (a
+                 command awaiting its own queue deadlocked — fixed + regression-tested);
+                 harness supports ?noboot (T0 engine specs) and ?still (instant cadence).
+exec-term-core : next task C-2.1/C-2.2 (vim motions, intents wrapper, palette, help sheet).
 exec-term-panes: GATE N1 PASSED ✅ (N-1.1..N-1.3 committed: tree.js + prefix.js pure
                  modules, 69 unit tests green). Gates re-verified on resume: 332 vitest
                  green; T0 e2e cases green (1 red in core's WIP C1 spec section —
@@ -290,12 +293,12 @@ status block, commit (`terminal-v1(<executor>): <task-id> <summary>`).
 - [x] **C-0.3** `Buffer.jsx` — `useBuffer()` + `<BufferView>` per §5; print queue; pin; pos%
 - [x] **C-0.4** `lib/cadence.js` (type/print timings, RM-instant) + Vitest on cadence/queue
 - [x] **C-0.5** Playwright: no-page-scroll, print/pin/clear/pos, RM-instant → **GATE T0 ✅**
-- [ ] **C-1.1** `Prompt.jsx` — echo + block cursor, mode indicator, history, Tab completion, refocus rules
-- [ ] **C-1.2** `lib/terminalModel.js` — section/artifact/beat selectors over site.js (+tests, zero hardcoded copy)
-- [ ] **C-1.3** `lib/commands.js` + `sections.jsx` — full command set + section renderers
-- [ ] **C-1.4** Boot sequence as command #1 (motd, auto-type, log frame, scramble name, CTAs)
-- [ ] **C-1.5** `StatusBar.jsx` — tabs, mode, %, clock (pane props stubbed)
-- [ ] **C-1.6** Playwright: boot/tabs/commands/content assertions → **GATE C1 ✅**
+- [x] **C-1.1** `Prompt.jsx` — echo + block cursor, mode indicator, history, Tab completion, refocus rules
+- [x] **C-1.2** `lib/terminalModel.js` — section/artifact/beat selectors over site.js (+tests, zero hardcoded copy)
+- [x] **C-1.3** `lib/commands.js` + `sections.jsx` — full command set + section renderers
+- [x] **C-1.4** Boot sequence as command #1 (motd, auto-type, log frame, scramble name, CTAs)
+- [x] **C-1.5** `StatusBar.jsx` — tabs, mode, %, clock (pane props stubbed)
+- [x] **C-1.6** Playwright: boot/tabs/commands/content assertions → **GATE C1 ✅**
 - [ ] **C-2.1** Vim motions in empty prompt (`j/k`, `gg/G` + `g‥`, `1–5`, `?`), Esc cascade
 - [ ] **C-2.2** `lib/intents.js` wrapper (P4) + `Palette.jsx` (⌘K, suggestions) + `HelpSheet.jsx`
 - [ ] **C-2.3** `mode graph|term` → cancelable `'on:set-mode'` dispatch + printErr fallback

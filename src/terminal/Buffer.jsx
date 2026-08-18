@@ -187,8 +187,10 @@ export function useBuffer() {
 function renderLine(item, i, pending) {
   if (isValidElement(item)) {
     const cls = item.props.className || '';
+    // keyed by position: lines are append-only and never reorder, and mixed
+    // authored/positional keys would collide (React dup-key warning).
     return cloneElement(item, {
-      key: item.key ?? i,
+      key: i,
       className: pending ? cls + ' pending' : cls,
     });
   }

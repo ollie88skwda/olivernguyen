@@ -224,11 +224,42 @@
   font-weight: 700;
 }
 
+.term-statusbar .sb-tabs {
+  display: flex;
+  gap: 1ch;
+}
+.term-statusbar .tab {
+  color: var(--text-faint);
+  padding: 0 1ch;
+  border-radius: 2px;
+}
+.term-statusbar .tab:hover {
+  color: var(--text);
+}
+.term-statusbar .tab.active {
+  color: var(--on-accent);
+  background: var(--accent);
+}
+.term-statusbar .tab.active::after {
+  content: "*";
+}
+
 .term-statusbar .sb-right {
   margin-left: auto;
   display: flex;
   gap: 1ch;
   color: var(--text-faint);
+}
+.term-statusbar .sb-panes,
+.term-statusbar .sb-zoom,
+.term-statusbar .sb-prefix {
+  color: var(--warning);
+}
+
+@media (max-width: 760px) {
+  .term-statusbar .sb-right {
+    display: none;
+  }
 }
 .term-statusbar .sb-mode {
   color: var(--accent-hi);

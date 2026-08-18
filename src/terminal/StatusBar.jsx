@@ -1,7 +1,7 @@
 /**
- * src/terminal/StatusBar.jsx — tmux statusbar (C-0.2 shell: session, mode,
- * %, clock; window tabs land at C-1.5, pane props {paneCount, zoomed, prefix}
- * arrive from panes at X-1).
+ * src/terminal/StatusBar.jsx — tmux statusbar (C-1.5): `[oN.c]` + window tabs
+ * (click = run that window's command) + mode indicator + pos% + clock.
+ * Pane props ({paneCount, zoomed, prefix}) are stubbed defaults until X-1.
  */
 import React, { useEffect, useState } from 'react';
 
@@ -12,7 +12,16 @@ const fmtTime = () =>
     hour12: false,
   });
 
-export default function StatusBar({ api, mode = '-- NORMAL --' }) {
+export default function StatusBar({
+  api,
+  windows = [],
+  active = 1,
+  onWindow,
+  mode = '-- NORMAL --',
+  paneCount = 1,
+  zoomed = false,
+  prefix = '',
+}) {
   const [pos, setPos] = useState(100);
   const [time, setTime] = useState(fmtTime);
 
@@ -26,11 +35,33 @@ export default function StatusBar({ api, mode = '-- NORMAL --' }) {
   return (
     <div className="term-statusbar" data-testid="term-statusbar">
       <span className="sb-sess">[oN.c]</span>
+      {windows.length > 0 && (
+        <nav className="sb-tabs" aria-label="Windows">
+          {windows.map((w) => (
+            <button
+              key={w.n}
+              type="button"
+              className={'tab' + (w.n === active ? ' active' : '')}
+              aria-current={w.n === active ? 'true' : undefined}
+              onClick={() => onWindow?.(w.n)}
+            >
+              {w.n}:{w.name}
+            </button>
+          ))}
+        </nav>
+      )}
       <span className="sb-right">
+        {paneCount > 1 && <span className="sb-panes">{paneCount} panes</span>}
+        {zoomed && <span className="sb-zoom">[Z]</span>}
+        {prefix && (
+          <span className="sb-prefix" data-testid="sb-prefix">
+            {prefix}
+          </span>
+        )}
         <span className="sb-mode" data-testid="sb-mode">
           {mode}
         </span>
-        <span className="sb-dim">·</span>
+        <span className="sb-dim">· ? help · ⌘K ·</span>
         <span className="sb-pos" data-testid="sb-pos">
           {pos}%
         </span>

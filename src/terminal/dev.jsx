@@ -8,8 +8,13 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import TerminalHome from './TerminalHome.jsx';
 
+// ?noboot: engine-level specs (Gate T0) want a deterministic EMPTY buffer;
+// boot-on-mount stays the production default.
+const noboot = new URLSearchParams(window.location.search).has('noboot');
+
 createRoot(document.getElementById('root')).render(
   <TerminalHome
+    autoboot={!noboot}
     devHook={(hook) => {
       window.__term = hook;
     }}

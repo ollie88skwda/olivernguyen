@@ -2,7 +2,9 @@
 // (/terminal-dev.html → window.__term). Gate T0 cases (C-0.5): the page never
 // scrolls, blocks print line-at-a-time + pin, echo renders, clear empties,
 // pos% follows buffer scroll, reduced-motion prints instantly, zero console
-// errors. C1/C2/C3 describe-blocks append below as their phases land.
+// errors. Gate C1 (C-1.6): boot hero, tabs/digits print sections, command
+// errors, history/Tab, content spot-checks vs site.js (kept literal so the
+// spec fails loudly if content drifts — graph.spec pattern).
 import { test, expect } from "@playwright/test";
 
 const HARNESS = "/terminal-dev.html";
@@ -21,8 +23,10 @@ const assertClean = (errors) => {
   expect(errors.console, "console errors").toEqual([]);
 };
 
-const openHarness = async (page) => {
-  await page.goto(HARNESS);
+// Gate T0 cases drive the raw engine — ?noboot keeps the buffer empty and
+// deterministic. Gate C1+ cases use the booting harness (production default).
+const openHarness = async (page, params = "?noboot") => {
+  await page.goto(HARNESS + params);
   await page.waitForFunction(() => !!window.__term);
 };
 
@@ -215,6 +219,235 @@ test.describe("terminal core — Gate T0 (buffer engine + screen shell)", () => 
       return Math.abs(s.getBoundingClientRect().height - window.innerHeight) <= 1;
     });
     expect(fits, ".term-screen owns exactly the viewport").toBe(true);
+    assertClean(errors);
+  });
+});
+
+/* ------------------------------- GATE C1 -------------------------------- */
+
+// literals mirror src/content/site.js (spot-checks per §6 Gate C1)
+const TAGLINE = "I build LLM agents. One ran a project alone for a week.";
+const DAY3_BEAT = "decision #141 — restructure email templates";
+const DAY4_BEAT = "decision #163 — pin dependency, stop the flake";
+const EMAIL = "oliverdnguyen@gmail.com";
+
+const STILL = HARNESS + "?still"; // instant cadence for command-table cases
+
+const bootDone = async (page) => {
+  await expect(page.locator("h1.name")).toHaveText("Oliver Nguyen", {
+    timeout: 15_000,
+  });
+};
+
+test.describe("terminal core — Gate C1 (prompt, commands, sections, boot)", () => {
+  test("boot autoruns: motd, auto-typed command, day-3 frame, hero, CTAs (§3.1.4)", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await openHarness(page, ""); // REAL boot, full cadence
+
+    // motd printed before the first command
+    await expect(page.locator(".ln.faint").first()).toContainText("Last login:");
+    // the site types its own first command → echo line
+    await expect(page.locator(".ln.echo .cmdtext").first()).toHaveText(
+      "operator --replay --day 3",
+      { timeout: 15_000 },
+    );
+    // day-3 log frame from site.week + operator stats summary
+    await expect(page.locator(".ln.k-log").first()).toContainText(DAY3_BEAT, {
+      timeout: 15_000,
+    });
+    await expect(page.locator(".ln.k-ok").first()).toContainText(
+      "257 decision entries",
+    );
+    // scramble settles on the real name; tagline is site.meta's
+    await bootDone(page);
+    await expect(page.locator(".ln.tagline").first()).toHaveText(TAGLINE);
+    // CTA row buttons
+    await expect(
+      page.locator('button.obtn[data-cmd="cat tools.txt"]'),
+    ).toBeVisible();
+    await expect(
+      page.locator('button.obtn[data-cmd="mode graph"]'),
+    ).toBeVisible();
+    // statusbar: window 1 active, prompt back to NORMAL
+    await expect(page.getByRole("button", { name: "1:boot" })).toHaveClass(
+      /active/,
+    );
+    await expect(page.getByTestId("sb-mode")).toHaveText("-- NORMAL --");
+    assertClean(errors);
+  });
+
+  test("every tab prints its section; active tab follows (§3.1.6)", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await page.goto(STILL);
+    await page.waitForFunction(() => !!window.__term);
+    await bootDone(page);
+
+    const expectSection = async (tab, needle) => {
+      await page.getByRole("button", { name: tab }).click();
+      await expect(page.locator(".blk").last()).toContainText(needle, {
+        timeout: 10_000,
+      });
+      await expect(page.getByRole("button", { name: tab })).toHaveClass(
+        /active/,
+      );
+    };
+    await expectSection("2:agents", "Voice / Operator");
+    await expectSection("3:robotics", "TechX Robotics");
+    await expectSection("4:leadership", "Eagle Scout");
+    await expectSection("5:contact", "OPEN CHANNEL.");
+    // echoes are real commands
+    await expect(page.locator(".ln.echo .cmdtext").nth(1)).toHaveText(
+      "cat tools.txt",
+    );
+    assertClean(errors);
+  });
+
+  test("digits 1–5 in the empty prompt auto-type the window command", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await page.goto(STILL);
+    await page.waitForFunction(() => !!window.__term);
+    await bootDone(page);
+    await page.keyboard.press("2");
+    await expect(page.locator(".ln.echo .cmdtext").nth(1)).toHaveText(
+      "cat tools.txt",
+    );
+    await expect(page.locator(".blk").last()).toContainText("ScopeCreep Notary");
+    await page.keyboard.press("5");
+    await expect(page.locator(".blk").last()).toContainText("github");
+    assertClean(errors);
+  });
+
+  test("typed commands: ls, cat errors, day N, open, email, quit, mode terminal", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await page.goto(STILL);
+    await page.waitForFunction(() => !!window.__term);
+    await bootDone(page);
+
+    const type = async (cmd) => {
+      await page.keyboard.type(cmd);
+      await page.keyboard.press("Enter");
+    };
+
+    await type("ls");
+    await expect(page.locator(".blk").last()).toContainText("tools.txt");
+    await expect(page.locator(".blk").last()).toContainText("contact.txt");
+
+    await type("cat nosuch.txt");
+    await expect(page.locator(".ln.err").last()).toHaveText(
+      "cat: nosuch.txt: No such file",
+    );
+
+    await type("day 4");
+    await expect(page.locator(".blk").last()).toContainText(DAY4_BEAT);
+    await type("day 9");
+    await expect(page.locator(".ln.err").last()).toHaveText(
+      "day: expected 1-7",
+    );
+
+    await type("open mac-agent");
+    await expect(page.locator(".blk").last()).toContainText(
+      "MCP toolbelt for macOS",
+    );
+    await expect(page.locator(".blk").last()).toContainText("8 MCP tools");
+
+    await type("email");
+    await expect(page.locator(".ln.ok").last()).toHaveText(
+      `copied ${EMAIL} ✓`,
+    );
+
+    await type("quit");
+    await expect(page.locator(".blk").last()).toContainText(
+      "this is a website. you live here now.",
+    );
+
+    await type("mode terminal");
+    await expect(page.locator(".blk").last()).toContainText(
+      "already in terminal mode",
+    );
+    assertClean(errors);
+  });
+
+  test("history (↑/↓) and Tab completion; mode indicator tracks input (§3.1.3)", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await page.goto(STILL);
+    await page.waitForFunction(() => !!window.__term);
+    await bootDone(page);
+
+    // Tab completion: command word, then cat filename
+    await page.keyboard.type("he");
+    await expect(page.getByTestId("sb-mode")).toHaveText("-- INSERT --");
+    await page.keyboard.press("Tab");
+    await expect(page.getByTestId("term-pecho")).toContainText("help");
+    await page.keyboard.press("Enter");
+    await expect(page.locator(".blk").last()).toContainText("Tab completes");
+
+    await page.keyboard.type("cat rob");
+    await page.keyboard.press("Tab");
+    await expect(page.getByTestId("term-pecho")).toContainText(
+      "cat robotics.log",
+    );
+    await page.keyboard.press("Escape"); // clears the prompt
+    await expect(page.getByTestId("sb-mode")).toHaveText("-- NORMAL --");
+
+    // : prefix → COMMAND mode
+    await page.keyboard.type(":ls");
+    await expect(page.getByTestId("sb-mode")).toHaveText("-- COMMAND --");
+    await page.keyboard.press("Enter");
+
+    // history: boot cmd + help + :ls recorded
+    await page.keyboard.press("ArrowUp");
+    await expect(page.getByTestId("term-pecho")).toContainText(":ls");
+    await page.keyboard.press("ArrowUp");
+    await expect(page.getByTestId("term-pecho")).toContainText("help");
+    await page.keyboard.press("ArrowDown");
+    await expect(page.getByTestId("term-pecho")).toContainText(":ls");
+    assertClean(errors);
+  });
+
+  test("printed [data-cmd] buttons run commands (CTA → tools section)", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await page.goto(STILL);
+    await page.waitForFunction(() => !!window.__term);
+    await bootDone(page);
+    await page.locator('button.obtn[data-cmd="cat tools.txt"]').click();
+    await expect(page.locator(".ln.echo .cmdtext").nth(1)).toHaveText(
+      "cat tools.txt",
+    );
+    await expect(page.locator(".blk").last()).toContainText("Articlewriter");
+    await expect(page.getByRole("button", { name: "2:agents" })).toHaveClass(
+      /active/,
+    );
+    assertClean(errors);
+  });
+
+  test("content honesty: three entities render their site.js facts verbatim", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await page.goto(STILL);
+    await page.waitForFunction(() => !!window.__term);
+    await bootDone(page);
+    await page.keyboard.press("2");
+    const blk = page.locator(".blk").last();
+    // operator (site.js stats)
+    await expect(blk).toContainText("257 decision entries");
+    await expect(blk).toContainText("RAN 7 DAYS");
+    // scopecreep
+    await expect(blk).toContainText("0 LLM calls");
+    // articlewriter
+    await expect(blk).toContainText("ARCHIVED");
     assertClean(errors);
   });
 });
