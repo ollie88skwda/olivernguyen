@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Switch, Route, useHistory, useLocation } from "react-router-dom";
 import React, { Suspense, lazy } from "react";
-import { TopBar } from "./pages/top_bar";
+import { SiteChrome as ChromeBar } from "./chrome/SiteChrome";
+import { ModeProvider } from "./mode/ModeProvider";
 import { ClerkProvider } from "@clerk/react";
 import { Permit } from "./pages/driving/permit.js";
 import { NotFoundPage } from "./pages/not_found_page.js";
@@ -45,20 +46,23 @@ const ClerkBridge = ({ children }) => {
   );
 };
 
-// Site chrome (top bar, sidebar, grain, scroll progress) is mounted once here so
-// every route carries it, instead of each page importing TopBar itself.
+// Site chrome (top bar, pages menu, mode toggle) is mounted once here so
+// every route carries it. I-1.5: src/chrome/SiteChrome replaces the old
+// pages/top_bar (grain retired, /debt dropped, TERM|GRAPH toggle added);
+// top_bar.js stays in the tree unmounted (P4 policy).
 // /be-my-girlfriend is full-bleed with its own art direction and opts out.
 const NO_CHROME = ["/be-my-girlfriend", "/bemygirlfriend", "/girlfriend"];
 
 const SiteChrome = () => {
   const { pathname } = useLocation();
   if (NO_CHROME.some((route) => pathname.startsWith(route))) return null;
-  return <TopBar />;
+  return <ChromeBar />;
 };
 
 export const Routes = () => {
   return (
     <Router>
+      <ModeProvider>
       <SiteChrome />
       <ClerkBridge>
       <Switch>
@@ -137,6 +141,7 @@ export const Routes = () => {
         </Route>
       </Switch>
       </ClerkBridge>
+      </ModeProvider>
     </Router>
   );
 };

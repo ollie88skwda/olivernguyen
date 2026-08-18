@@ -1,0 +1,170 @@
+/* Shared chrome (05 §6.4) — sakura-tokened; page bodies keep their own CSS.
+ * Everything is scoped under .site-chrome (which also carries .sakura, so the
+ * mode's token set applies to chrome only — plan P2). */
+
+.site-chrome-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0 24px;
+  z-index: 1000;
+  background:
+    color-mix(in srgb, var(--bg) 82%, transparent);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+.sc-logo {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 1.5rem;
+  letter-spacing: 0.02em;
+  color: var(--text);
+  text-decoration: none;
+}
+.sc-logo:hover {
+  color: var(--accent);
+}
+
+.sc-links {
+  display: flex;
+  gap: 22px;
+  margin-right: auto;
+  margin-left: 28px;
+}
+.sc-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+.sc-link:hover {
+  color: var(--accent);
+}
+
+.sc-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* TERM | GRAPH segmented toggle (05 §6.1) */
+.sc-mode-toggle {
+  position: relative;
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 2px;
+  background: var(--surface);
+}
+.sc-mode-btn {
+  position: relative;
+  z-index: 1;
+  appearance: none;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  padding: 6px 12px;
+  border-radius: 999px;
+  color: var(--text-muted);
+}
+.sc-mode-btn[aria-pressed="true"] {
+  color: var(--on-accent);
+}
+.sc-mode-thumb {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.sc-cmdk {
+  appearance: none;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  padding: 7px 10px;
+}
+.sc-cmdk:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.sc-menu-btn {
+  appearance: none;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 1.1rem;
+  padding: 6px;
+}
+.sc-menu-btn:hover {
+  color: var(--accent);
+}
+
+/* Pages menu (hamburger) */
+.sc-menu {
+  position: fixed;
+  top: 72px;
+  right: 16px;
+  z-index: 1001;
+  min-width: 220px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+.sc-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sc-menu a {
+  display: block;
+  padding: 7px 10px;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.88rem;
+}
+.sc-menu a:hover {
+  background: var(--surface-2);
+  color: var(--accent);
+}
+.sc-menu-group {
+  margin-top: 6px;
+  padding: 7px 10px 2px;
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.sc-menu-sub a {
+  padding-left: 20px;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
