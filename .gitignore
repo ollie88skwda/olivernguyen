@@ -12,6 +12,10 @@ package-lock.json
 
 .DS_Store
 
+# Playwright scratch output
+test-results/
+playwright-report/
+
 # Agent and tooling scratch output. All of this was untracked and unignored, which is
 # how an unscoped `git add -A` once swept ~300 junk files into a commit.
 .agents/
