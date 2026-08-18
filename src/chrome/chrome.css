@@ -189,3 +189,28 @@
     animation: none;
   }
 }
+
+/* The ⌘K affordance only exists where GraphCanvas mounts (desktop + fine
+   pointer — GraphHome's DESKTOP_MQ); on the mobile list it would be a dead
+   button, so hide it there. */
+@media (max-width: 767px), (pointer: coarse) {
+  .sc-cmdk {
+    display: none;
+  }
+}
+
+/* -------------------------------------------------------------------------
+   Integration glue (X-4 ship-check): on "/" the fixed 64px chrome overlays
+   the graph's top-anchored HUD (graph.css anchors at top:18px for a bare
+   viewport — correct in the dev harness, which never loads this file).
+   Nudge only the top-anchored pieces below the bar; the graph files stay
+   untouched (§5 ownership). On "/" the page never scrolls, so the bar never
+   hides from under them. */
+html[data-mode="graph"] .graph-root .legend,
+html[data-mode="graph"] .graph-root .filterbar,
+html[data-mode="graph"] .graph-root .tourhud {
+  top: 82px;
+}
+html[data-mode="graph"] .graph-root .dossier {
+  top: 64px;
+}
