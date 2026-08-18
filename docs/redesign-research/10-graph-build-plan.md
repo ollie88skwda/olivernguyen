@@ -8,10 +8,13 @@ This doc is restart-safe: any fresh agent must be able to resume from it alone.
 ## CURRENT STATUS / NEXT TASK  ← executors MUST keep this block updated
 
 ```
-Last updated : 2026-08-17 (exec-infra) — GATE 0 ✅ (23f83210). exec-graph UNBLOCKED.
-exec-infra   : I-0.1..I-0.6 DONE. Gate 0: 16/16 Playwright routes clean (2x stable),
-               vitest 216/216, vite build green. I-0.7 preview deployed + /api
-               verified. Next = Phase 1 (I-1.1 sakura.css …).
+Last updated : 2026-08-18 (exec-infra) — GATE 1 ✅. Phase 1 complete.
+exec-infra   : I-0.x + I-1.x ALL DONE. Gate 1: mode.spec (toggle/persist/URL/
+               ?mode-force/on:set-mode contract) + legacy-visual freeze ×3
+               re-passed against pre-swap baselines + contrast 63/63; full
+               Playwright 31 passed / 4 env-gated skips, vitest 216/216.
+               ModeProvider already handles the 'on:set-mode' cancelable
+               CustomEvent (X-2 contract). Next = Integration X-1.
 exec-graph   : ALL PHASES DONE — GATES G1–G4 ✅ (last: 9cbea665). Harness:
                http://localhost:3200/graph-dev.html (bg-vite-dev pane w2Y:pN).
                Full check this session: vitest 216/216 · playwright 26 passed.
@@ -23,7 +26,7 @@ exec-graph   : ALL PHASES DONE — GATES G1–G4 ✅ (last: 9cbea665). Harness:
                X-1 note: GraphHome imports graph.css itself; lazy-import it and the
                d3 deps ride in its chunk. Dev harness (graph-dev.html) is already
                excluded from prod (build input pinned to index.html).
-Integration  : blocked until Phase 1 gate + Phase G4 gate both pass
+Integration  : UNBLOCKED (Gates 1 + G4 both ✅) — X-1 in progress (exec-infra leads)
 Blockers     : none · ops note: exec-infra sessions kept dying on provider 429/refusals;
                exec-graph respawned it twice via herdr (pane w2Y:pK, model pinned to
                anthropic/claude-fable-5, SHORT prompt — long prompts triggered refusals).
@@ -290,10 +293,10 @@ gate actually passes before building on it (`npx playwright test`, `npx vitest r
 - [x] **I-0.7** Vercel preview deploy; `/api` verified (session fn + SPA rewrite + statics); authed flows flagged (no creds)
 - [x] **I-1.1** `src/styles/sakura.css` — 04 §5 both token sets, `.sakura` scoping (P2), font vars (4531b14a)
 - [x] **I-1.2** Contrast-check script over 04's pairs (CI-runnable: `yarn contrast`, 63 pairs, negative-tested)
-- [ ] **I-1.3** `ModeProvider` (P3 default, persistence, URL sync, `data-mode`, theme-color)
-- [ ] **I-1.4** `src/home/Home.jsx` — mode switch, graph placeholder, terminal holding screen (P4)
-- [ ] **I-1.5** Top bar + TERM|GRAPH toggle on chromed routes; `/debt` dropped; `NO_CHROME` intact
-- [ ] **I-1.6** Playwright: toggle/persist/URL + legacy screenshot diff ×3 → **GATE 1 ✅**
+- [x] **I-1.3** `ModeProvider` (P3 default, persistence, URL sync, `data-mode`, theme-color) (dc6899c4; incl. 'on:set-mode' listener per X-2 contract)
+- [x] **I-1.4** `src/home/Home.jsx` — mode switch, graph placeholder, terminal holding screen (P4)
+- [x] **I-1.5** Top bar + TERM|GRAPH toggle on chromed routes; `/debt` dropped; `NO_CHROME` intact (2a9af316)
+- [x] **I-1.6** Playwright: toggle/persist/URL + legacy screenshot diff ×3 → **GATE 1 ✅** (e2e/mode.spec.js 4/4; legacy-visual 3/3 vs pre-swap baselines; contrast 63/63)
 
 ### exec-graph
 - [x] **G-1.1** `src/content/site.js` — 05 §2.2 schema, all 30 nodes + week ring, prototype copy (P5)
