@@ -501,7 +501,8 @@
   overflow-y: auto;
   user-select: text;
 }
-.graph-root.dossier-open .dossier { transform: none; }
+.graph-root.dossier-open .dossier,
+.graph-root .dossier-open .dossier { transform: none; }
 
 .graph-root .d-close {
   position: absolute;

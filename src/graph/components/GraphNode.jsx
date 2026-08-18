@@ -3,15 +3,26 @@
  * DOM mirrors the prototype exactly (.node > .drift > .card) so graph.css
  * and the screenshot comparison apply 1:1.
  */
-import React, { useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { KINDS } from '../../content/site.js';
 
 export default function GraphNode({
-  entity, pos, still, hot, active, match,
+  entity, pos, still, entryDelay = 0, hot, active, arrived, match,
   onHover, onHoverEnd, onActivate,
 }) {
   const down = useRef(null);
   const isLeaf = entity.kind !== 'root' && entity.kind !== 'group';
+
+  // entry: assemble outward from the center (prototype), skipped when still
+  const [entered, setEntered] = useState(still);
+  useEffect(() => {
+    if (still) { setEntered(true); return undefined; }
+    let r2 = null;
+    const r1 = requestAnimationFrame(() => {
+      r2 = requestAnimationFrame(() => setEntered(true));
+    });
+    return () => { cancelAnimationFrame(r1); if (r2) cancelAnimationFrame(r2); };
+  }, [still]);
 
   // idle drift garnish: random phase/period, fixed per mount (prototype)
   const driftStyle = useMemo(() => {
@@ -28,15 +39,29 @@ export default function GraphNode({
     isLeaf ? 'leaf' : '',
     hot ? 'hot' : '',
     active ? 'active' : '',
+    arrived ? 'arrived' : '',
     match ? 'match' : '',
   ].filter(Boolean).join(' ');
 
   const kind = KINDS[entity.kind];
 
+  const nodeStyle = entered
+    ? {
+        transform: `translate(${pos.x}px, ${pos.y}px)`,
+        opacity: 1,
+        transition: still
+          ? 'none'
+          : `transform .85s cubic-bezier(.22,.9,.3,1) ${entryDelay}ms, opacity .45s ease ${entryDelay}ms`,
+      }
+    : {
+        transform: `translate(${pos.x * 0.12}px, ${pos.y * 0.12}px)`,
+        opacity: 0,
+      };
+
   return (
     <div
       className={cls}
-      style={{ transform: `translate(${pos.x}px, ${pos.y}px)` }}
+      style={nodeStyle}
       data-id={entity.id}
       onPointerEnter={() => onHover(entity.id)}
       onPointerLeave={onHoverEnd}
