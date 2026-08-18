@@ -1,0 +1,83 @@
+/* ============================================================================
+ * SAKURA TOKENS — 04-sakura-palette.md §5, verbatim hexes.
+ *
+ * Scoping (plan P2): legacy src/styles/theme.css owns :root (--bg/--text/
+ * --accent…). Sakura tokens therefore live under a `.sakura` scope class and
+ * NEVER on :root — new chrome + GraphHome mount inside `.sakura`; legacy page
+ * bodies are untouched.
+ *
+ * Mode is carried by <html data-mode="graph|terminal"> (set by ModeProvider).
+ * Light (graph) tokens are the `.sakura` default so sakura UI is never
+ * un-themed even before ModeProvider hydrates; dark (terminal) overrides key
+ * off the html attribute. Contrast pairs are enforced by
+ * scripts/contrast-check.mjs (04 §2.3 / §3.4 tables).
+ * ========================================================================== */
+
+/* ---- LIGHT SAKURA — "Sakura Paper" (graph mode, default) ---- */
+.sakura {
+  --bg: #faf1f5;
+  --surface: #fdf8fa;
+  --surface-2: #f2e2ea;
+  --border: #e2c9d4;
+  --text: #3a1e2b;
+  --text-muted: #6f4459;
+  --text-faint: #84536a;
+  --accent: #a83a68;
+  --accent-hi: #93275a;
+  --on-accent: #fdf8fa;
+  --success: #15734f;
+  --warning: #835b10;
+  --error: #b93a2c;
+  --selection: #f7cede;
+  /* graph-specific (04 §3.3) */
+  --node-fill: #fdf8fa;
+  --node-border: #a97188;
+  --node-border-active: #a83a68;
+  --edge: #d9b6c4;
+  --routing-pulse: #15734f;
+  --dot-grid: #e8d3dc;
+
+  /* Fonts (plan §3.1 / L9) — same faces as legacy theme.css, re-declared here
+   * so graph never depends on legacy CSS being loaded. */
+  --font-display: "Big Shoulders", sans-serif;
+  --font-sans: "Hanken Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: "Martian Mono", ui-monospace, monospace;
+
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+/* ---- DARK SAKURA — "Night Plum" (terminal mode) ---- */
+html[data-mode="terminal"] .sakura {
+  --bg: #180f14;
+  --surface: #1f1319;
+  --surface-2: #2a1b22;
+  --border: #3a2430;
+  --border-strong: #5c3a48;
+  --text: #f5dce6;
+  --text-muted: #d888a8;
+  --text-faint: #b0788f;
+  --accent: #ffb7d1;
+  --accent-hi: #ff6fb0;
+  --on-accent: #1f1319;
+  --success: #46b989;
+  --warning: #e8a94a;
+  --error: #e15647;
+  --error-hi: #ea897e;
+  --selection: #3a2430;
+  /* terminal-specific (04 §2.2) */
+  --term-log: #d888a8;
+  --term-log-dim: #b0788f;
+  --term-prompt: #ff6fb0;
+  --term-active-line: #31202a;
+  --term-cursor: #ff6fb0;
+  --term-success-line: #182520;
+  --term-error-line: #2b1917;
+}
+
+/* ::selection uses --selection in both modes (04 §5 rationing rules). */
+.sakura ::selection {
+  background: var(--selection);
+  color: var(--text);
+}
