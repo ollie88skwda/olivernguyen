@@ -1,0 +1,250 @@
+/* ============================================================================
+ * src/terminal/terminal.css — screen / buffer / prompt / statusbar / cell grid
+ * (C-0.2). Ported from prototype/terminal/styles.css v2; ALL color comes from
+ * src/styles/sakura.css tokens ("Night Plum" keys off html[data-mode=
+ * "terminal"] .sakura) — zero hexes here. Class-scoped, no ids: several
+ * buffers coexist once panes land. CRT texture: none (P8).
+ *
+ * Cell grid (§3.1.7): sizes in ch/row multiples off --term-fs/--row. Initial
+ * values are a first guess for Martian Mono (much wider than the prototype's
+ * system stack) — the dedicated type pass C-3.4 retunes them vs screenshots.
+ * ========================================================================== */
+
+.term-screen {
+  --term-fs: 14px;
+  --row: 22px; /* one cell row; all vertical rhythm sits on this */
+
+  height: 100dvh;
+  display: grid;
+  grid-template-rows: 1fr auto auto; /* main (buffer/panes) / promptline / statusbar */
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font: 400 var(--term-fs) / var(--row) var(--font-mono);
+}
+
+/* Chromed "/" integration glue lives in chrome.css at X-2, not here — the
+   harness mounts the screen bare. */
+
+.term-screen button {
+  font: inherit;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.term-screen :focus-visible {
+  outline: 2px solid var(--accent-hi);
+  outline-offset: 1px;
+  border-radius: 2px;
+}
+
+.term-screen .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- main row (buffer now; PaneGrid replaces its content at X-1) --- */
+
+.term-main {
+  display: flex;
+  min-height: 0; /* the grid row must be allowed to shrink — buffers scroll */
+}
+
+/* ---------- scrollback buffer ---------- */
+
+.term-buffer {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--row) 2ch;
+}
+.term-buffer::-webkit-scrollbar {
+  width: 8px;
+}
+.term-buffer::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+.term-buffer::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
+}
+
+.term-screen .ln {
+  margin: 0;
+  max-width: 100ch;
+  min-height: var(--row);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+.term-screen .pending {
+  display: none; /* output lines not yet "printed" */
+}
+
+/* prompt echo of an executed command */
+.term-screen .echo {
+  margin-top: var(--row);
+}
+.term-screen .echo .cmdtext {
+  color: var(--text);
+}
+
+.term-screen .psigil {
+  color: var(--term-prompt);
+  font-weight: 700;
+  white-space: pre;
+}
+
+/* color roles (one hue ladder, rationed — 04 §5) */
+.term-screen .dim { color: var(--term-log-dim); }
+.term-screen .faint { color: var(--text-faint); }
+.term-screen .mut { color: var(--text-muted); }
+.term-screen .ok { color: var(--success); }
+.term-screen .err { color: var(--error-hi); }
+.term-screen .acc { color: var(--accent); }
+.term-screen .hot { color: var(--accent-hi); }
+.term-screen .ln b { color: var(--text); font-weight: 700; }
+.term-screen .ind { padding-left: 4ch; }
+
+.term-screen .k-log { color: var(--term-log); }
+.term-screen .k-ok { color: var(--success); }
+
+/* hero output (printed by `operator --replay`) — the ONE non-mono element:
+   Big Shoulders on the printed name only (L6) */
+.term-screen .name {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5.5vw, 64px);
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  color: var(--text);
+  margin: var(--row) 0 0;
+  min-height: 0;
+}
+.term-screen .tagline {
+  color: var(--text-muted);
+}
+
+.term-screen .big {
+  font-size: clamp(24px, 3.4vw, 38px);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text);
+  margin-top: var(--row);
+}
+
+/* buttons + links printed inside output */
+.term-screen .obtn {
+  color: var(--accent);
+}
+.term-screen .obtn:hover {
+  color: var(--accent-hi);
+  background: var(--selection);
+}
+.term-screen .plain {
+  color: var(--text-muted);
+  text-underline-offset: 3px;
+}
+.term-screen .plain:hover {
+  color: var(--accent);
+}
+
+/* ---------- prompt line ---------- */
+
+.term-screen .promptline {
+  display: flex;
+  align-items: baseline;
+  padding: 6px 2ch;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  position: relative;
+  cursor: text;
+}
+
+.term-screen .pecho {
+  white-space: pre;
+  flex: 1;
+  color: var(--text);
+  overflow: hidden;
+}
+
+/* block cursor: full-cell inverse, steps(1) blink (§3.1.3) */
+.term-screen .pcursor {
+  background: var(--term-cursor);
+  color: var(--on-accent);
+  animation: term-blink 1.06s steps(1) infinite;
+}
+@keyframes term-blink {
+  50% {
+    background: transparent;
+    color: var(--text);
+  }
+}
+.term-screen .promptline.blurred .pcursor {
+  animation: none;
+  background: transparent;
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--term-cursor);
+}
+
+/* the real input is visually offscreen; the echo + cursor are the prompt */
+.term-screen .promptline input {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  border: none;
+}
+
+/* ---------- tmux statusbar ---------- */
+
+.term-statusbar {
+  display: flex;
+  align-items: center;
+  gap: 2ch;
+  padding: 3px 2ch;
+  background: var(--surface-2);
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.term-statusbar .sb-sess {
+  color: var(--accent-hi);
+  font-weight: 700;
+}
+
+.term-statusbar .sb-right {
+  margin-left: auto;
+  display: flex;
+  gap: 1ch;
+  color: var(--text-faint);
+}
+.term-statusbar .sb-mode {
+  color: var(--accent-hi);
+  font-weight: 700;
+}
+.term-statusbar .sb-dim {
+  color: var(--text-faint);
+}
+
+/* ---------- reduced motion (scoped — this chunk lazily joins graph pages) - */
+
+@media (prefers-reduced-motion: reduce) {
+  .term-screen *,
+  .term-screen *::before,
+  .term-screen *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

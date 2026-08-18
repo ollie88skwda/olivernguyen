@@ -8,10 +8,17 @@ This doc is restart-safe: any fresh agent must be able to resume from it alone.
 ## CURRENT STATUS / NEXT TASK  ← executors MUST keep this block updated
 
 ```
-Last updated   : (planner) — plan written, build NOT started.
-exec-term-core : next task C-0.1 (branch redesign/terminal-v1 + dev harness + screen shell).
-exec-term-panes: next task N-1.1 (pure split-tree module — may start NOW, parallel with C-0;
-                 component work (N-2+) only after core's GATE T0).
+Last updated   : exec-term-core — GATE T0 PASSED ✅ (C-0.1..C-0.5 done: branch, harness,
+                 screen shell, buffer engine, cadence; 7/7 T0 e2e + 15 cadence unit green;
+                 graph FINAL GATE re-verified before building: 216 vitest + 36 e2e).
+exec-term-core : next task C-1.1 (Prompt: echo/cursor/history/Tab/refocus rules).
+exec-term-panes: GATE T0 ticked → N-2 component work UNBLOCKED. Your N-1 modules
+                 (panes/tree.js, panes/prefix.js + tests) sit uncommitted in the shared
+                 worktree — commit them yourself (core only commits core paths). Buffer
+                 contract is live: src/terminal/Buffer.jsx exports useBuffer()/{ref,api},
+                 BufferView, ln(cls,children), SIGIL. NOTE: no vite.config change needed
+                 for terminal-panes-dev.html — the dev server serves root *.html
+                 automatically (graph-dev pattern); keep it out of build inputs.
 Blockers       : none.
 Preview URL    : — (graph-v1 preview: see doc 10 status header)
 Notes for Oliver : —
@@ -280,11 +287,11 @@ status block, commit (`terminal-v1(<executor>): <task-id> <summary>`).
 ## 8 · LIVE TASK CHECKLIST — tick as you go
 
 ### exec-term-core
-- [ ] **C-0.1** Branch `redesign/terminal-v1` from graph-v1; `terminal-dev.html` + `dev.jsx` harness (DEV-only vite inputs, incl. panes' harness)
-- [ ] **C-0.2** Screen shell: `#screen` grid 100dvh in `.sakura` dark; body never scrolls; cell-grid vars
-- [ ] **C-0.3** `Buffer.jsx` — `useBuffer()` + `<BufferView>` per §5; print queue; pin; pos%
-- [ ] **C-0.4** `lib/cadence.js` (type/print timings, RM-instant) + Vitest on cadence/queue
-- [ ] **C-0.5** Playwright: no-page-scroll, print/pin/clear/pos, RM-instant → **GATE T0 ✅**
+- [x] **C-0.1** Branch `redesign/terminal-v1` from graph-v1; `terminal-dev.html` + `dev.jsx` harness (DEV-only vite inputs, incl. panes' harness)
+- [x] **C-0.2** Screen shell: `#screen` grid 100dvh in `.sakura` dark; body never scrolls; cell-grid vars
+- [x] **C-0.3** `Buffer.jsx` — `useBuffer()` + `<BufferView>` per §5; print queue; pin; pos%
+- [x] **C-0.4** `lib/cadence.js` (type/print timings, RM-instant) + Vitest on cadence/queue
+- [x] **C-0.5** Playwright: no-page-scroll, print/pin/clear/pos, RM-instant → **GATE T0 ✅**
 - [ ] **C-1.1** `Prompt.jsx` — echo + block cursor, mode indicator, history, Tab completion, refocus rules
 - [ ] **C-1.2** `lib/terminalModel.js` — section/artifact/beat selectors over site.js (+tests, zero hardcoded copy)
 - [ ] **C-1.3** `lib/commands.js` + `sections.jsx` — full command set + section renderers
