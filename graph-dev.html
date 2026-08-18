@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" data-mode="graph">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>graph-dev — GraphHome harness (DEV ONLY)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@400;700;800;900&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;1,400&family=Martian+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* ------------------------------------------------------------------
+         DEV-ONLY token fallback (exec-graph). Until exec-infra's I-1.1 lands
+         src/styles/sakura.css, the harness declares the light-sakura set from
+         04-sakura-palette §5 verbatim + the §3.1 font vars — on :root, so the
+         real sakura.css (scoped html[data-mode] .sakura) always overrides it.
+         Production GraphHome references variables only; this block never
+         ships (this file is not a build input).
+         ------------------------------------------------------------------ */
+      :root {
+        --bg: #faf1f5;        --surface: #fdf8fa;    --surface-2: #f2e2ea;
+        --border: #e2c9d4;
+        --text: #3a1e2b;      --text-muted: #6f4459; --text-faint: #84536a;
+        --accent: #a83a68;    --accent-hi: #93275a;  --on-accent: #fdf8fa;
+        --success: #15734f;   --warning: #835b10;    --error: #b93a2c;
+        --selection: #f7cede;
+        --node-fill: #fdf8fa; --node-border: #a97188; --node-border-active: #a83a68;
+        --edge: #d9b6c4;      --routing-pulse: #15734f; --dot-grid: #e8d3dc;
+        --font-display: "Big Shoulders", "Arial Narrow", sans-serif;
+        --font-sans: "Hanken Grotesk", -apple-system, "Segoe UI", sans-serif;
+        --font-mono: "Martian Mono", ui-monospace, "SF Mono", monospace;
+      }
+      html, body { height: 100%; margin: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/graph/dev.jsx"></script>
+  </body>
+</html>
