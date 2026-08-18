@@ -12,10 +12,13 @@ Last updated : 2026-08-17 (exec-infra) — GATE 0 ✅ (23f83210). exec-graph UNB
 exec-infra   : I-0.1..I-0.6 DONE. Gate 0: 16/16 Playwright routes clean (2x stable),
                vitest 216/216, vite build green. I-0.7 preview deployed + /api
                verified. Next = Phase 1 (I-1.1 sakura.css …).
-exec-graph   : GATE G2 ✅ (90a3a5c5) — canvas/camera/nodes/edges live in the harness
-               (http://localhost:3200/graph-dev.html · bg-vite-dev pane w2Y:pN ·
-               ?edges= + ?still work; screenshots in /tmp/graph-shots).
-               next task = G-3.1 (dossier) then G-3.2..G-3.7.
+exec-graph   : GATE G3 ✅ (157a41e9) — full interaction layer live in the harness
+               (http://localhost:3200/graph-dev.html · bg-vite-dev pane w2Y:pN).
+               e2e/graph.spec.js 5/5. next task = G-4.1 (mobile dossier-list fallback).
+               NOTE for X-2 (exec-infra): the graph's ⌘K/prompt "switch to terminal"
+               intent dispatches cancelable CustomEvent 'on:set-mode' (detail =
+               'terminal'|'graph') on window; ModeProvider should listen +
+               preventDefault. Uncaught → graph shows a holding-screen toast.
 Integration  : blocked until Phase 1 gate + Phase G4 gate both pass
 Blockers     : none
 Preview URL  : https://olivernguyen-pdsyq4d2u-ollie88skwdas-projects.vercel.app (Phase-0 state)
@@ -292,13 +295,13 @@ gate actually passes before building on it (`npx playwright test`, `npx vitest r
 - [x] **G-2.5** Hover 1-hop highlight, semantic-zoom fade, dot-grid sync
 - [x] **G-2.6** Type pass: Big Shoulders/Hanken/Martian mapped + retuned (§3.1), screenshots vs prototype (canvas elements done; dossier titles re-checked in G-3.1)
 - [x] **G-2.7** Manual + screenshot review vs prototype → **GATE G2 ✅** (side-by-side /tmp/graph-shots; e2e/graph-shots.spec.js env-gated harness shots; pinch = stock d3-zoom touch, not emulatable headless — same code path as prototype)
-- [ ] **G-3.1** Dossier: focus fly, panel, linked chips, close cascade, focus trap
-- [ ] **G-3.2** Pulse routing on reworked edges: bead, `.routing`, arrival flash
-- [ ] **G-3.3** Prompt bar + typewriter placeholder + suggestions
-- [ ] **G-3.4** ⌘K palette + `/` filter
-- [ ] **G-3.5** Guided tour (8 stops, idle autostart + cancel)
-- [ ] **G-3.6** Entry animation + keyboard model + never-trap rules
-- [ ] **G-3.7** Playwright: click-crawl every entity, pulse assertions, keyboard specs → **GATE G3 ✅**
+- [x] **G-3.1** Dossier: focus fly, panel, linked chips, close cascade, focus trap (157a41e9)
+- [x] **G-3.2** Pulse routing on reworked edges: bead, `.routing`, arrival flash
+- [x] **G-3.3** Prompt bar + typewriter placeholder + suggestions
+- [x] **G-3.4** ⌘K palette + `/` filter (filter Esc now releases input focus — prototype parity fix)
+- [x] **G-3.5** Guided tour (8 stops, 6s-idle autostart + any-input cancel, 4s auto-dwell)
+- [x] **G-3.6** Entry animation + keyboard model + never-trap rules
+- [x] **G-3.7** Playwright: click-crawl every entity, pulse assertions, keyboard specs → **GATE G3 ✅** (e2e/graph.spec.js 5/5; incl. mouse-only crawl of all 30 nodes + occlusion drag-recovery)
 - [ ] **G-4.1** Mobile dossier-list fallback; graph chunk never fetched on mobile
 - [ ] **G-4.2** Reduced-motion fallbacks throughout; `?still` kept
 - [ ] **G-4.3** SR layer: role=application + hidden entity list; axe pass
