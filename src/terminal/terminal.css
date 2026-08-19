@@ -329,6 +329,26 @@
   color: var(--text-faint);
 }
 
+/* ---------- panes integration (X-1) ---------- */
+
+/* boot opens ONE full-screen main pane (09 §C): until a split exists the
+   card chrome flattens (no border/gap/bg) so the boot screen reads like the
+   approved prototype — but the title ROW stays: its [|] [–] [z] [×] buttons
+   are 09's mouse-discoverability requirement (gate-asserted by panes).
+   Lives here (core file), not panes.css (§5 ownership). */
+.term-panes:has(> .pane:only-child) {
+  padding: 0;
+}
+.term-panes > .pane:only-child {
+  border: none;
+  border-radius: 0;
+  background: none;
+}
+
+.term-statusbar .sb-err {
+  white-space: nowrap;
+}
+
 /* ---------- overlays: help sheet + ⌘K palette (C-2.2) ---------- */
 
 .term-overlay {

@@ -1,7 +1,7 @@
 /**
  * src/terminal/HelpSheet.jsx — the `?` keyboard help overlay (C-2.2).
  * Dialog semantics + focus on close button + focus return handled by
- * TerminalHome (Esc cascade closes it). Pane-grammar rows join at X-1.
+ * TerminalHome (Esc cascade closes it). Pane grammar (09 §C) joined at X-1.
  */
 import React, { useEffect, useRef } from 'react';
 
@@ -14,6 +14,14 @@ const KEYS = [
   ['⌘K / Ctrl+K', 'command palette'],
   ['?', 'this help'],
   ['Esc', 'clear prompt / close'],
+];
+
+const PANES = [
+  ['^G v / ^G -', 'split pane right / down'],
+  ['^G h j k l', 'move focus between panes'],
+  ['^G z / ^G x', 'zoom / close pane (main refuses)'],
+  ['^G r', 'resize mode — h/j/k/l nudge, Esc exits'],
+  ['^G Tab', 'cycle panes'],
 ];
 
 const CMDS = [
@@ -61,6 +69,8 @@ export default function HelpSheet({ open, onClose }) {
       >
         <h2>keys</h2>
         <KeyTable rows={KEYS} />
+        <h2>panes</h2>
+        <KeyTable rows={PANES} />
         <h2>commands</h2>
         <KeyTable rows={CMDS} />
         <button ref={closeRef} type="button" className="obtn" onClick={onClose}>

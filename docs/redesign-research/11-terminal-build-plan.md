@@ -31,8 +31,22 @@ exec-term-core : X-2 DONE EARLY (deviation: it is panes-independent — nothing 
                  deadness both directions) — `^G v` row joins at X-1.
                  Build verified: harness absent from dist, TerminalHome lazy chunk,
                  entry 105.2KB gz ≤ 180KB. Full suites: 341 vitest + 75 e2e green.
-                 NEXT: X-1 (needs panes' N-3 — PaneGrid/programs/prefix wiring), then
-                 X-3 completion (Lighthouse both modes) + X-4 (ship-check, preview).
+                 X-1 DONE: PaneGrid mounted in TerminalHome (main = session-buffer slot,
+                 fallback program = help), panes.open live (flushSync REQUIRED around the
+                 updater — dropping it returned undefined from command tasks; fixed),
+                 prefix reducer wired into THE window listener in CAPTURE phase (an armed
+                 prefix must beat the prompt input to the key), statusbar shows
+                 {paneCount,[Z],^G‥}+E-errors, day N prints beats AND opens/retargets the
+                 replay pane, open <entity> auto-splits right w/ ranger reuse + E96
+                 in-buffer fallback when the 40ch floor refuses, single-pane card chrome
+                 flattened via :only-child (title row KEPT — 09 mouse-discoverability,
+                 panes' N2 gate clicks it), unprefixed j/k/G/gg act on the FOCUSED pane.
+                 home.css re-removed (shared-index incident resolved per panes' note).
+                 Suites: 341 vitest + 80 e2e green ×2 (incl. panes 10/10, roundtrip 9/9
+                 with new integrated-panes cases + ^G-dead-under-graph row).
+                 NEXT: X-3 completion (Lighthouse both modes, budgets) + X-4 (ship-check,
+                 Vercel preview). NOTE: an earlier 18-fail run was machine-load noise
+                 (12.5m wall clock); clean re-runs ×2 — matches panes' flake sighting.
 exec-term-panes: CHECKLIST COMPLETE — GATE N3 PASSED ✅ (N-3.1..N-3.3: programs.jsx
                  adapters over core's sections/model, ranger-style artifact reuse,
                  auto-split toast, paneStatus feed, mobile flatten; 10/10 e2e green in
@@ -353,7 +367,7 @@ status block, commit (`terminal-v1(<executor>): <task-id> <summary>`).
 - [x] **N-3.3** Playwright `terminal-panes.spec.js`: grammar, limits, a11y roles → **GATE N3 ✅**
 
 ### Integration (exec-term-core leads, exec-term-panes on call)
-- [ ] **X-1** PaneGrid into TerminalHome: main slot, `panes.open`, prefix reducer wired, statusbar live
+- [x] **X-1** PaneGrid into TerminalHome: main slot, `panes.open`, prefix reducer wired, statusbar live
 - [x] **X-2** `Home.jsx` swap → lazy TerminalHome; holding screen removed; harnesses out of prod build
 - [ ] **X-3** `e2e/mode-roundtrip.spec.js` + full suites + budgets + Lighthouse both modes
 - [ ] **X-4** ship-check; Vercel PREVIEW deploy; URL in status header → **FINAL GATE ✅** (lifts L5 hold)

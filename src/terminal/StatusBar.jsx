@@ -23,6 +23,7 @@ export default function StatusBar({
   paneCount = 1,
   zoomed = false,
   prefix = '',
+  err = '',
 }) {
   const [pos, setPos] = useState(100);
   const [time, setTime] = useState(fmtTime);
@@ -64,8 +65,21 @@ export default function StatusBar({
         </button>
       )}
       <span className="sb-right">
-        {paneCount > 1 && <span className="sb-panes">{paneCount} panes</span>}
-        {zoomed && <span className="sb-zoom">[Z]</span>}
+        {err && (
+          <span className="err sb-err" data-testid="sb-err" role="status">
+            {err}
+          </span>
+        )}
+        {paneCount > 1 && (
+          <span className="sb-panes" data-testid="sb-panes">
+            {paneCount} panes
+          </span>
+        )}
+        {zoomed && (
+          <span className="sb-zoom" data-testid="sb-zoom">
+            [Z]
+          </span>
+        )}
         {prefix && (
           <span className="sb-prefix" data-testid="sb-prefix">
             {prefix}

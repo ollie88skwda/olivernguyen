@@ -331,45 +331,53 @@ test.describe("terminal core — Gate C1 (prompt, commands, sections, boot)", ()
     await page.waitForFunction(() => !!window.__term);
     await bootDone(page);
 
+    // X-1: day/open auto-split panes on a wide screen — session-buffer
+    // assertions scope to the main pane (pane grammar: mode-roundtrip.spec)
+    const main = page.locator('[data-pane="main"]');
     const type = async (cmd) => {
       await page.keyboard.type(cmd);
       await page.keyboard.press("Enter");
     };
 
     await type("ls");
-    await expect(page.locator(".blk").last()).toContainText("tools.txt");
-    await expect(page.locator(".blk").last()).toContainText("contact.txt");
+    await expect(main.locator(".blk").last()).toContainText("tools.txt");
+    await expect(main.locator(".blk").last()).toContainText("contact.txt");
 
     await type("cat nosuch.txt");
-    await expect(page.locator(".ln.err").last()).toHaveText(
+    await expect(main.locator(".ln.err").last()).toHaveText(
       "cat: nosuch.txt: No such file",
     );
 
     await type("day 4");
-    await expect(page.locator(".blk").last()).toContainText(DAY4_BEAT);
+    await expect(main.locator(".blk").last()).toContainText(DAY4_BEAT);
     await type("day 9");
-    await expect(page.locator(".ln.err").last()).toHaveText(
+    await expect(main.locator(".ln.err").last()).toHaveText(
       "day: expected 1-7",
     );
 
     await type("open mac-agent");
-    await expect(page.locator(".blk").last()).toContainText(
+    // 1280px + replay pane already open → another right-split of main would
+    // break the 40ch floor: refused with a statusbar E-error, dossier falls
+    // back into the session buffer (P7/P9; wide-screen split path is covered
+    // in mode-roundtrip.spec)
+    await expect(page.getByTestId("sb-err")).toContainText("E96");
+    await expect(main.locator(".blk").last()).toContainText(
       "MCP toolbelt for macOS",
     );
-    await expect(page.locator(".blk").last()).toContainText("8 MCP tools");
+    await expect(main.locator(".blk").last()).toContainText("8 MCP tools");
 
     await type("email");
-    await expect(page.locator(".ln.ok").last()).toHaveText(
+    await expect(main.locator(".ln.ok").last()).toHaveText(
       `copied ${EMAIL} ✓`,
     );
 
     await type("quit");
-    await expect(page.locator(".blk").last()).toContainText(
+    await expect(main.locator(".blk").last()).toContainText(
       "this is a website. you live here now.",
     );
 
     await type("mode terminal");
-    await expect(page.locator(".blk").last()).toContainText(
+    await expect(main.locator(".blk").last()).toContainText(
       "already in terminal mode",
     );
     assertClean(errors);
