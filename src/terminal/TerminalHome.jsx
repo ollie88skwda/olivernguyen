@@ -51,6 +51,7 @@ import {
   expire,
   PREFIX_EXPIRY_MS,
 } from './panes/prefix.js';
+import { setStill } from './lib/cadence.js';
 import { complete, createRunner } from './lib/commands.js';
 import { EMAIL, FILES, WINDOWS, artifact, windowByN } from './lib/terminalModel.js';
 import {
@@ -172,15 +173,19 @@ export default function TerminalHome({ devHook, autoboot = true }) {
 
   // §3.1.1 — the page NEVER scrolls while the terminal is mounted; only the
   // buffer does. Restored on unmount so graph mode is untouched (P3).
+  // P9/X-3: coarse pointers get an INSTANT cadence — typing theater is a
+  // fine-pointer experience, and the typed boot pushed mobile LCP to ~5s.
   useEffect(() => {
     const html = document.documentElement;
     const body = document.body;
     const prev = [html.style.overflow, body.style.overflow];
     html.style.overflow = 'hidden';
     body.style.overflow = 'hidden';
+    if (window.matchMedia('(pointer: coarse)').matches) setStill(true);
     return () => {
       html.style.overflow = prev[0];
       body.style.overflow = prev[1];
+      setStill(false);
     };
   }, []);
 

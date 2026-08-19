@@ -44,9 +44,18 @@ exec-term-core : X-2 DONE EARLY (deviation: it is panes-independent — nothing 
                  home.css re-removed (shared-index incident resolved per panes' note).
                  Suites: 341 vitest + 80 e2e green ×2 (incl. panes 10/10, roundtrip 9/9
                  with new integrated-panes cases + ^G-dead-under-graph row).
-                 NEXT: X-3 completion (Lighthouse both modes, budgets) + X-4 (ship-check,
-                 Vercel preview). NOTE: an earlier 18-fail run was machine-load noise
-                 (12.5m wall clock); clean re-runs ×2 — matches panes' flake sighting.
+                 X-3 DONE: budgets — entry 105.2KB gz ≤ 180 (terminal chunk 12.6KB gz,
+                 lazy, network-asserted). Lighthouse (prod build via vite preview,
+                 Chrome 13.4.1): graph / — mobile 91-93 perf / 100 a11y, desktop
+                 100/100 (no regression — graph-v1 baseline benchmarked same-machine at
+                 93-95); terminal /?mode=terminal — mobile 95/100, desktop 97/100.
+                 Fix en route: coarse pointers now run an INSTANT cadence
+                 (cadence.setStill; P9 touch-first) — the typed boot had pushed terminal
+                 mobile LCP to 5.0s/perf 78; now 2.6s/95. Full suites re-green after:
+                 341 vitest + 80 e2e. NOTE: mobile Lighthouse swings ±15pts under
+                 machine load — the 18-fail e2e run + early 76/85 graph scores were
+                 contention noise (verified via graph-v1 baseline worktree).
+                 NEXT: X-4 — ship-check, Vercel PREVIEW deploy, URL here.
 exec-term-panes: CHECKLIST COMPLETE — GATE N3 PASSED ✅ (N-3.1..N-3.3: programs.jsx
                  adapters over core's sections/model, ranger-style artifact reuse,
                  auto-split toast, paneStatus feed, mobile flatten; 10/10 e2e green in
@@ -369,7 +378,7 @@ status block, commit (`terminal-v1(<executor>): <task-id> <summary>`).
 ### Integration (exec-term-core leads, exec-term-panes on call)
 - [x] **X-1** PaneGrid into TerminalHome: main slot, `panes.open`, prefix reducer wired, statusbar live
 - [x] **X-2** `Home.jsx` swap → lazy TerminalHome; holding screen removed; harnesses out of prod build
-- [ ] **X-3** `e2e/mode-roundtrip.spec.js` + full suites + budgets + Lighthouse both modes
+- [x] **X-3** `e2e/mode-roundtrip.spec.js` + full suites + budgets + Lighthouse both modes
 - [ ] **X-4** ship-check; Vercel PREVIEW deploy; URL in status header → **FINAL GATE ✅** (lifts L5 hold)
 
 ---

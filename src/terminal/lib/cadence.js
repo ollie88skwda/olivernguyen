@@ -26,13 +26,23 @@ export const typeDelay = (rand = Math.random) =>
 export const printDelay = (base = PRINT_BASE_MS, rand = Math.random) =>
   base + rand() * PRINT_JITTER_MS;
 
+/** App-set still override (C-3.2/X-3): TerminalHome flips this on for
+ * coarse-pointer devices — P9 touch-first, and the typed boot otherwise
+ * pushes mobile LCP past the §6 Lighthouse gate (name paints ~5s in). */
+let stillOverride = false;
+export const setStill = (v) => {
+  stillOverride = Boolean(v);
+};
+
 /**
- * True when motion is allowed. False under prefers-reduced-motion OR the
- * `?still` screenshot param (C-3.2) — callers then print/type instantly.
- * Read live (not cached) so Playwright's emulateMedia mid-page works.
+ * True when motion is allowed. False under prefers-reduced-motion, the
+ * `?still` screenshot param (C-3.2), or the app-set still override —
+ * callers then print/type instantly. Read live (not cached) so Playwright's
+ * emulateMedia mid-page works.
  */
 export function motionOK() {
   if (typeof window === 'undefined') return false;
+  if (stillOverride) return false;
   try {
     if (new URLSearchParams(window.location.search).has('still')) return false;
   } catch {
