@@ -302,6 +302,14 @@
   }
 }
 
+/* P9: splits are disabled on flat layouts — the pane title buttons are dead
+   grammar there, so they go away entirely (single pane carries no ops). */
+@media (max-width: 880px), (pointer: coarse) {
+  .term-panes .pane-btns {
+    display: none;
+  }
+}
+
 /* ---------- touch (P9): ≥44px targets; keyboard never pops uninvited ----- */
 
 @media (pointer: coarse) {

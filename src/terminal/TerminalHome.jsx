@@ -498,6 +498,7 @@ export default function TerminalHome({ devHook, autoboot = true }) {
     (id, name) => {
       const action = BTN_ACTIONS[name];
       if (!action) return;
+      if (flatRef.current && action.type === 'split') return; // P9
       const dims = measureDims();
       setPs((s) => applyAction({ ...s, focusedId: id }, action, id, dims));
     },
