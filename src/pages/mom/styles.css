@@ -1,17 +1,22 @@
-/* Scoped styles for /mum (and /mom). Everything hangs off .mum-root so the
- * purple palette never leaks into the rest of the site — the global tokens in
- * styles/theme.css are untouched, only the font stack is borrowed from them.
+/* Scoped styles for /mom (and its /mum alias). Everything hangs off .mom-root
+ * so the purple palette never leaks into the rest of the site — the global
+ * tokens in styles/theme.css are untouched, only the font stack is borrowed.
  *
- * Mobile only: the page is a phone-width column, centred on wider screens. */
+ * Mobile only: the page is a phone-width column, centred on wider screens.
+ *
+ * Type is deliberately oversized and the padding deliberately tight: she reads
+ * this at arm's length without her glasses, and nothing may need scrolling.
+ * Every screen is a fixed-height flex column, so growing the type eats the
+ * empty space rather than pushing anything off the bottom. */
 
-.mum-root {
-  --mum-paper: #f7f0e2;
-  --mum-accent: #4b1a72;
-  --mum-accent-hi: #7c3aab;
-  --mum-deep: #2c0d45;
-  --mum-petal: #a86fd0;
-  --mum-light: #c9a8e4;
-  --mum-ink: #241033;
+.mom-root {
+  --mom-paper: #f7f0e2;
+  --mom-accent: #4b1a72;
+  --mom-accent-hi: #7c3aab;
+  --mom-deep: #2c0d45;
+  --mom-petal: #a86fd0;
+  --mom-light: #c9a8e4;
+  --mom-ink: #241033;
 
   position: relative;
   display: flex;
@@ -19,36 +24,36 @@
   width: 100%;
   min-height: 100dvh;
   overflow: hidden;
-  background: radial-gradient(120% 80% at 50% 0%, #3b1259 0%, var(--mum-deep) 62%);
-  color: var(--mum-paper);
+  background: radial-gradient(120% 80% at 50% 0%, #3b1259 0%, var(--mom-deep) 62%);
+  color: var(--mom-paper);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
 }
 
-.mum-root *,
-.mum-root *::before,
-.mum-root *::after {
+.mom-root *,
+.mom-root *::before,
+.mom-root *::after {
   box-sizing: border-box;
   min-width: 0;
 }
 
-.mum-root ::selection {
-  background: var(--mum-petal);
-  color: var(--mum-deep);
+.mom-root ::selection {
+  background: var(--mom-petal);
+  color: var(--mom-deep);
 }
 
-.mum-phone {
+.mom-phone {
   position: relative;
   width: 100%;
   max-width: 430px;
   height: 100dvh;
   overflow: hidden;
-  background: var(--mum-deep);
+  background: var(--mom-deep);
 }
 
 /* material texture, same trick as the site grain but scoped and non-blocking */
-.mum-phone::after {
+.mom-phone::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -60,12 +65,12 @@
 }
 
 @media (min-width: 520px) {
-  .mum-phone {
+  .mom-phone {
     box-shadow: 0 0 0 1px rgba(201, 168, 228, 0.16), 0 40px 90px rgba(0, 0, 0, 0.45);
   }
 }
 
-.mum-screen {
+.mom-screen {
   position: absolute;
   inset: 0;
   display: flex;
@@ -73,18 +78,18 @@
   overflow: hidden;
 }
 
-.mum-eyebrow {
+.mom-eyebrow {
   margin: 0;
   font-family: var(--font-mono);
-  font-size: 9.5px;
+  font-size: 13px;
   font-weight: 400;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--mum-light);
+  color: var(--mom-light);
 }
 
 /* invisible full-screen tap target, sits above the artwork */
-.mum-fullzone {
+.mom-fullzone {
   position: absolute;
   inset: 0;
   z-index: 6;
@@ -98,14 +103,14 @@
 
 /* ── opening ─────────────────────────────────────────────────────────────── */
 
-.mum-screen--opening {
+.mom-screen--opening {
   align-items: center;
   justify-content: center;
-  padding: 28px 22px;
+  padding: 24px 18px;
   text-align: center;
 }
 
-.mum-fifty {
+.mom-fifty {
   position: relative;
   font-family: var(--font-display);
   font-weight: 900;
@@ -113,75 +118,75 @@
   line-height: 0.8;
   letter-spacing: -0.01em;
   color: transparent;
-  -webkit-text-stroke: 2px var(--mum-petal);
+  -webkit-text-stroke: 2px var(--mom-petal);
 }
 
 /* A second copy of the digits sits exactly on top of the outlined pair and is
  * revealed from the bottom edge up. Clipping (rather than growing a box) keeps
  * the two copies in pixel-perfect register. */
-.mum-fifty-fill {
+.mom-fifty-fill {
   position: absolute;
   inset: 0;
-  color: var(--mum-paper);
+  color: var(--mom-paper);
   /* same stroke width as the outline underneath, so the fill swallows it
      cleanly instead of leaving a purple halo */
-  -webkit-text-stroke: 2px var(--mum-paper);
+  -webkit-text-stroke: 2px var(--mom-paper);
   /* the clip is bled past the box so the stroke of the glyphs, which overflows
      the tight 0.8 line box, is covered too */
   clip-path: inset(100% -8% -12% -8%);
-  animation: mum-fill 1.6s 0.25s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  animation: mom-fill 1.6s 0.25s cubic-bezier(0.65, 0, 0.35, 1) forwards;
 }
 
-.mum-fifty--short .mum-fifty-fill {
+.mom-fifty--short .mom-fifty-fill {
   animation-duration: 0.85s;
   animation-delay: 0.1s;
 }
 
-@keyframes mum-fill {
+@keyframes mom-fill {
   to {
     clip-path: inset(-16% -8% -12% -8%);
   }
 }
 
-.mum-cap {
-  margin: 18px 0 0;
+.mom-cap {
+  margin: 20px 0 0;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 27px;
-  line-height: 1.05;
+  font-size: clamp(36px, 10.5vw, 44px);
+  line-height: 1.02;
   letter-spacing: 0.01em;
-  color: var(--mum-paper);
+  color: var(--mom-paper);
   opacity: 0;
-  animation: mum-rise 0.8s 1.85s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
+  animation: mom-rise 0.8s 1.85s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
 }
 
-.mum-fifty--short + .mum-cap {
+.mom-fifty--short + .mom-cap {
   animation-delay: 0.95s;
 }
 
-.mum-cap-sub {
-  margin-top: 12px;
+.mom-cap-sub {
+  margin-top: 14px;
   opacity: 0;
-  animation: mum-rise 0.8s 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: mom-rise 0.8s 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.mum-begin {
+.mom-begin {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 42px;
+  bottom: 34px;
   margin: 0;
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.24em;
+  font-size: 14px;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--mum-light);
+  color: var(--mom-light);
   opacity: 0;
-  animation: mum-rise 0.7s 2.7s cubic-bezier(0.16, 1, 0.3, 1) forwards,
-    mum-breathe 2.6s 3.4s ease-in-out infinite;
+  animation: mom-rise 0.7s 2.7s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+    mom-breathe 2.6s 3.4s ease-in-out infinite;
 }
 
-@keyframes mum-rise {
+@keyframes mom-rise {
   from {
     opacity: 0;
     transform: translateY(14px);
@@ -192,7 +197,7 @@
   }
 }
 
-@keyframes mum-breathe {
+@keyframes mom-breathe {
   0%,
   100% {
     opacity: 1;
@@ -204,7 +209,7 @@
 
 /* ── confetti ────────────────────────────────────────────────────────────── */
 
-.mum-confetti {
+.mom-confetti {
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -212,26 +217,26 @@
   contain: strict;
 }
 
-.mum-confetti--back {
+.mom-confetti--back {
   z-index: 1;
   opacity: 0.85;
 }
 
-.mum-confetti--front {
+.mom-confetti--front {
   z-index: 5;
 }
 
-.mum-confetti i {
+.mom-confetti i {
   position: absolute;
   top: 0;
   display: block;
-  animation-name: mum-drop;
+  animation-name: mom-drop;
   animation-timing-function: linear;
   animation-iteration-count: infinite;
   will-change: transform;
 }
 
-@keyframes mum-drop {
+@keyframes mom-drop {
   0% {
     opacity: 0;
     transform: translate3d(0, -14vh, 0) rotate(0deg);
@@ -244,35 +249,68 @@
   }
   100% {
     opacity: 0;
-    transform: translate3d(var(--mum-drift), 108vh, 0) rotate(var(--mum-spin));
+    transform: translate3d(var(--mom-drift), 108vh, 0) rotate(var(--mom-spin));
   }
 }
 
 /* ── the deck ────────────────────────────────────────────────────────────── */
 
-.mum-bar {
+/* The standing header takes only the height it needs and the card below takes
+   the rest, so the title is always on screen and never crowds the card out. */
+.mom-head {
   position: relative;
   z-index: 4;
   display: flex;
-  align-items: center;
+  flex: 0 0 auto;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
-  padding: 22px 22px 6px;
+  gap: 14px;
+  padding: 16px 18px 6px;
 }
 
-.mum-bar-title {
-  color: rgba(201, 168, 228, 0.62);
+.mom-standing {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(30px, 8.6vw, 36px);
+  line-height: 0.94;
+  letter-spacing: -0.005em;
+  color: var(--mom-paper);
 }
 
-.mum-tapzone {
+.mom-head-side {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.mom-count {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+  color: var(--mom-petal);
+}
+
+.mom-count-total {
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(201, 168, 228, 0.6);
+}
+
+.mom-tapzone {
   position: relative;
   z-index: 3;
   display: flex;
   flex: 1;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
   width: 100%;
-  padding: 12px 20px;
+  padding: 8px 14px;
   border: 0;
   background: transparent;
   font: inherit;
@@ -281,28 +319,27 @@
   cursor: pointer;
 }
 
-.mum-card {
+.mom-card {
   position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
-  min-height: 68%;
-  padding: 26px 24px 22px;
+  padding: 20px 20px 18px;
   border-radius: 20px;
-  background: var(--mum-paper);
-  color: var(--mum-ink);
+  background: var(--mom-paper);
+  color: var(--mom-ink);
   box-shadow: 0 22px 44px rgba(10, 2, 20, 0.42);
-  animation: mum-card-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: mom-card-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* the fiftieth lands on its own and is allowed to feel different */
-.mum-card--final {
-  background: linear-gradient(170deg, #fdf8ec 0%, var(--mum-paper) 60%);
+.mom-card--final {
+  background: linear-gradient(170deg, #fdf8ec 0%, var(--mom-paper) 60%);
   box-shadow: 0 0 0 1px rgba(168, 111, 208, 0.5), 0 26px 60px rgba(10, 2, 20, 0.5);
   animation-duration: 0.9s;
 }
 
-@keyframes mum-card-in {
+@keyframes mom-card-in {
   from {
     opacity: 0;
     transform: translateY(20px) scale(0.985);
@@ -313,206 +350,222 @@
   }
 }
 
-.mum-card-num {
+.mom-card-num {
+  flex: 0 0 auto;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 17px;
   font-weight: 600;
-  letter-spacing: 0.2em;
-  color: var(--mum-accent-hi);
+  letter-spacing: 0.16em;
+  color: var(--mom-accent-hi);
 }
 
-.mum-card-text {
+/* auto margins centre the words in whatever height is left over; the padding
+   only guards the gap to the number and the rule when the card is nearly full */
+.mom-card-text {
   margin: auto 0;
-  padding: 24px 0;
+  padding: 14px 0;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: clamp(29px, 8.6vw, 36px);
-  line-height: 1.08;
+  font-size: clamp(42px, 14vw, 58px);
+  line-height: 1.06;
   letter-spacing: 0.005em;
-  color: var(--mum-accent);
+  color: var(--mom-accent);
 }
 
-.mum-card--final .mum-card-text {
-  color: var(--mum-deep);
+/* the shorter the reason, the larger it is set — see sizeBand() in index.js */
+.mom-card-text--lg {
+  font-size: clamp(48px, 16vw, 64px);
 }
 
-.mum-card-rule {
+.mom-card-text--xl {
+  font-size: clamp(60px, 20.5vw, 82px);
+}
+
+.mom-card--final .mom-card-text {
+  color: var(--mom-deep);
+}
+
+.mom-card-rule {
   display: block;
-  width: 46px;
-  height: 2px;
-  background: var(--mum-petal);
+  flex: 0 0 auto;
+  width: 56px;
+  height: 3px;
+  background: var(--mom-petal);
 }
 
-.mum-card-from {
-  margin-top: 12px;
-  color: rgba(75, 26, 114, 0.55);
-}
-
-.mum-foot {
+.mom-foot {
   position: relative;
   z-index: 4;
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 4px 22px 26px;
+  padding: 0 18px 12px;
 }
 
-.mum-back,
-.mum-close {
+.mom-back,
+.mom-close {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
   margin: 0;
-  padding: 13px 16px 13px 0;
+  padding: 0 18px 0 0;
   border: 0;
   background: transparent;
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.18em;
+  font-size: 14px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--mum-light);
+  color: var(--mom-light);
   cursor: pointer;
 }
 
-.mum-close {
-  padding-right: 0;
-  padding-left: 16px;
+.mom-close {
+  align-items: flex-start;
+  padding: 6px 0 0;
+  font-size: 13px;
+  letter-spacing: 0.1em;
 }
 
-.mum-back[disabled] {
+.mom-back[disabled] {
   opacity: 0.22;
   cursor: default;
 }
 
-.mum-foot-hint {
+.mom-foot-hint {
   color: rgba(201, 168, 228, 0.55);
 }
 
-.mum-progress {
+.mom-progress {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
   z-index: 4;
-  height: 2px;
+  height: 3px;
   background: rgba(201, 168, 228, 0.18);
 }
 
-.mum-progress span {
+.mom-progress span {
   display: block;
   height: 100%;
-  background: var(--mum-petal);
+  background: var(--mom-petal);
   transform-origin: left center;
   transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ── the live age ────────────────────────────────────────────────────────── */
 
-.mum-screen--age {
+.mom-screen--age {
   justify-content: center;
-  background: var(--mum-paper);
-  color: var(--mum-ink);
+  background: var(--mom-paper);
+  color: var(--mom-ink);
 }
 
-.mum-screen--age .mum-eyebrow {
-  color: var(--mum-accent-hi);
+.mom-screen--age .mom-eyebrow {
+  color: var(--mom-accent-hi);
 }
 
-.mum-age-body {
+.mom-age-body {
   position: relative;
   z-index: 2;
-  padding: 0 26px;
-  animation: mum-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+  padding: 0 20px;
+  animation: mom-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.mum-age-hi {
+.mom-age-hi {
   margin: 0;
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: clamp(46px, 13vw, 58px);
+  font-size: clamp(64px, 18.5vw, 78px);
   /* Big Shoulders has long descenders; anything under 1 collides the y of
      "Happy" with the line below */
   line-height: 1;
   letter-spacing: -0.01em;
-  color: var(--mum-deep);
+  color: var(--mom-deep);
 }
 
-.mum-age-rule {
-  margin-top: 26px;
-  background: var(--mum-accent-hi);
+.mom-age-rule {
+  margin-top: 22px;
+  background: var(--mom-accent-hi);
 }
 
-.mum-age-lead {
+.mom-age-lead {
   margin-top: 16px;
 }
 
-.mum-age-figure {
+.mom-age-figure {
   margin: 10px 0 0;
   font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1.85;
+  font-size: 21px;
+  line-height: 1.55;
   font-variant-numeric: tabular-nums;
-  color: var(--mum-accent);
+  color: var(--mom-accent);
 }
 
-.mum-age-figure--small {
-  font-size: 10.5px;
-  line-height: 1.8;
-  color: var(--mum-light);
-}
-
-.mum-age-foot {
-  margin: 22px 0 0;
+.mom-age-figure--small {
   font-size: 14px;
+  line-height: 1.6;
+  color: var(--mom-light);
+}
+
+.mom-age-foot {
+  margin: 20px 0 0;
+  font-size: 20px;
+  line-height: 1.35;
   color: rgba(36, 16, 51, 0.62);
 }
 
-.mum-screen--age .mum-begin {
-  padding-left: 26px;
-  color: var(--mum-accent-hi);
+.mom-screen--age .mom-begin {
+  padding-left: 20px;
+  color: var(--mom-accent-hi);
   animation-delay: 1.2s, 1.9s;
 }
 
 /* ── the grid of fifty ───────────────────────────────────────────────────── */
 
-.mum-scroll {
+.mom-scroll {
   position: relative;
   z-index: 2;
   height: 100%;
   overflow-y: auto;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
-  padding: 30px 20px 34px;
+  padding: 20px 16px 24px;
 }
 
-.mum-grid-head {
-  animation: mum-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+.mom-grid-head {
+  animation: mom-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
-.mum-grid-title {
-  margin: 10px 0 0;
+.mom-grid-title {
+  margin: 8px 0 0;
   font-family: var(--font-display);
   font-weight: 900;
-  font-size: clamp(38px, 11vw, 46px);
-  line-height: 1;
+  font-size: clamp(46px, 13vw, 56px);
+  line-height: 0.96;
   letter-spacing: -0.005em;
-  color: var(--mum-paper);
+  color: var(--mom-paper);
 }
 
-.mum-grid-sub {
-  margin: 12px 0 0;
-  font-size: 14px;
+.mom-grid-sub {
+  margin: 10px 0 0;
+  font-size: 18px;
+  line-height: 1.3;
   color: rgba(247, 240, 226, 0.62);
 }
 
-.mum-grid {
+.mom-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
-  margin: 24px 0 0;
+  gap: 7px;
+  margin: 18px 0 0;
   padding: 0;
   list-style: none;
 }
 
-.mum-tile {
+.mom-tile {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -523,28 +576,28 @@
   border-radius: 12px;
   background: transparent;
   font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 400;
-  letter-spacing: 0.04em;
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
   color: rgba(201, 168, 228, 0.92);
   cursor: pointer;
-  animation: mum-tile-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: mom-tile-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
   animation-delay: calc(var(--i) * 14ms);
   transition: transform 0.18s ease, background-color 0.18s ease, color 0.18s ease;
 }
 
-.mum-tile.is-open {
+.mom-tile.is-open {
   border-color: rgba(201, 168, 228, 0.55);
   background: rgba(168, 111, 208, 0.22);
   font-weight: 600;
-  color: var(--mum-paper);
+  color: var(--mom-paper);
 }
 
-.mum-tile:active {
+.mom-tile:active {
   transform: scale(0.94);
 }
 
-@keyframes mum-tile-in {
+@keyframes mom-tile-in {
   from {
     opacity: 0;
     transform: translateY(10px) scale(0.9);
@@ -555,26 +608,26 @@
   }
 }
 
-.mum-grid-foot {
-  margin-top: 28px;
-  padding-top: 18px;
+.mom-grid-foot {
+  margin-top: 22px;
+  padding-top: 16px;
   border-top: 1px solid rgba(201, 168, 228, 0.18);
-  animation: mum-rise 0.6s 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: mom-rise 0.6s 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
 /* ── reading one reason back from the grid ───────────────────────────────── */
 
-.mum-overlay {
+.mom-overlay {
   position: absolute;
   inset: 0;
   z-index: 8;
   display: flex;
   flex-direction: column;
-  background: var(--mum-deep);
-  animation: mum-fade 0.28s ease both;
+  background: var(--mom-deep);
+  animation: mom-fade 0.28s ease both;
 }
 
-@keyframes mum-fade {
+@keyframes mom-fade {
   from {
     opacity: 0;
   }
@@ -586,25 +639,25 @@
 /* ── reduced motion: no fill, no confetti, no staggering — just the words ── */
 
 @media (prefers-reduced-motion: reduce) {
-  .mum-root *,
-  .mum-root *::before,
-  .mum-root *::after {
+  .mom-root *,
+  .mom-root *::before,
+  .mom-root *::after {
     animation: none !important;
     transition: none !important;
   }
 
-  .mum-fifty-fill {
+  .mom-fifty-fill {
     clip-path: inset(-16% -8% -12% -8%);
   }
 
-  .mum-cap,
-  .mum-cap-sub,
-  .mum-begin,
-  .mum-age-body,
-  .mum-grid-head,
-  .mum-grid-foot,
-  .mum-tile,
-  .mum-card {
+  .mom-cap,
+  .mom-cap-sub,
+  .mom-begin,
+  .mom-age-body,
+  .mom-grid-head,
+  .mom-grid-foot,
+  .mom-tile,
+  .mom-card {
     opacity: 1;
     transform: none;
   }

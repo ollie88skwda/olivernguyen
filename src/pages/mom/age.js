@@ -1,4 +1,4 @@
-/* Calendar-correct age maths for /mum.
+/* Calendar-correct age maths for /mom.
  *
  * Everything here is pure and clock-injected (callers pass `now`) so the whole
  * joke can be unit tested — see age.test.js. Units are walked biggest first and

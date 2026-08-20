@@ -22,7 +22,7 @@ const Apply = lazy(() => import("./pages/apply/index.js"));
 const EssayStudio = lazy(() => import("./pages/essay_studio/index.js"));
 const WritingRoom = lazy(() => import("./pages/essay_studio/room/index.js"));
 const Transfer = lazy(() => import("./pages/transfer/index.js"));
-const MumFifty = lazy(() => import("./pages/mum/index.js"));
+const MomFifty = lazy(() => import("./pages/mom/index.js"));
 
 // ClerkProvider needs router functions, and those need useHistory, which only
 // works inside <Router>. Hence a component between Router and Switch rather than
@@ -48,9 +48,9 @@ const ClerkBridge = ({ children }) => {
 
 // Site chrome (top bar, sidebar, grain, scroll progress) is mounted once here so
 // every route carries it, instead of each page importing TopBar itself.
-// /be-my-girlfriend and /mum are full-bleed with their own art direction and
-// opt out. /mum is unlisted: nothing links to it, it is found by URL only.
-const NO_CHROME = ["/be-my-girlfriend", "/bemygirlfriend", "/girlfriend", "/mum", "/mom"];
+// /be-my-girlfriend and /mom are full-bleed with their own art direction and
+// opt out. /mom is unlisted: nothing links to it, it is found by URL only.
+const NO_CHROME = ["/be-my-girlfriend", "/bemygirlfriend", "/girlfriend", "/mom", "/mum"];
 
 const SiteChrome = () => {
   const { pathname } = useLocation();
@@ -96,9 +96,10 @@ export const Routes = () => {
             <BeMyGirlfriend />
           </Suspense>
         </Route>
-        <Route path={["/mum", "/mom"]}>
+        {/* /mom is canonical; /mum stays alive because the link was shared as /mum */}
+        <Route path={["/mom", "/mum"]}>
           <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#2c0d45" }} />}>
-            <MumFifty />
+            <MomFifty />
           </Suspense>
         </Route>
         <Route path="/college">
