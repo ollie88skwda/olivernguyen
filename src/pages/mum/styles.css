@@ -1,0 +1,611 @@
+/* Scoped styles for /mum (and /mom). Everything hangs off .mum-root so the
+ * purple palette never leaks into the rest of the site — the global tokens in
+ * styles/theme.css are untouched, only the font stack is borrowed from them.
+ *
+ * Mobile only: the page is a phone-width column, centred on wider screens. */
+
+.mum-root {
+  --mum-paper: #f7f0e2;
+  --mum-accent: #4b1a72;
+  --mum-accent-hi: #7c3aab;
+  --mum-deep: #2c0d45;
+  --mum-petal: #a86fd0;
+  --mum-light: #c9a8e4;
+  --mum-ink: #241033;
+
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: radial-gradient(120% 80% at 50% 0%, #3b1259 0%, var(--mum-deep) 62%);
+  color: var(--mum-paper);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mum-root *,
+.mum-root *::before,
+.mum-root *::after {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.mum-root ::selection {
+  background: var(--mum-petal);
+  color: var(--mum-deep);
+}
+
+.mum-phone {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--mum-deep);
+}
+
+/* material texture, same trick as the site grain but scoped and non-blocking */
+.mum-phone::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+  opacity: 0.055;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (min-width: 520px) {
+  .mum-phone {
+    box-shadow: 0 0 0 1px rgba(201, 168, 228, 0.16), 0 40px 90px rgba(0, 0, 0, 0.45);
+  }
+}
+
+.mum-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mum-eyebrow {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--mum-light);
+}
+
+/* invisible full-screen tap target, sits above the artwork */
+.mum-fullzone {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* ── opening ─────────────────────────────────────────────────────────────── */
+
+.mum-screen--opening {
+  align-items: center;
+  justify-content: center;
+  padding: 28px 22px;
+  text-align: center;
+}
+
+.mum-fifty {
+  position: relative;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(112px, 42vw, 176px);
+  line-height: 0.8;
+  letter-spacing: -0.01em;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--mum-petal);
+}
+
+/* A second copy of the digits sits exactly on top of the outlined pair and is
+ * revealed from the bottom edge up. Clipping (rather than growing a box) keeps
+ * the two copies in pixel-perfect register. */
+.mum-fifty-fill {
+  position: absolute;
+  inset: 0;
+  color: var(--mum-paper);
+  /* same stroke width as the outline underneath, so the fill swallows it
+     cleanly instead of leaving a purple halo */
+  -webkit-text-stroke: 2px var(--mum-paper);
+  /* the clip is bled past the box so the stroke of the glyphs, which overflows
+     the tight 0.8 line box, is covered too */
+  clip-path: inset(100% -8% -12% -8%);
+  animation: mum-fill 1.6s 0.25s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+.mum-fifty--short .mum-fifty-fill {
+  animation-duration: 0.85s;
+  animation-delay: 0.1s;
+}
+
+@keyframes mum-fill {
+  to {
+    clip-path: inset(-16% -8% -12% -8%);
+  }
+}
+
+.mum-cap {
+  margin: 18px 0 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 27px;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+  color: var(--mum-paper);
+  opacity: 0;
+  animation: mum-rise 0.8s 1.85s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
+}
+
+.mum-fifty--short + .mum-cap {
+  animation-delay: 0.95s;
+}
+
+.mum-cap-sub {
+  margin-top: 12px;
+  opacity: 0;
+  animation: mum-rise 0.8s 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.mum-begin {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 42px;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--mum-light);
+  opacity: 0;
+  animation: mum-rise 0.7s 2.7s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+    mum-breathe 2.6s 3.4s ease-in-out infinite;
+}
+
+@keyframes mum-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes mum-breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.42;
+  }
+}
+
+/* ── confetti ────────────────────────────────────────────────────────────── */
+
+.mum-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+
+.mum-confetti--back {
+  z-index: 1;
+  opacity: 0.85;
+}
+
+.mum-confetti--front {
+  z-index: 5;
+}
+
+.mum-confetti i {
+  position: absolute;
+  top: 0;
+  display: block;
+  animation-name: mum-drop;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+@keyframes mum-drop {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -14vh, 0) rotate(0deg);
+  }
+  10% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--mum-drift), 108vh, 0) rotate(var(--mum-spin));
+  }
+}
+
+/* ── the deck ────────────────────────────────────────────────────────────── */
+
+.mum-bar {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 22px 22px 6px;
+}
+
+.mum-bar-title {
+  color: rgba(201, 168, 228, 0.62);
+}
+
+.mum-tapzone {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 12px 20px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mum-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 68%;
+  padding: 26px 24px 22px;
+  border-radius: 20px;
+  background: var(--mum-paper);
+  color: var(--mum-ink);
+  box-shadow: 0 22px 44px rgba(10, 2, 20, 0.42);
+  animation: mum-card-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* the fiftieth lands on its own and is allowed to feel different */
+.mum-card--final {
+  background: linear-gradient(170deg, #fdf8ec 0%, var(--mum-paper) 60%);
+  box-shadow: 0 0 0 1px rgba(168, 111, 208, 0.5), 0 26px 60px rgba(10, 2, 20, 0.5);
+  animation-duration: 0.9s;
+}
+
+@keyframes mum-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.mum-card-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  color: var(--mum-accent-hi);
+}
+
+.mum-card-text {
+  margin: auto 0;
+  padding: 24px 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(29px, 8.6vw, 36px);
+  line-height: 1.08;
+  letter-spacing: 0.005em;
+  color: var(--mum-accent);
+}
+
+.mum-card--final .mum-card-text {
+  color: var(--mum-deep);
+}
+
+.mum-card-rule {
+  display: block;
+  width: 46px;
+  height: 2px;
+  background: var(--mum-petal);
+}
+
+.mum-card-from {
+  margin-top: 12px;
+  color: rgba(75, 26, 114, 0.55);
+}
+
+.mum-foot {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 22px 26px;
+}
+
+.mum-back,
+.mum-close {
+  margin: 0;
+  padding: 13px 16px 13px 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mum-light);
+  cursor: pointer;
+}
+
+.mum-close {
+  padding-right: 0;
+  padding-left: 16px;
+}
+
+.mum-back[disabled] {
+  opacity: 0.22;
+  cursor: default;
+}
+
+.mum-foot-hint {
+  color: rgba(201, 168, 228, 0.55);
+}
+
+.mum-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  height: 2px;
+  background: rgba(201, 168, 228, 0.18);
+}
+
+.mum-progress span {
+  display: block;
+  height: 100%;
+  background: var(--mum-petal);
+  transform-origin: left center;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── the live age ────────────────────────────────────────────────────────── */
+
+.mum-screen--age {
+  justify-content: center;
+  background: var(--mum-paper);
+  color: var(--mum-ink);
+}
+
+.mum-screen--age .mum-eyebrow {
+  color: var(--mum-accent-hi);
+}
+
+.mum-age-body {
+  position: relative;
+  z-index: 2;
+  padding: 0 26px;
+  animation: mum-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.mum-age-hi {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(46px, 13vw, 58px);
+  /* Big Shoulders has long descenders; anything under 1 collides the y of
+     "Happy" with the line below */
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--mum-deep);
+}
+
+.mum-age-rule {
+  margin-top: 26px;
+  background: var(--mum-accent-hi);
+}
+
+.mum-age-lead {
+  margin-top: 16px;
+}
+
+.mum-age-figure {
+  margin: 10px 0 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.85;
+  font-variant-numeric: tabular-nums;
+  color: var(--mum-accent);
+}
+
+.mum-age-figure--small {
+  font-size: 10.5px;
+  line-height: 1.8;
+  color: var(--mum-light);
+}
+
+.mum-age-foot {
+  margin: 22px 0 0;
+  font-size: 14px;
+  color: rgba(36, 16, 51, 0.62);
+}
+
+.mum-screen--age .mum-begin {
+  padding-left: 26px;
+  color: var(--mum-accent-hi);
+  animation-delay: 1.2s, 1.9s;
+}
+
+/* ── the grid of fifty ───────────────────────────────────────────────────── */
+
+.mum-scroll {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 30px 20px 34px;
+}
+
+.mum-grid-head {
+  animation: mum-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.mum-grid-title {
+  margin: 10px 0 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(38px, 11vw, 46px);
+  line-height: 1;
+  letter-spacing: -0.005em;
+  color: var(--mum-paper);
+}
+
+.mum-grid-sub {
+  margin: 12px 0 0;
+  font-size: 14px;
+  color: rgba(247, 240, 226, 0.62);
+}
+
+.mum-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mum-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 1px solid rgba(201, 168, 228, 0.32);
+  border-radius: 12px;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: rgba(201, 168, 228, 0.92);
+  cursor: pointer;
+  animation: mum-tile-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i) * 14ms);
+  transition: transform 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+}
+
+.mum-tile.is-open {
+  border-color: rgba(201, 168, 228, 0.55);
+  background: rgba(168, 111, 208, 0.22);
+  font-weight: 600;
+  color: var(--mum-paper);
+}
+
+.mum-tile:active {
+  transform: scale(0.94);
+}
+
+@keyframes mum-tile-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.mum-grid-foot {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(201, 168, 228, 0.18);
+  animation: mum-rise 0.6s 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── reading one reason back from the grid ───────────────────────────────── */
+
+.mum-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  background: var(--mum-deep);
+  animation: mum-fade 0.28s ease both;
+}
+
+@keyframes mum-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── reduced motion: no fill, no confetti, no staggering — just the words ── */
+
+@media (prefers-reduced-motion: reduce) {
+  .mum-root *,
+  .mum-root *::before,
+  .mum-root *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .mum-fifty-fill {
+    clip-path: inset(-16% -8% -12% -8%);
+  }
+
+  .mum-cap,
+  .mum-cap-sub,
+  .mum-begin,
+  .mum-age-body,
+  .mum-grid-head,
+  .mum-grid-foot,
+  .mum-tile,
+  .mum-card {
+    opacity: 1;
+    transform: none;
+  }
+}
