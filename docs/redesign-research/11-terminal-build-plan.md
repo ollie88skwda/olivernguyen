@@ -8,76 +8,44 @@ This doc is restart-safe: any fresh agent must be able to resume from it alone.
 ## CURRENT STATUS / NEXT TASK  ← executors MUST keep this block updated
 
 ```
-Last updated   : exec-term-core — ALL C-PHASES DONE: GATES T0+C1+C2+C3 PASSED ✅
-                 (25 terminal e2e green; full suites: 341 vitest + 66 e2e incl. graph —
-                 no regressions). C-3.4 type pass: harness vs prototype screenshots
-                 compared; cell metrics near-identical (Martian Mono 14px/22px → ch
-                 9.80px vs proto 9.63px); accepted.
-                 Impl notes: runner has its OWN queue, prints ride the buffer queue (a
-                 command awaiting its own queue deadlocked — fixed + regression-tested);
-                 harness supports ?noboot (T0 engine specs) and ?still (instant cadence);
-                 intents wrapper drops graph-only tour/fit rows (L7: every palette row
-                 must do something real); statusbar grew a ⌘K chip (P9 palette entry).
-exec-term-core : X-2 DONE EARLY (deviation: it is panes-independent — nothing in it
-                 touches panes files). "/" now mounts the REAL terminal behind TERM:
-                 lazy(TerminalHome), holding screen + home.css deleted, chrome.css grew
-                 terminal glue (64px bar clearance) + terminal.css a border-box reset
-                 (content-box made 100dvh+64px overflow → typing focus-scrolled the page
-                 — caught by the roundtrip spec, fixed). integration.spec.js's two
-                 terminal-holding assertions updated to the real terminal (required by
-                 X-2's holding-screen removal; graph coverage unchanged).
-                 mode-roundtrip.spec.js written + green (4/4: P6 network assert, toggle
-                 round-trip w/ fresh-session assert, intent round-trip both ways, P3 key
-                 deadness both directions) — `^G v` row joins at X-1.
-                 Build verified: harness absent from dist, TerminalHome lazy chunk,
-                 entry 105.2KB gz ≤ 180KB. Full suites: 341 vitest + 75 e2e green.
-                 X-1 DONE: PaneGrid mounted in TerminalHome (main = session-buffer slot,
-                 fallback program = help), panes.open live (flushSync REQUIRED around the
-                 updater — dropping it returned undefined from command tasks; fixed),
-                 prefix reducer wired into THE window listener in CAPTURE phase (an armed
-                 prefix must beat the prompt input to the key), statusbar shows
-                 {paneCount,[Z],^G‥}+E-errors, day N prints beats AND opens/retargets the
-                 replay pane, open <entity> auto-splits right w/ ranger reuse + E96
-                 in-buffer fallback when the 40ch floor refuses, single-pane card chrome
-                 flattened via :only-child (title row KEPT — 09 mouse-discoverability,
-                 panes' N2 gate clicks it), unprefixed j/k/G/gg act on the FOCUSED pane.
-                 home.css re-removed (shared-index incident resolved per panes' note).
-                 Suites: 341 vitest + 80 e2e green ×2 (incl. panes 10/10, roundtrip 9/9
-                 with new integrated-panes cases + ^G-dead-under-graph row).
-                 X-3 DONE: budgets — entry 105.2KB gz ≤ 180 (terminal chunk 12.6KB gz,
-                 lazy, network-asserted). Lighthouse (prod build via vite preview,
-                 Chrome 13.4.1): graph / — mobile 91-93 perf / 100 a11y, desktop
-                 100/100 (no regression — graph-v1 baseline benchmarked same-machine at
-                 93-95); terminal /?mode=terminal — mobile 95/100, desktop 97/100.
-                 Fix en route: coarse pointers now run an INSTANT cadence
-                 (cadence.setStill; P9 touch-first) — the typed boot had pushed terminal
-                 mobile LCP to 5.0s/perf 78; now 2.6s/95. Full suites re-green after:
-                 341 vitest + 80 e2e. NOTE: mobile Lighthouse swings ±15pts under
-                 machine load — the 18-fail e2e run + early 76/85 graph scores were
-                 contention noise (verified via graph-v1 baseline worktree).
-                 NEXT: X-4 — ship-check, Vercel PREVIEW deploy, URL here.
-exec-term-panes: CHECKLIST COMPLETE — GATE N3 PASSED ✅ (N-3.1..N-3.3: programs.jsx
-                 adapters over core's sections/model, ranger-style artifact reuse,
-                 auto-split toast, paneStatus feed, mobile flatten; 10/10 e2e green in
-                 terminal-panes.spec.js, 71 unit tests). ON CALL for Integration.
-                 X-1 crib sheet for core: panes/dev.jsx holds the REFERENCE impls of
-                 applyAction + panes.open (reuse→setLeaf, split off main RIGHT, toast via
-                 toastText(), flat→{ok:false,inBuffer:true}) and replay day-follow (setLeaf
-                 day on the replay leaf). PaneGrid extras beyond §5: onPaneAction(id,act)
-                 (title buttons — act on THAT id), toast + flat props, paneStatus() export;
-                 prefixStep returns `handled` (true → preventDefault + skip own handling).
-                 Program adapters defer prints one microtask (engine flushSync × lifecycle).
-                 FYI core: 2 flaky-looking fails seen in YOUR WIP surface across full runs
-                 (integration.spec TERM cases once, mode-roundtrip once) — panes + T0 + N
-                 suites green both runs; untouched. ⚠ SHARED-INDEX INCIDENT: your staged
-                 `git rm src/home/home.css` got swept into my N-3 commit (broke that commit
-                 in isolation — HEAD Home.jsx still imported it); I amended to RESTORE
-                 home.css. It is back on disk + in HEAD — re-run `git rm src/home/home.css`
-                 as part of your X-2 commit. Suggest we both keep the index clean between
-                 commits (stage only at commit time).
+Last updated   : exec-term-core — FINAL GATE ✅ (X-1..X-4 done). TERMINAL BUILD COMPLETE
+                 (preview only). Doc-10 L5 launch-hold is LIFTED — both modes gated;
+                 the production flip stays Oliver's call.
+                 Evidence: 341 vitest + 80 e2e green (×3 runs); Lighthouse — graph /
+                 91-93 perf / 100 a11y mobile · 100/100 desktop (baseline-matched via
+                 graph-v1 worktree bench), terminal /?mode=terminal 95/100 mobile ·
+                 97/100 desktop; entry 105.2KB gz ≤ 180 (terminal = lazy 12.6KB gz
+                 chunk, fetch-on-flip network-asserted); ship-check 11 screenshots
+                 reviewed both viewports (fixes: pane buttons hidden + splits gated on
+                 flat layouts).
+Preview URL    : https://olivernguyen-c78kx5om9-ollie88skwdas-projects.vercel.app
+                 (redesign/terminal-v1, both modes at one URL) — behind Vercel SSO
+                 deployment protection (project setting), same as doc-10's preview;
+                 open while logged into Vercel.
+FOLLOW-UP ROUND: F-C.1..F-C.3 appended to §8 exec-term-core (supervisor round 2):
+                 fresh preview deploy + /api verify · graph focus-intent API ·
+                 top-bar Work/About/Contact restore.
+OWNERSHIP GRANT (round 2, logged here + doc 10): exec-graph is RETIRED.
+                 exec-term-core now owns src/graph/lib/**, the intent-registry
+                 surface (src/intents/registry.js) and chrome files (F-C.2/3).
+                 exec-term-panes simultaneously owns
+                 src/graph/components/GraphCanvas.jsx + src/graph/GraphHome.jsx
+                 (camera state-lift) — core will NOT touch those two files;
+                 coordination via this header. Never-trap and the cancelable
+                 'on:set-mode' contract stay inviolate.
 Blockers       : none.
-Preview URL    : — (graph-v1 preview: see doc 10 status header)
-Notes for Oliver : —
+Notes for Oliver :
+  - Production flip (both modes → olivernguyen.com) is YOURS to call — L5 hold
+    lifted, previews only so far.
+  - Previews sit behind Vercel SSO deployment protection; disable it or add a
+    protection-bypass secret to share the URL publicly.
+  - Terminal ⌘K drops the graph-only tour/fit intents (L7: every palette row must
+    do something real). Flag if you want terminal equivalents.
+  - Touch devices boot INSTANTLY (typed boot pushed mobile LCP to 5.0s → gate
+    fail); desktop keeps the full typing theater. Flag if you want typing on touch.
+  - day N / open <entity> auto-split panes on wide screens; when the 40ch×12 pane
+    floor refuses (narrow windows), content prints in-buffer + an E96 statusbar
+    error — intended degradation.
 ```
 
 Update rules: tick checkboxes in §8 as you complete tasks; rewrite this block at the end
@@ -363,6 +331,9 @@ status block, commit (`terminal-v1(<executor>): <task-id> <summary>`).
 - [x] **C-3.3** SR layer: role=log, dialog semantics, skip link; axe
 - [x] **C-3.4** Type pass: Martian Mono cell-grid retune vs prototype screenshots (§3.3)
 - [x] **C-3.5** Playwright: mobile/RM/axe/screenshots → **GATE C3 ✅**
+- [ ] **F-C.1** Vercel preview deploy of redesign/terminal-v1 (both modes at one URL); verify /api; record URL in the status header
+- [ ] **F-C.2** Graph focus-intent API — inbound intent surface (registry-driven) so chrome can deep-link into clusters (doc-10 Notes deviation)
+- [ ] **F-C.3** Top-bar Work/About/Contact links wired to that API; E2E the three links in graph mode
 
 ### exec-term-panes
 - [x] **N-1.1** `panes/tree.js` — split tree ops, limits, focusDir geometry (pure)
@@ -379,7 +350,7 @@ status block, commit (`terminal-v1(<executor>): <task-id> <summary>`).
 - [x] **X-1** PaneGrid into TerminalHome: main slot, `panes.open`, prefix reducer wired, statusbar live
 - [x] **X-2** `Home.jsx` swap → lazy TerminalHome; holding screen removed; harnesses out of prod build
 - [x] **X-3** `e2e/mode-roundtrip.spec.js` + full suites + budgets + Lighthouse both modes
-- [ ] **X-4** ship-check; Vercel PREVIEW deploy; URL in status header → **FINAL GATE ✅** (lifts L5 hold)
+- [x] **X-4** ship-check; Vercel PREVIEW deploy; URL in status header → **FINAL GATE ✅** (lifts L5 hold)
 
 ---
 *Prev: `10-graph-build-plan.md` (graph, DONE to preview). This doc is the single source

@@ -28,6 +28,14 @@ exec-graph   : ALL PHASES DONE — GATES G1–G4 ✅ (last: 9cbea665). Harness:
                d3 deps ride in its chunk. Dev harness (graph-dev.html) is already
                excluded from prod (build input pinned to index.html).
 Integration  : X-1..X-4 DONE — FINAL GATE ✅ (bd39e909 + deploy). NOT in production (L5).
+               2026-08-18 UPDATE (doc-11 FINAL GATE ✅): the L5 launch-hold is LIFTED —
+               both modes gated on redesign/terminal-v1; production flip = Oliver's call.
+OWNERSHIP GRANT (2026-08-18, doc-11 follow-up round — exec-graph RETIRED):
+               exec-term-core owns src/graph/lib/** + src/intents/registry.js + chrome
+               (F-C.2/3: graph focus-intent API + restored top-bar Work/About/Contact).
+               exec-term-panes owns src/graph/components/GraphCanvas.jsx +
+               src/graph/GraphHome.jsx (camera state-lift). Never-trap and the
+               cancelable 'on:set-mode' contract stay inviolate.
 Blockers     : none · ops note: exec-infra sessions kept dying on provider 429/refusals;
                exec-graph respawned it twice via herdr (pane w2Y:pK, model pinned to
                anthropic/claude-fable-5, SHORT prompt — long prompts triggered refusals).
