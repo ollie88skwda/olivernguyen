@@ -10,6 +10,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { allEntities, entityById, groups, meta } from '../../content/site.js';
 import { POSITIONS, worldBBox } from '../lib/layout.js';
+import { fitTransform } from '../lib/camera.js';
 import {
   buildEdges, buildAdjacency, buildIndex, clusterMembers, pathFromRoot,
 } from '../lib/structure.js';
@@ -28,6 +29,16 @@ import Palette from './Palette.jsx';
 import FilterBar from './FilterBar.jsx';
 import TourHud from './TourHud.jsx';
 import Toast from './Toast.jsx';
+
+/**
+ * F-P.1 — TERM↔GRAPH state-lift. Module-level store: survives the mode-flip
+ * unmount (the lazy chunk stays loaded), dies on reload. Only a session that
+ * DIVERGED from the entry state is saved (camera moved / node focused /
+ * dossier open) — an untouched graph round-trips to a fresh entry, which
+ * also keeps StrictMode's dev fake-remount from tainting first-visit
+ * behavior (its cleanup runs before any divergence).
+ */
+const SAVED = { view: null };
 
 const EDGES = buildEdges(allEntities);
 const EDGE_KEYS = edgeKeySet(EDGES);
@@ -85,6 +96,14 @@ export default function GraphCanvas() {
     bbox: BBOX, reducedMotion,
     onGrabChange: setGrabbing, onFarChange: setFar,
   });
+
+  // F-P.1: render-time peek (real remounts only — StrictMode's fake remount
+  // re-runs effects without re-rendering, and its save is always null).
+  const restoredMount = useRef(SAVED.view != null);
+  // Nodes mount "still" on a restored session (no entry re-assemble), then
+  // release one frame later so the idle drift garnish resumes.
+  const [justRestored, setJustRestored] = useState(() => SAVED.view != null);
+  const liveView = useRef(null);
 
   /* ------------------------------- helpers ------------------------------- */
 
@@ -204,7 +223,9 @@ export default function GraphCanvas() {
   /* --------------------------- entry + autostart --------------------------- */
 
   useEffect(() => {
-    if (still) return undefined;
+    // restored sessions skip the entry animation exactly like ?still: .ready
+    // never lands (edge draw + stagger are entry-only; resting state is full)
+    if (still || restoredMount.current) return undefined;
     const raf = requestAnimationFrame(() => setReady(true));
     return () => cancelAnimationFrame(raf);
   }, [still]);
@@ -311,6 +332,44 @@ export default function GraphCanvas() {
     clearTimeout(arriveTimer.current);
   }, []);
 
+  /* ---------------------- TERM↔GRAPH state-lift (F-P.1) ---------------------- */
+
+  // Live values for the unmount save — effect closures would go stale.
+  liveView.current = { focusId, dossierOpen };
+
+  useEffect(() => {
+    let raf = null;
+    const v = SAVED.view;
+    if (v) {
+      SAVED.view = null; // consume — restores are one-shot
+      interacted.current = true; // a restored session never idle-autostarts the tour
+      camera.setInstant(v.camera);
+      preFocus.current = v.preFocus; // Esc after restore still flies back
+      if (v.focusId) setFocusId(v.focusId);
+      if (v.dossierOpen) setDossierOpen(true);
+      raf = requestAnimationFrame(() => setJustRestored(false));
+    }
+    return () => {
+      if (raf) cancelAnimationFrame(raf);
+      // save on unmount — runs while the stage is still in the DOM. The
+      // never-trap mechanism is untouched: every listener-binding effect
+      // above still detaches on this same unmount.
+      const { focusId: fid, dossierOpen: dopen } = liveView.current;
+      const cam = camera.current();
+      const fit = fitTransform(BBOX, camera.viewport());
+      const diverged =
+        Boolean(fid) || dopen ||
+        Math.abs(cam.k - fit.k) > 1e-3 ||
+        Math.abs(cam.x - fit.x) > 0.5 ||
+        Math.abs(cam.y - fit.y) > 0.5;
+      SAVED.view = diverged
+        ? { camera: cam, focusId: fid, dossierOpen: dopen, preFocus: preFocus.current }
+        : null;
+    };
+    // mount/unmount only — live values arrive via refs
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   /* ------------------------------- derived ------------------------------- */
 
   const hotIds = useMemo(() => {
@@ -385,7 +444,7 @@ export default function GraphCanvas() {
               key={e.id}
               entity={e}
               pos={POSITIONS[e.id]}
-              still={still}
+              still={still || justRestored}
               entryDelay={i * 18}
               hot={hotIds ? hotIds.has(e.id) : false}
               active={focusId === e.id}

@@ -18,10 +18,14 @@ Last updated   : exec-term-core — FINAL GATE ✅ (X-1..X-4 done). TERMINAL BUI
                  chunk, fetch-on-flip network-asserted); ship-check 11 screenshots
                  reviewed both viewports (fixes: pane buttons hidden + splits gated on
                  flat layouts).
-Preview URL    : https://olivernguyen-c78kx5om9-ollie88skwdas-projects.vercel.app
-                 (redesign/terminal-v1, both modes at one URL) — behind Vercel SSO
-                 deployment protection (project setting), same as doc-10's preview;
-                 open while logged into Vercel.
+Preview URL    : https://olivernguyen-15qyd9i02-ollie88skwdas-projects.vercel.app
+                 (redesign/terminal-v1 tip, both modes at one URL; F-C.1 re-deploy) —
+                 behind Vercel SSO deployment protection; open logged into Vercel.
+                 /api VERIFIED on the preview via a Protection-Bypass-for-Automation
+                 secret (created via the project API; value in Vercel dashboard →
+                 Deployment Protection, not committed here): GET /api/auth/session →
+                 401 JSON, POST → 405, /api/exemplars/list → 401 — real function
+                 responses, not SSO redirects; both mode URLs serve 200.
 FOLLOW-UP ROUND: F-C.1..F-C.3 appended to §8 exec-term-core (supervisor round 2):
                  fresh preview deploy + /api verify · graph focus-intent API ·
                  top-bar Work/About/Contact restore.
@@ -33,6 +37,20 @@ OWNERSHIP GRANT (round 2, logged here + doc 10): exec-graph is RETIRED.
                  (camera state-lift) — core will NOT touch those two files;
                  coordination via this header. Never-trap and the cancelable
                  'on:set-mode' contract stay inviolate.
+exec-term-panes (round 2): F-P.1 + F-P.2 DONE ✅. State-lift = module-level SAVED
+                 store in GraphCanvas.jsx: saves camera/focusId/dossierOpen/preFocus
+                 on unmount ONLY if the session diverged from entry (untouched graph
+                 round-trips to a fresh mount — StrictMode fake-remounts + existing
+                 fresh-entry specs unaffected); consume-on-mount restore via
+                 camera.setInstant, entry anims skipped (.ready withheld; nodes mount
+                 still → released next frame so drift resumes), 6s tour autostart
+                 suppressed, Esc fly-back preserved. Never-trap mechanism byte-identical
+                 (same unmount detach; core's key-deadness specs green). New spec:
+                 e2e/graph-state-lift.spec.js (motion + reduced-motion + fresh-entry
+                 guard; 9/9 under repeat×3/4 workers). Full suites 341 vitest + 83 e2e.
+                 GraphHome.jsx: granted, zero edits needed. lib/camera.js consumed
+                 import-only (fitTransform). FYI core: F-P landed AFTER your F-C.1
+                 deploy — next preview re-deploy picks up the state-lift.
 Blockers       : none.
 Notes for Oliver :
   - Production flip (both modes → olivernguyen.com) is YOURS to call — L5 hold
@@ -331,7 +349,7 @@ status block, commit (`terminal-v1(<executor>): <task-id> <summary>`).
 - [x] **C-3.3** SR layer: role=log, dialog semantics, skip link; axe
 - [x] **C-3.4** Type pass: Martian Mono cell-grid retune vs prototype screenshots (§3.3)
 - [x] **C-3.5** Playwright: mobile/RM/axe/screenshots → **GATE C3 ✅**
-- [ ] **F-C.1** Vercel preview deploy of redesign/terminal-v1 (both modes at one URL); verify /api; record URL in the status header
+- [x] **F-C.1** Vercel preview deploy of redesign/terminal-v1 (both modes at one URL); verify /api; record URL in the status header
 - [ ] **F-C.2** Graph focus-intent API — inbound intent surface (registry-driven) so chrome can deep-link into clusters (doc-10 Notes deviation)
 - [ ] **F-C.3** Top-bar Work/About/Contact links wired to that API; E2E the three links in graph mode
 
@@ -345,6 +363,8 @@ status block, commit (`terminal-v1(<executor>): <task-id> <summary>`).
 - [x] **N-3.1** `programs.jsx` — replay / section pagers / artifact / help adapters (§3.2)
 - [x] **N-3.2** Auto-split rules + toast; statusbar props ({paneCount, zoomed, prefix}); mobile flatten
 - [x] **N-3.3** Playwright `terminal-panes.spec.js`: grammar, limits, a11y roles → **GATE N3 ✅**
+- [x] **F-P.1** TERM↔GRAPH camera state-lift — lift live camera/focus/dossier state (module-level store) so returning to GRAPH restores where you were; never-trap detach mechanism must NOT regress (its E2E stays green). Owned files this round: `src/graph/components/GraphCanvas.jsx` + `src/graph/GraphHome.jsx` ONLY
+- [x] **F-P.2** Round-trip E2E: graph → focus node + move camera → TERM → interact → GRAPH → camera/focus restored; plus reduced-motion variant
 
 ### Integration (exec-term-core leads, exec-term-panes on call)
 - [x] **X-1** PaneGrid into TerminalHome: main slot, `panes.open`, prefix reducer wired, statusbar live
