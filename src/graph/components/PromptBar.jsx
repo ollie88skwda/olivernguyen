@@ -2,11 +2,18 @@
  * src/graph/components/PromptBar.jsx — the hero CTA (G-3.3).
  * cmdk-style inline intent input: fuzzy suggestions (top 4), ↑/↓/↵/Esc,
  * rotating typewriter placeholder (idle only; static under RM/?still).
+ *
+ * F-C.2: also the canvas's INBOUND intent socket — it holds the live onRun
+ * (GraphCanvas.runIntent), so it binds lib/focusIntent here: chrome's
+ * 'on:graph-intent' dispatches + ?focus= deep-links execute through the
+ * same registry path as typed prompts. Unbinds with the canvas (never-trap).
  */
 import React, { useEffect, useRef, useState } from 'react';
 import { matchIntents, PROMPT_PLACEHOLDERS } from '../../intents/registry.js';
+import { bindGraphIntents } from '../lib/focusIntent.js';
 
 export default function PromptBar({ still, onRun, onNoMatch }) {
+  useEffect(() => bindGraphIntents(onRun), [onRun]);
   const inputRef = useRef(null);
   const [value, setValue] = useState('');
   const [matches, setMatches] = useState([]);

@@ -6,9 +6,14 @@
  *   - mobile / coarse-pointer rendering (canvas + d3 never imported — P6)
  *   - the visually-hidden screen-reader layer on desktop (G-4.3, 05 §8)
  * Pure DOM + content imports only. No d3, no canvas code.
+ *
+ * F-C.2 (mobile leg): the non-srOnly list consumes a ?focus= deep-link by
+ * scrolling to the target group header / entry — the canvas never mounts
+ * here (P6), so the list is the deep-link's landing surface.
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { allEntities, entityById, groups, KINDS, meta, formatBeat } from '../../content/site.js';
+import { consumeFocusParam, resolveGraphIntent } from '../lib/focusIntent.js';
 
 function memberIdsOf(groupId) {
   // group's subtree in authored order, excluding the group node itself
@@ -30,7 +35,11 @@ function ListEntry({ entity, heading: H = 'h3' }) {
   const kind = KINDS[entity.kind];
   const internal = entity.link && entity.link.href.startsWith('/');
   return (
-    <article className="gl-entry" aria-label={entity.dTitle || entity.title}>
+    <article
+      className="gl-entry"
+      id={`gl-${entity.id}`}
+      aria-label={entity.dTitle || entity.title}
+    >
       <div className="gl-kind">
         {`${kind.glyph} ${kind.label}`}
         {entity.status ? <span className="gl-status">{entity.status}</span> : null}
@@ -69,6 +78,20 @@ function ListEntry({ entity, heading: H = 'h3' }) {
 
 export default function GraphList({ srOnly = false }) {
   const root = entityById.get('oliver');
+
+  // ?focus= deep-link → scroll to the section/entry. Non-srOnly only: on
+  // desktop the SR copy of this list must not steal the canvas's deep-link.
+  useEffect(() => {
+    if (srOnly) return;
+    const detail = consumeFocusParam();
+    if (!detail) return;
+    const it = resolveGraphIntent(detail);
+    const id = it?.run?.type === 'node' ? it.run.id : null;
+    if (!id) return;
+    const el =
+      document.getElementById(`gl-h-${id}`) || document.getElementById(`gl-${id}`);
+    el?.scrollIntoView({ block: 'start' });
+  }, [srOnly]);
   return (
     <div className={srOnly ? 'g-list visually-hidden' : 'g-list'} aria-label="Site graph as a list">
       <header className="gl-head">

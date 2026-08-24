@@ -47,6 +47,31 @@
   gap: 14px;
 }
 
+/* F-C.3: restored section links (graph mode only) */
+.sc-nav {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-left: 26px;
+  margin-right: auto;
+}
+.sc-nav a {
+  color: var(--text-muted);
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.sc-nav a:hover {
+  color: var(--accent);
+}
+@media (max-width: 700px) {
+  .sc-nav {
+    display: none; /* deep-links still work by URL; the bar stays uncrowded */
+  }
+}
+
 /* TERM | GRAPH segmented toggle (05 §6.1). The thumb is one absolutely-
    positioned pill sliding between two equal-width buttons via CSS transform
    (mode-terminal = left, mode-graph = right). */

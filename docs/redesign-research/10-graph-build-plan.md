@@ -36,6 +36,12 @@ OWNERSHIP GRANT (2026-08-18, doc-11 follow-up round — exec-graph RETIRED):
                exec-term-panes owns src/graph/components/GraphCanvas.jsx +
                src/graph/GraphHome.jsx (camera state-lift). Never-trap and the
                cancelable 'on:set-mode' contract stay inviolate.
+               F-C.2/3 DONE (core): the doc-10 "graph focus-intent API + top-bar link
+               restore" deviation is CLOSED — lib/focusIntent.js ('on:graph-intent'
+               cancelable event + ?focus= deep-link), bound in PromptBar.jsx, consumed
+               by GraphList.jsx on mobile; chrome renders Work/About/Contact in graph
+               mode (e2e/graph-focus-intents.spec.js 5/5). PromptBar/GraphList edits
+               claimed under this grant — not on panes' two-file list.
 Blockers     : none · ops note: exec-infra sessions kept dying on provider 429/refusals;
                exec-graph respawned it twice via herdr (pane w2Y:pK, model pinned to
                anthropic/claude-fable-5, SHORT prompt — long prompts triggered refusals).

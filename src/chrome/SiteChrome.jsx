@@ -13,8 +13,25 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import ScrollProgress from "../components/ScrollProgress";
 import { useMode } from "../mode/ModeProvider";
+import {
+  FOCUS_PARAM,
+  dispatchGraphIntent,
+} from "../graph/lib/focusIntent.js";
 import "../styles/sakura.css";
 import "./chrome.css";
+
+// F-C.3: the Work/About/Contact links return — wired to the graph's inbound
+// intent surface instead of the old home's dead /#work anchors. On "/" in
+// graph mode the click dispatches 'on:graph-intent' (canvas pulses + focuses
+// the node); anywhere the dispatch goes unhandled (legacy routes, mobile
+// list) the href navigates to /?focus=<id> and the mounted graph surface
+// consumes it. Terminal mode hides them — the terminal carries its own nav
+// (statusbar tabs), and a link that yanks you out of the mode is a trap.
+const NAV_LINKS = [
+  { label: "Work", detail: "agents" },
+  { label: "About", detail: "oliver" },
+  { label: "Contact", detail: "contact" },
+];
 
 const SCROLL_TOP_THRESHOLD = 25;
 
@@ -73,10 +90,22 @@ export const SiteChrome = () => {
         className={`site-chrome-bar sakura${visible ? "" : " sc-hidden"}`}
       >
         <a href="/" className="sc-logo">oN.c</a>
-        {/* X-1: the Work/About/Contact anchors died with the old home's
-            sections (P4); the graph has no #hash targets and no inbound
-            focus-intent API yet — dropped rather than left dead. Pages menu +
-            the graph's own nav (⌘K, legend, prompt) cover navigation. */}
+        {mode === "graph" && (
+          <nav className="sc-nav" aria-label="Site sections">
+            {NAV_LINKS.map(({ label, detail }) => (
+              <a
+                key={detail}
+                href={`/?${FOCUS_PARAM}=${detail}`}
+                onClick={(e) => {
+                  if (pathname === "/" && dispatchGraphIntent(detail))
+                    e.preventDefault();
+                }}
+              >
+                {label}
+              </a>
+            ))}
+          </nav>
+        )}
         <div className="sc-right">
           <div
             className={`sc-mode-toggle mode-${mode}`}

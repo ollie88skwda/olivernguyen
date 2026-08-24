@@ -18,17 +18,30 @@ Last updated   : exec-term-core — FINAL GATE ✅ (X-1..X-4 done). TERMINAL BUI
                  chunk, fetch-on-flip network-asserted); ship-check 11 screenshots
                  reviewed both viewports (fixes: pane buttons hidden + splits gated on
                  flat layouts).
-Preview URL    : https://olivernguyen-15qyd9i02-ollie88skwdas-projects.vercel.app
-                 (redesign/terminal-v1 tip, both modes at one URL; F-C.1 re-deploy) —
+Preview URL    : https://olivernguyen-1onf5yepe-ollie88skwdas-projects.vercel.app
+                 (redesign/terminal-v1 tip incl. F-C.2/3, both modes at one URL) —
                  behind Vercel SSO deployment protection; open logged into Vercel.
                  /api VERIFIED on the preview via a Protection-Bypass-for-Automation
                  secret (created via the project API; value in Vercel dashboard →
                  Deployment Protection, not committed here): GET /api/auth/session →
                  401 JSON, POST → 405, /api/exemplars/list → 401 — real function
                  responses, not SSO redirects; both mode URLs serve 200.
-FOLLOW-UP ROUND: F-C.1..F-C.3 appended to §8 exec-term-core (supervisor round 2):
-                 fresh preview deploy + /api verify · graph focus-intent API ·
-                 top-bar Work/About/Contact restore.
+FOLLOW-UP ROUND: F-C.1..F-C.3 ALL DONE ✅ (round 2).
+                 F-C.2: src/graph/lib/focusIntent.js — cancelable 'on:graph-intent'
+                 CustomEvent (detail = registry id | entity id | free text; mirrors the
+                 'on:set-mode' shape) + ?focus= deep-link param, consumed once by the
+                 first mounted surface. PromptBar binds it beside the canvas's runIntent
+                 (StrictMode-safe deferred consumption — the fake mount otherwise ate
+                 the deep-link); GraphList (mobile, non-srOnly) consumes by scrolling to
+                 gl-h-<group>/gl-<id>. OWNERSHIP: PromptBar.jsx + GraphList.jsx edits
+                 claimed under the exec-graph retirement (neither is on panes' list —
+                 they own ONLY GraphCanvas.jsx + GraphHome.jsx; untouched by core).
+                 F-C.3: chrome Work→agents / About→oliver / Contact→contact links,
+                 graph mode only (terminal keeps its own nav — a mode-yanking link is a
+                 trap); on / they dispatch in-page, elsewhere they navigate /?focus=.
+                 Suites: 353 vitest + 88 e2e green; entry 106.6KB gz ≤ 180 (registry now
+                 eager via chrome, +1.4KB); P6 mobile network assert still green;
+                 graph-focus-intents.spec.js 5/5; ship-check shots reviewed.
 OWNERSHIP GRANT (round 2, logged here + doc 10): exec-graph is RETIRED.
                  exec-term-core now owns src/graph/lib/**, the intent-registry
                  surface (src/intents/registry.js) and chrome files (F-C.2/3).
@@ -350,8 +363,8 @@ status block, commit (`terminal-v1(<executor>): <task-id> <summary>`).
 - [x] **C-3.4** Type pass: Martian Mono cell-grid retune vs prototype screenshots (§3.3)
 - [x] **C-3.5** Playwright: mobile/RM/axe/screenshots → **GATE C3 ✅**
 - [x] **F-C.1** Vercel preview deploy of redesign/terminal-v1 (both modes at one URL); verify /api; record URL in the status header
-- [ ] **F-C.2** Graph focus-intent API — inbound intent surface (registry-driven) so chrome can deep-link into clusters (doc-10 Notes deviation)
-- [ ] **F-C.3** Top-bar Work/About/Contact links wired to that API; E2E the three links in graph mode
+- [x] **F-C.2** Graph focus-intent API — inbound intent surface (registry-driven) so chrome can deep-link into clusters (doc-10 Notes deviation)
+- [x] **F-C.3** Top-bar Work/About/Contact links wired to that API; E2E the three links in graph mode
 
 ### exec-term-panes
 - [x] **N-1.1** `panes/tree.js` — split tree ops, limits, focusDir geometry (pure)
