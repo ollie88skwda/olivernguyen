@@ -1,11 +1,14 @@
-import React, { useState } from "react";
-import { Helmet } from "react-helmet";
+import React, { useEffect, useState } from "react";
 import "../../styles/App.css";
 
 export const ArticleWriter = () => {
   const [product, setProduct] = useState("");
   const [articleHTML, setArticleHTML] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    document.title = "Generate Article";
+  }, []);
 
   const handleGenerateArticle = async () => {
     setLoading(true);
@@ -29,9 +32,6 @@ export const ArticleWriter = () => {
 
   return (
     <div>
-      <Helmet>
-        <title>Generate Article</title>
-      </Helmet>
       <h1>Generate an Article</h1>
 
       <input

@@ -124,7 +124,7 @@ export const Permit = () => {
                       Complete the California Driver's License or ID Card
                       Application
                     </h3>
-                    <p>
+                    <div>
                       This one's a bit more complicated. Visit the hyperlink on
                       the website or{" "}
                       <a
@@ -182,7 +182,7 @@ export const Permit = () => {
                       to do whatever applies to you.
                       <br />
                       <br />
-                    </p>
+                    </div>
                     <section>
                       <h3>Have a parent(s)/guardian(s) sign the application</h3>
                       <p>
@@ -194,7 +194,7 @@ export const Permit = () => {
                     </section>
                     <section>
                       <h3>Visit a DMV office where you will:</h3>
-                      <p>
+                      <div>
                         <h4>
                           1. Bring your California Identification Card or proof
                           of identity and residency.
@@ -233,7 +233,7 @@ export const Permit = () => {
                         <p>
                           I'll go over the knowledge test in the next section
                         </p>
-                      </p>
+                      </div>
                     </section>
                   </section>
                 </div>
