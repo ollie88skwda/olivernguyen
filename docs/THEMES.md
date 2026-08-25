@@ -108,7 +108,9 @@ npx playwright test e2e/gallery-shots.spec.js   # 4 combos × 1440px + 375px, fa
 2. **`<meta name="theme-color">`** currently follows mode in `ModeProvider` (`graph` → `#faf1f5`,
    `terminal` → `#180f14`). It must follow **theme**.
 3. **`src/components/ui/sonner.jsx`** derives sonner's `theme` prop from mode. Same fix.
-4. **A theme control in the UI.** `src/chrome/` has a mode toggle and no theme toggle. Placement
-   and shape are an open design question — `BRAND.md` §4 allows exactly one more 999px control
-   only by decision.
+4. **A theme control in the UI** — specified by D-23, not yet built. Sun/moon `lucide` icons on the
+   18px `--icon` grid, 40px square button at `3px` radius (44px coarse, **never** 999px), in
+   `.sc-right` immediately after the TERM|GRAPH toggle and before the conditional `SEARCH ⌘K`
+   button. Shows the current theme; `aria-label` names the action and flips with state; 140ms
+   crossfade. `sun` and `moon` join `check` on `src/components/brand/icon.jsx`'s allow-list.
 5. **`docs/redesign-research/05-v1-spec.md` §6.3** is superseded by D-03 and now by this file.

@@ -47,6 +47,32 @@ field-hover borders would go 5.53:1 → 3.51:1 for no reason anyone asked for.
 contrast-clean today. Reversing this is a one-line move if a light surface ever needs the strong
 hairline outside the console. Closes the `COMPONENTS.md` "still open" item.
 
+### D-23 · The theme control — sun/moon, top-right, square
+Decided by Oliver 2026-08-26; the placement was left to the agent and taken from convention.
+
+**Shape.** A sun and a moon, `lucide-react`, joining `check` on `src/components/brand/icon.jsx`'s
+allow-list — the third and fourth names ever added (§8 requires a decision for each). Same terms as
+D-13/D-17: stroke locked to 1.5, drawn at the full 18px `--icon` grid, `currentColor`. No mono glyph
+was tried: ☀ and ☾ are outside §8's ratified set and fail at control size the way the tick did.
+
+**Geometry.** An icon button on §4's ordinary control rules — 40px square, `3px` radius, 44px on a
+coarse pointer. **Not** 999px. §4's round exception list (mode toggle, status pills, radio) stays
+closed; a second round control next to the mode toggle would read as part of it.
+
+**Placement.** Top-right header cluster, immediately after the TERM|GRAPH toggle and before the
+conditional `SEARCH ⌘K` button, inside `.sc-right`. That is where the convention puts it — header
+far-right, beside the other global controls, never in the page body or the footer (Tailwind, Vercel,
+shadcn and Next docs all sit it in the top-right nav cluster; MDN's footer placement is the outlier
+and is routinely missed). The one local refinement: it goes *before* `SEARCH ⌘K` rather than after,
+because that button only exists in graph mode on `/` — placing the theme control after it would move
+the control whenever the mode changed.
+*Rejected:* inside the pages menu (a preference people expect to see, not hunt for); merged into the
+mode toggle as a four-way control (conflates two independent axes — the whole point of D-19).
+
+**Behaviour.** Shows the icon of the **current** theme, per the dominant convention; the action goes
+in the accessible name (`aria-label="Switch to dark theme"`), which flips with state. Crossfade on
+§6's 140ms state change — no rotate-and-spin, no morph.
+
 ### D-22 · All four themes shipped
 Reviewed by Oliver in the gallery, all four combinations, and accepted without changes — including
 D-20's hairline marker on the light log. `BRAND.md` §3's status table reads *shipped* on all four
