@@ -47,8 +47,35 @@ function watchErrors(page) {
   return errors;
 }
 
+/**
+ * Wait until the camera flight settles (world transform stable ≥250ms), the
+ * same helper graph-state-lift.spec.js uses.
+ *
+ * R-G1 made this load-bearing here. The node cards used to carry a perpetual
+ * ±2px idle drift, which kept Playwright's "element is stable" check busy
+ * until roughly when the camera stopped too. BRAND.md §6 bans infinite loops
+ * (D-18 ratifies exactly two, and that was a third), so the drift is gone and
+ * a card is "stable" the instant it renders — including mid-flight, where a
+ * click lands on empty stage because the card has moved on. Wait for the
+ * camera explicitly instead of relying on a garnish to do it.
+ */
+const settleCamera = (page) =>
+  page.waitForFunction(
+    () => {
+      const el = document.querySelector(".g-world");
+      if (!el || !el.style.transform) return false;
+      const t = el.style.transform;
+      if (el.__lastT === t) return performance.now() - el.__lastAt > 250;
+      el.__lastT = t;
+      el.__lastAt = performance.now();
+      return false;
+    },
+    { timeout: 10_000 },
+  );
+
 async function clickNode(page, id) {
   const card = page.locator(`[data-id="${id}"] .card`);
+  await settleCamera(page);
   try {
     await card.click({ timeout: 3000 });
   } catch {
@@ -57,7 +84,7 @@ async function clickNode(page, id) {
     await page.mouse.down();
     await page.mouse.move(880, 560, { steps: 5 });
     await page.mouse.up();
-    await page.waitForTimeout(400);
+    await settleCamera(page);
     await card.click({ timeout: 3000 });
   }
 }
@@ -78,7 +105,7 @@ test.describe("graph mode — Gate G3", () => {
 
     for (const [group, members] of Object.entries(CRAWL)) {
       await page.locator(".legend .chip", { hasText: new RegExp(`^${group}$`, "i") }).click();
-      await page.waitForTimeout(900);
+      await settleCamera(page);
       for (const [id, title] of members) {
         await clickNode(page, id);
         await page.waitForTimeout(650);

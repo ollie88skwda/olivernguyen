@@ -6,11 +6,11 @@ Precondition: library audited complete + rulebook-matching (see COMPONENTS.md, B
 ## CURRENT STATUS / NEXT TASK  ← executors MUST keep this block updated
 
 ```
-Last updated : exec-terminal, R-T3 done — GATE TERMINAL ✅
-exec-chrome     : R-C1 ✅ R-C2 ✅ R-C3 ✅ R-C4 ✅ · next = R-I1 (Integration), once GATE GRAPH-HOME passes
-exec-graph-home : R-G1 IN PROGRESS (graph.css + surface components → library/brand) · then R-G2
+Last updated : exec-graph-home, R-G3 done — GATE GRAPH-HOME ✅
+exec-chrome     : R-C1 ✅ R-C2 ✅ R-C3 ✅ R-C4 ✅ · next = R-I1 (Integration) — UNBLOCKED, both home gates pass
+exec-graph-home : R-G1 ✅ R-G2 ✅ R-G3 ✅ — GATE GRAPH-HOME ✅, nothing outstanding
 exec-terminal   : R-T1 ✅ R-T2 ✅ R-T3 ✅ — GATE TERMINAL ✅, nothing outstanding
-Integration     : waiting on GATE GRAPH-HOME only
+Integration     : ready to start (R-I1, exec-chrome leads)
 Blockers        : none
 Notes for Oliver:
   1. exec-terminal moved a gate assertion. The console body went from a bespoke
@@ -32,10 +32,13 @@ Notes for Oliver:
      do not dim the bar and it stays clickable behind a modal. Both panels
      open below the bar so nothing is occluded. Changing it means moving the
      bar's z-index, which is exec-chrome's file and a decision, not a fix.
-  4. FOR EXEC-GRAPH-HOME (not a blocker for chrome): the working tree throws
-     React warnings for `titleAs` / `titleClassName` reaching a DOM element
-     from src/graph/components/GraphList.jsx:65, which fails
-     e2e/graph.spec.js's console-error assertion.
+  4. NOT REPRODUCIBLE — closed by exec-graph-home. `titleAs`/`titleClassName`
+     are destructured by NodeCard (src/components/brand/node-card.jsx:34-35)
+     and never reach the DOM; a fresh run of / at 375px logs no React warning,
+     and e2e/graph.spec.js is green. The sighting was almost certainly a stale
+     vite module: the R-G1 working tree was destroyed mid-session by a
+     `git reset --hard` from another executor and rebuilt (see note 9), and
+     the shared :3100 server kept serving pre-reset transforms.
   5. R-C3 removed three things from the chrome on brand grounds — the bar's
      backdrop blur (§9 bans glassmorphism), the ☰ hamburger (not in §8's
      ratified set; it is `…` now) and <ScrollProgress> (probed ids of the
@@ -55,6 +58,29 @@ Notes for Oliver:
      First-party JS on `/` before the graph chunk is 137 kB gz against the
      180 kB budget (05 §8). Fine, but the headroom is 43 kB and both home
      surfaces still have to land — re-measured at R-I1.
+  9. PROCESS, needs your call. Mid-session an executor ran a hard reset that
+     wiped every uncommitted file in the shared working tree, destroying the
+     whole first pass of R-G1 (nine files). It was rebuilt from scratch and
+     committed immediately, so nothing is lost, but three agents sharing one
+     checkout means any `git reset --hard` / `git checkout -- .` silently
+     deletes the other two's work. Worth one worktree per executor next time.
+  10. R-G1 removed the graph's idle node drift (§6 bans infinite loops; D-18
+     ratifies exactly two and that was a third). The canvas is now completely
+     still at rest. It reads more deliberate and less "alive" — if you want
+     the shimmer back it is a new decision entry, not a bug.
+  11. R-G1 also squared the group nodes, the tour HUD, the toast, the legend
+     chips and the tech tokens (§4 gives 999px to the mode toggle, status
+     pills and the radio, and nothing else), and deleted the bespoke card
+     shadow the canvas used for depth (§9 allows one shadow in the system).
+     Depth on the canvas is now carried entirely by hairlines.
+  12. FOR R-I1 / exec-chrome, measured and NOT actioned: at 1440x900 the
+     topmost node sits partly behind the fixed 64px bar. The one-line fix
+     (`.g-stage { top: var(--s-16) }` alongside the other graph HUD offsets in
+     chrome.css) was tried and rejected — shrinking the stage drops fit zoom
+     from 46% to 42%, under camera.js FAR_K (0.45), which hides every leaf
+     card's kicker and description at rest. One clipped node beats a canvas
+     with no labels. Fixing it properly means moving FAR_K too, which is a
+     camera decision. Left as-is on purpose.
 ```
 
 Update rules: tick §8 checkboxes as tasks complete; rewrite this block each session; human questions → "Notes for Oliver".
@@ -111,9 +137,9 @@ Replace bespoke surface CSS with existing library components + `components.css` 
       theme round-trip leaving mode alone, nav is graph-only, reduced-motion fallback.
       Full suite: 128 passed, 2 failed — both pre-existing/other-executor, see Notes 3 and 4.
 ### exec-graph-home
-- [ ] **R-G1** GraphHome surface ported to library/brand (node-card, dossier, prompt-bar, typography); graph.css → tokens
-- [ ] **R-G2** all four themes render clean at 1440/375; reduced-motion OK
-- [ ] **R-G3** mount through new chrome (post GATE CHROME) → **GATE GRAPH-HOME ✅**
+- [x] **R-G1** GraphHome surface ported to library/brand (node-card, dossier, prompt-bar, typography); graph.css → tokens
+- [x] **R-G2** all four themes render clean at 1440/375; reduced-motion OK
+- [x] **R-G3** mount through new chrome (post GATE CHROME) → **GATE GRAPH-HOME ✅**
 ### exec-terminal
 - [x] **R-T1** TerminalHome + panes/statusline ported to brand pieces (log, statusline, glyph, prompt-bar); terminal.css → tokens — inventory in COMPONENTS.md §"Surfaces ported onto the library"
 - [x] **R-T2** all four themes + keyboard/mobile story render clean at 1440/375 — `e2e/terminal-shots.spec.js`, 14 renders
