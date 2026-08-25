@@ -1,9 +1,14 @@
 /**
  * src/graph/components/GraphNode.jsx — one node card per kind (G-2.3).
- * DOM mirrors the prototype exactly (.node > .drift > .card) so graph.css
- * and the screenshot comparison apply 1:1.
+ * DOM is .node > .drift > .card so graph.css applies 1:1.
+ *
+ * R-G1: the ±2px idle drift garnish was REMOVED. BRAND.md §6 bans infinite
+ * loops and D-18 ratifies exactly two (the terminal cursor blink and the
+ * 1800ms skeleton pulse); a third needs a decision, and this was a third.
+ * The `.drift` wrapper stays as the card's positioning element so the entry
+ * transform and the DOM contract are unchanged.
  */
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { KINDS } from '../../content/site.js';
 
 export default function GraphNode({
@@ -22,15 +27,6 @@ export default function GraphNode({
       r2 = requestAnimationFrame(() => setEntered(true));
     });
     return () => { cancelAnimationFrame(r1); if (r2) cancelAnimationFrame(r2); };
-  }, [still]);
-
-  // idle drift garnish: random phase/period, fixed per mount (prototype)
-  const driftStyle = useMemo(() => {
-    if (still) return { animation: 'none' };
-    return {
-      animationDelay: `${(-Math.random() * 8).toFixed(2)}s`,
-      animationDuration: `${(6 + Math.random() * 3.5).toFixed(2)}s`,
-    };
   }, [still]);
 
   const cls = [
@@ -66,7 +62,7 @@ export default function GraphNode({
       onPointerEnter={() => onHover(entity.id)}
       onPointerLeave={onHoverEnd}
     >
-      <div className="drift" style={driftStyle}>
+      <div className="drift">
         <div
           className="card"
           role="button"

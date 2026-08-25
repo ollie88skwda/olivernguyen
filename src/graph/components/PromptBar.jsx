@@ -7,8 +7,16 @@
  * (GraphCanvas.runIntent), so it binds lib/focusIntent here: chrome's
  * 'on:graph-intent' dispatches + ?focus= deep-links execute through the
  * same registry path as typed prompts. Unbinds with the canvas (never-trap).
+ *
+ * R-G1: the bar itself is the library's prompt bar (brand/prompt-bar.jsx) —
+ * .on-prompt / .on-prompt-input, the §8 ▸ sigil as a <Glyph> and the key hint
+ * as a <Kbd>. It is composed from those classes rather than mounted as
+ * <PromptBar>, because the suggestion list needs the input's own class hook
+ * (.p-input) and that component fixes its inner class names.
  */
 import React, { useEffect, useRef, useState } from 'react';
+import { Kbd } from '@/components/ui/kbd';
+import { Glyph } from '@/components/brand';
 import { matchIntents, PROMPT_PLACEHOLDERS } from '../../intents/registry.js';
 import { bindGraphIntents } from '../lib/focusIntent.js';
 
@@ -73,11 +81,11 @@ export default function PromptBar({ still, onRun, onNoMatch }) {
           ))}
         </div>
       )}
-      <div className="promptbar">
-        <span className="p-glyph">▸</span>
+      <div className="promptbar on-prompt">
+        <Glyph name="prompt" tone="accent" className="p-glyph" />
         <input
           ref={inputRef}
-          className="p-input"
+          className="p-input on-prompt-input"
           value={value}
           placeholder={placeholder}
           aria-label="Ask the graph"
@@ -88,7 +96,7 @@ export default function PromptBar({ still, onRun, onNoMatch }) {
           }}
           onKeyDown={onKeyDown}
         />
-        <span className="p-hint">↵</span>
+        <Kbd className="p-hint">↵</Kbd>
       </div>
     </div>
   );

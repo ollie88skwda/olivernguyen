@@ -7,12 +7,34 @@
  *   - the visually-hidden screen-reader layer on desktop (G-4.3, 05 §8)
  * Pure DOM + content imports only. No d3, no canvas code.
  *
+ * R-G1: each entry is the library's NodeCard — COMPONENTS.md documents that
+ * component as existing precisely for this list ("the phone build renders
+ * graph mode as a grouped LIST … and that list needs the same card without
+ * React Flow"). Everything inside it is a brand piece too: MonoLabel,
+ * StatusPill, Log/LogLine, StatRow/StatBlock, TechRow/TechToken, Wordmark,
+ * Display and Button.
+ *
  * F-C.2 (mobile leg): the non-srOnly list consumes a ?focus= deep-link by
  * scrolling to the target group header / entry — the canvas never mounts
  * here (P6), so the list is the deep-link's landing surface.
  */
 import React, { useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+  Display,
+  Log,
+  LogLine,
+  MonoLabel,
+  NodeCard,
+  StatBlock,
+  StatRow,
+  StatusPill,
+  TechRow,
+  TechToken,
+  Wordmark,
+} from '@/components/brand';
 import { allEntities, entityById, groups, KINDS, meta, formatBeat } from '../../content/site.js';
+import { beatLine } from '../beats.js';
 import { consumeFocusParam, resolveGraphIntent } from '../lib/focusIntent.js';
 
 function memberIdsOf(groupId) {
@@ -35,44 +57,60 @@ function ListEntry({ entity, heading: H = 'h3' }) {
   const kind = KINDS[entity.kind];
   const internal = entity.link && entity.link.href.startsWith('/');
   return (
-    <article
+    <NodeCard
+      as="article"
       className="gl-entry"
       id={`gl-${entity.id}`}
       aria-label={entity.dTitle || entity.title}
+      titleAs={H}
+      titleClassName="gl-title"
+      /* content mark, not a BRAND §8 glyph — see Dossier.jsx */
+      kicker={`${kind.glyph} ${kind.label}`}
+      title={entity.dTitle || entity.title}
     >
-      <div className="gl-kind">
-        {`${kind.glyph} ${kind.label}`}
-        {entity.status ? <span className="gl-status">{entity.status}</span> : null}
-      </div>
-      <H className="gl-title">{entity.dTitle || entity.title}</H>
+      {entity.status && (
+        <StatusPill className="gl-status" dot={false}>{entity.status}</StatusPill>
+      )}
       {entity.type && <div className="gl-type">{entity.type}</div>}
       {entity.blurb && <p className="gl-blurb">{entity.blurb}</p>}
       {entity.beats && (
-        <ul className="gl-beats">
-          {entity.beats.map((b) => <li key={b.t + b.text}>{formatBeat(b)}</li>)}
-        </ul>
+        /* role is cleared: .on-log is a live region for the terminal, and 25
+           static live regions on one page is noise for assistive tech */
+        <Log className="gl-beats" role={undefined}>
+          {entity.beats.map((b) => {
+            const { time, glyph, body } = beatLine(b);
+            return (
+              <LogLine key={formatBeat(b)} time={time} glyph={glyph} state="dim">
+                {body}
+              </LogLine>
+            );
+          })}
+        </Log>
       )}
       {entity.stats.length > 0 && (
-        <ul className="gl-stats">
+        <StatRow className="gl-stats">
           {entity.stats.map((s) => (
-            <li key={s.label}><b>{s.value}</b> {s.label}</li>
+            <StatBlock key={s.label} value={s.value} label={s.label} />
           ))}
-        </ul>
+        </StatRow>
       )}
       {entity.tech.length > 0 && (
-        <div className="gl-tech">{entity.tech.join(' · ')}</div>
+        <TechRow className="gl-tech">
+          {entity.tech.map((t) => <TechToken key={t}>{t}</TechToken>)}
+        </TechRow>
       )}
       {entity.link && (
-        <a
-          className="gl-link"
-          href={entity.link.href}
-          target={internal ? undefined : '_blank'}
-          rel={internal ? undefined : 'noreferrer'}
-        >
-          {entity.link.label}
-        </a>
+        <Button variant="link" className="gl-link" asChild>
+          <a
+            href={entity.link.href}
+            target={internal ? undefined : '_blank'}
+            rel={internal ? undefined : 'noreferrer'}
+          >
+            {entity.link.label}
+          </a>
+        </Button>
       )}
-    </article>
+    </NodeCard>
   );
 }
 
@@ -95,14 +133,17 @@ export default function GraphList({ srOnly = false }) {
   return (
     <div className={srOnly ? 'g-list visually-hidden' : 'g-list'} aria-label="Site graph as a list">
       <header className="gl-head">
-        <div className="gl-brand">oN.c <span>graph mode</span></div>
-        <h1 className="gl-name">{meta.name}</h1>
+        <div className="gl-brand">
+          <Wordmark />
+          <MonoLabel>graph mode</MonoLabel>
+        </div>
+        <Display className="gl-name">{meta.name}</Display>
         <p className="gl-tagline">{meta.tagline}</p>
       </header>
       <ListEntry entity={root} heading="h2" />
       {groups.map((g) => (
         <section key={g.id} aria-labelledby={`gl-h-${g.id}`}>
-          <h2 id={`gl-h-${g.id}`} className="gl-group">{g.title}</h2>
+          <h2 id={`gl-h-${g.id}`} className="gl-group on-section-title">{g.title}</h2>
           {g.blurb && <p className="gl-group-sub">{g.blurb}</p>}
           {memberIdsOf(g.id).map((id) => (
             <ListEntry key={id} entity={entityById.get(id)} />

@@ -1,11 +1,32 @@
 /**
  * src/graph/components/Dossier.jsx — node detail panel (G-3.1).
- * DOM mirrors the prototype dossier; dialog semantics with a light focus
- * trap (focus enters on open, Tab cycles inside, returns to the node card on
- * close — 05 §4.3).
+ *
+ * R-G1: composed from the component library. Every leaf piece is a brand
+ * component — MonoLabel (§7 kicker/label role), StatusPill (§4's one 999px
+ * licence), Log/LogLine (§5 density + §8 glyph marks), StatBlock/StatRow,
+ * TechRow/TechToken, Button, Glyph. The panel shell itself stays graph-owned
+ * because it is a full-height slide-in pinned to the canvas edge, but it reads
+ * the same tokens the library's .on-dossier does (--dossier-border,
+ * --shadow-dossier, --pad-card) — see src/graph/graph.css.
+ *
+ * Dialog semantics with a light focus trap (focus enters on open, Tab cycles
+ * inside, returns to the node card on close — 05 §4.3).
  */
 import React, { useEffect, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import {
+  Glyph,
+  Log,
+  LogLine,
+  MonoLabel,
+  StatBlock,
+  StatRow,
+  StatusPill,
+  TechRow,
+  TechToken,
+} from '@/components/brand';
 import { KINDS, formatBeat, entityById } from '../../content/site.js';
+import { beatLine } from '../beats.js';
 
 export default function Dossier({ entity, open, onClose, onGoto }) {
   const panelRef = useRef(null);
@@ -64,55 +85,82 @@ export default function Dossier({ entity, open, onClose, onGoto }) {
       tabIndex={-1}
       onKeyDown={onKeyDown}
     >
-      <button type="button" className="d-close" aria-label="Close" onClick={onClose}>×</button>
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        className="d-close"
+        aria-label="Close"
+        onClick={onClose}
+      >
+        <Glyph name="close" />
+      </Button>
       <div className="d-kind">
-        {`${kind.glyph} ${kind.label}`}
-        {entity.status && <span className="d-status">{entity.status}</span>}
+        {/* KINDS[].glyph is a CONTENT mark (● ○ ◆ ◔ ▣ ✦ ▤ ✉), not the BRAND §8
+            control set, so it stays part of the label text rather than a
+            <Glyph> — glyph.jsx deliberately throws on names it has not
+            ratified. */}
+        <MonoLabel>{`${kind.glyph} ${kind.label}`}</MonoLabel>
+        {entity.status && (
+          <StatusPill className="d-status" dot={false}>{entity.status}</StatusPill>
+        )}
       </div>
       <h2 className="d-title">{entity.dTitle || entity.title}</h2>
       {entity.type && <div className="d-type">{entity.type}</div>}
       {entity.blurb && <p className="d-blurb">{entity.blurb}</p>}
       {entity.beats && (
-        <div className="d-beats">
-          {entity.beats.map((b) => <div key={b.t + b.text}>{formatBeat(b)}</div>)}
-        </div>
+        <Log className="d-beats">
+          {entity.beats.map((b) => {
+            const { time, glyph, body } = beatLine(b);
+            return (
+              <LogLine key={formatBeat(b)} time={time} glyph={glyph} state="dim">
+                {body}
+              </LogLine>
+            );
+          })}
+        </Log>
       )}
       {entity.stats.length > 0 && (
-        <div className="d-stats">
+        <StatRow className="d-stats">
           {entity.stats.map((s) => (
-            <div className="d-stat" key={s.label}>
-              <div className="v">{s.value}</div>
-              <div className="l">{s.label}</div>
-            </div>
+            <StatBlock className="d-stat" key={s.label} value={s.value} label={s.label} />
           ))}
-        </div>
+        </StatRow>
       )}
       {entity.tech.length > 0 && (
-        <div className="d-tech">
-          {entity.tech.map((t) => <span key={t}>{t}</span>)}
-        </div>
+        <TechRow className="d-tech">
+          {entity.tech.map((t) => <TechToken key={t}>{t}</TechToken>)}
+        </TechRow>
       )}
       {rel.length > 0 && (
         <div className="d-rel">
-          <span className="d-rel-h">linked</span>
+          <MonoLabel className="d-rel-h">linked</MonoLabel>
           {rel.map((id) => (
-            <button type="button" key={id} onClick={() => onGoto(id)}>
-              {`→ ${entityById.get(id).dTitle || entityById.get(id).title}`}
-            </button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              key={id}
+              onClick={() => onGoto(id)}
+            >
+              <Glyph name="call" />
+              {entityById.get(id).dTitle || entityById.get(id).title}
+            </Button>
           ))}
         </div>
       )}
       {entity.link && (
-        <a
-          className="d-link"
-          href={entity.link.href}
-          target={internal ? undefined : '_blank'}
-          rel={internal ? undefined : 'noreferrer'}
-        >
-          {entity.link.label}
-        </a>
+        <Button variant="link" className="d-link" asChild>
+          <a
+            href={entity.link.href}
+            target={internal ? undefined : '_blank'}
+            rel={internal ? undefined : 'noreferrer'}
+          >
+            {entity.link.label}
+          </a>
+        </Button>
       )}
-      <div className="d-esc">esc to close</div>
+      <MonoLabel className="d-esc">esc to close</MonoLabel>
     </aside>
   );
 }

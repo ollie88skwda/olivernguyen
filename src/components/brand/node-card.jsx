@@ -23,9 +23,16 @@ const TechRow = React.forwardRef(function TechRow({ className, ...props }, ref) 
       {...props} />;
 });
 
+// `titleAs` / `titleClassName` exist for the phone graph list (G-4.1): the
+// list nests entries under real section headings, so the root entry has to be
+// an <h2> where the rest are <h3> or axe flags a skipped heading level, and
+// the surface keeps its own test hook. Neither changes a brand value — the
+// title role stays .on-node-title (§7 display, --fs-title).
 const NodeCard = React.forwardRef(function NodeCard({
   kicker,
   title,
+  titleAs: TitleAs = "h3",
+  titleClassName,
   description,
   tech = [],
   active = false,
@@ -43,7 +50,7 @@ const NodeCard = React.forwardRef(function NodeCard({
       {...props}
     >
       {kicker && <MonoLabel>{kicker}</MonoLabel>}
-      <h3 className="on-node-title">{title}</h3>
+      <TitleAs className={cn("on-node-title", titleClassName)}>{title}</TitleAs>
       {description && <p className="on-node-desc">{description}</p>}
       {tech.length > 0 && (
         <TechRow>

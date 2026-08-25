@@ -1,19 +1,45 @@
-/* ============================================================
-   graph mode — production stylesheet (port of prototype/graph/style.css)
-
-   Rules (build-plan P2 / §5 contract):
-   - Everything scoped under .graph-root (GraphHome's own wrapper, which
-     also carries .sakura). Nothing leaks into legacy pages.
-   - Colors: token variables from src/styles/sakura.css ONLY — no hex.
-     Alpha'd colors are color-mix() over tokens.
-   - Fonts: --font-display (Big Shoulders) / --font-sans (Hanken Grotesk)
-     / --font-mono (Martian Mono) per §3.1. Initial retune here (Martian
-     Mono is wider than the prototype's JetBrains: tracking cut roughly in
-     half, key max-widths widened); the screenshot-driven type pass is
-     G-2.6 and may adjust further.
-   - Top bar + TERM|GRAPH toggle + Search ⌘K button are exec-infra chrome
-     (05 §6.4) — their prototype styles are intentionally NOT ported.
-   ============================================================ */
+/* ============================================================================
+ * graph mode — surface stylesheet, PORTED ONTO THE COMPONENT LIBRARY (R-G1).
+ *
+ * Everything is scoped under .graph-root (GraphHome's own wrapper, which also
+ * carries .sakura). Nothing leaks into legacy pages.
+ *
+ * WHAT CHANGED IN THE PORT (12-rebuild-plan §3)
+ *   §4 radius   every surface is now 0 (--r-surface) and every control 3px
+ *               (--r-control). The 999px pills this file used to draw — group
+ *               node, tour HUD, toast, chips, tech tokens, status badge — are
+ *               gone; 999px survives ONLY where §4 allows it, i.e. the
+ *               StatusPill component (.on-pill) and the routing dot.
+ *   §5 spacing  the 4px ladder via --s-*; no value between rungs.
+ *   §6 motion   140ms --dur-state on state change; the dossier slide and the
+ *               edge draw are the 640ms camera signature (--dur-camera /
+ *               --ease-camera). The idle node drift was REMOVED: §6 permits
+ *               exactly two infinite loops (cursor blink, skeleton pulse) and
+ *               D-18 says a third needs a decision.
+ *   §7 type     --font-display / --font-sans / --font-mono-body (things you
+ *               read lines of: prompt, filter, palette inputs) /
+ *               --font-mono-label (labels, chips, kickers, key hints).
+ *               The condensed-face sizing flagged in COMPONENTS.md
+ *               "Follow-up work" §1 is retuned here: display type is no longer
+ *               uppercased or positively tracked, and sits on --fs-* rungs.
+ *   §9 surface  hairlines only. The bespoke --g-shadow-1/--g-shadow-2 lift and
+ *               the bead's drop-shadow glow are DELETED — §9 allows exactly
+ *               one shadow in the system, the open dossier, and only in light
+ *               (--shadow-dossier, which is `none` on the dark ladder).
+ *
+ * CASCADE RULE FOR THIS FILE
+ *   Brand/library components bring their own `.sakura .on-*` rules (0,2,0).
+ *   Where this file needs to adjust one, it does so at (0,3,0) —
+ *   `.graph-root .hook.on-thing { … }` — so the winner never depends on
+ *   stylesheet import order. Graph-owned elements are styled here outright.
+ *
+ * WORLD UNITS
+ *   Everything inside .g-world is world space: the camera scales it between
+ *   k=0.35 and k=2.2, so a px in there is not a screen px. Card geometry is
+ *   authored to lib/layout.js `nodeHalf()` and must stay inside it. Type roles,
+ *   faces, radius, colour and motion still come from tokens; sizes are picked
+ *   off the ladder that keeps each card inside its half-extent.
+ * ========================================================================== */
 
 .graph-root {
   position: fixed;
@@ -23,10 +49,6 @@
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
-  --g-shadow-1: 0 1px 2px color-mix(in srgb, var(--text) 5%, transparent),
-                0 6px 18px color-mix(in srgb, var(--text) 6%, transparent);
-  --g-shadow-2: 0 2px 4px color-mix(in srgb, var(--text) 6%, transparent),
-                0 14px 34px color-mix(in srgb, var(--text) 10%, transparent);
 }
 
 .graph-root ::selection { background: var(--selection); }
@@ -39,11 +61,13 @@
   padding: 0;
   cursor: pointer;
 }
+/* one focus treatment, the same one components.css ships (§4: the ring sits at
+   the element's own radius, so controls get 3px and surfaces stay square) */
 .graph-root button:focus-visible,
 .graph-root input:focus-visible,
 .graph-root [role="button"]:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
+  outline: var(--focus-ring-w) solid var(--focus-ring);
+  outline-offset: 1px;
 }
 
 /* ------------------------------- stage ------------------------------- */
@@ -55,8 +79,9 @@
   touch-action: none;
   user-select: none;
   -webkit-user-select: none;
+  /* §9: the graph's ONE texture layer */
   background-image: radial-gradient(var(--dot-grid) 1.2px, transparent 1.3px);
-  background-size: 26px 26px;
+  background-size: 26px 26px;    /* = lib/camera.js GRID_BASE at k=1 */
 }
 .g-stage.grabbing { cursor: grabbing; }
 
@@ -84,129 +109,141 @@
   stroke-linecap: round;
   stroke-dasharray: 1;           /* pathLength=1 → whole path */
   stroke-dashoffset: 0;
-  transition: opacity .3s ease, stroke .25s ease, stroke-width .25s ease;
+  transition:
+    opacity var(--dur-state) var(--ease-state),
+    stroke var(--dur-state) var(--ease-state),
+    stroke-width var(--dur-state) var(--ease-state);
 }
 .graph-root .edge.hot { stroke: var(--node-border); stroke-width: 2.25; }
 .graph-root .edge.routing { stroke: var(--routing-pulse); stroke-width: 2.25; opacity: 1 !important; }
 
-.graph-root .bead {
-  fill: var(--routing-pulse);
-  filter: drop-shadow(0 0 4px color-mix(in srgb, var(--routing-pulse) 50%, transparent));
-}
+/* §9 bans glow: the bead is a solid jade dot, not a light source. */
+.graph-root .bead { fill: var(--routing-pulse); }
 
 /* instant dim in, eased return */
 .g-stage.hovering  .edge:not(.hot) { opacity: .16; transition: none; }
 .g-stage.filtering .edge           { opacity: .16; transition: none; }
 
-.g-stage.ready .edge { animation: g-draw .7s ease var(--d, 0s) backwards; }
+/* entry draw-in — §6 signature 2 (the camera curve), not a bespoke ease */
+.g-stage.ready .edge {
+  animation: g-draw var(--dur-camera) var(--ease-camera) var(--d, 0s) backwards;
+}
 @keyframes g-draw { from { stroke-dashoffset: 1; } }
 
 /* ------------------------------- nodes ------------------------------- */
 
 .graph-root .node { position: absolute; left: 0; top: 0; }
 
-.graph-root .drift { animation: g-drift 7.5s ease-in-out infinite; }
+/* `.drift` is kept as the card's positioning wrapper. Its ±2px idle animation
+   was removed in the port: BRAND.md §6 bans infinite loops and D-18 ratifies
+   exactly two (cursor blink, skeleton pulse). A third is a decision. */
+.graph-root .drift { display: block; }
 
-@keyframes g-drift {              /* ±2-3px idle garnish */
-  0%, 100% { transform: translate(0, 0); }
-  25%      { transform: translate(1.9px, -2.5px); }
-  50%      { transform: translate(-1.6px, 1.9px); }
-  75%      { transform: translate(2.3px, 1.3px); }
-}
-
+/* the canvas card — the world-space variant of the library's node card.
+   Same brand rules (§4 radius 0, §9 one hairline and no lift, --node-* colour
+   roles); its box is authored to lib/layout.js nodeHalf(). */
 .graph-root .card {
   position: absolute;
   transform: translate(-50%, -50%);
   background: var(--node-fill);
   border: 1px solid var(--node-border);
-  border-radius: 11px;
-  padding: 10px 14px 11px;
+  border-radius: var(--r-surface);
+  padding: var(--s-3) var(--s-4);
   width: max-content;
-  max-width: 244px;              /* +12px: Martian Mono runs wider */
-  box-shadow: var(--g-shadow-1);
+  max-width: 240px;
   cursor: pointer;
-  transition: opacity .3s ease, border-color .16s ease, box-shadow .16s ease;
+  transition:
+    opacity var(--dur-state) var(--ease-state),
+    border-color var(--dur-state) var(--ease-state),
+    background-color var(--dur-state) var(--ease-state);
 }
-.graph-root .card:hover { border-color: var(--node-border-active); box-shadow: var(--g-shadow-2); }
+.graph-root .card:hover { border-color: var(--node-border-active); }
 
 .graph-root .node.active .card {
   border-color: var(--node-border-active);
-  box-shadow: 0 0 0 3px var(--selection), var(--g-shadow-2);
+  background: var(--selection);
 }
 
-/* jade arrival flash when a routed pulse lands */
+/* jade arrival flash when a routed pulse lands — §2 rations jade to "it
+   worked", and §9 gets it across with colour, not a halo */
 .graph-root .node.arrived .card {
   border-color: var(--routing-pulse);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--routing-pulse) 16%, transparent),
-              var(--g-shadow-2);
+  background: color-mix(in srgb, var(--routing-pulse) 12%, var(--node-fill));
 }
 
+/* kicker — §7's Martian label role, the same values as .on-label */
 .graph-root .card .k {
-  font-family: var(--font-mono);
-  font-size: 9px;
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
   font-weight: 500;
-  letter-spacing: .07em;         /* was .14em on JetBrains */
+  letter-spacing: var(--track-label);
   text-transform: uppercase;
+  line-height: 1.4;
   color: var(--text-faint);
-  margin-bottom: 3px;
-  transition: opacity .25s ease;
+  margin-bottom: var(--s-1);
+  transition: opacity var(--dur-state) var(--ease-state);
 }
-.graph-root .card .t { font-size: 14px; font-weight: 600; letter-spacing: -.01em; line-height: 1.25; }
-.graph-root .card .m {
-  font-size: 11.5px;
-  color: var(--text-muted);
-  line-height: 1.35;
-  margin-top: 2px;
-  transition: opacity .25s ease;
-}
-
-/* root card — display face (Big Shoulders is condensed: bigger, tracking open) */
-.graph-root .kind-root .card { padding: 16px 22px 17px; max-width: 320px; border-width: 1.5px; }
-.graph-root .kind-root .card .t {
+/* title — §7 display role (Familjen Grotesk 700, negative tracking, sentence
+   case). Sized down from --fs-title so the card stays inside nodeHalf(). */
+.graph-root .card .t {
   font-family: var(--font-display);
-  font-size: 30px;
+  font-size: var(--fs-body);
   font-weight: 700;
-  letter-spacing: .01em;
-  line-height: 1.05;
-  text-transform: uppercase;
+  letter-spacing: var(--track-display);
+  line-height: 1.15;
+  color: var(--text);
 }
-.graph-root .kind-root .card .m { font-size: 12.5px; margin-top: 6px; }
+.graph-root .card .m {
+  font-family: var(--font-sans);
+  font-size: var(--fs-label);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  margin-top: var(--s-1);
+  transition: opacity var(--dur-state) var(--ease-state);
+}
 
-/* group pills */
+/* root card — the hero node */
+.graph-root .kind-root .card {
+  padding: var(--s-4) var(--s-6);
+  max-width: 320px;
+}
+.graph-root .kind-root .card .t { font-size: var(--fs-title-lg); line-height: 1.05; }
+.graph-root .kind-root .card .m { font-size: var(--fs-mono); margin-top: var(--s-2); }
+
+/* group nodes — §4 killed the 999px pill: a node is a surface, so it is square */
 .graph-root .kind-group .card {
-  border-radius: 999px;
-  padding: 7px 16px 8px;
+  padding: var(--s-2) var(--s-4);
   background: var(--surface-2);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--s-2);
 }
 .graph-root .kind-group .card .t {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .09em;         /* was .16em */
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
   text-transform: uppercase;
   color: var(--text-muted);
 }
+/* the routing dot — a dot, which is what --r-pill is for (cf. .on-pill-dot) */
 .graph-root .g-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
+  width: var(--s-2); height: var(--s-2);
+  border-radius: var(--r-pill);
   background: var(--accent);
   flex: none;
 }
 
 /* day nodes — the operator week ring */
 .graph-root .kind-day .card {
-  border-radius: 8px;
-  padding: 5px 10px 6px;
+  padding: var(--s-1) var(--s-2);
   border-style: dashed;
 }
 .graph-root .kind-day .card .t {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .07em;         /* was .14em */
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
   color: var(--text-muted);
 }
 
@@ -217,121 +254,86 @@
 .g-stage.filtering .node:not(.match) .card { opacity: .12; transition: opacity 0s; }
 .g-stage.filtering .node.match .card { border-color: var(--node-border-active); }
 
-/* semantic zoom garnish: fade leaf detail out entirely when far.
-   (prototype ghosted at opacity .15 — fully hiding instead keeps WCAG/axe
-   clean; at k<0.45 the ghost was illegible anyway. Flagged for Oliver.) */
+/* semantic zoom: hide leaf detail entirely when far (a ghosted copy is both
+   illegible and an axe contrast failure) */
 .g-stage.far .node.leaf .m, .g-stage.far .node.leaf .k {
   opacity: 0;
   visibility: hidden;
-  transition: opacity .25s ease, visibility 0s linear .25s;
+  transition: opacity var(--dur-state) var(--ease-state), visibility 0s linear var(--dur-state);
 }
 
-/* ---------------------------- chrome (ui) ---------------------------- */
+/* ---------------------------- screen-space ui ---------------------------- */
 
 .graph-root .ui { position: absolute; z-index: 10; }
 
+/* legend / mini-index — a surface: square, hairline, no lift */
 .graph-root .legend {
-  top: 18px; left: 18px;
+  top: var(--s-4); left: var(--s-4);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 13px;
-  padding: 14px 16px 15px;
-  box-shadow: var(--g-shadow-1);
-  width: 224px;                  /* +12px for Martian Mono chips */
+  border-radius: var(--r-surface);
+  padding: var(--s-4);
+  width: 248px;
 }
-.graph-root .brand { display: flex; align-items: baseline; gap: 8px; }
-.graph-root .logo { font-family: var(--font-mono); font-weight: 600; font-size: 15px; color: var(--accent-hi); }
-.graph-root .mode-label {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: .1em;          /* was .18em */
-  color: var(--text-faint);
-}
-.graph-root .legend-sub {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-faint);
-  margin: 3px 0 11px;
-}
-.graph-root .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.graph-root .chip {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  font-weight: 500;
-  color: var(--text-muted);
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 4px 11px 5px;
-  transition: color .15s, border-color .15s, background .15s;
-}
-.graph-root .chip:hover { color: var(--accent-hi); border-color: var(--node-border); }
-.graph-root .chip.tour {
-  margin-top: 8px;
-  color: var(--accent-hi);
-  background: var(--surface);
-  border-color: var(--node-border);
-  width: 100%;
-  text-align: center;
-}
-.graph-root .chip.tour:hover { background: var(--surface-2); }
+.graph-root .brand { display: flex; align-items: baseline; gap: var(--s-2); }
+/* §10 wordmark is brand/wordmark.jsx (.on-wordmark) — nothing to restyle. */
+.graph-root .legend-sub.on-label { display: block; margin: var(--s-1) 0 var(--s-3); }
+.graph-root .chips { display: flex; flex-wrap: wrap; gap: var(--s-2); }
+.graph-root .chips .chip.tour { width: 100%; margin-top: var(--s-1); }
 
 .graph-root .hintbar {
-  bottom: 14px; left: 50%;
+  bottom: var(--s-3); left: 50%;
   transform: translateX(-50%);
-  font-family: var(--font-mono);
-  font-size: 10px;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
   color: var(--text-faint);
   white-space: nowrap;
 }
-.graph-root .hintbar b { color: var(--text-muted); font-weight: 600; }
 
 .graph-root .zoomctl {
-  bottom: 16px; right: 16px;
+  bottom: var(--s-4); right: var(--s-4);
   display: flex;
   align-items: center;
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 11px;
-  box-shadow: var(--g-shadow-1);
+  border-radius: var(--r-surface);
   overflow: hidden;
 }
-.graph-root .zoomctl button {
-  width: 34px; height: 34px;
-  font-size: 15px;
-  color: var(--text-muted);
-  transition: background .15s, color .15s;
-}
-.graph-root .zoomctl button:hover { background: var(--surface-2); color: var(--accent-hi); }
-.graph-root .z-label {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  color: var(--text-faint);
-  min-width: 48px;
+.graph-root .zoomctl .z-label.on-label {
+  min-width: var(--s-16);
   text-align: center;
 }
 
 .graph-root .filterbar {
-  top: 18px; left: 50%;
-  transform: translate(-50%, -8px);
+  top: var(--s-4); left: 50%;
+  transform: translate(-50%, calc(-1 * var(--s-2)));
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: var(--s-2);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 11px;
-  padding: 9px 14px;
-  box-shadow: var(--g-shadow-2);
+  border-radius: var(--r-surface);
+  padding: var(--s-2) var(--s-3);
   opacity: 0;
   pointer-events: none;
-  transition: opacity .18s ease, transform .18s ease;
+  transition:
+    opacity var(--dur-state) var(--ease-state),
+    transform var(--dur-state) var(--ease-state);
 }
 .graph-root .filterbar.open { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); }
-.graph-root .filterbar .slash { font-family: var(--font-mono); font-weight: 600; color: var(--accent-hi); }
+.graph-root .filterbar .slash {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  color: var(--accent-hi);
+}
 .graph-root .f-input {
-  font-family: var(--font-mono);
-  font-size: 12.5px;
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
   color: var(--text);
   background: none;
   border: none;
@@ -339,53 +341,30 @@
   width: 250px;
 }
 .graph-root .f-input::placeholder { color: var(--text-faint); }
-.graph-root .f-count { font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); white-space: nowrap; }
+.graph-root .f-count.on-label { white-space: nowrap; }
 
 /* ----------------------------- prompt bar ----------------------------- */
 
 .graph-root .promptwrap {
-  bottom: 40px; left: 50%;
+  bottom: var(--s-12); left: 50%;
   transform: translateX(-50%);
-  width: min(540px, 62vw);       /* +20px for the wider mono */
+  width: min(560px, 62vw);
 }
-.graph-root .promptbar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: var(--surface);
-  border: 1px solid var(--node-border);
-  border-radius: 13px;
-  padding: 12px 16px;
-  box-shadow: var(--g-shadow-2);
-  transition: border-color .15s, box-shadow .15s;
+/* .promptbar / .p-input carry the library's .on-prompt / .on-prompt-input
+   classes (brand/prompt-bar); only the canvas-specific hairline is set here,
+   at (0,3,0) so import order cannot flip it. */
+.graph-root .promptbar.on-prompt {
+  border-color: var(--node-border);
 }
-.graph-root .promptbar:focus-within { border-color: var(--node-border-active); }
-.graph-root .p-glyph { font-family: var(--font-mono); font-weight: 600; color: var(--accent-hi); }
-.graph-root .p-input {
-  flex: 1;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  color: var(--text);
-  background: none;
-  border: none;
-  outline: none;
-}
-.graph-root .p-input::placeholder { color: var(--text-faint); }
-.graph-root .p-hint {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  color: var(--text-faint);
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  padding: 2px 6px 3px;
+.graph-root .promptbar.on-prompt:focus-within {
+  border-color: var(--node-border-active);
 }
 
 .graph-root .p-suggest {
-  margin-bottom: 8px;
+  margin-bottom: var(--s-2);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 11px;
-  box-shadow: var(--g-shadow-2);
+  border-radius: var(--r-surface);
   overflow: hidden;
   display: none;
 }
@@ -394,12 +373,17 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 12px;
-  padding: 9px 14px 10px;
+  gap: var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-control);
   cursor: pointer;
-  font-size: 12.5px;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  color: var(--text);
+  transition:
+    color var(--dur-state) var(--ease-state),
+    background-color var(--dur-state) var(--ease-state);
 }
-.graph-root .sug .sk { font-family: var(--font-mono); font-size: 9.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; }
 .graph-root .sug.sel, .graph-root .sug:hover { background: var(--surface-2); }
 .graph-root .sug.sel .sl, .graph-root .sug:hover .sl { color: var(--accent-hi); }
 
@@ -410,7 +394,7 @@
 .graph-root .p-backdrop {
   position: absolute;
   inset: 0;
-  background: color-mix(in srgb, var(--text) 18%, transparent);
+  background: var(--overlay);
 }
 .graph-root .p-panel {
   position: absolute;
@@ -419,231 +403,174 @@
   width: min(560px, 88vw);
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  box-shadow: var(--g-shadow-2);
+  border-radius: var(--r-surface);
   overflow: hidden;
 }
 .graph-root .pal-input {
   width: 100%;
-  font-family: var(--font-mono);
-  font-size: 13.5px;
+  box-sizing: border-box;
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
   color: var(--text);
   background: none;
   border: none;
   border-bottom: 1px solid var(--border);
   outline: none;
-  padding: 15px 18px;
+  padding: var(--s-4);
 }
 .graph-root .pal-input::placeholder { color: var(--text-faint); }
-.graph-root .pal-list { list-style: none; margin: 0; padding: 6px; max-height: 46vh; overflow-y: auto; }
+.graph-root .pal-list { list-style: none; margin: 0; padding: var(--s-2); max-height: 46vh; overflow-y: auto; }
 .graph-root .pal-list li {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 12px;
-  padding: 10px 12px 11px;
-  border-radius: 8px;
+  gap: var(--s-3);
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-control);
   cursor: pointer;
-  font-size: 13px;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  color: var(--text);
+  transition:
+    color var(--dur-state) var(--ease-state),
+    background-color var(--dur-state) var(--ease-state);
 }
-.graph-root .pal-list li .pk { font-family: var(--font-mono); font-size: 9.5px; color: var(--text-faint); text-transform: uppercase; letter-spacing: .06em; }
 .graph-root .pal-list li.sel, .graph-root .pal-list li:hover { background: var(--surface-2); }
 .graph-root .pal-list li.sel .pl, .graph-root .pal-list li:hover .pl { color: var(--accent-hi); }
-.graph-root .pal-list .empty { color: var(--text-faint); font-family: var(--font-mono); font-size: 11.5px; cursor: default; }
+.graph-root .pal-list .empty {
+  color: var(--text-faint);
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  cursor: default;
+}
 
 /* ------------------------------- tour hud ------------------------------ */
 
 .graph-root .tourhud {
-  top: 18px; left: 50%;
-  transform: translate(-50%, -8px);
+  top: var(--s-4); left: 50%;
+  transform: translate(-50%, calc(-1 * var(--s-2)));
   display: none;
   align-items: baseline;
-  gap: 12px;
+  gap: var(--s-3);
   background: var(--surface);
   border: 1px solid var(--node-border);
-  border-radius: 999px;
-  padding: 9px 18px 10px;
-  box-shadow: var(--g-shadow-2);
+  border-radius: var(--r-surface);
+  padding: var(--s-2) var(--s-4);
   white-space: nowrap;
 }
 .graph-root .tourhud.on { display: flex; transform: translate(-50%, 0); }
-.graph-root .t-step { font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; color: var(--accent-hi); }
-.graph-root .t-cap { font-size: 12.5px; color: var(--text); }
-.graph-root .t-keys { font-family: var(--font-mono); font-size: 9.5px; color: var(--text-faint); }
+.graph-root .t-cap { font-family: var(--font-sans); font-size: var(--fs-body); color: var(--text); }
 
 /* -------------------------------- toast -------------------------------- */
 
 .graph-root .toast {
-  bottom: 96px; left: 50%;
-  transform: translate(-50%, 6px);
+  bottom: var(--s-24); left: 50%;
+  transform: translate(-50%, var(--s-1));
   z-index: 40;
-  font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
   color: var(--text);
   background: var(--surface);
   border: 1px solid var(--node-border);
-  border-radius: 999px;
-  padding: 9px 18px 10px;
-  box-shadow: var(--g-shadow-2);
+  border-radius: var(--r-surface);
+  padding: var(--s-2) var(--s-4);
   opacity: 0;
   pointer-events: none;
-  transition: opacity .22s ease, transform .22s ease;
+  transition:
+    opacity var(--dur-state) var(--ease-state),
+    transform var(--dur-state) var(--ease-state);
 }
 .graph-root .toast.show { opacity: 1; transform: translate(-50%, 0); }
 
 /* ------------------------------ dossier ------------------------------ */
 
+/* §9's ONE exception. --shadow-dossier casts sideways in light and is `none`
+   on the dark ladder, where --dossier-border steps up to the strong hairline
+   instead (D-15). Both are read here, never re-derived.
+   §6 signature 2: the panel opens on the 640ms camera curve. */
 .graph-root .dossier {
   position: absolute;
   top: 0; right: 0; bottom: 0;
   z-index: 20;
+  box-sizing: border-box;
   width: min(430px, 34vw);
   background: var(--surface);
-  border-left: 1px solid var(--border);
-  box-shadow: -18px 0 56px color-mix(in srgb, var(--text) 8%, transparent);
+  border-left: 1px solid var(--dossier-border);
+  border-radius: var(--r-surface);
+  box-shadow: var(--shadow-dossier);
   transform: translateX(106%);
-  transition: transform .38s cubic-bezier(.32, .72, .28, 1);
-  padding: 30px 30px 24px;
+  transition: transform var(--dur-camera) var(--ease-camera);
+  padding: var(--pad-card);
   overflow-y: auto;
   user-select: text;
 }
 .graph-root.dossier-open .dossier,
 .graph-root .dossier-open .dossier { transform: none; }
 
-.graph-root .d-close {
+/* the close control is the library's icon button, parked in the corner */
+.graph-root .d-close.on-btn {
   position: absolute;
-  top: 14px; right: 16px;
-  width: 30px; height: 30px;
-  font-size: 19px;
-  line-height: 1;
-  color: var(--text-faint);
-  border-radius: 8px;
-  transition: background .15s, color .15s;
+  top: var(--s-2); right: var(--s-2);
 }
-.graph-root .d-close:hover { background: var(--surface-2); color: var(--accent-hi); }
 
 .graph-root .d-kind {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: .09em;         /* was .16em */
-  text-transform: uppercase;
-  color: var(--text-faint);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--s-2);
+  flex-wrap: wrap;
 }
-.graph-root .d-status {
-  font-size: 9px;
-  letter-spacing: .07em;         /* was .12em */
-  color: var(--text-muted);
-  background: var(--surface-2);
-  border-radius: 999px;
-  padding: 3px 9px;
-}
+/* dossier title — §7's 32px display rung (--fs-title-lg, D-12). Same values as
+   .on-dossier-title; kept here because .d-title is the surface's test hook. */
 .graph-root .d-title {
   font-family: var(--font-display);
-  font-size: 34px;               /* condensed display face: 26 → 34 */
+  font-size: var(--fs-title-lg);
   font-weight: 700;
-  letter-spacing: .005em;
+  letter-spacing: var(--track-display);
   line-height: 1.05;
-  text-transform: uppercase;
-  margin: 12px 0 4px;
+  color: var(--text);
+  margin: var(--s-3) 0 var(--s-1);
 }
-.graph-root .d-type { font-size: 13px; color: var(--text-muted); }
-.graph-root .d-blurb { font-size: 13.5px; line-height: 1.65; color: var(--text); margin: 18px 0 0; }
-
-.graph-root .d-beats {
-  margin-top: 20px;
-  background: var(--surface-2);
-  border-radius: 10px;
-  padding: 13px 15px;
-}
-.graph-root .d-beats div {
-  font-family: var(--font-mono);
-  font-size: 10.5px;             /* wider mono: 11 → 10.5 to keep one line */
-  line-height: 1.9;
+.graph-root .d-type {
+  font-family: var(--font-sans);
+  font-size: var(--fs-mono);
   color: var(--text-muted);
 }
-
-.graph-root .d-stats {
-  display: flex;
-  gap: 10px;
-  margin-top: 22px;
-}
-.graph-root .d-stat {
-  flex: 1;
-  background: var(--surface-2);
-  border-radius: 10px;
-  padding: 11px 12px 12px;
-}
-.graph-root .d-stat .v {
-  font-family: var(--font-display);
-  font-size: 24px;               /* display face: 19 → 24 */
-  font-weight: 700;
-  letter-spacing: .01em;
-  color: var(--accent-hi);
-}
-.graph-root .d-stat .l {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  letter-spacing: .05em;         /* was .08em */
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin-top: 3px;
-  line-height: 1.4;
+.graph-root .d-blurb {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text);
+  max-width: 70ch;               /* §5 body measure */
+  margin: var(--s-4) 0 0;
 }
 
-.graph-root .d-tech { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 20px; }
-.graph-root .d-tech span {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
-  color: var(--text-muted);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 4px 11px 5px;
+/* beats are a log — brand/log.jsx owns the type roles and density licence.
+   overflow-x is dropped: .on-log scrolls sideways for terminal transcripts,
+   but these lines wrap (pre-wrap) and a scrollable region nothing can focus
+   is an axe violation (scrollable-region-focusable). */
+.graph-root .d-beats.on-log { margin-top: var(--s-6); max-width: none; overflow-x: visible; }
+
+/* stat row: the library's StatBlock, closed up to fit a 430px panel */
+.graph-root .d-stats.on-stat-row { gap: var(--s-6); margin-top: var(--s-6); }
+
+.graph-root .d-tech.on-tech-row { margin-top: var(--s-6); }
+
+.graph-root .d-rel { margin-top: var(--s-6); }
+.graph-root .d-rel-h.on-label { display: block; margin-bottom: var(--s-2); }
+.graph-root .d-rel .on-btn { margin: 0 var(--s-1) var(--s-1) 0; }
+
+/* variant="link" already zeroes height and padding (components.css). The
+   label is a URL, so it has to be allowed to wrap inside a 430px panel. */
+.graph-root .d-link.on-btn {
+  margin-top: var(--s-6);
+  align-self: flex-start;
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+  overflow-wrap: anywhere;
 }
 
-.graph-root .d-rel { margin-top: 24px; }
-.graph-root .d-rel-h {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  letter-spacing: .08em;         /* was .14em */
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin-bottom: 8px;
-}
-.graph-root .d-rel button {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--accent);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 5px 12px 6px;
-  margin: 0 6px 6px 0;
-  transition: color .15s, border-color .15s, background .15s;
-}
-.graph-root .d-rel button:hover { color: var(--accent-hi); border-color: var(--node-border); background: var(--surface-2); }
-
-.graph-root .d-link, .graph-root .d-stub {
-  display: inline-block;
-  margin-top: 22px;
-  font-family: var(--font-mono);
-  font-size: 12px;
-}
-.graph-root .d-link { color: var(--accent); text-decoration-color: var(--edge); text-underline-offset: 3px; }
-.graph-root .d-link:hover { color: var(--accent-hi); }
-.graph-root .d-stub { color: var(--text-faint); }
-
-.graph-root .d-esc {
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  letter-spacing: .07em;         /* was .12em */
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin-top: 34px;
-}
+.graph-root .d-esc.on-label { display: block; margin-top: var(--s-8); }
 
 /* -------------------- dossier-list fallback (G-4.1) -------------------- */
 
@@ -652,120 +579,87 @@
 .graph-root .g-list {
   max-width: 640px;
   margin: 0 auto;
-  padding: 28px 20px 48px;
+  padding: var(--s-8) var(--s-4) var(--s-12);
 }
 .graph-root .gl-brand {
-  font-family: var(--font-mono);
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--accent-hi);
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-2);
 }
-.graph-root .gl-brand span {
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-  margin-left: 6px;
+.graph-root .gl-name.on-display {
+  font-size: var(--fs-display);
+  margin: var(--s-4) 0 var(--s-2);
 }
-.graph-root .gl-name {
-  font-family: var(--font-display);
-  font-size: 44px;
-  font-weight: 800;
-  letter-spacing: .01em;
-  line-height: 1;
-  text-transform: uppercase;
-  margin: 18px 0 6px;
+.graph-root .gl-tagline {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  max-width: 70ch;
+  margin: 0 0 var(--s-8);
 }
-.graph-root .gl-tagline { font-size: 14px; color: var(--text-muted); margin: 0 0 26px; }
-.graph-root .gl-group {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: .09em;
-  text-transform: uppercase;
-  color: var(--accent-hi);
+.graph-root .gl-group.on-section-title {
+  font-size: var(--fs-section);
   border-top: 1px solid var(--border);
-  padding-top: 22px;
-  margin: 34px 0 4px;
+  padding-top: var(--s-6);
+  margin: var(--s-12) 0 var(--s-1);
 }
-.graph-root .gl-group-sub { font-size: 13px; color: var(--text-muted); margin: 0 0 14px; }
-.graph-root .gl-entry {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px 18px;
-  margin: 12px 0;
-  box-shadow: var(--g-shadow-1);
+.graph-root .gl-group-sub {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  max-width: 70ch;
+  margin: 0 0 var(--s-4);
+}
+/* the list entry is the library's NodeCard (brand/node-card.jsx) — §4 radius 0,
+   §9 hairline, --node-* under data-mode="graph". Only its rhythm is set here. */
+.graph-root .gl-entry.on-node {
+  gap: var(--s-3);
+  padding: var(--pad-card);
+  margin: var(--s-3) 0;
 }
 .graph-root .gl-kind {
-  font-family: var(--font-mono);
-  font-size: 9.5px;
-  font-weight: 500;
-  letter-spacing: .07em;
-  text-transform: uppercase;
-  color: var(--text-faint);
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--s-2);
+  flex-wrap: wrap;
 }
-.graph-root .gl-status {
-  font-size: 8.5px;
-  letter-spacing: .06em;
-  color: var(--text-muted);
-  background: var(--surface-2);
-  border-radius: 999px;
-  padding: 2px 8px;
-}
-.graph-root .gl-title {
-  font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: .005em;
-  text-transform: uppercase;
-  line-height: 1.1;
-  margin: 8px 0 2px;
-}
-.graph-root .gl-type { font-size: 12.5px; color: var(--text-muted); }
-.graph-root .gl-blurb { font-size: 13px; line-height: 1.6; margin: 10px 0 0; }
-.graph-root .gl-beats {
-  list-style: none;
-  margin: 12px 0 0;
-  padding: 10px 12px;
-  background: var(--surface-2);
-  border-radius: 8px;
-}
-.graph-root .gl-beats li {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  line-height: 1.9;
+.graph-root .gl-type {
+  font-family: var(--font-sans);
+  font-size: var(--fs-mono);
   color: var(--text-muted);
 }
-.graph-root .gl-stats { list-style: none; display: flex; flex-wrap: wrap; gap: 14px; margin: 12px 0 0; padding: 0; }
-.graph-root .gl-stats li { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-faint); }
-.graph-root .gl-stats b {
-  font-family: var(--font-display);
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--accent-hi);
-  margin-right: 4px;
+.graph-root .gl-blurb {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text);
+  max-width: 70ch;
+  margin: 0;
 }
-.graph-root .gl-tech { font-family: var(--font-mono); font-size: 10.5px; color: var(--text-muted); margin-top: 10px; }
-.graph-root .gl-link {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  color: var(--accent);
-  text-underline-offset: 3px;
-  margin-top: 10px;
+/* the entry is a column flex (.on-node), so inline pieces have to opt out of
+   the default stretch or a pill grows to the width of the card */
+.graph-root .gl-status.on-pill { align-self: flex-start; }
+.graph-root .gl-beats.on-log { max-width: none; overflow-x: visible; }
+.graph-root .gl-stats.on-stat-row { gap: var(--s-6); }
+.graph-root .gl-tech.on-tech-row { margin-top: var(--s-1); }
+.graph-root .gl-link.on-btn {
+  align-self: flex-start;
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+  overflow-wrap: anywhere;
 }
 .graph-root .gl-foot {
-  font-family: var(--font-mono);
-  font-size: 10.5px;
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
   color: var(--text-faint);
   border-top: 1px solid var(--border);
-  padding-top: 20px;
-  margin-top: 36px;
+  padding-top: var(--s-6);
+  margin-top: var(--s-12);
 }
 .graph-root .gl-foot a { color: var(--accent); }
 
@@ -783,10 +677,16 @@
   border: 0;
 }
 
-/* --------------------------- reduced motion --------------------------- */
+/* --------------------------- reduced motion ---------------------------
+ * §6: every animated element sits behind this, with a static fallback that
+ * carries the same DOM. components.css kills the .on-* transitions; this
+ * block covers the graph-owned ones. JS-driven motion queries the media
+ * query itself (GraphCanvas.jsx / useCamera.js).
+ * -------------------------------------------------------------------- */
 
 @media (prefers-reduced-motion: reduce) {
-  .graph-root .drift, .g-stage.ready .edge { animation: none; }
+  .g-stage.ready .edge { animation: none; }
   .graph-root .card, .graph-root .edge, .graph-root .dossier,
-  .graph-root .filterbar, .graph-root .toast { transition: none; }
+  .graph-root .filterbar, .graph-root .toast, .graph-root .sug,
+  .graph-root .pal-list li { transition: none; }
 }

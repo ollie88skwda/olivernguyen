@@ -4,6 +4,7 @@
  * up so the canvas can dim non-matches and Enter-fly to the top hit.
  */
 import React, { useEffect, useRef } from 'react';
+import { MonoLabel } from '@/components/brand';
 import { filterCountLabel } from '../lib/filter.js';
 
 export default function FilterBar({ open, query, matches, onQuery, onClose, onCommit }) {
@@ -37,7 +38,9 @@ export default function FilterBar({ open, query, matches, onQuery, onClose, onCo
           e.stopPropagation();
         }}
       />
-      <span className="f-count">{query.trim() ? filterCountLabel(matches.length) : ''}</span>
+      <MonoLabel className="f-count">
+        {query.trim() ? filterCountLabel(matches.length) : ''}
+      </MonoLabel>
     </div>
   );
 }

@@ -8,6 +8,9 @@
  * All decisions delegated to pure lib/ modules (unit-tested).
  */
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Kbd } from '@/components/ui/kbd';
+import { Glyph, MonoLabel, Wordmark } from '@/components/brand';
 import { allEntities, entityById, groups, meta } from '../../content/site.js';
 import { POSITIONS, worldBBox } from '../lib/layout.js';
 import { fitTransform } from '../lib/camera.js';
@@ -458,35 +461,57 @@ export default function GraphCanvas() {
         </div>
       </div>
 
-      {/* legend / mini-index */}
+      {/* legend / mini-index — library pieces only (R-G1) */}
       <div className="ui legend">
         <div className="brand">
-          <span className="logo">oN.c</span>
-          <span className="mode-label">GRAPH MODE</span>
+          <Wordmark className="logo" />
+          <MonoLabel>graph mode</MonoLabel>
         </div>
-        <div className="legend-sub">30 nodes · all real</div>
+        <MonoLabel className="legend-sub">{`${allEntities.length} nodes · all real`}</MonoLabel>
         <div className="chips">
           {groups.map((g) => (
-            <button key={g.id} type="button" className="chip" onClick={() => flyToCluster(g.id)}>
+            <Button
+              key={g.id}
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="chip"
+              onClick={() => flyToCluster(g.id)}
+            >
               {g.title}
-            </button>
+            </Button>
           ))}
-          <button type="button" className="chip tour" onClick={() => startTour(false)}>
-            ▸ guided tour
-          </button>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="chip tour"
+            onClick={() => startTour(false)}
+          >
+            <Glyph name="prompt" />
+            guided tour
+          </Button>
         </div>
       </div>
 
       {/* zoom control */}
       <div className="ui zoomctl">
-        <button type="button" aria-label="Zoom out" onClick={() => camera.zoomBy(1 / 1.35)}>−</button>
-        <span ref={zoomLabelRef} className="z-label">100%</span>
-        <button type="button" aria-label="Zoom in" onClick={() => camera.zoomBy(1.35)}>+</button>
-        <button type="button" aria-label="Fit view" onClick={() => { closeDossier(false); camera.fitView(); }}>⛶</button>
+        <Button type="button" variant="ghost" size="icon" aria-label="Zoom out" onClick={() => camera.zoomBy(1 / 1.35)}>−</Button>
+        <MonoLabel ref={zoomLabelRef} className="z-label">100%</MonoLabel>
+        <Button type="button" variant="ghost" size="icon" aria-label="Zoom in" onClick={() => camera.zoomBy(1.35)}>+</Button>
+        <Button type="button" variant="ghost" size="icon" aria-label="Fit view" onClick={() => { closeDossier(false); camera.fitView(); }}>⛶</Button>
       </div>
 
       <div className="ui hintbar">
-        <b>click</b> any node · <b>/</b> filter · <b>⌘K</b> commands · <b>⇥</b> cycle · <b>esc</b> back
+        <Kbd>click</Kbd> any node
+        <Glyph name="sep" />
+        <Kbd>/</Kbd> filter
+        <Glyph name="sep" />
+        <Kbd><Glyph name="key" />K</Kbd> commands
+        <Glyph name="sep" />
+        <Kbd>⇥</Kbd> cycle
+        <Glyph name="sep" />
+        <Kbd>esc</Kbd> back
       </div>
 
       <FilterBar
