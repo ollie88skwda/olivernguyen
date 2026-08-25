@@ -14,6 +14,7 @@ This is not a suggestion or a starting point. Colour, radius, spacing, motion, t
 surface treatment, and the wordmark are all locked there. Every one of those values was decided
 by reviewing live renders of this site, and each rejected alternative is recorded with its reason.
 
+- **Reuse the component library before building anything new.** `docs/COMPONENTS.md` inventories the primitives in `src/components/ui/**` and the brand pieces in `src/components/brand/**`, with values centralised in `src/styles/components.css` and the gallery at `/_components`. Before writing any UI, check it and reuse an existing piece — only add a new component when none exists, then log it in `docs/COMPONENTS.md`.
 - Building or restyling anything visual → open `docs/BRAND.md` first.
 - Wondering why a value is what it is, or tempted to re-open a settled choice →
   `docs/DECISIONS.md` has the history. Re-litigating a logged decision without being asked is
