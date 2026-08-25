@@ -1,0 +1,149 @@
+/* Gallery chrome only (dev route /_components). Nothing here is part of the
+ * component library — it is the scaffolding the specimens sit on. Same rule
+ * applies though: tokens only, no hexes, no literal radii or durations.
+ * Classes are prefixed gx- so they can never collide with the on- library.
+ */
+
+.gx-root {
+  box-sizing: border-box;
+  min-height: 100dvh;
+  padding: calc(var(--s-16) + var(--s-8)) var(--s-8) var(--s-24);
+  background: var(--bg);
+  color: var(--text);
+}
+.gx-root *,
+.gx-root *::before,
+.gx-root *::after {
+  box-sizing: border-box;
+}
+
+.gx-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--s-16);
+}
+.gx-head-switch {
+  display: flex;
+  gap: var(--s-2);
+}
+
+.gx-specimens {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-24); /* §5 section gap, phone rung */
+  max-width: 1080px;
+}
+
+.gx-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-6);
+}
+.gx-block-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-8);
+}
+.gx-rule {
+  margin: 0;
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  line-height: var(--lh-mono);
+  color: var(--text-faint);
+  max-width: 70ch;
+}
+
+.gx-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+.gx-row-items {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+}
+
+.gx-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--s-6);
+  align-items: start;
+}
+
+.gx-hero {
+  font-size: var(--fs-display);
+}
+
+.gx-glyphs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: var(--s-4);
+}
+.gx-glyph-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-3);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: var(--s-6);
+}
+
+/* the RadioGroup root is .on-field-row (a column); this row of two options
+   needs the same specificity to win. */
+.sakura .gx-radios {
+  flex-direction: row;
+  gap: var(--s-6);
+}
+
+.gx-skeletons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  width: 100%;
+  max-width: 320px;
+}
+
+.gx-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  width: 100%;
+  max-width: 320px;
+}
+
+.gx-scroll {
+  height: calc(var(--s-36) + var(--s-8));
+  width: 100%;
+  max-width: 420px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.gx-scroll-inner {
+  padding: var(--s-3) var(--s-4);
+}
+.gx-scroll-inner p {
+  margin: 0;
+}
+
+.gx-palette {
+  width: 100%;
+  max-width: 480px;
+}
+
+@media (max-width: 767px) {
+  .gx-root {
+    padding: calc(var(--s-16) + var(--s-4)) var(--s-4) var(--s-16);
+  }
+  .gx-specimens {
+    gap: var(--s-16);
+  }
+}

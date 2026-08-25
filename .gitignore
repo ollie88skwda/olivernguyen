@@ -16,6 +16,11 @@ package-lock.json
 test-results/
 playwright-report/
 
+# Component-gallery eyeballing shots (e2e/gallery-shots.spec.js). These are
+# review artefacts, not visual-regression baselines — those live in
+# e2e/*.spec.js-snapshots/ and ARE committed.
+e2e/__shots__/
+
 # Agent and tooling scratch output. All of this was untracked and unignored, which is
 # how an unscoped `git add -A` once swept ~300 junk files into a commit.
 .agents/

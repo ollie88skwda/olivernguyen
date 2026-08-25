@@ -30,10 +30,11 @@
 }
 
 .sc-logo {
+  /* BRAND.md §7 / §10: the wordmark is Familjen Grotesk 700 at -0.02em. */
   font-family: var(--font-display);
-  font-weight: 900;
+  font-weight: 700;
   font-size: 1.5rem;
-  letter-spacing: 0.02em;
+  letter-spacing: var(--track-display);
   color: var(--text);
   text-decoration: none;
 }

@@ -39,6 +39,14 @@ const EssayStudio = lazy(() => import("./pages/essay_studio/index.js"));
 const WritingRoom = lazy(() => import("./pages/essay_studio/room/index.js"));
 const Transfer = lazy(() => import("./pages/transfer/index.js"));
 
+// Dev-only component gallery (/_components). Behind import.meta.env.DEV so the
+// route, its chunk and the whole component-gallery tree are absent from a
+// production build — it is a workbench, not a page. Not in the pages menu, and
+// disallowed in public/robots.txt.
+const ComponentGallery = import.meta.env.DEV
+  ? lazy(() => import("./gallery/ComponentGallery.jsx"))
+  : null;
+
 // ClerkProvider needs router functions, and those need useHistory, which only
 // works inside <Router>. Hence a component between Router and Switch rather than
 // wrapping the app in index.js. routerPush and routerReplace are a union in
@@ -90,6 +98,11 @@ export const Routes = () => {
         <Route path="/sign-in">
           <SignInPage />
         </Route>
+        {ComponentGallery && (
+          <Route path="/_components">
+            <ComponentGallery />
+          </Route>
+        )}
         <Route path="/permit">
           <Permit />
         </Route>

@@ -37,11 +37,19 @@
   --routing-pulse: #15734f;
   --dot-grid: #e8d3dc;
 
-  /* Fonts (plan §3.1 / L9) — same faces as legacy theme.css, re-declared here
-   * so graph never depends on legacy CSS being loaded. */
-  --font-display: "Big Shoulders", sans-serif;
+  /* Fonts — BRAND.md §7 / DECISIONS D-07 + D-08. Re-declared here so sakura
+   * never depends on legacy theme.css being loaded (which still points its
+   * own :root --font-display at Big Shoulders; that stack is frozen).
+   *
+   * The mono is SPLIT (D-08): JetBrains Mono for anything you read many lines
+   * of, Martian Mono for labels/chips/statusline/key hints. `--font-mono` is
+   * kept as the label face because every existing sakura-scoped use of it
+   * (chrome nav, mode toggle, graph chips/legend/hintbar) is a label. */
+  --font-display: "Familjen Grotesk", sans-serif;
   --font-sans: "Hanken Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: "Martian Mono", ui-monospace, monospace;
+  --font-mono-body: "JetBrains Mono", ui-monospace, monospace;
+  --font-mono-label: "Martian Mono", ui-monospace, monospace;
+  --font-mono: var(--font-mono-label);
 
   background: var(--bg);
   color: var(--text);
@@ -80,4 +88,91 @@ html[data-mode="terminal"] .sakura {
 .sakura ::selection {
   background: var(--selection);
   color: var(--text);
+}
+
+/* ============================================================================
+ * SYSTEM TOKENS — names for values already locked in BRAND.md.
+ *
+ * Nothing here is a new design decision: every value is lifted verbatim from
+ * BRAND.md §4 (radius), §5 (spacing), §6 (motion), §7 (type). They exist so a
+ * component can say `var(--r-control)` instead of `3px`, which is the rule in
+ * BRAND.md §11.1. Where BRAND.md states a RANGE (mono body 13–14px, mono label
+ * 10–11px, label tracking 0.08–0.16em) a single point inside it is picked and
+ * flagged in docs/COMPONENTS.md — no value outside a stated range is invented.
+ * ========================================================================== */
+.sakura {
+  /* --- radius (§4): surfaces square · controls 3 · only toggles round --- */
+  --r-surface: 0;
+  --r-control: 3px;
+  --r-pill: 999px;
+
+  /* --- spacing (§5): the 4px ladder, and nothing between its rungs --- */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-12: 48px;
+  --s-16: 64px;
+  --s-24: 96px;
+  --s-36: 144px;
+  --pad-card: 28px; /* §5 table: card/panel padding (20 on phone) */
+
+  /* --- motion (§6): 140ms ease-out is EVERYTHING except the two signatures */
+  --dur-state: 140ms;
+  --ease-state: ease-out;
+  --dur-camera: 640ms;
+  --ease-camera: cubic-bezier(0.16, 1, 0.3, 1);
+  --type-cadence: 28ms; /* signature 1: terminal typing, per character */
+
+  /* --- type (§7) --- */
+  --fs-display: clamp(40px, 5.5vw, 64px);
+  --fs-section: clamp(32px, 3.4vw, 40px);
+  /* §7 fixes hero, section head, body, mono body and mono label, but not the
+   * sizes between a section head and body copy — card, dialog and node titles
+   * live there. These two are 4px-ladder rungs chosen to sit under §7's
+   * "section heads ~32–40px"; flagged as OQ-5 in docs/COMPONENTS.md. */
+  --fs-title-lg: 32px;
+  --fs-title: 24px;
+  --fs-body: 16px;
+  --lh-body: 1.6;
+  --fs-mono: 13px; /* §7 range 13–14 */
+  --lh-mono: 1.7;
+  --fs-label: 11px; /* §7 range 10–11 */
+  --track-display: -0.02em;
+  --track-label: 0.12em; /* §7 range 0.08–0.16em */
+
+  /* --- derived roles (no new colour: aliases onto §2 tokens) --- */
+  /* §2.3: `--error` on `--surface-2` fails contrast; dark ships `--error-hi`
+   * for exactly that. Light has no `--error-hi`, so it falls back to its own
+   * `--error` — see the open question in docs/COMPONENTS.md. */
+  --danger-text: var(--error);
+  /* the backdrop behind an overlay — same recipe chrome.css and terminal.css
+   * already use, expressed once. */
+  --overlay: color-mix(in srgb, var(--bg) 65%, transparent);
+  /* §9: the ONE permitted shadow, on the open dossier only. §9 does not give
+   * it a value; this is the recipe graph.css already ships for the real
+   * dossier, expressed as a token. The dark variant below is a placeholder
+   * until graph · dark is derived (§3) — see docs/COMPONENTS.md OQ-9. */
+  --shadow-dossier: 0 18px 56px color-mix(in srgb, var(--text) 8%, transparent);
+  /* focus: 2px --accent-hi at 1px offset, the treatment terminal.css already
+   * ships. BRAND.md §4 fixes the focus-ring RADIUS (3px) but not its colour or
+   * width — flagged in docs/COMPONENTS.md. */
+  --focus-ring: var(--accent-hi);
+  --focus-ring-w: 2px;
+}
+
+html[data-mode="terminal"] .sakura {
+  --danger-text: var(--error-hi);
+  /* on Night Plum a --text-tinted shadow is a pink halo, and §9 bans border +
+   * shadow + glow on one element. Shadow downward off --bg instead. */
+  --shadow-dossier: 0 18px 56px color-mix(in srgb, var(--bg) 72%, transparent);
+}
+
+@media (max-width: 767px) {
+  .sakura,
+  html[data-mode="terminal"] .sakura {
+    --pad-card: 20px; /* §5: card padding drops a rung on phone */
+  }
 }

@@ -1,0 +1,1480 @@
+/* ============================================================================
+ * components.css — the component library's whole visual layer.
+ *
+ * WHY A CSS FILE AND NOT TAILWIND CLASSES IN THE JSX
+ * Tailwind preflight is off here and the repo's real styling idiom is
+ * token-only CSS (chrome.css / terminal.css / graph.css). Keeping the values
+ * in CSS makes BRAND.md §11.1 ("reference var(--token), never a hex, radius,
+ * duration or font name") mechanically checkable: this file contains no hex,
+ * no font name, and no radius or duration literal outside the token block in
+ * sakura.css. The .jsx files carry structure, behaviour and class names only.
+ *
+ * SCOPE: everything is under `.sakura`. BRAND.md §11.3 / AGENTS.md §2 —
+ * these tokens never touch :root and must never reach src/pages/.
+ *
+ * CASCADE: this file is unlayered, Tailwind's utilities are in
+ * @layer utilities, so unlayered wins. That is deliberate — a component's
+ * brand styling should not be defeatable by a stray utility class.
+ *
+ * BRAND RULES ENCODED HERE
+ *   §4  radius   0 surfaces · 3px controls · 999px pills+toggle ONLY
+ *   §5  spacing  the 4px ladder only, via --s-*
+ *   §6  motion   140ms ease-out on state change, nothing else, all of it
+ *                behind prefers-reduced-motion
+ *   §7  type     display / sans / mono-body / mono-label roles
+ *   §8  icons    glyphs first
+ *   §9  surface  1px hairlines · shadow ONLY on .on-dossier
+ * ========================================================================== */
+
+/* Preflight is off and .sakura wraps graph + terminal too, so there is no
+   blanket element reset here. Every component resets itself. */
+
+/* --------------------------------------------------------------------------
+ * Shared control metrics.
+ * BRAND.md does not specify control HEIGHTS (see docs/COMPONENTS.md, open
+ * question OQ-2); these are 4px-ladder multiples, and coarse pointers get the
+ * 44px minimum tap target required by §1.
+ * ------------------------------------------------------------------------ */
+.sakura {
+  --ctl-h: 40px;
+  --ctl-h-sm: 32px;
+}
+@media (pointer: coarse) {
+  .sakura {
+    --ctl-h: 44px;
+    --ctl-h-sm: 44px;
+  }
+}
+
+/* Focus is one treatment everywhere: §4 keeps the ring at control radius. */
+.sakura .on-focus,
+.sakura [class^="on-"]:focus-visible,
+.sakura [class*=" on-"]:focus-visible {
+  /* the outline follows each element's own radius, so controls (3px) get a
+     3px ring per BRAND.md §4 and surfaces are not silently rounded. */
+  outline: var(--focus-ring-w) solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+/* ==========================================================================
+ * TYPE ROLES — §7. Every component below composes these three.
+ * ========================================================================== */
+
+.sakura .on-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: var(--track-display);
+  line-height: 1.05;
+  color: var(--text);
+  margin: 0;
+}
+
+.sakura .on-prose {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  max-width: 70ch; /* §5: body measure caps at ~70ch */
+  margin: 0;
+}
+
+/* mono label — the uppercase Martian role (§7, D-08) */
+.sakura .on-label {
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  line-height: 1.4;
+  color: var(--text-faint);
+  margin: 0;
+  display: inline-block;
+}
+.sakura .on-label[data-tone="muted"] { color: var(--text-muted); }
+.sakura .on-label[data-tone="text"] { color: var(--text); }
+.sakura .on-label[data-tone="accent"] { color: var(--accent-hi); }
+
+/* mono body — JetBrains, the "read forty lines of it" face (D-08) */
+.sakura .on-mono {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  line-height: var(--lh-mono);
+  color: var(--text-muted);
+}
+
+/* ==========================================================================
+ * BUTTON — §4 control radius, §7 label type, §6 140ms.
+ * Four variants only: primary · ghost · link · danger.
+ * ========================================================================== */
+
+.sakura .on-btn {
+  box-sizing: border-box;
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  height: var(--ctl-h);
+  padding: 0 var(--s-4);
+  border: 1px solid transparent;
+  border-radius: var(--r-control);
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  transition:
+    color var(--dur-state) var(--ease-state),
+    background-color var(--dur-state) var(--ease-state),
+    border-color var(--dur-state) var(--ease-state);
+}
+.sakura .on-btn[data-size="sm"] {
+  height: var(--ctl-h-sm);
+  padding: 0 var(--s-3);
+}
+.sakura .on-btn[data-size="icon"] {
+  width: var(--ctl-h);
+  padding: 0;
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  letter-spacing: 0;
+}
+.sakura .on-btn > svg {
+  width: 18px; /* §8: lucide sits on an 18px grid */
+  height: 18px;
+  flex: none;
+  stroke-width: 1.5;
+}
+
+.sakura .on-btn[data-variant="primary"] {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.sakura .on-btn[data-variant="primary"]:hover:not(:disabled) {
+  background: var(--accent-hi);
+}
+
+.sakura .on-btn[data-variant="ghost"] {
+  border-color: var(--border);
+  color: var(--text);
+}
+.sakura .on-btn[data-variant="ghost"]:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: var(--surface-2);
+  color: var(--accent-hi);
+}
+
+.sakura .on-btn[data-variant="link"] {
+  height: auto;
+  padding: 0;
+  color: var(--accent-hi);
+  text-underline-offset: 3px;
+}
+.sakura .on-btn[data-variant="link"]:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.sakura .on-btn[data-variant="danger"] {
+  border-color: var(--error);
+  color: var(--danger-text);
+}
+.sakura .on-btn[data-variant="danger"]:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+
+/* Disabled is stated in tokens, not opacity: faint text on a hairline. */
+.sakura .on-btn:disabled,
+.sakura .on-btn[aria-disabled="true"] {
+  cursor: not-allowed;
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-faint);
+}
+
+/* ==========================================================================
+ * FIELDS — input · textarea · select trigger. §4 control radius.
+ * Body text, so §7's sans at 16px (also blocks the iOS focus zoom).
+ * ========================================================================== */
+
+.sakura .on-field {
+  box-sizing: border-box;
+  appearance: none;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: var(--ctl-h);
+  padding: 0 var(--s-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-control);
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: 1.2;
+  transition:
+    border-color var(--dur-state) var(--ease-state),
+    background-color var(--dur-state) var(--ease-state);
+}
+.sakura textarea.on-field {
+  height: auto;
+  min-height: calc(var(--s-16) + var(--s-6));
+  padding: var(--s-3);
+  line-height: var(--lh-body);
+  resize: vertical;
+}
+.sakura .on-field::placeholder {
+  color: var(--text-faint);
+}
+.sakura .on-field:hover:not(:disabled) {
+  border-color: var(--border-strong, var(--text-faint));
+}
+.sakura .on-field:focus-visible,
+.sakura .on-field[data-state="open"] {
+  border-color: var(--accent);
+}
+.sakura .on-field:disabled,
+.sakura .on-field[data-disabled] {
+  background: var(--surface-2);
+  color: var(--text-faint);
+  cursor: not-allowed;
+}
+.sakura .on-field[aria-invalid="true"] {
+  border-color: var(--error);
+}
+/* mono variant — for fields that take commands or paths, not prose */
+.sakura .on-field[data-face="mono"] {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+}
+
+/* select trigger carries a value + a ▾ glyph */
+.sakura .on-select-trigger {
+  justify-content: space-between;
+  gap: var(--s-2);
+  cursor: pointer;
+  text-align: left;
+}
+.sakura .on-select-trigger[data-placeholder] {
+  color: var(--text-faint);
+}
+.sakura .on-select-glyph {
+  font-family: var(--font-mono-body);
+  color: var(--text-faint);
+  flex: none;
+}
+
+/* ==========================================================================
+ * CHECKBOX · RADIO · SWITCH
+ * Checkbox is a control → 3px. Radio is a circle by convention, which §4
+ * does not cover (docs/COMPONENTS.md OQ-3) — it stays round.
+ * The switch is the one place besides the mode toggle and status pills that
+ * needs 999px, so it is drawn as a 3px track instead (§4 is explicit that
+ * 999px is the mode toggle and pills ONLY).
+ * ========================================================================== */
+
+.sakura .on-check {
+  box-sizing: border-box;
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid var(--border-strong, var(--text-faint));
+  border-radius: var(--r-control);
+  background: var(--surface);
+  color: var(--on-accent);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-state) var(--ease-state),
+    border-color var(--dur-state) var(--ease-state);
+}
+.sakura .on-check[data-state="checked"],
+.sakura .on-check[data-state="indeterminate"] {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.sakura .on-check:disabled {
+  background: var(--surface-2);
+  border-color: var(--border);
+  cursor: not-allowed;
+}
+.sakura .on-check-glyph {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  line-height: 1;
+  color: var(--on-accent);
+}
+
+.sakura .on-radio {
+  border-radius: var(--r-pill);
+}
+.sakura .on-radio[data-state="checked"] {
+  background: var(--surface);
+  border-color: var(--accent);
+}
+.sakura .on-radio-dot {
+  display: block;
+  width: var(--s-2);
+  height: var(--s-2);
+  border-radius: var(--r-pill);
+  background: var(--accent);
+}
+
+/* switch: a 3px track with a 3px thumb — square-ish on purpose (§4) */
+.sakura .on-switch {
+  box-sizing: border-box;
+  appearance: none;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  width: var(--s-8);
+  height: var(--s-4);
+  /* hairline-scale inset, not §5 ladder spacing — the ladder governs gaps
+     between things, and a 4px gutter in a 16px track leaves no thumb. */
+  padding: 1px;
+  border: 1px solid var(--border-strong, var(--text-faint));
+  border-radius: var(--r-control);
+  background: var(--surface-2);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-state) var(--ease-state),
+    border-color var(--dur-state) var(--ease-state);
+}
+.sakura .on-switch[data-state="checked"] {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.sakura .on-switch:disabled {
+  cursor: not-allowed;
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+.sakura .on-switch-thumb {
+  display: block;
+  width: var(--s-3);
+  height: var(--s-3);
+  /* §4 has three radii and 1px is not one of them; the track already carries
+     the control radius, so the thumb is square. */
+  border-radius: var(--r-surface);
+  background: var(--text-faint);
+  transition: transform var(--dur-state) var(--ease-state);
+}
+.sakura .on-switch[data-state="checked"] .on-switch-thumb {
+  background: var(--on-accent);
+  /* track inner width 28 − thumb 12 = 16 = 100% of the thumb + one ladder step */
+  transform: translateX(calc(100% + var(--s-1)));
+}
+
+/* field row: label → control, §5 says label→content is 12 */
+.sakura .on-field-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+.sakura .on-check-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.sakura .on-check-row label {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+.sakura .on-check-row[data-disabled="true"] label {
+  color: var(--text-faint);
+  cursor: not-allowed;
+}
+
+/* ==========================================================================
+ * BADGE / CHIP · TECH TOKEN · STATUS PILL · KBD
+ * ========================================================================== */
+
+.sakura .on-badge {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  padding: var(--s-1) var(--s-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-control);
+  background: transparent;
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--text-muted);
+}
+.sakura .on-badge[data-tone="accent"] {
+  border-color: var(--accent);
+  color: var(--accent-hi);
+}
+.sakura .on-badge[data-tone="success"] {
+  border-color: var(--success);
+  color: var(--success);
+}
+.sakura .on-badge[data-tone="warning"] {
+  border-color: var(--warning);
+  color: var(--warning);
+}
+.sakura .on-badge[data-tone="danger"] {
+  border-color: var(--error);
+  color: var(--danger-text);
+}
+.sakura .on-badge[data-solid="true"] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+}
+
+/* tech token — a chip that names a technology; lower-contrast than a badge
+   because a stack list is many of them at once (§2 rationing). */
+.sakura .on-tech {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  padding: var(--s-1) var(--s-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-control);
+  background: var(--surface-2);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  line-height: 1;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.sakura .on-tech-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2); /* §5: inline chip / token gap */
+}
+
+/* status pill — one of exactly two things allowed to be 999px (§4) */
+.sakura .on-pill {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-1) var(--s-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  line-height: 1.4;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.sakura .on-pill-dot {
+  width: var(--s-2);
+  height: var(--s-2);
+  border-radius: var(--r-pill);
+  background: var(--text-faint);
+  flex: none;
+}
+.sakura .on-pill[data-status="live"] { border-color: var(--success); color: var(--success); }
+.sakura .on-pill[data-status="live"] .on-pill-dot { background: var(--success); }
+.sakura .on-pill[data-status="routing"] { border-color: var(--accent); color: var(--accent-hi); }
+.sakura .on-pill[data-status="routing"] .on-pill-dot { background: var(--accent-hi); }
+.sakura .on-pill[data-status="warning"] { border-color: var(--warning); color: var(--warning); }
+.sakura .on-pill[data-status="warning"] .on-pill-dot { background: var(--warning); }
+.sakura .on-pill[data-status="error"] { border-color: var(--error); color: var(--danger-text); }
+.sakura .on-pill[data-status="error"] .on-pill-dot { background: var(--danger-text); }
+
+/* key hint — §7 puts key hints in the label mono */
+.sakura .on-kbd {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--s-6);
+  padding: 2px var(--s-1);
+  border: 1px solid var(--border);
+  border-radius: var(--r-control);
+  background: var(--surface-2);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  line-height: 1.4;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+.sakura .on-kbd-group {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+
+/* ==========================================================================
+ * SURFACES — card/panel, separator, skeleton, progress, scroll area.
+ * §4: every one of these is a SURFACE, so radius 0. §9: hairline only, no
+ * shadow (the sole exception, .on-dossier, is at the bottom of this file).
+ * ========================================================================== */
+
+.sakura .on-card {
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: var(--r-surface);
+  background: var(--surface);
+  color: var(--text);
+  padding: var(--pad-card);
+}
+.sakura .on-card[data-interactive="true"] {
+  cursor: pointer;
+  transition: border-color var(--dur-state) var(--ease-state);
+}
+.sakura .on-card[data-interactive="true"]:hover {
+  border-color: var(--accent);
+}
+.sakura .on-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--s-4);
+  margin-bottom: var(--s-3);
+}
+.sakura .on-card-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-title);
+  letter-spacing: var(--track-display);
+  line-height: 1.1;
+  color: var(--text);
+  margin: 0;
+}
+.sakura .on-card-desc {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  margin: 0;
+}
+.sakura .on-card-content > * + * {
+  margin-top: var(--s-3);
+}
+.sakura .on-card-footer {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-6); /* §5: row gap inside a group */
+}
+
+.sakura .on-separator {
+  flex: none;
+  border: 0;
+  background: var(--border);
+  margin: 0;
+}
+.sakura .on-separator[data-orientation="horizontal"] {
+  height: 1px;
+  width: 100%;
+}
+.sakura .on-separator[data-orientation="vertical"] {
+  width: 1px;
+  align-self: stretch;
+}
+
+/* No shimmer: §6 bans infinite loops. The loading signal is aria-busy plus a
+   flat surface block (docs/COMPONENTS.md OQ-4). */
+.sakura .on-skeleton {
+  display: block;
+  background: var(--surface-2);
+  border-radius: var(--r-surface);
+}
+.sakura .on-skeleton[data-shape="control"] {
+  border-radius: var(--r-control);
+}
+.sakura .on-skeleton[data-shape="text"] {
+  border-radius: var(--r-surface);
+  height: var(--s-3);
+}
+
+.sakura .on-progress {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: var(--s-1);
+  border-radius: var(--r-surface);
+  background: var(--surface-2);
+}
+.sakura .on-progress-fill {
+  width: 100%;
+  height: 100%;
+  background: var(--accent);
+  transition: transform var(--dur-state) var(--ease-state);
+}
+
+.sakura .on-scroll {
+  position: relative;
+  overflow: hidden;
+}
+.sakura .on-scroll-viewport {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+.sakura .on-scrollbar {
+  display: flex;
+  touch-action: none;
+  user-select: none;
+  padding: 1px; /* hairline-scale inset, as on the switch track */
+  background: transparent;
+}
+.sakura .on-scrollbar[data-orientation="vertical"] { width: var(--s-2); }
+.sakura .on-scrollbar[data-orientation="horizontal"] {
+  height: var(--s-2);
+  flex-direction: column;
+}
+.sakura .on-scroll-thumb {
+  position: relative;
+  flex: 1;
+  border-radius: var(--r-control);
+  background: var(--border-strong, var(--border));
+}
+
+/* ==========================================================================
+ * TABLE — §9 hairlines do the separating; header row is a label row (§7).
+ * ========================================================================== */
+
+.sakura .on-table-wrap {
+  position: relative;
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--r-surface);
+  background: var(--surface);
+}
+.sakura .on-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  color: var(--text);
+}
+.sakura .on-table th {
+  text-align: left;
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+.sakura .on-table td {
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-muted);
+  vertical-align: top;
+}
+.sakura .on-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+.sakura .on-table tbody tr {
+  transition: background-color var(--dur-state) var(--ease-state);
+}
+.sakura .on-table tbody tr:hover {
+  background: var(--surface-2);
+}
+.sakura .on-table caption {
+  caption-side: bottom;
+  padding: var(--s-3) var(--s-4);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  text-align: left;
+}
+/* numeric cells read as data, not prose */
+.sakura .on-table [data-numeric="true"] {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  text-align: right;
+}
+
+/* ==========================================================================
+ * TABS — label triggers on a hairline rail, active marked by an accent rule.
+ * ========================================================================== */
+
+.sakura .on-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-6);
+}
+.sakura .on-tabs-list {
+  display: flex;
+  gap: var(--s-6);
+  border-bottom: 1px solid var(--border);
+}
+.sakura .on-tabs-trigger {
+  appearance: none;
+  position: relative;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  padding: 0 0 var(--s-3);
+  margin-bottom: -1px;
+  border-bottom: 1px solid transparent;
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  transition:
+    color var(--dur-state) var(--ease-state),
+    border-color var(--dur-state) var(--ease-state);
+}
+.sakura .on-tabs-trigger:hover {
+  color: var(--text-muted);
+}
+.sakura .on-tabs-trigger[data-state="active"] {
+  color: var(--accent-hi);
+  border-bottom-color: var(--accent);
+}
+.sakura .on-tabs-content {
+  outline: none;
+}
+
+/* ==========================================================================
+ * OVERLAY FAMILY — tooltip · popover · dropdown · dialog · sheet · command.
+ * Panels are SURFACES (radius 0). Items inside them are CONTROLS (3px).
+ * §9: no shadow on any of them. Separation is the hairline plus the backdrop.
+ * ========================================================================== */
+
+.sakura-portal {
+  /* portalled content escapes .sakura in the DOM, so the portal root re-scopes
+     the tokens. The class list is `sakura sakura-portal`. It must not paint or
+     take space — `.sakura` sets a background, and this wrapper sits in the
+     body flow with only fixed/absolute children. */
+  position: relative;
+  z-index: 1200;
+  background: none;
+}
+
+/* the library's own visually-hidden helper; terminal.css has its own copy
+   scoped to .term-screen, and neither may become a global. */
+.sakura .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sakura .on-panel {
+  box-sizing: border-box;
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: var(--r-surface);
+  background: var(--surface);
+  color: var(--text);
+}
+
+.sakura .on-tooltip {
+  padding: var(--s-1) var(--s-2);
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: var(--r-control);
+  background: var(--surface-2);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  line-height: 1.4;
+  color: var(--text);
+  max-width: 40ch;
+}
+
+.sakura .on-menu {
+  min-width: 200px;
+  padding: var(--s-1);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+}
+.sakura .on-menu-item {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  width: 100%;
+  padding: var(--s-2) var(--s-3);
+  border-radius: var(--r-control);
+  cursor: pointer;
+  outline: none;
+  color: var(--text-muted);
+  user-select: none;
+  transition:
+    color var(--dur-state) var(--ease-state),
+    background-color var(--dur-state) var(--ease-state);
+}
+.sakura .on-menu-item[data-highlighted],
+.sakura .on-menu-item[data-selected="true"],
+.sakura .on-menu-item[data-state="checked"] {
+  background: var(--selection);
+  color: var(--accent-hi);
+}
+.sakura .on-menu-item[data-disabled] {
+  color: var(--text-faint);
+  cursor: not-allowed;
+}
+.sakura .on-menu-item[data-tone="danger"] {
+  color: var(--danger-text);
+}
+.sakura .on-menu-item > svg {
+  width: 18px;
+  height: 18px;
+  flex: none;
+  stroke-width: 1.5;
+}
+.sakura .on-menu-label {
+  padding: var(--s-2) var(--s-3) var(--s-1);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.sakura .on-menu-shortcut {
+  margin-left: auto;
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  color: var(--text-faint);
+}
+.sakura .on-menu-glyph {
+  font-family: var(--font-mono-body);
+  width: var(--s-4);
+  flex: none;
+  color: var(--accent-hi);
+}
+.sakura .on-menu-sep {
+  height: 1px;
+  margin: var(--s-1) 0;
+  background: var(--border);
+}
+
+.sakura .on-popover {
+  min-width: 240px;
+  padding: var(--s-4);
+}
+.sakura .on-popover-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-body);
+  letter-spacing: var(--track-display);
+  color: var(--text);
+  margin: 0 0 var(--s-2);
+}
+
+.sakura .on-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: var(--overlay);
+}
+
+.sakura .on-dialog {
+  position: fixed;
+  z-index: 1201;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100vw - var(--s-8));
+  max-width: 520px;
+  max-height: calc(100dvh - var(--s-16));
+  overflow-y: auto;
+  padding: var(--pad-card);
+}
+.sakura .on-dialog-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  margin-bottom: var(--s-6);
+}
+.sakura .on-dialog-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-title);
+  letter-spacing: var(--track-display);
+  line-height: 1.1;
+  color: var(--text);
+  margin: 0;
+}
+.sakura .on-dialog-desc {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  margin: 0;
+}
+.sakura .on-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--s-2);
+  margin-top: var(--s-6);
+}
+.sakura .on-close {
+  appearance: none;
+  position: absolute;
+  top: var(--s-4);
+  right: var(--s-4);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--s-6);
+  height: var(--s-6);
+  padding: 0;
+  border: 0;
+  border-radius: var(--r-control);
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  color: var(--text-faint);
+  transition: color var(--dur-state) var(--ease-state);
+}
+.sakura .on-close:hover {
+  color: var(--accent-hi);
+}
+
+.sakura .on-sheet {
+  position: fixed;
+  z-index: 1201;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+  background: var(--surface);
+  border-radius: var(--r-surface);
+  padding: var(--pad-card);
+  overflow-y: auto;
+}
+.sakura .on-sheet[data-side="right"] {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(420px, 100vw);
+  border-left: 1px solid var(--border-strong, var(--border));
+}
+.sakura .on-sheet[data-side="left"] {
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(420px, 100vw);
+  border-right: 1px solid var(--border-strong, var(--border));
+}
+.sakura .on-sheet[data-side="bottom"] {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  max-height: 80dvh;
+  border-top: 1px solid var(--border-strong, var(--border));
+}
+.sakura .on-sheet[data-side="top"] {
+  left: 0;
+  right: 0;
+  top: 0;
+  max-height: 80dvh;
+  border-bottom: 1px solid var(--border-strong, var(--border));
+}
+
+/* command palette — the ⌘K surface; the prompt row is the terminal prompt */
+.sakura .on-command {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  width: 100%;
+}
+.sakura .on-command-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  padding: var(--s-3) var(--s-4);
+  border-bottom: 1px solid var(--border);
+  transition: border-color var(--dur-state) var(--ease-state);
+}
+.sakura .on-command-row:focus-within {
+  border-bottom-color: var(--accent);
+}
+.sakura .on-command-sigil {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  color: var(--term-prompt, var(--accent-hi));
+  flex: none;
+}
+.sakura .on-command-input {
+  appearance: none;
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: none;
+  color: var(--text);
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  caret-color: var(--term-cursor, var(--accent-hi));
+}
+.sakura .on-command-input::placeholder {
+  color: var(--text-faint);
+}
+/* The prompt and palette inputs are bare by design: the row's hairline and the
+   caret carry focus. A ring on the input as well is two indicators for one
+   state, and it boxes a row that is already the only focusable thing there. */
+.sakura .on-command-input:focus-visible,
+.sakura .on-prompt-input:focus-visible {
+  outline: none;
+}
+.sakura .on-command-list {
+  max-height: 320px;
+  overflow-y: auto;
+  padding: var(--s-1);
+}
+.sakura .on-command-empty {
+  padding: var(--s-6);
+  text-align: center;
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  color: var(--text-faint);
+}
+.sakura .on-command-item {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+}
+/* cmdk renders group headings as a bare div with this attribute */
+.sakura .on-command-list [cmdk-group-heading] {
+  padding: var(--s-2) var(--s-3) var(--s-1);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.sakura .on-command-dialog {
+  position: fixed;
+  z-index: 1201;
+  top: 12vh;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(640px, calc(100vw - var(--s-8)));
+  padding: 0;
+}
+
+/* ==========================================================================
+ * AVATAR — §10: the avatar is `oN` on --bg, SQUARE, 3px radius. Not a circle.
+ * ========================================================================== */
+
+.sakura .on-avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--s-8);
+  height: var(--s-8);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--r-control);
+  background: var(--bg);
+  user-select: none;
+}
+.sakura .on-avatar[data-size="sm"] { width: var(--s-6); height: var(--s-6); }
+.sakura .on-avatar[data-size="lg"] { width: var(--s-12); height: var(--s-12); }
+.sakura .on-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* §10: the mark must stay legible at 12px, so the fallback never goes below
+   the mono body size. */
+.sakura .on-avatar-fallback {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-body);
+  letter-spacing: var(--track-display);
+  color: var(--text-muted);
+}
+.sakura .on-avatar[data-size="sm"] .on-avatar-fallback { font-size: var(--fs-mono); }
+.sakura .on-avatar[data-size="lg"] .on-avatar-fallback { font-size: var(--fs-title); }
+
+/* ==========================================================================
+ * BRAND COMPONENTS — §8 glyphs, the log, the operator chrome.
+ * ========================================================================== */
+
+/* glyph: a typographic mark set in the mono, never an SVG path (§8/D-09) */
+.sakura .on-glyph {
+  font-family: var(--font-mono-body);
+  font-style: normal;
+  line-height: 1;
+  display: inline-block;
+  color: inherit;
+}
+.sakura .on-glyph[data-tone="accent"] { color: var(--accent-hi); }
+.sakura .on-glyph[data-tone="muted"] { color: var(--text-muted); }
+.sakura .on-glyph[data-tone="faint"] { color: var(--text-faint); }
+.sakura .on-glyph[data-tone="success"] { color: var(--success); }
+.sakura .on-glyph[data-tone="warning"] { color: var(--warning); }
+.sakura .on-glyph[data-tone="error"] { color: var(--danger-text); }
+
+/* log line: timestamp · glyph · text. Density is allowed here and only here
+   plus the statusline (§5). Colours come from the terminal ladder when it is
+   defined and fall back to the shared ladder otherwise — the light-terminal
+   theme is still "to derive" (BRAND.md §3, docs/COMPONENTS.md OQ-1). */
+.sakura .on-log {
+  display: block;
+  border: 1px solid var(--border);
+  border-radius: var(--r-surface);
+  background: var(--surface);
+  padding: var(--s-3) 0;
+  max-width: 880px; /* §5: log content column caps at ~880px */
+  overflow-x: auto;
+}
+.sakura .on-log-line {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: baseline;
+  gap: var(--s-2);
+  padding: 0 var(--s-4);
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  line-height: var(--lh-mono);
+  color: var(--term-log, var(--text-muted));
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+.sakura .on-log-time {
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+.sakura .on-log-line[data-state="dim"] {
+  color: var(--term-log-dim, var(--text-faint));
+}
+.sakura .on-log-line[data-state="active"] {
+  background: var(--term-active-line, var(--selection));
+  color: var(--text);
+}
+.sakura .on-log-line[data-state="success"] {
+  background: var(--term-success-line, var(--surface-2));
+  color: var(--success);
+}
+.sakura .on-log-line[data-state="error"] {
+  background: var(--term-error-line, var(--surface-2));
+  color: var(--danger-text);
+}
+
+/* code / log block — a surface, so square (§4) */
+.sakura .on-code {
+  display: block;
+  margin: 0;
+  padding: var(--s-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-surface);
+  background: var(--surface);
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  line-height: var(--lh-mono);
+  color: var(--text-muted);
+  overflow-x: auto;
+  max-width: 880px;
+}
+.sakura .on-code-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  padding: var(--s-2) var(--s-4);
+  border: 1px solid var(--border);
+  border-bottom: 0;
+  background: var(--surface-2);
+  max-width: 880px;
+  box-sizing: border-box;
+}
+.sakura .on-code-head + .on-code {
+  border-top-color: var(--border);
+}
+
+/* statusline — the tmux-style bar; dense by licence of §5 */
+.sakura .on-statusline {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  padding: var(--s-1) var(--s-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-surface);
+  background: var(--surface-2);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow-x: auto;
+}
+.sakura .on-statusline-spacer { margin-left: auto; }
+
+/* prompt bar — a control (3px), the ▸ sigil in the accent */
+.sakura .on-prompt {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  width: 100%;
+  min-height: var(--ctl-h);
+  padding: 0 var(--s-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-control);
+  background: var(--surface);
+  transition: border-color var(--dur-state) var(--ease-state);
+}
+.sakura .on-prompt:focus-within {
+  border-color: var(--accent);
+}
+.sakura .on-prompt-input {
+  appearance: none;
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: none;
+  color: var(--text);
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  caret-color: var(--term-cursor, var(--accent-hi));
+}
+.sakura .on-prompt-input::placeholder { color: var(--text-faint); }
+
+/* node card — the graph's unit.
+ *
+ * The --node-* tokens are declared in the LIGHT block of sakura.css and the
+ * dark block does not override them, because BRAND.md §3 still lists
+ * graph · dark as "to derive". So they are only safe to read when graph mode
+ * is actually on; in terminal mode the card falls back to the shared ladder.
+ * Reading them unconditionally paints a Sakura-Paper card inside Night Plum. */
+.sakura .on-node {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding: var(--s-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-surface);
+  background: var(--surface);
+  text-align: left;
+  transition: border-color var(--dur-state) var(--ease-state);
+}
+html[data-mode="graph"] .sakura .on-node {
+  border-color: var(--node-border);
+  background: var(--node-fill);
+}
+.sakura button.on-node {
+  appearance: none;
+  cursor: pointer;
+  width: 100%;
+}
+.sakura .on-node:hover,
+.sakura .on-node[data-active="true"] {
+  border-color: var(--accent);
+}
+html[data-mode="graph"] .sakura .on-node:hover,
+html[data-mode="graph"] .sakura .on-node[data-active="true"] {
+  border-color: var(--node-border-active);
+}
+.sakura .on-node-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-title);
+  letter-spacing: var(--track-display);
+  line-height: 1.1;
+  color: var(--text);
+  margin: 0;
+}
+.sakura .on-node-desc {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* dossier — §9's ONE exception: the only element in the system that lifts */
+.sakura .on-dossier {
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: var(--r-surface);
+  background: var(--surface);
+  box-shadow: var(--shadow-dossier);
+  padding: var(--pad-card);
+}
+.sakura .on-dossier-header {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--border);
+  margin-bottom: var(--s-6);
+}
+.sakura .on-dossier-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-title-lg);
+  letter-spacing: var(--track-display);
+  line-height: 1.05;
+  color: var(--text);
+  margin: 0;
+  padding-right: var(--s-8);
+}
+.sakura .on-dossier-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+/* stat block */
+.sakura .on-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+.sakura .on-stat-value {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-title);
+  letter-spacing: var(--track-display);
+  line-height: 1;
+  color: var(--accent-hi);
+}
+.sakura .on-stat-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-8);
+}
+
+/* section head — kicker, display heading, optional hairline rule */
+.sakura .on-section-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3); /* §5: label → content */
+}
+.sakura .on-section-head[data-rule="true"] {
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--border);
+}
+.sakura .on-section-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-section);
+  letter-spacing: var(--track-display);
+  line-height: 1.05;
+  color: var(--text);
+  margin: 0;
+}
+
+/* ==========================================================================
+ * TOAST (sonner) — sonner renders outside .sakura, so its own CSS variables
+ * are set on the toaster element and the surface is squared off here.
+ * ========================================================================== */
+
+.on-toaster [data-sonner-toast] {
+  border-radius: var(--r-surface) !important;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  box-shadow: none !important;
+}
+.on-toaster [data-sonner-toast] [data-title] {
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+.on-toaster [data-sonner-toast] [data-description] {
+  font-family: var(--font-sans);
+  font-size: var(--fs-mono);
+}
+
+/* ==========================================================================
+ * MOTION — §6. Everything above transitions at 140ms ease-out; the two
+ * signature moves live in the terminal and graph code, not here. All of it
+ * is switched off under prefers-reduced-motion, with the DOM unchanged.
+ * ========================================================================== */
+
+/* Entrances. §6: state changes are 140ms ease-out, and the sheet is treated as
+   a camera move (640ms, the graph easing). Opacity and transform only — no
+   scale-up, no spring. */
+@keyframes on-fade-in {
+  from { opacity: 0; }
+}
+@keyframes on-fade-out {
+  to { opacity: 0; }
+}
+@keyframes on-slide-from-right {
+  from { transform: translateX(100%); }
+}
+@keyframes on-slide-from-left {
+  from { transform: translateX(-100%); }
+}
+@keyframes on-slide-from-bottom {
+  from { transform: translateY(100%); }
+}
+@keyframes on-slide-from-top {
+  from { transform: translateY(-100%); }
+}
+
+.sakura .on-overlay[data-state="open"],
+.sakura .on-tooltip[data-state="delayed-open"],
+.sakura .on-menu[data-state="open"],
+.sakura .on-popover[data-state="open"] {
+  animation: on-fade-in var(--dur-state) var(--ease-state);
+}
+.sakura .on-overlay[data-state="closed"] {
+  animation: on-fade-out var(--dur-state) var(--ease-state);
+}
+.sakura .on-dialog[data-state="open"],
+.sakura .on-command-dialog[data-state="open"] {
+  animation: on-fade-in var(--dur-state) var(--ease-state);
+}
+.sakura .on-sheet[data-side="right"][data-state="open"] {
+  animation: on-slide-from-right var(--dur-camera) var(--ease-camera);
+}
+.sakura .on-sheet[data-side="left"][data-state="open"] {
+  animation: on-slide-from-left var(--dur-camera) var(--ease-camera);
+}
+.sakura .on-sheet[data-side="bottom"][data-state="open"] {
+  animation: on-slide-from-bottom var(--dur-camera) var(--ease-camera);
+}
+.sakura .on-sheet[data-side="top"][data-state="open"] {
+  animation: on-slide-from-top var(--dur-camera) var(--ease-camera);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sakura [class^="on-"],
+  .sakura [class*=" on-"],
+  .sakura-portal [class^="on-"],
+  .sakura-portal [class*=" on-"] {
+    transition: none !important;
+    animation: none !important;
+  }
+}
