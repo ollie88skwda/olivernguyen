@@ -17,6 +17,10 @@ const dataMode = (page) =>
   page.locator("html").getAttribute("data-mode");
 
 test.describe("mode toggle — Gate 1", () => {
+  // Theme resolution falls through to prefers-color-scheme (THEMES.md §2), so
+  // pin it: these assertions are about mode, and the ladder must not drift.
+  test.use({ colorScheme: "light" });
+
   test("defaults to graph (P3), toggle swaps data-mode + URL + storage, persists", async ({
     page,
   }) => {
@@ -38,10 +42,11 @@ test.describe("mode toggle — Gate 1", () => {
     expect(
       await page.evaluate(() => window.localStorage.getItem("on.mode")),
     ).toBe("terminal");
-    // theme-color follows the mode's --bg (04 §5).
+    // theme-color follows the LADDER's --bg, not the mode (D-19, THEMES.md §6.2).
+    // Switching to terminal must therefore leave it on the light ladder's value.
     await expect(
       page.locator('meta[name="theme-color"]'),
-    ).toHaveAttribute("content", "#180f14");
+    ).toHaveAttribute("content", "#faf1f5");
 
     // Persistence: fresh load WITHOUT the param stays terminal.
     await page.goto("/");
