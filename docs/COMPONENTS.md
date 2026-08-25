@@ -204,6 +204,41 @@ surface stylesheet. Anything overriding a library class must beat `.sakura .on-x
 Renders: `npx playwright test e2e/terminal-shots.spec.js` — 4 theme × mode combinations at 1440 and
 375, both overlays, the split grid and the coarse-pointer story. Shots land in `e2e/__shots__/`.
 
+### Chrome — R-C3, 2026-08-26 (D-26)
+
+`src/chrome/SiteChrome.jsx` is greenfield on the library; `src/chrome/chrome.css` is down from 309
+to ~130 lines and no longer draws a single control.
+
+| Chrome piece | Now renders | Notes |
+|---|---|---|
+| wordmark | `Wordmark as="a"` | D-25. Was a hand-set `.sc-logo` that could silently lose the §10 dot |
+| mode toggle | `ModeToggle` | D-25. §4's 999px exception, owned in one place |
+| theme control | `Button variant="ghost" size="icon"` + `Icon` | D-23 calls it "an ordinary 3px icon button" — that is this variant exactly. The sun/moon crossfade stays in `chrome.css`: it is a D-23 behaviour, not a Button one |
+| nav links | `<a>` + `MonoLabel tone="muted"` | a nav link is a link, not a boxed button; §7's label role supplies the type. `min-height: var(--ctl-h)` gives §1's 44px tap target |
+| ⌘K | `Button variant="ghost" size="sm"` + `Glyph name="key"` | ⌘ is §8's glyph. The chord is one span or `.on-btn`'s 8px gap lands between ⌘ and K |
+| pages menu | `DropdownMenu` (+ `Label`, `Separator`, items `asChild`) | replaced ~70 lines of bespoke panel CSS carrying a drop shadow and a 12px radius, both §4/§9 violations |
+
+Three things the rebuild removed on brand grounds:
+
+- **The bar's `backdrop-filter: blur(8px)`.** §9 bans glassmorphism and blurred backdrops outright.
+  The bar is solid `--bg` on the §9 hairline now.
+- **The ☰ hamburger.** §8's ratified set has no hamburger; `…` (`Glyph name="more"`, ratified D-13)
+  is the mark for "there is more here".
+- **`<ScrollProgress>`.** It probes `#about/#work/#skills/#contact` — ids of the retired old home —
+  so on `/` it can only read "U0 / Hero", and the 100dvh terminal screen never scrolls, so it never
+  became visible at all. Where it did show (legacy routes) it was painted by the frozen navy/gold
+  `theme.css` inside a sakura bar. The component stays in the tree for `src/pages/top_bar.js`.
+
+Also: the hide-on-scroll slide now runs at §6's `--dur-state` (140ms ease-out) instead of a bespoke
+350ms curve, and `index.html`'s static `theme-color` is the light ladder's `--bg` (`#faf1f5`), not
+the retired legacy cream — it is only the pre-hydration value, but it used to flash the wrong one.
+
+Gate: `e2e/chrome.spec.js` — §10's accent dot, §4's radius split (toggle 999px / theme control 3px
+and square), theme-color across all four combinations, the theme round-trip leaving mode alone, and
+the reduced-motion fallback. Use `page.emulateMedia({ reducedMotion })` there, **not**
+`test.use({ reducedMotion })`: under this config's Desktop Chrome device the latter leaves
+`matchMedia()` false, so the assertion passes for the wrong reason.
+
 ## Follow-up work this created
 
 1. `src/graph/graph.css` sizes its display type for a **condensed** face (`/* condensed display
@@ -215,8 +250,11 @@ Renders: `npx playwright test e2e/terminal-shots.spec.js` — 4 theme × mode co
    pages under `src/pages/` are restyled.
 3. `e2e/legacy-visual.spec.js` → `/permit` fails on `redesign/terminal-v1` **before** this branch
    (verified by stashing). `/pull` and `/college` pass. Unrelated pre-existing baseline drift.
-4. Nothing shipped consumes this library yet, so `components.css` is absent from the production
-   bundle. Entry chunk is 48.18 kB gz, inside the 180 kB budget.
+4. The chrome consumes the library on every route as of R-C3, so `components.css` and the Radix
+   parts it pulls are now in the entry chunk. Entry went 58.4 → 90.6 kB gz; first-party JS on `/`
+   before the graph chunk is **137 kB gz against the 180 kB budget** (05 §8). `DropdownMenu` is
+   14.2 kB gz of that and `Tooltip` only 0.4 (it shares Radix's popper with the menu). Headroom is
+   43 kB — re-measure at Integration, when the two home surfaces land.
 5. **Do not strip the terminal scanline.** It was removed once under P8 and reinstated
    deliberately at 3% (D-16). Reversing it needs a new decision entry.
 

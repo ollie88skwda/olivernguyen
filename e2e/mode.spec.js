@@ -99,11 +99,15 @@ test.describe("mode toggle — Gate 1", () => {
   }) => {
     await page.goto("/pull");
     await expect(page.getByRole("button", { name: "TERM" })).toBeVisible();
-    // /debt is gone from the pages menu (05 §6.4).
+    // /debt is gone from the pages menu (05 §6.4). R-C3 rebuilt that menu on
+    // the library DropdownMenu, so it portals to <body> and is addressed by its
+    // data-slot rather than the retired #sc-pages-menu id.
     await page.getByRole("button", { name: "Open pages menu" }).click();
-    const menu = page.locator("#sc-pages-menu");
+    const menu = page.locator('[data-slot="dropdown-menu-content"]');
     await expect(menu).toBeVisible();
     expect(await menu.locator('a[href="/debt"]').count()).toBe(0);
+    // it portals out of .sakura, so PortalScope must keep the tokens attached
+    await expect(menu.locator('a[href="/pull"]')).toBeVisible();
 
     await page.goto("/be-my-girlfriend");
     await expect(page.locator(".site-chrome")).toHaveCount(0);

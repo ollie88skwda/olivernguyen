@@ -6,12 +6,12 @@ Precondition: library audited complete + rulebook-matching (see COMPONENTS.md, B
 ## CURRENT STATUS / NEXT TASK  ← executors MUST keep this block updated
 
 ```
-Last updated : exec-terminal, R-T1 + R-T2 done
-exec-chrome     : R-C1 ✅ R-C2 ✅ · next = R-C3 (chrome rebuild)
+Last updated : exec-chrome, R-C3 + R-C4 done — GATE CHROME ✅
+exec-chrome     : R-C1 ✅ R-C2 ✅ R-C3 ✅ R-C4 ✅ · next = R-I1 (Integration), once both home gates pass
 exec-graph-home : R-G1 IN PROGRESS (graph.css + surface components → library/brand) · then R-G2
-exec-terminal   : R-T1 ✅ R-T2 ✅ · next = R-T3, waiting on GATE CHROME
-Integration     : blocked until chrome gate + both home gates pass
-Blockers        : exec-terminal R-T3 and exec-graph-home R-G3 wait on GATE CHROME (R-C4) — not ticked yet
+exec-terminal   : R-T1 ✅ R-T2 ✅ · next = R-T3 — UNBLOCKED, mount through the new chrome
+Integration     : waiting on GATE GRAPH-HOME + GATE TERMINAL
+Blockers        : none — GATE CHROME is ticked, R-T3 and R-G3 may proceed
 Notes for Oliver:
   1. exec-terminal moved a gate assertion. The console body went from a bespoke
      14px to the library's --fs-mono (13px, BRAND.md §7's ratified point inside
@@ -19,11 +19,34 @@ Notes for Oliver:
      no longer trips the 40ch floor at that width. e2e/terminal.spec.js narrows
      to 960px before asserting the refusal. The RULE under test is unchanged —
      only the width that trips it moved.
-  2. FOR EXEC-CHROME: e2e/mode.spec.js "toggle present on a chromed legacy
-     route" fails on the current working tree (#sc-pages-menu not found).
-     src/chrome/**, not terminal.
+  2. FIXED by exec-chrome in R-C3. The pages menu is a library DropdownMenu
+     now, so it portals to <body>; the spec addresses it by data-slot instead
+     of the retired #sc-pages-menu id.
   3. e2e/legacy-visual.spec.js /permit still fails — pre-existing baseline
      drift, already logged as COMPONENTS.md follow-up 3.
+  4. FOR EXEC-GRAPH-HOME (not a blocker for chrome): the working tree throws
+     React warnings for `titleAs` / `titleClassName` reaching a DOM element
+     from src/graph/components/GraphList.jsx:65, which fails
+     e2e/graph.spec.js's console-error assertion.
+  5. R-C3 removed three things from the chrome on brand grounds — the bar's
+     backdrop blur (§9 bans glassmorphism), the ☰ hamburger (not in §8's
+     ratified set; it is `…` now) and <ScrollProgress> (probed ids of the
+     retired old home, never visible on `/`, and painted from the frozen
+     navy/gold theme.css). Full rationale in COMPONENTS.md §Chrome. Say if you
+     want any of them back — each is a one-line revert.
+  6. §10 says the wordmark dot is "the same colour as the routing pulse", but
+     it also says the dot is `--accent`, and on BOTH ladders --routing-pulse is
+     jade, not --accent. The normative sentence (dot = --accent) was followed.
+     On the dark ladder --accent (#ffb7d1) sits close to --text (#f5dce6), so
+     the dot is subtle there; it is legible at 20px and 6x zoom, but if you want
+     it louder that is a palette decision, not a component one.
+  7. §10 also fixes the favicon as "`oN` on --bg, square, 3px radius".
+     index.html still points at /on_logo_navy.png. That needs an asset, not
+     code, so it was left alone.
+  8. Entry-chunk cost of putting the chrome on the library: 58.4 → 90.6 kB gz.
+     First-party JS on `/` before the graph chunk is 137 kB gz against the
+     180 kB budget (05 §8). Fine, but the headroom is 43 kB and both home
+     surfaces still have to land — re-measured at R-I1.
 ```
 
 Update rules: tick §8 checkboxes as tasks complete; rewrite this block each session; human questions → "Notes for Oliver".
@@ -69,8 +92,16 @@ Replace bespoke surface CSS with existing library components + `components.css` 
 - [x] **R-C2** `Wordmark` + `ModeToggle` brand components (D-25, incl. §10 accent dot); logged in COMPONENTS.md
       — exported from `@/components/brand`, specimens in the gallery under `#marks`, verified in all
       four themes. `--fs-wordmark: 20px` names §10's stated nav size in `src/styles/sakura.css`.
-- [ ] **R-C3** SiteChrome rebuilt on library; chrome.css replaced (D-26); theme control + TERM|GRAPH toggle + nav all from library pieces
-- [ ] **R-C4** chrome gate: screenshots + theme-color + round-trip → **GATE CHROME ✅**
+- [x] **R-C3** SiteChrome rebuilt on library; chrome.css replaced (D-26); theme control + TERM|GRAPH toggle + nav all from library pieces
+      — chrome.css 309 → ~130 lines and it no longer draws a control: layout, the hide-on-scroll
+      slide, the D-23 icon crossfade and the two home-surface offsets, all on tokens. Per-piece
+      table and the three brand-grounds removals are in COMPONENTS.md §Chrome.
+- [x] **R-C4** chrome gate: screenshots + theme-color + round-trip → **GATE CHROME ✅**
+      — 8 renders (4 themes × 1440/375, coarse-pointer emulated at 375), zero console errors, shots
+      in `e2e/__shots__/chrome-*.png`. theme-color follows the LADDER in all four combinations.
+      `e2e/chrome.spec.js` (9 tests) makes it durable: §10 accent dot, §4 radius split, theme-color,
+      theme round-trip leaving mode alone, nav is graph-only, reduced-motion fallback.
+      Full suite: 128 passed, 2 failed — both pre-existing/other-executor, see Notes 3 and 4.
 ### exec-graph-home
 - [ ] **R-G1** GraphHome surface ported to library/brand (node-card, dossier, prompt-bar, typography); graph.css → tokens
 - [ ] **R-G2** all four themes render clean at 1440/375; reduced-motion OK

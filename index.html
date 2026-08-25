@@ -4,7 +4,11 @@
     <meta charset="utf-8" />
     <link rel="icon" href="/on_logo_navy.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#f1e9d4" />
+    <!-- The pre-hydration value only. src/theme/ThemeProvider.jsx rewrites this
+         on every load to the ladder's --bg (light #faf1f5 / dark #180f14,
+         THEMES.md §6.2), so the static default must be the light ladder's --bg
+         or the phone status bar flashes the retired legacy cream first. -->
+    <meta name="theme-color" content="#faf1f5" />
     <meta
       name="description"
       content="Oliver Nguyen — I love to build things. Projects, tools, and experiments."
