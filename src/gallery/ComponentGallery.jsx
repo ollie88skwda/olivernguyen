@@ -6,14 +6,17 @@
 //   · the route is registered behind import.meta.env.DEV in src/Routes.js, so
 //     it does not exist in a production build at all
 //
-// BOTH SHIPPED THEMES (BRAND.md §3: terminal · dark, graph · light) are
-// reachable from one URL. The gallery does NOT fork the token scoping to show
-// them side by side: sakura.css keys dark off `html[data-mode="terminal"]`, and
-// duplicating those hexes onto a wrapper selector would mean two copies of the
-// palette and a contrast gate that only checks one of them. Instead the page
-// drives the real switch through ModeProvider's setMode(), and ?mode= (which
-// ModeProvider already reads) makes each theme a screenshot-able URL:
-//   /_components?mode=terminal   /_components?mode=graph
+// ALL FOUR THEMES (BRAND.md §3 — theme and mode are independent) are reachable
+// from one URL. The gallery does NOT fork the token scoping to show them side by
+// side: duplicating those hexes onto a wrapper selector would mean two copies of
+// the palette and a contrast gate that only checks one of them. Instead the page
+// drives the real attributes — mode through ModeProvider's setMode(), the ladder
+// straight onto <html data-theme> — and mirrors both into the URL, so every
+// combination is a screenshot-able link:
+//   /_components?mode=terminal&theme=dark    (shipped)
+//   /_components?mode=graph&theme=light      (shipped)
+//   /_components?mode=terminal&theme=light   (derived, 04 §6.1)
+//   /_components?mode=graph&theme=dark       (derived, 04 §6.3)
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
@@ -669,32 +672,78 @@ function Specimens() {
 
 /* --------------------------------------------------------------- the page */
 
-const THEMES = [
-  { mode: "terminal", label: "terminal · dark", name: "Night Plum" },
-  { mode: "graph", label: "graph · light", name: "Sakura Paper" },
+const MODES = [
+  { mode: "terminal", label: "terminal" },
+  { mode: "graph", label: "graph" },
 ];
+const LADDERS = [
+  { theme: "light", label: "light", name: "Sakura Paper" },
+  { theme: "dark", label: "dark", name: "Night Plum" },
+];
+
+// BRAND.md §3: theme and mode are independent, so the gallery needs BOTH
+// switches to reach all four combinations. Mode goes through the real
+// ModeProvider; the ladder is written straight onto <html data-theme> here,
+// because no ThemeProvider exists yet (04 §5) and this route is dev-only. Both
+// are mirrored into the URL so every combination is a screenshot-able link:
+//   /_components?mode=terminal&theme=light   /_components?mode=graph&theme=dark
+const readTheme = (mode) => {
+  try {
+    const param = new URLSearchParams(window.location.search).get("theme");
+    if (LADDERS.some((l) => l.theme === param)) return param;
+  } catch {
+    /* ignore */
+  }
+  return mode === "terminal" ? "dark" : "light"; // the two shipped combinations
+};
 
 export function ComponentGallery() {
   const { mode, setMode } = useMode();
-  const current = THEMES.find((t) => t.mode === mode) ?? THEMES[1];
+  const [theme, setTheme] = React.useState(() => readTheme(mode));
+  const ladder = LADDERS.find((l) => l.theme === theme) ?? LADDERS[0];
+
+  React.useEffect(() => {
+    const html = document.documentElement;
+    html.setAttribute("data-theme", theme);
+    const url = new URL(window.location.href);
+    url.searchParams.set("theme", theme);
+    window.history.replaceState(window.history.state, "", url);
+    // leave the attribute off when the gallery unmounts, so the rest of the
+    // site goes back to the shipped data-mode bridge.
+    return () => html.removeAttribute("data-theme");
+  }, [theme]);
 
   return (
     <div className="sakura gx-root">
       <header className="gx-head">
         <div>
           <MonoLabel tone="accent">Component gallery · dev only</MonoLabel>
-          <h1 className="on-section-title">{current.name}</h1>
+          <h1 className="on-section-title">{ladder.name}</h1>
+          <MonoLabel tone="faint">{`${mode} · ${theme}`}</MonoLabel>
+        </div>
+        <div className="gx-head-switch" role="group" aria-label="Mode">
+          {MODES.map((m) => (
+            <Button
+              key={m.mode}
+              size="sm"
+              variant={m.mode === mode ? "primary" : "ghost"}
+              aria-pressed={m.mode === mode}
+              onClick={() => setMode(m.mode)}
+            >
+              {m.label}
+            </Button>
+          ))}
         </div>
         <div className="gx-head-switch" role="group" aria-label="Theme">
-          {THEMES.map((t) => (
+          {LADDERS.map((l) => (
             <Button
-              key={t.mode}
+              key={l.theme}
               size="sm"
-              variant={t.mode === mode ? "primary" : "ghost"}
-              aria-pressed={t.mode === mode}
-              onClick={() => setMode(t.mode)}
+              variant={l.theme === theme ? "primary" : "ghost"}
+              aria-pressed={l.theme === theme}
+              onClick={() => setTheme(l.theme)}
             >
-              {t.label}
+              {l.label}
             </Button>
           ))}
         </div>
