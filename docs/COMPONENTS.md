@@ -162,6 +162,48 @@ interface. What changed for this library:
 **Still open — plumbing, not design:** nothing sets `data-theme` outside `/_components`, and
 `sonner.jsx` still derives its `theme` prop from mode. Both are listed in `docs/THEMES.md` §6.
 
+## Surfaces ported onto the library
+
+### Terminal — R-T1/R-T2, 2026-08-26 (`docs/redesign-research/12-rebuild-plan.md`)
+
+`src/terminal/**` builds on the library. No new component was added; the port reuses these.
+
+| Terminal piece | Now renders | Notes |
+|---|---|---|
+| `StatusBar.jsx` | `Statusline` + `StatuslineSpacer` + `MonoLabel` + `StatusPill` + `Glyph` | §5 density and §7 Martian come from `.on-statusline`. The pane-error, zoom and prefix indicators are pills (§4's pill exception). `·` and `⌘` are glyphs, not literal characters in the JSX |
+| `Palette.jsx` | `.on-overlay` + `.on-panel` + `.on-command-*` + `.on-menu-item` + `Glyph` | sigil is §8's `▸`, was a stray `›`. Selection is `data-selected`, not a bespoke `.sel` colour |
+| `HelpSheet.jsx` | `.on-overlay` + `.on-panel` + `MonoLabel` + `Kbd` + `Button` | every key hint is a `Kbd` (§7) |
+| `panes/Pane.jsx` | `Glyph name="close"` | §8's `✕`, was a bare `×`. `[|] [–] [z]` stay bracket grammar — §8 has no split/zoom mark |
+| `Buffer.jsx` printed lines | unchanged `.ln`, log type role in `terminal.css` | `Log`/`LogLine` is a bounded 880px card; the console is that surface full-bleed, so it takes the type role, not the component |
+
+**Neither overlay uses `Dialog` or `CommandDialog`.** Radix and cmdk would portal the panel out of
+`.term-screen`, take focus and own their own Esc — and `TerminalHome` owns THE ONE window keydown and
+the Esc cascade (`09` §5/P3), which is gate-asserted in `e2e/terminal.spec.js`. The library's VALUES
+port; its state machines do not.
+
+What changed in the values:
+
+- **The console body is `--fs-mono` (13px), was a bespoke 14px.** §7's range is 13–14 and 13 is the
+  ratified point. Consequence: 1440px now fits ~180 columns, so pane splits that used to trip the
+  40ch floor no longer do — `e2e/terminal.spec.js` narrows the window to 960px to test the floor.
+- **Panes are square** (`--r-surface`), were 2px. **Pane gap is `--s-1`**, was an off-ladder 6px.
+- **Both overlay panels lost their drop shadow and 6px radius** — §4 and §9 violations.
+- `terminal.css` declares two terminal-local tokens, the way `components.css` declares `--ctl-h`:
+  `--row` (the cell grid, `calc(var(--fs-mono) * var(--lh-mono))`) and `--term-blink` (§6's one
+  permitted console loop, which has no site-wide token because nothing else blinks).
+- Every `var(--term-*)` read carries the shared-ladder fallback `components.css` uses, so the
+  console is never token-less when `<html data-theme>` has not landed yet.
+- `src/terminal/dev.jsx` and `src/terminal/panes/dev.jsx` now write `<html data-theme>` from
+  `?theme=`, defaulting to dark. Neither harness set the attribute before, so **every** `--term-*`
+  token was undefined in them.
+
+Cascade rule for consumers: `components.css` is imported by the brand components, i.e. after a
+surface stylesheet. Anything overriding a library class must beat `.sakura .on-x` (0-3-0 or higher);
+`terminal.css` uses the compound mount root `.term-screen.sakura`.
+
+Renders: `npx playwright test e2e/terminal-shots.spec.js` — 4 theme × mode combinations at 1440 and
+375, both overlays, the split grid and the coarse-pointer story. Shots land in `e2e/__shots__/`.
+
 ## Follow-up work this created
 
 1. `src/graph/graph.css` sizes its display type for a **condensed** face (`/* condensed display

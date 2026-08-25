@@ -11,14 +11,23 @@
  *                      executor should focus id first, then apply. Refusals
  *                      (main close, limits) surface as statusbar E-errors.
  * tabIndex=-1        — PaneGrid moves DOM focus here on focus actions (AT).
+ *
+ * R-T1: the title row is BRAND.md §7's label role (panes.css) and the close
+ * mark is now <Glyph name="close">, i.e. §8's ratified ✕ — it used to be a bare
+ * × multiplication sign in the JSX. The other three stay bracket-grammar
+ * characters: they are tmux/Herdr notation, not icons, and §8's set has no
+ * mark for "split" or "zoom".
  */
 import React from 'react';
+import { Glyph } from '@/components/brand';
+
+const CLOSE = <Glyph name="close" label="" />;
 
 const BTNS = [
   ['split-right', '[|]', 'split pane right'],
   ['split-down', '[\u2013]', 'split pane down'],
   ['zoom', '[z]', 'zoom pane'],
-  ['close', '[\u00d7]', 'close pane'],
+  ['close', <React.Fragment key="c">[{CLOSE}]</React.Fragment>, 'close pane'],
 ];
 
 export default function Pane({ leaf, focused, zoomed, onClick, onAction, children }) {

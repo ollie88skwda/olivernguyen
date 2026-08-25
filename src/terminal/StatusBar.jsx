@@ -2,9 +2,28 @@
  * src/terminal/StatusBar.jsx — tmux statusbar (C-1.5): `[oN.c]` + window tabs
  * (click = run that window's command) + ⌘K chip (P9: the palette's tappable
  * entry point — the only palette affordance on touch) + mode indicator +
- * pos% + clock. Pane props ({paneCount, zoomed, prefix}) stubbed until X-1.
+ * pos% + clock + pane state.
+ *
+ * R-T1: this is the library's <Statusline> (docs/COMPONENTS.md). BRAND.md §5
+ * licenses density inside the statusline and §7 puts it in Martian Mono — both
+ * now come from `.on-statusline` rather than being restated here.
+ * <StatuslineSpacer> is the right-hand push, the two transient pane states are
+ * <StatusPill> (§4's pill exception, §2's "real states only"), and the `·`
+ * separators and `⌘` key mark are <Glyph> per §8 — they used to be literal
+ * characters in the JSX.
+ *
+ * terminal.css only re-does the geometry the library cannot know: the bar is
+ * the bottom row of a 100dvh grid, so it is square and borderless except on
+ * top. Everything else is the library rule.
  */
 import React, { useEffect, useState } from 'react';
+import {
+  Glyph,
+  MonoLabel,
+  Statusline,
+  StatuslineSpacer,
+  StatusPill,
+} from '@/components/brand';
 
 const fmtTime = () =>
   new Date().toLocaleTimeString([], {
@@ -36,8 +55,8 @@ export default function StatusBar({
   }, []);
 
   return (
-    <div className="term-statusbar" data-testid="term-statusbar">
-      <span className="sb-sess">[oN.c]</span>
+    <Statusline className="term-statusbar" data-testid="term-statusbar">
+      <MonoLabel className="sb-sess">[oN.c]</MonoLabel>
       {windows.length > 0 && (
         <nav className="sb-tabs" aria-label="Windows">
           {windows.map((w) => (
@@ -61,14 +80,21 @@ export default function StatusBar({
           aria-label="Open command palette"
           onClick={onPalette}
         >
-          ⌘K
+          <Glyph name="key" label="" />K
         </button>
       )}
+      <StatuslineSpacer />
       <span className="sb-right">
         {err && (
-          <span className="err sb-err" data-testid="sb-err" role="status">
+          <StatusPill
+            status="error"
+            dot={false}
+            className="sb-err"
+            data-testid="sb-err"
+            role="status"
+          >
             {err}
-          </span>
+          </StatusPill>
         )}
         {paneCount > 1 && (
           <span className="sb-panes" data-testid="sb-panes">
@@ -76,25 +102,33 @@ export default function StatusBar({
           </span>
         )}
         {zoomed && (
-          <span className="sb-zoom" data-testid="sb-zoom">
+          <StatusPill status="warning" dot={false} className="sb-zoom" data-testid="sb-zoom">
             [Z]
-          </span>
+          </StatusPill>
         )}
         {prefix && (
-          <span className="sb-prefix" data-testid="sb-prefix">
+          <StatusPill
+            status="warning"
+            dot={false}
+            className="sb-prefix"
+            data-testid="sb-prefix"
+          >
             {prefix}
-          </span>
+          </StatusPill>
         )}
         <span className="sb-mode" data-testid="sb-mode">
           {mode}
         </span>
-        <span className="sb-dim">· ? help · ⌘K ·</span>
+        <span className="sb-dim">
+          <Glyph name="sep" /> ? help <Glyph name="sep" /> <Glyph name="key" label="" />K{' '}
+          <Glyph name="sep" />
+        </span>
         <span className="sb-pos" data-testid="sb-pos">
           {pos}%
         </span>
-        <span className="sb-dim">·</span>
+        <Glyph name="sep" className="sb-dim" />
         <span className="sb-time">{time}</span>
       </span>
-    </div>
+    </Statusline>
   );
 }

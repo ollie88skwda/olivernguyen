@@ -19,6 +19,7 @@ import { createRoot } from 'react-dom/client';
 import { flushSync } from 'react-dom';
 import '../../styles/sakura.css';
 import '../terminal.css';
+import { MonoLabel, Statusline, StatusPill } from '@/components/brand';
 import PaneGrid, { paneStatus, toastText } from './PaneGrid.jsx';
 import PROGRAMS from './programs.jsx';
 import {
@@ -296,30 +297,39 @@ function Harness() {
           flat={flat}
         />
       </div>
-      <footer className="term-statusbar" data-testid="panes-statusbar">
-        <span className="sb-sess">[panes-dev]</span>
+      {/* mirrors core's StatusBar: the library <Statusline> carries the type,
+          density and tones; terminal.css only re-does the bottom-row geometry */}
+      <Statusline className="term-statusbar" data-testid="panes-statusbar">
+        <MonoLabel className="sb-sess">[panes-dev]</MonoLabel>
         <span className="sb-panes" data-testid="sb-panes">
           {sb.paneCount} pane{sb.paneCount === 1 ? '' : 's'}
         </span>
         {sb.zoomed && (
-          <span className="sb-zoom" data-testid="sb-zoom">
+          <StatusPill status="warning" dot={false} className="sb-zoom" data-testid="sb-zoom">
             [Z]
-          </span>
+          </StatusPill>
         )}
         {sb.prefix && (
-          <span className="sb-prefix" data-testid="sb-prefix">
+          <StatusPill status="warning" dot={false} className="sb-prefix" data-testid="sb-prefix">
             {sb.prefix}
-          </span>
+          </StatusPill>
         )}
         {st.helpOpen && <span className="sb-dim">?help (core's sheet at C-2.2)</span>}
         {st.lastErr && (
-          <span className="err" data-testid="sb-err">
+          <StatusPill status="error" dot={false} className="sb-err" data-testid="sb-err">
             {st.lastErr}
-          </span>
+          </StatusPill>
         )}
-      </footer>
+      </Statusline>
     </main>
   );
 }
+
+// R-T2: same ladder plumbing as src/terminal/dev.jsx — without a data-theme
+// attribute sakura.css declares no --term-* tokens at all.
+document.documentElement.setAttribute(
+  'data-theme',
+  new URLSearchParams(window.location.search).get('theme') === 'light' ? 'light' : 'dark',
+);
 
 createRoot(document.getElementById('root')).render(<Harness />);

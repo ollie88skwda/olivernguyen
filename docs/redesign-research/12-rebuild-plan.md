@@ -6,13 +6,24 @@ Precondition: library audited complete + rulebook-matching (see COMPONENTS.md, B
 ## CURRENT STATUS / NEXT TASK  ← executors MUST keep this block updated
 
 ```
-Last updated : exec-chrome, R-C1 + R-C2 done
+Last updated : exec-terminal, R-T1 + R-T2 done
 exec-chrome     : R-C1 ✅ R-C2 ✅ · next = R-C3 (chrome rebuild)
 exec-graph-home : R-G1 IN PROGRESS (graph.css + surface components → library/brand) · then R-G2
-exec-terminal   : R-T1 IN PROGRESS (token/surface port + panes) · then R-T2
+exec-terminal   : R-T1 ✅ R-T2 ✅ · next = R-T3, waiting on GATE CHROME
 Integration     : blocked until chrome gate + both home gates pass
 Blockers        : exec-terminal R-T3 and exec-graph-home R-G3 wait on GATE CHROME (R-C4) — not ticked yet
-Notes for Oliver: —
+Notes for Oliver:
+  1. exec-terminal moved a gate assertion. The console body went from a bespoke
+     14px to the library's --fs-mono (13px, BRAND.md §7's ratified point inside
+     the 13–14 range), so 1440px now fits ~180 columns and the second pane split
+     no longer trips the 40ch floor at that width. e2e/terminal.spec.js narrows
+     to 960px before asserting the refusal. The RULE under test is unchanged —
+     only the width that trips it moved.
+  2. FOR EXEC-CHROME: e2e/mode.spec.js "toggle present on a chromed legacy
+     route" fails on the current working tree (#sc-pages-menu not found).
+     src/chrome/**, not terminal.
+  3. e2e/legacy-visual.spec.js /permit still fails — pre-existing baseline
+     drift, already logged as COMPONENTS.md follow-up 3.
 ```
 
 Update rules: tick §8 checkboxes as tasks complete; rewrite this block each session; human questions → "Notes for Oliver".
@@ -65,8 +76,8 @@ Replace bespoke surface CSS with existing library components + `components.css` 
 - [ ] **R-G2** all four themes render clean at 1440/375; reduced-motion OK
 - [ ] **R-G3** mount through new chrome (post GATE CHROME) → **GATE GRAPH-HOME ✅**
 ### exec-terminal
-- [ ] **R-T1** TerminalHome + panes/statusline ported to brand pieces (log, statusline, glyph, prompt-bar); terminal.css → tokens
-- [ ] **R-T2** all four themes + keyboard/mobile story render clean at 1440/375
+- [x] **R-T1** TerminalHome + panes/statusline ported to brand pieces (log, statusline, glyph, prompt-bar); terminal.css → tokens — inventory in COMPONENTS.md §"Surfaces ported onto the library"
+- [x] **R-T2** all four themes + keyboard/mobile story render clean at 1440/375 — `e2e/terminal-shots.spec.js`, 14 renders
 - [ ] **R-T3** mount through new chrome (post GATE CHROME) → **GATE TERMINAL ✅**
 ### Integration (exec-chrome leads)
 - [ ] **R-I1** home + chrome together, four themes, full suite + ship-check → **REBUILD DONE ✅**

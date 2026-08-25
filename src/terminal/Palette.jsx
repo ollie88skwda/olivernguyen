@@ -3,8 +3,23 @@
  * Fuzzy via the shared matcher; empty query → suggestions. Enter/click runs
  * the intent (TerminalHome closes + executes). No window listeners here —
  * the ⌘K chord lives in TerminalHome's ONE window keydown (P3).
+ *
+ * R-T1: the SURFACE is the library's (docs/COMPONENTS.md) — `.on-overlay`
+ * backdrop, `.on-panel` (§4 radius 0, §9 hairline and NO shadow; the old panel
+ * was 6px with a 24/64 drop shadow, a straight brand violation) and the
+ * `.on-command-*` row / input / list values the shipped <Command> primitive
+ * uses. Rows are `.on-menu-item`, so selection is the library's
+ * `data-selected` wash rather than a bespoke `.sel` colour. The prompt sigil
+ * is <Glyph name="prompt"> — §8's ▸, replacing a `›` that was never in the
+ * ratified set.
+ *
+ * It is NOT the <CommandDialog> primitive: cmdk owns filtering, selection and
+ * focus, and this palette's keyboard model (Ctrl-n/p, the Esc cascade handoff
+ * to TerminalHome, intents-driven matching) is gate-asserted in
+ * e2e/terminal.spec.js. The library's VALUES port; its state machine does not.
  */
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Glyph } from '@/components/brand';
 import { matchTerminalIntents, suggestedIntents } from './lib/intents.js';
 
 export default function Palette({ open, onClose, onRun }) {
@@ -52,18 +67,18 @@ export default function Palette({ open, onClose, onRun }) {
   return (
     <div className="term-overlay" data-testid="term-palette">
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
-      <div className="backdrop" onClick={onClose} />
+      <div className="backdrop on-overlay" onClick={onClose} />
       <div
-        className="panel palette-panel"
+        className="panel palette-panel on-panel on-command"
         role="dialog"
         aria-modal="true"
         aria-label="Command palette"
       >
-        <div className="prow">
-          <span className="psigil">›</span>
+        <div className="prow on-command-row">
+          <Glyph name="prompt" className="psigil on-command-sigil" label="" />
           <input
             ref={inputRef}
-            className="palette-input"
+            className="palette-input on-command-input"
             type="text"
             value={query}
             placeholder="type a command… try: replay the week"
@@ -77,15 +92,18 @@ export default function Palette({ open, onClose, onRun }) {
             onKeyDown={onKeyDown}
           />
         </div>
-        <ul className="palette-list" role="listbox" aria-label="Commands">
-          {items.length === 0 && <li className="empty">no matching commands</li>}
+        <ul className="palette-list on-command-list" role="listbox" aria-label="Commands">
+          {items.length === 0 && (
+            <li className="empty on-command-empty">no matching commands</li>
+          )}
           {items.map((it, i) => (
             /* eslint-disable-next-line jsx-a11y/click-events-have-key-events */
             <li
               key={it.id}
               role="option"
               aria-selected={i === sel}
-              className={i === sel ? 'sel' : ''}
+              data-selected={i === sel ? 'true' : undefined}
+              className={'on-menu-item on-command-item' + (i === sel ? ' sel' : '')}
               onClick={() => onRun(it)}
               onMouseMove={() => setSel(i)}
             >

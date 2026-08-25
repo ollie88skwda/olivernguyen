@@ -355,11 +355,18 @@ test.describe("terminal core — Gate C1 (prompt, commands, sections, boot)", ()
       "day: expected 1-7",
     );
 
+    // R-T1: the console body is now the library's --fs-mono (13px, BRAND.md
+    // §7's ratified point inside the 13–14 range) instead of a bespoke 14px, so
+    // 1280px fits ~164 columns and a second split of main clears the 40ch floor
+    // on its own. Narrow the window first — the rule under test is the FLOOR,
+    // not the pixel width that happened to trip it. 960px stays above the
+    // 880px flat breakpoint, so this is still the split path, just a refused one.
+    await page.setViewportSize({ width: 960, height: 800 });
     await type("open mac-agent");
-    // 1280px + replay pane already open → another right-split of main would
-    // break the 40ch floor: refused with a statusbar E-error, dossier falls
-    // back into the session buffer (P7/P9; wide-screen split path is covered
-    // in mode-roundtrip.spec)
+    // replay pane already open → another right-split of main would break the
+    // 40ch floor: refused with a statusbar E-error, dossier falls back into the
+    // session buffer (P7/P9; wide-screen split path is covered in
+    // mode-roundtrip.spec)
     await expect(page.getByTestId("sb-err")).toContainText("E96");
     await expect(main.locator(".blk").last()).toContainText(
       "MCP toolbelt for macOS",

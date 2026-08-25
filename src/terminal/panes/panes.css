@@ -1,14 +1,23 @@
 /* ============================================================================
  * src/terminal/panes/panes.css — pane chrome (N-2.1/N-2.2, 09 §C grammar).
- * ALL color from sakura.css tokens — zero hexes (terminal.css rule). Herdr
- * chrome grammar: panes are separated cards (gaps + 1px borders), accent
- * border marks focus, unfocused content dims to .85. Box-drawing stays inside
- * title rows — CSS borders span flex edges, box glyphs don't (09 §B).
- * Zoom = CSS visibility only; the tree is untouched (P7).
+ *
+ * R-T1: ported onto the token layer with the rest of the terminal surface.
+ * Herdr chrome grammar is unchanged — panes are separated cards (gaps + 1px
+ * hairlines), the accent border marks focus, unfocused content dims — but
+ * every value is now a `var(--token)`:
+ *   §4  a pane is a SURFACE, so radius 0 (--r-surface). It used to be 2px,
+ *       which BRAND.md §4 does not define ("a rounded log pane is a
+ *       contradiction").
+ *   §5  the gap is --s-1; 6px was not a rung on the 4px ladder.
+ *   §6  the resize transition is the 140ms state curve, not a bespoke 120ms.
+ *   §7  a pane title is a LABEL, so it takes the Martian label role, matching
+ *       the statusline it sits above.
+ * Box-drawing stays inside title rows — CSS borders span flex edges, box
+ * glyphs don't (09 §B). Zoom = CSS visibility only; the tree is untouched (P7).
  * ========================================================================== */
 
 .term-panes {
-  --pane-gap: 6px;
+  --pane-gap: var(--s-1);
   flex: 1;
   display: flex;
   min-width: 0;
@@ -54,10 +63,10 @@
   min-height: 0;
 }
 
-/* resize: ratio changes animate — motion-gated (09 §C sketch) */
+/* resize: ratio changes animate on §6's state curve — motion-gated */
 @media (prefers-reduced-motion: no-preference) {
   .split-a {
-    transition: flex-basis 120ms ease;
+    transition: flex-basis var(--dur-state) var(--ease-state);
   }
 }
 
@@ -71,7 +80,8 @@
   min-height: 0;
   background: var(--bg);
   border: 1px solid var(--border);
-  border-radius: 2px;
+  border-radius: var(--r-surface);
+  transition: border-color var(--dur-state) var(--ease-state);
 }
 .pane.focused {
   border-color: var(--accent);
@@ -91,7 +101,11 @@
   padding: 0 1ch;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
-  font-size: 12px;
+  /* §7: a pane title is a label, same role as the statusline */
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
   color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -116,6 +130,10 @@
 .pane-btns button {
   color: var(--text-faint);
   white-space: pre;
+  border-radius: var(--r-control);
+  transition:
+    color var(--dur-state) var(--ease-state),
+    background-color var(--dur-state) var(--ease-state);
 }
 .pane-btns button:hover {
   color: var(--accent-hi);
@@ -148,18 +166,23 @@
   z-index: 2;
 }
 
-/* ---------- auto-split toast (bottom-right, Herdr grammar) -------------- */
+/* ---------- auto-split toast (bottom-right, Herdr grammar) --------------
+ * §4: a toast is a surface, so square. §7: it is one dense label line, so it
+ * takes the label role the statusline uses. */
 
 .pane-toast {
   position: absolute;
   right: calc(var(--pane-gap) + 2ch);
-  bottom: calc(var(--pane-gap) + 6px);
+  bottom: calc(var(--pane-gap) + var(--s-2));
   z-index: 3;
-  padding: 4px 2ch;
+  padding: var(--s-1) 2ch;
   background: var(--surface-2);
-  border: 1px solid var(--border-strong);
-  border-radius: 2px;
-  font-size: 12px;
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: var(--r-surface);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
   color: var(--text-muted);
 }
 .pane-toast .acc {
