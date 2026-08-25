@@ -96,7 +96,7 @@ rather than a generic UI part.
 | `Statusline` / `StatuslineSpacer` | — | §5 density · §7 Martian |
 | `StatusPill` | `status` `neutral\|live\|routing\|warning\|error`, `dot` | §4 — one of the only two components allowed 999px · §2 jade means "it worked" |
 | `PromptBar` | `placeholder` `onSubmit`, native input props | §4 3px control · §8 `▸` sigil · §6 140ms focus |
-| `NodeCard` | `kicker` `title` `description` `tech[]` `active` `as` | §4 radius 0 · §7 display title · §9 hairline. Reads `--node-*` **only** under `html[data-mode="graph"]` — see "Still open" below |
+| `NodeCard` | `kicker` `title` `description` `tech[]` `active` `as` | §4 radius 0 · §7 display title · §9 hairline. Reads `--node-*` **only** under `html[data-mode="graph"]` — they describe the canvas (`THEMES.md` §3) |
 | `TechToken` / `TechRow` | — | §4 3px · §5 8px inline token gap · §2 low-contrast so a stack list is not the loudest thing on screen |
 | `Dossier` / `DossierHeader` | `kicker` `title` `meta` `onClose` | §9 the only component that lifts — and only in light; dark uses `--border-strong` instead (D-15) |
 | `StatBlock` / `StatRow` | `value` `label` | §7 display figure + Martian label |
@@ -137,8 +137,8 @@ and what was rejected: `docs/DECISIONS.md` D-12…D-18. Summary of what changed 
 
 ### Closed 2026-08-26 — the four themes
 
-**The light-terminal and dark-graph themes now exist** (`BRAND.md` §3, values and contrast tables in
-`docs/redesign-research/04-sakura-palette.md` §6). Theme and mode are independent attributes:
+**All four themes ship** (D-22). The scheme is `docs/THEMES.md`; values and contrast tables are
+`docs/redesign-research/04-sakura-palette.md` §6. Theme and mode are independent attributes:
 `<html data-theme="light|dark">` picks the ladder, `<html data-mode="graph|terminal">` picks the
 interface. What changed for this library:
 
@@ -146,14 +146,14 @@ interface. What changed for this library:
   `html[data-mode="graph"]` — that guard is about the *canvas*, not about a missing theme: a node
   card rendered inside the terminal takes the shared surface ladder on purpose.
 - `--term-*` is declared on both ladders too, under `[data-mode="terminal"]`.
-- `--border-strong` and `--error-hi` gained light values, but **scoped to terminal · light only**.
-  `components.css` reads `var(--border-strong, var(--text-faint))` for control hairlines, so putting
-  `--border-strong` on the light core would restyle shipped graph · light controls (5.53:1 → 3.51:1
-  borders). Promoting both to the light core is a live decision — 04 §6.5 item 10.
+- `--border-strong` and `--error-hi` gained light values, **scoped to terminal · light only** and
+  staying that way (D-21). Keep every `var(--border-strong, …)` fallback chain intact.
+- `Log` gained one theme-scoped rule each way: the light active row is marked by a hairline and 500
+  weight rather than a loud wash (D-20), and the active row's timestamp steps from `--text-faint`
+  to `--term-log` on both ladders (D-22).
 
-**Still open:** nothing sets `data-theme` yet. `src/styles/sakura.css` carries one back-compat
-clause (`html:not([data-theme])[data-mode="terminal"]`) so the shipped terminal stays dark; a
-`ThemeProvider` (and `sonner.jsx`, which still derives its `theme` prop from mode) is the next job.
+**Still open — plumbing, not design:** nothing sets `data-theme` outside `/_components`, and
+`sonner.jsx` still derives its `theme` prop from mode. Both are listed in `docs/THEMES.md` §6.
 
 ## Follow-up work this created
 
@@ -174,7 +174,7 @@ clause (`html:not([data-theme])[data-mode="terminal"]`) so the shipped terminal 
 ## Verification
 
 ```bash
-node scripts/contrast-check.mjs            # 181/181 pairs pass, across all four themes
+node scripts/contrast-check.mjs            # 183/183 pairs pass, across all four themes
 npm run test:run                           # 353 unit tests
 npx playwright test e2e/gallery-shots.spec.js
 ```

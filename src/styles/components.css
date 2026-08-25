@@ -1204,6 +1204,13 @@
   background: var(--term-active-line, var(--selection));
   color: var(--text);
 }
+/* The timestamp steps up a tier on the executing row. --text-faint measures
+ * 4.33:1 on Night Plum's active wash — the one pair in the log that missed 4.5
+ * — and the log tier clears it on both ladders (5.84 dark, 6.47 light). Gated
+ * in scripts/contrast-check.mjs; ledger in 04 §6.5 note 9. */
+.sakura .on-log-line[data-state="active"] .on-log-time {
+  color: var(--term-log, var(--text-muted));
+}
 .sakura .on-log-line[data-state="success"] {
   background: var(--term-success-line, var(--surface-2));
   color: var(--success);

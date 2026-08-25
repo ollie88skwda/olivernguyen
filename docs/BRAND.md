@@ -9,6 +9,7 @@ Use these tokens. Do not invent new values. If something you need is not defined
 ask — adding a token is a decision, not an implementation detail.
 
 - Decision history and rationale: `docs/DECISIONS.md`.
+- Theme scheme — the four combinations, switching, scoping, verification: `docs/THEMES.md`.
 - Colour science, contrast tables, derivations: `docs/redesign-research/04-sakura-palette.md`.
 - Component inventory and token-to-file index: `docs/COMPONENTS.md`.
 
@@ -98,12 +99,15 @@ re-propose neutral-base palettes. **Night-only** (dropping the paper theme) was 
 
 Mode and theme are **independent switches**. Theme does not follow mode.
 
+**The scheme — switching, scoping, per-theme tokens, verification — lives in `docs/THEMES.md`.**
+This section stays the brand statement; that file is the reference.
+
 | Combination | Status |
 |---|---|
 | terminal · dark (Night Plum) | shipped |
 | graph · light (Sakura Paper) | shipped |
-| terminal · **light** | **derived** 2026-08-26 — `04-sakura-palette.md` §6.1/§6.2 |
-| graph · **dark** | **derived** 2026-08-26 — `04-sakura-palette.md` §6.3/§6.4 |
+| terminal · **light** | **shipped** 2026-08-26 (D-22) — `04-sakura-palette.md` §6.1/§6.2 |
+| graph · **dark** | **shipped** 2026-08-26 (D-22) — `04-sakura-palette.md` §6.3/§6.4 |
 
 **Derivation rule for the two new themes:** hold the hue slice, move only the ladder position.
 Light terminal = plum ink on sakura paper; because it cannot lean on glow, the log leans on
@@ -113,9 +117,8 @@ all four combinations are enforced by `scripts/contrast-check.mjs`.
 
 **Switching:** the ladder is keyed off `<html data-theme="light|dark">`, the interface off
 `<html data-mode="graph|terminal">` — two attributes, never one implying the other. `.sakura` with
-no `data-theme` is the light ladder, so sakura UI is never token-less. One back-compat clause in
-`src/styles/sakura.css` keeps `data-mode="terminal"` dark until a theme switch is wired; it is
-marked for deletion at that point (04 §5).
+no `data-theme` is the light ladder, so sakura UI is never token-less. Full contract and the
+remaining plumbing: `docs/THEMES.md` §2 and §6.
 
 First-visit default: follow the OS `prefers-color-scheme`; mode defaults per `05-v1-spec.md` §6.2.
 An explicit user choice always wins and persists.
@@ -288,7 +291,7 @@ initials at once; the dot is the same colour as the routing pulse.
 ```
 targets   phone: terminal + graph-as-list · desktop ≥768 fine-pointer: full canvas
 colour    sakura · 60/30/10 · jade = "it worked" only
-themes    4 independent combinations, all derived
+themes    4 independent combinations, all shipped · scheme in docs/THEMES.md
           data-theme = ladder · data-mode = interface
 radius    0 surfaces · 3 controls · 999 toggles, pills and the radio only
 controls  40 default · 32 small · both 44 on coarse pointer · 24 checkbox + switch

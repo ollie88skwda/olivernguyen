@@ -8,10 +8,15 @@ If you want to reverse one of these, say so explicitly — do not quietly re-ope
 
 ## 2026-08-26 · The other two themes
 
+> **The theme scheme lives in `docs/THEMES.md`.** That file is the reference for how the four
+> themes are switched, scoped and verified. This block is the *why*; go there for the *what*.
+> Colour philosophy stays in `docs/BRAND.md`; the derivation maths stays in
+> `docs/redesign-research/04-sakura-palette.md` §6.
+
 Derived by the theme pass on `feat/component-library`, under the rule `BRAND.md` §3 had already
 ratified ("hold the hue slice, move only the ladder position"). No new hue, no rejected direction
-re-opened. Values, OKLCH and full contrast tables: **`docs/redesign-research/04-sakura-palette.md`
-§6**. Not yet reviewed by Oliver against live renders — the screenshots exist, the sign-off does not.
+re-opened. **Reviewed by Oliver on the live `/_components` gallery in all four combinations and
+accepted (D-22).**
 
 ### D-19 · Theme and mode are two attributes, not one
 `<html data-theme="light|dark">` picks the ladder; `<html data-mode="graph|terminal">` picks the
@@ -33,12 +38,26 @@ would need. One theme-scoped rule in `components.css`; no other theme changes.
 *Rejected:* a louder wash with `--error`/`--success` swapped for deeper variants (invents colour to
 solve a lightness problem); marking the row with `--accent` text (breaks the log's colour grammar).
 
-### D-21 · Light `--border-strong` and `--error-hi` are scoped to the terminal, pending a call
-Both exist on the light ladder now, but **only** under `data-mode="terminal"`, because
-`components.css` reads `var(--border-strong, var(--text-faint))` for control hairlines — putting
-`--border-strong` on the light core would restyle shipped graph · light controls (5.53:1 → 3.51:1
-borders). That is a brand decision and is **open**: promoting both to the light core is what closes
-the `COMPONENTS.md` "still open" item properly. See 04 §6.5 item 10.
+### D-21 · Light `--border-strong` and `--error-hi` stay scoped to the terminal
+Both exist on the light ladder, but **only** under `data-mode="terminal"`. Promoting them to the
+light core would restyle shipped graph · light controls — `components.css` reads
+`var(--border-strong, var(--text-faint))` for control hairlines, so the checkbox, switch and
+field-hover borders would go 5.53:1 → 3.51:1 for no reason anyone asked for.
+*Decided:* leave them scoped. Consumers keep their `var(--token, fallback)` chains, which are all
+contrast-clean today. Reversing this is a one-line move if a light surface ever needs the strong
+hairline outside the console. Closes the `COMPONENTS.md` "still open" item.
+
+### D-22 · All four themes shipped
+Reviewed by Oliver in the gallery, all four combinations, and accepted without changes — including
+D-20's hairline marker on the light log. `BRAND.md` §3's status table reads *shipped* on all four
+rows. The scheme is frozen in `docs/THEMES.md`; the remaining work is plumbing, not design, and is
+listed in that file's §6.
+*Also closed here:* the log timestamp steps from `--text-faint` to `--term-log` on the executing
+row. Faint measured **4.33:1** on Night Plum's active wash — the only pair in the log under 4.5 —
+and the log tier clears it on both ladders (5.84 dark, 6.47 light). One rule in `components.css`,
+no palette change, now gated. §2's locked values were not touched.
+*Rejected:* lifting Night Plum's active wash to fix it (changes a locked §2 value to solve a
+problem one selector solves); leaving it as documented decorative (a timestamp is text).
 
 ---
 
@@ -107,6 +126,7 @@ text line.
 ### Not decided here
 - The **light-terminal and dark-graph themes** remain to derive, and are now the next job
   (follow-on 1 below). `--border-strong` and `--error-hi` gain light-mode values with them.
+  *→ Done 2026-08-26, D-19 … D-22. Scheme: `docs/THEMES.md`.*
 - `src/graph/graph.css` still sizes its display type for the condensed face Big Shoulders.
 
 ---

@@ -162,10 +162,14 @@ const terminalMode = ({ washesCarryState }) => {
   check("--term-log", "--term-active-line", TEXT);
   check("--term-prompt", "--term-active-line", TEXT);
   check("--text", "--term-active-line", TEXT);
+  // The timestamp on the executing row. It renders in --term-log there, not the
+  // faint tier, precisely because faint misses 4.5 on Night Plum's wash
+  // (components.css `.on-log-line[data-state="active"] .on-log-time`).
+  check("--term-log", "--term-active-line", TEXT);
   if (!washesCarryState) return;
-  // LIGHT ONLY. Dark's washes are loud enough that --text-faint (4.33) and
-  // --error (4.10) fall under 4.5 on --term-active-line; that is shipped,
-  // locked, and documented as decorative-on-active (04 §6.5 note 3). The light
+  // LIGHT ONLY. Dark's washes are loud enough that --error measures 4.10 on
+  // --term-active-line; that is a locked §2 value and the log never renders
+  // --error text on the active row (states are mutually exclusive). The light
   // washes were derived the other way round — quiet enough that every state
   // colour AND the dim tier clear 4.5 on all three of them — so the gate holds
   // light to the stricter bar it was built to meet.

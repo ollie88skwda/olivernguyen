@@ -447,17 +447,18 @@ Non-text UI and signal pairs:
    1.93:1 on its page — fine there, because dark's emphasis comes from the wash and the glow.
    Light terminal has neither, so its strong hairline is the value the light ladder already
    ratified for non-text UI (`--node-border` `#a97188`, 3.51:1). Same value, second role.
-9. **Dark `--text-faint` / `--error` on `--term-active-line` are below 4.5 (4.33 / 4.10).** This is
-   pre-existing and shipped: §2.3 only ever measured the log, prompt and text tiers on that wash.
-   Not reopened here (§2 is locked); the gate holds *light* to the stricter bar it was built to
-   meet and leaves dark on its documented §2.3 pair set. Worth a decision before v1 if timestamps
-   are ever rendered on the active row.
-10. **Light `--border-strong` and `--error-hi` are scoped to terminal · light, not to the light
-    core.** `src/styles/components.css` reads `var(--border-strong, var(--text-faint))` for control
+9. **The log timestamp steps up a tier on the executing row (D-22).** `--text-faint` measures
+   **4.33:1** on Night Plum's `--term-active-line` — the one pair in the log under 4.5, and a real
+   one, because the timestamp does render there. Fixed in `components.css`, not in the palette: the
+   active row's timestamp uses `--term-log`, which clears on both ladders (5.84 dark, 6.47 light)
+   and is now gated. §2's locked values were not touched. `--error` on that same wash measures 4.10
+   and is left alone — log states are mutually exclusive, so error text never lands on the active
+   row.
+10. **Light `--border-strong` and `--error-hi` stay scoped to terminal · light (D-21).**
+    `src/styles/components.css` reads `var(--border-strong, var(--text-faint))` for control
     hairlines, so declaring `--border-strong` on the light core would change *shipped* graph · light
-    rendering (checkbox / switch / field-hover borders 5.53:1 → 3.51:1). That is a brand decision,
-    not part of deriving a theme. Promoting both to the light core closes the `COMPONENTS.md`
-    "Still open" item properly and should be taken as one.
+    rendering (checkbox / switch / field-hover borders 5.53:1 → 3.51:1) for no reason anyone asked
+    for. Decided: leave scoped, keep the fallback chains.
 
 ---
 
