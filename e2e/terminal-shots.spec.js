@@ -1,4 +1,9 @@
-// e2e/terminal-shots.spec.js — exec-terminal Gate R-T2 (12-rebuild-plan §8).
+// e2e/terminal-shots.spec.js — exec-terminal Gates R-T2 and R-T3
+// (docs/redesign-research/12-rebuild-plan.md §8).
+//
+// R-T2 shoots the SURFACE on its own dev harness; R-T3 (the block at the
+// bottom) shoots it mounted through the rebuilt SiteChrome on the real "/"
+// route, which is what GATE TERMINAL signs off.
 //
 // Dev-only: screenshots the ported terminal surface in ALL FOUR theme × mode
 // combinations at 1440px and 375px, plus both overlays, and fails on any
@@ -170,3 +175,124 @@ for (const { theme } of COMBOS.filter((c) => c.mode === "terminal")) {
     expect(errors, `console errors in panes @ ${theme}`).toEqual([]);
   });
 }
+
+/* ==========================================================================
+ * R-T3 — TerminalHome mounted through the rebuilt SiteChrome, on "/".
+ *
+ * This is GATE TERMINAL. The harness above proves the surface; these prove the
+ * integration, and everything they assert is a way the fixed 64px bar can
+ * break a 100dvh grid that is not allowed to scroll the page (09 §3.1.1):
+ *   - the bar's own offset glue (chrome.css `html[data-mode="terminal"]
+ *     .term-screen { padding-top }`) actually lands,
+ *   - the statusbar, the bottom row of that grid, is still fully on screen,
+ *   - the page still does not scroll behind the fixed bar,
+ *   - the bar's portalled DropdownMenu opens OVER the console,
+ *   - theme and mode round-trip without unmounting or losing the ladder (D-19).
+ * ========================================================================== */
+
+const CHROME_H = 64; // .site-chrome-bar height — chrome.css, var(--s-16)
+
+async function bootRoute(page, theme) {
+  await page.goto(`/?mode=terminal&theme=${theme}`, { waitUntil: "networkidle" });
+  await expect(page.locator("h1.name")).toHaveText("Oliver Nguyen", {
+    timeout: 20_000,
+  });
+  await page.evaluate(() => document.fonts.ready);
+  await page.waitForTimeout(300);
+}
+
+for (const theme of ["dark", "light"]) {
+  for (const vp of VIEWPORTS) {
+    test(`terminal through chrome: ${theme} @ ${vp.id}`, async ({ page }) => {
+      const errors = watchErrors(page);
+      await page.setViewportSize({ width: vp.w, height: vp.h });
+      await bootRoute(page, theme);
+
+      await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+      await expect(page.locator(".site-chrome-bar")).toBeVisible();
+
+      // the glue landed: the console clears the bar rather than hiding under it
+      const screen = page.locator(".term-screen");
+      expect(
+        await screen.evaluate((el) => parseFloat(getComputedStyle(el).paddingTop)),
+      ).toBe(CHROME_H);
+      const firstRow = await page.locator(".pane-title").first().boundingBox();
+      expect(firstRow.y, "pane title must sit below the bar").toBeGreaterThanOrEqual(
+        CHROME_H,
+      );
+
+      // the bottom row of the 100dvh grid is still fully on screen
+      const bar = await page.getByTestId("term-statusbar").boundingBox();
+      expect(bar.y + bar.height).toBeLessThanOrEqual(vp.h + 1);
+
+      // §3.1.1: the page itself never scrolls while the terminal is mounted
+      expect(
+        await page.evaluate(
+          () =>
+            document.documentElement.scrollHeight -
+            document.documentElement.clientHeight,
+        ),
+      ).toBeLessThanOrEqual(0);
+
+      await page.screenshot({
+        path: `e2e/__shots__/terminal-chrome-${theme}-${vp.id}.png`,
+      });
+      expect(errors, `console errors through chrome: ${theme} @ ${vp.id}`).toEqual([]);
+    });
+  }
+}
+
+test("chrome's portalled pages menu opens over the console", async ({ page }) => {
+  const errors = watchErrors(page);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await bootRoute(page, "dark");
+
+  await page.getByRole("button", { name: /pages menu/i }).click();
+  const menu = page.locator(".sc-menu[role='menu']");
+  await expect(menu).toBeVisible();
+  // it portals to <body>, so it must re-scope .sakura or it renders in legacy
+  // navy/gold on top of Night Plum (COMPONENTS.md, PortalScope)
+  expect(
+    await menu.evaluate((el) => !!el.closest(".sakura, .sakura-portal")),
+  ).toBe(true);
+  await page.screenshot({ path: "e2e/__shots__/terminal-chrome-menu.png" });
+  await page.keyboard.press("Escape");
+  await expect(menu).toBeHidden();
+  expect(errors).toEqual([]);
+});
+
+test("theme and mode round-trip over a mounted terminal (D-19)", async ({ page }) => {
+  const errors = watchErrors(page);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await bootRoute(page, "dark");
+
+  // scope to the bar: the printed console CTAs answer to "graph" too
+  const bar = page.locator(".site-chrome-bar");
+  const modeToggle = bar.getByRole("group", { name: "Site mode" });
+
+  // theme flips, mode does not — two independent attributes
+  await bar.getByRole("button", { name: /^switch to .* theme$/i }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  await expect(page.locator("html")).toHaveAttribute("data-mode", "terminal");
+  await expect(page.getByTestId("terminal-home")).toBeVisible();
+  // the console ladder followed the theme, not the mode
+  expect(
+    await page.evaluate(() =>
+      getComputedStyle(document.querySelector(".term-screen"))
+        .getPropertyValue("--term-log")
+        .trim(),
+    ),
+  ).not.toBe("");
+
+  // mode flips to graph and back; terminal remounts fresh (P3)
+  await modeToggle.getByRole("button", { name: "GRAPH" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-mode", "graph");
+  await expect(page.getByTestId("terminal-home")).toHaveCount(0);
+  await modeToggle.getByRole("button", { name: "TERM" }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-mode", "terminal");
+  await expect(page.locator("h1.name")).toHaveText("Oliver Nguyen", {
+    timeout: 20_000,
+  });
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  expect(errors).toEqual([]);
+});

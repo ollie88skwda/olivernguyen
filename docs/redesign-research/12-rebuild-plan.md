@@ -6,12 +6,12 @@ Precondition: library audited complete + rulebook-matching (see COMPONENTS.md, B
 ## CURRENT STATUS / NEXT TASK  ← executors MUST keep this block updated
 
 ```
-Last updated : exec-chrome, R-C3 + R-C4 done — GATE CHROME ✅
-exec-chrome     : R-C1 ✅ R-C2 ✅ R-C3 ✅ R-C4 ✅ · next = R-I1 (Integration), once both home gates pass
+Last updated : exec-terminal, R-T3 done — GATE TERMINAL ✅
+exec-chrome     : R-C1 ✅ R-C2 ✅ R-C3 ✅ R-C4 ✅ · next = R-I1 (Integration), once GATE GRAPH-HOME passes
 exec-graph-home : R-G1 IN PROGRESS (graph.css + surface components → library/brand) · then R-G2
-exec-terminal   : R-T1 ✅ R-T2 ✅ · next = R-T3 — UNBLOCKED, mount through the new chrome
-Integration     : waiting on GATE GRAPH-HOME + GATE TERMINAL
-Blockers        : none — GATE CHROME is ticked, R-T3 and R-G3 may proceed
+exec-terminal   : R-T1 ✅ R-T2 ✅ R-T3 ✅ — GATE TERMINAL ✅, nothing outstanding
+Integration     : waiting on GATE GRAPH-HOME only
+Blockers        : none
 Notes for Oliver:
   1. exec-terminal moved a gate assertion. The console body went from a bespoke
      14px to the library's --fs-mono (13px, BRAND.md §7's ratified point inside
@@ -24,6 +24,14 @@ Notes for Oliver:
      of the retired #sc-pages-menu id.
   3. e2e/legacy-visual.spec.js /permit still fails — pre-existing baseline
      drift, already logged as COMPONENTS.md follow-up 3.
+  3b. FOR EXEC-CHROME: e2e/chrome.spec.js "§10 wordmark: oN.c with the dot in
+     --accent" fails on the current working tree. src/chrome/** — not seen
+     from the terminal side, flagged only.
+  3c. Pre-existing, NOT introduced by R-T3: the terminal's overlays sit at
+     z-index 80 and the chrome bar at 1000, so the palette and help backdrops
+     do not dim the bar and it stays clickable behind a modal. Both panels
+     open below the bar so nothing is occluded. Changing it means moving the
+     bar's z-index, which is exec-chrome's file and a decision, not a fix.
   4. FOR EXEC-GRAPH-HOME (not a blocker for chrome): the working tree throws
      React warnings for `titleAs` / `titleClassName` reaching a DOM element
      from src/graph/components/GraphList.jsx:65, which fails
@@ -109,6 +117,11 @@ Replace bespoke surface CSS with existing library components + `components.css` 
 ### exec-terminal
 - [x] **R-T1** TerminalHome + panes/statusline ported to brand pieces (log, statusline, glyph, prompt-bar); terminal.css → tokens — inventory in COMPONENTS.md §"Surfaces ported onto the library"
 - [x] **R-T2** all four themes + keyboard/mobile story render clean at 1440/375 — `e2e/terminal-shots.spec.js`, 14 renders
-- [ ] **R-T3** mount through new chrome (post GATE CHROME) → **GATE TERMINAL ✅**
+- [x] **R-T3** mount through new chrome (post GATE CHROME) → **GATE TERMINAL ✅**
+      — `e2e/terminal-shots.spec.js` §R-T3: the console on "/" in both ladders at 1440 and 375, the
+      64px offset glue, the statusbar staying on screen, `documentElement` still unscrollable, the
+      portalled pages menu over the console inside `.sakura`, and theme × mode round-tripping
+      independently (D-19) with a fresh remount on the mode flip (P3). Gates: contrast 183/183,
+      441 unit, gallery-shots green, zero console errors.
 ### Integration (exec-chrome leads)
 - [ ] **R-I1** home + chrome together, four themes, full suite + ship-check → **REBUILD DONE ✅**

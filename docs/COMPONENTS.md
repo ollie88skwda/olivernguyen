@@ -87,6 +87,12 @@ from the file, not just left unstyled.
 
 ### Brand components — `@/components/brand`
 
+**Changed 2026-08-25 (R-G1):** `NodeCard` gained `titleAs` (default `h3`) and `titleClassName`.
+The phone graph list nests entries under real section headings, so its root entry has to be an
+`<h2>` where the rest are `<h3>` or axe flags a skipped heading level, and the surface keeps its
+own test hook. Neither prop changes a brand value — the title role stays `.on-node-title`
+(§7 display at `--fs-title`).
+
 All hand-built: no registry ships an equivalent, and every one of them is a `BRAND.md` concept
 rather than a generic UI part.
 
@@ -204,6 +210,13 @@ surface stylesheet. Anything overriding a library class must beat `.sakura .on-x
 Renders: `npx playwright test e2e/terminal-shots.spec.js` — 4 theme × mode combinations at 1440 and
 375, both overlays, the split grid and the coarse-pointer story. Shots land in `e2e/__shots__/`.
 
+Mounted through the rebuilt `SiteChrome` (R-T3, same spec file). The fixed 64px bar is the only
+thing that can break a 100dvh grid which is not allowed to scroll the page, so the gate asserts the
+four ways it can: `chrome.css`'s `html[data-mode="terminal"] .term-screen { padding-top }` lands, the
+statusbar stays fully on screen, `documentElement` still has no scrollable overflow, and the bar's
+portalled `DropdownMenu` opens over the console inside a `.sakura` scope. Theme and mode round-trip
+independently (D-19) with the console remounting fresh on a mode flip (P3).
+
 ### Chrome — R-C3, 2026-08-26 (D-26)
 
 `src/chrome/SiteChrome.jsx` is greenfield on the library; `src/chrome/chrome.css` is down from 309
@@ -241,10 +254,12 @@ the reduced-motion fallback. Use `page.emulateMedia({ reducedMotion })` there, *
 
 ## Follow-up work this created
 
-1. `src/graph/graph.css` sizes its display type for a **condensed** face (`/* condensed display
-   face: 26 → 34 */`). Familjen Grotesk is normal-width, so `.kind-root .card .t`, `.d-title`,
-   `.gl-name`, `.gl-title` and `.d-stat .v` now read wide and loose. They need a retune pass against
-   screenshots — a visual decision, deliberately not made here.
+1. ~~`src/graph/graph.css` sizes its display type for a **condensed** face.~~ **CLOSED by R-G1.**
+   The condensed-face sizing is gone: display type in graph mode is no longer uppercased or
+   positively tracked, and every size is an `--fs-*` rung — `.gl-name` → `--fs-display`, `.d-title`
+   → `--fs-title-lg`, `.gl-title` → `.on-node-title` (`--fs-title`), `.d-stat .v` → `.on-stat-value`,
+   `.kind-root .card .t` → `--fs-title-lg` in world units. Reviewed against 1440 and 375 renders in
+   all four themes (`e2e/graph-home-shots.spec.js`).
 2. `index.html` still loads **Big Shoulders**, because the frozen legacy `:root` stack in
    `src/styles/theme.css` points `--font-display` at it. Drop it from the font URL when the legacy
    pages under `src/pages/` are restyled.
@@ -257,6 +272,15 @@ the reduced-motion fallback. Use `page.emulateMedia({ reducedMotion })` there, *
    43 kB — re-measure at Integration, when the two home surfaces land.
 5. **Do not strip the terminal scanline.** It was removed once under P8 and reinstated
    deliberately at 3% (D-16). Reversing it needs a new decision entry.
+6. **Do not reinstate the graph's idle node drift.** R-G1 removed it: §6 bans infinite loops and
+   D-18 ratifies exactly two (cursor blink, skeleton pulse), so it was a third. `e2e/graph.spec.js`
+   waited on it by accident — its `clickNode` now settles the camera explicitly instead.
+7. **Graph fit framing under the fixed chrome bar.** At 1440×900 the topmost node sits partly
+   behind the 64px bar. The one-line fix (`.g-stage { top: var(--s-16) }` in chrome.css, where the
+   other graph HUD offsets live) was measured and **rejected**: shrinking the stage drops fit zoom
+   from 46% to 42%, under `camera.js` `FAR_K` (0.45), which hides every leaf card's kicker and
+   description at rest. One clipped node beats a canvas with no labels. Reopening it means moving
+   `FAR_K` too — a camera decision, not a styling one.
 
 ## Verification
 
