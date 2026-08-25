@@ -131,8 +131,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  /* D-23: an ordinary control — 40px square, and §1's 44px minimum on a coarse
+     pointer. --ctl-h carries both; the literal is only the no-token fallback. */
+  width: var(--ctl-h, 40px);
+  height: var(--ctl-h, 40px);
   padding: 0;
   border: 1px solid var(--border);
   border-radius: var(--r-control, 3px);
