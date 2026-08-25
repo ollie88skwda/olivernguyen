@@ -12,23 +12,26 @@ import { Icon } from "@/components/brand/icon";
 import { PortalScope } from "@/components/brand/portal-scope";
 import "@/styles/components.css";
 
+// D-24: DOM-rendering parts forward refs; `Select` is the context Root and
+// renders nothing, so it stays a plain function.
 function Select(props) {
   return <SelectPrimitive.Root data-slot="select" {...props} />;
 }
 
-function SelectGroup(props) {
-  return <SelectPrimitive.Group data-slot="select-group" {...props} />;
-}
+const SelectGroup = React.forwardRef(function SelectGroup(props, ref) {
+  return <SelectPrimitive.Group data-slot="select-group" ref={ref} {...props} />;
+});
 
-function SelectValue(props) {
-  return <SelectPrimitive.Value data-slot="select-value" {...props} />;
-}
+const SelectValue = React.forwardRef(function SelectValue(props, ref) {
+  return <SelectPrimitive.Value data-slot="select-value" ref={ref} {...props} />;
+});
 
-function SelectTrigger({ className, children, ...props }) {
+const SelectTrigger = React.forwardRef(function SelectTrigger({ className, children, ...props }, ref) {
   return (
     <SelectPrimitive.Trigger
       data-slot="select-trigger"
       className={cn("on-field on-select-trigger", className)}
+      ref={ref}
       {...props}
     >
       {children}
@@ -37,9 +40,9 @@ function SelectTrigger({ className, children, ...props }) {
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );
-}
+});
 
-function SelectContent({ className, children, position = "popper", ...props }) {
+const SelectContent = React.forwardRef(function SelectContent({ className, children, position = "popper", ...props }, ref) {
   return (
     <SelectPrimitive.Portal>
       <PortalScope>
@@ -48,6 +51,7 @@ function SelectContent({ className, children, position = "popper", ...props }) {
           position={position}
           sideOffset={4}
           className={cn("on-panel on-menu", className)}
+          ref={ref}
           {...props}
         >
           <SelectPrimitive.Viewport>{children}</SelectPrimitive.Viewport>
@@ -55,23 +59,25 @@ function SelectContent({ className, children, position = "popper", ...props }) {
       </PortalScope>
     </SelectPrimitive.Portal>
   );
-}
+});
 
-function SelectLabel({ className, ...props }) {
+const SelectLabel = React.forwardRef(function SelectLabel({ className, ...props }, ref) {
   return (
     <SelectPrimitive.Label
       data-slot="select-label"
       className={cn("on-menu-label", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
-function SelectItem({ className, children, ...props }) {
+const SelectItem = React.forwardRef(function SelectItem({ className, children, ...props }, ref) {
   return (
     <SelectPrimitive.Item
       data-slot="select-item"
       className={cn("on-menu-item", className)}
+      ref={ref}
       {...props}
     >
       {/* the glyph column is always reserved so selecting never shifts text */}
@@ -83,17 +89,18 @@ function SelectItem({ className, children, ...props }) {
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
     </SelectPrimitive.Item>
   );
-}
+});
 
-function SelectSeparator({ className, ...props }) {
+const SelectSeparator = React.forwardRef(function SelectSeparator({ className, ...props }, ref) {
   return (
     <SelectPrimitive.Separator
       data-slot="select-separator"
       className={cn("on-menu-sep", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
 export {
   Select,

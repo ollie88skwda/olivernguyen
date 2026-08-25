@@ -9,34 +9,48 @@ import { Tabs as TabsPrimitive } from "radix-ui";
 import { cn } from "@/lib/utils";
 import "@/styles/components.css";
 
-function Tabs({ className, ...props }) {
-  return <TabsPrimitive.Root data-slot="tabs" className={cn("on-tabs", className)} {...props} />;
-}
-
-function TabsList({ className, ...props }) {
+const Tabs = React.forwardRef(function Tabs({ className, ...props }, ref) {
   return (
-    <TabsPrimitive.List data-slot="tabs-list" className={cn("on-tabs-list", className)} {...props} />
+    <TabsPrimitive.Root
+      data-slot="tabs"
+      className={cn("on-tabs", className)}
+      ref={ref}
+      {...props}
+    />
   );
-}
+});
 
-function TabsTrigger({ className, ...props }) {
+const TabsList = React.forwardRef(function TabsList({ className, ...props }, ref) {
+  return (
+    <TabsPrimitive.List
+      data-slot="tabs-list"
+      className={cn("on-tabs-list", className)}
+      ref={ref}
+      {...props}
+    />
+  );
+});
+
+const TabsTrigger = React.forwardRef(function TabsTrigger({ className, ...props }, ref) {
   return (
     <TabsPrimitive.Trigger
       data-slot="tabs-trigger"
       className={cn("on-tabs-trigger", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
-function TabsContent({ className, ...props }) {
+const TabsContent = React.forwardRef(function TabsContent({ className, ...props }, ref) {
   return (
     <TabsPrimitive.Content
       data-slot="tabs-content"
       className={cn("on-tabs-content", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
 export { Tabs, TabsList, TabsTrigger, TabsContent };

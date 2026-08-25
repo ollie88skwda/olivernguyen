@@ -10,14 +10,15 @@ import { Label as LabelPrimitive } from "radix-ui";
 import { cn } from "@/lib/utils";
 import "@/styles/components.css";
 
-function Label({ className, role = "label", ...props }) {
+const Label = React.forwardRef(function Label({ className, role = "label", ...props }, ref) {
   return (
     <LabelPrimitive.Root
       data-slot="label"
       className={cn(role === "label" && "on-label", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
 export { Label };

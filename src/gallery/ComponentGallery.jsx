@@ -65,6 +65,8 @@ import {
   DossierHeader,
   StatBlock,
   StatRow,
+  Wordmark,
+  ModeToggle,
 } from "@/components/brand";
 
 import { useMode } from "@/mode/ModeProvider";
@@ -96,6 +98,7 @@ const Block = ({ id, title, source, rule, children }) => (
 function Specimens() {
   const [progress, setProgress] = React.useState(64);
   const [paletteOpen, setPaletteOpen] = React.useState(false);
+  const [markMode, setMarkMode] = React.useState("terminal");
 
   return (
     <TooltipProvider>
@@ -121,6 +124,24 @@ function Specimens() {
             <MonoLabel tone="muted">muted</MonoLabel>
             <MonoLabel tone="text">text</MonoLabel>
             <MonoLabel tone="accent">accent</MonoLabel>
+          </Row>
+        </Block>
+
+        {/* ---------------------------------------------------- marks */}
+        <Block
+          id="marks"
+          title="Wordmark · mode toggle"
+          source="hand-built · BRAND §10 / §4 · D-25"
+          rule="The dot is --accent, the same colour as the routing pulse. The mode toggle is the second and last 999px component."
+        >
+          <Row label="Wordmark">
+            <Wordmark />
+            <Wordmark as="a" href="#marks" />
+          </Row>
+          <Row label="Mode toggle">
+            {/* local state on purpose — this is a specimen, not the site's mode
+                switch; the gallery header owns that one. */}
+            <ModeToggle mode={markMode} onModeChange={setMarkMode} />
           </Row>
         </Block>
 

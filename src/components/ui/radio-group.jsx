@@ -7,21 +7,23 @@ import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
 import { cn } from "@/lib/utils";
 import "@/styles/components.css";
 
-function RadioGroup({ className, ...props }) {
+const RadioGroup = React.forwardRef(function RadioGroup({ className, ...props }, ref) {
   return (
     <RadioGroupPrimitive.Root
       data-slot="radio-group"
       className={cn("on-field-row", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
-function RadioGroupItem({ className, ...props }) {
+const RadioGroupItem = React.forwardRef(function RadioGroupItem({ className, ...props }, ref) {
   return (
     <RadioGroupPrimitive.Item
       data-slot="radio-group-item"
       className={cn("on-check on-radio", className)}
+      ref={ref}
       {...props}
     >
       <RadioGroupPrimitive.Indicator
@@ -30,6 +32,6 @@ function RadioGroupItem({ className, ...props }) {
       />
     </RadioGroupPrimitive.Item>
   );
-}
+});
 
 export { RadioGroup, RadioGroupItem };

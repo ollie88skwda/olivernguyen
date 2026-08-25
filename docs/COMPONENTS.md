@@ -23,7 +23,11 @@ Gallery: `/_components` (dev server only). `docs/DECISIONS.md` follow-on item 4 
 - Do not add a Tailwind utility to override a component. `components.css` is unlayered and beats
   `@layer utilities`; that is deliberate.
 - All components are React 18 `forwardRef`. Registry output assumes React 19 and omits it; anything
-  used as a Radix `asChild` child breaks without it.
+  used as a Radix `asChild` child breaks without it. Swept and enforced 2026-08-26 (D-24) by
+  `src/components/ui/forward-ref.test.jsx`, which fails on any DOM-rendering export that is a plain
+  function. The exceptions are the parts that render no DOM of their own — `Dialog`, `Sheet`,
+  `Select`, `Popover`, `DropdownMenu`, `DropdownMenuSub`, `Tooltip`, `TooltipProvider`,
+  `CommandDialog` — which are Radix context Roots with no node to point a ref at.
 
 ## Token layer
 
@@ -35,6 +39,7 @@ Gallery: `/_components` (dev server only). `docs/DECISIONS.md` follow-on item 4 
 | Spacing | `--s-1 … --s-36`, `--pad-card` | §5 |
 | Motion | `--dur-state` `--ease-state` `--dur-camera` `--ease-camera` `--type-cadence` | §6 |
 | Type | `--fs-display` `--fs-section` `--fs-title-lg` `--fs-title` `--fs-body` `--fs-mono` `--fs-label` `--lh-body` `--lh-mono` `--track-display` `--track-label` | §7 |
+| Mark | `--fs-wordmark` | §10 — names the "nav: ~20px" the section already fixes (added D-25) |
 | Fonts | `--font-display` `--font-sans` `--font-mono-body` `--font-mono-label` | §7 / D-07 / D-08 |
 | Derived | `--danger-text` `--overlay` `--shadow-dossier` `--focus-ring` `--focus-ring-w` | §2.3 / §9 |
 | Controls | `--ctl-h` `--ctl-h-sm` | §4 (added D-12) |
@@ -101,6 +106,8 @@ rather than a generic UI part.
 | `Dossier` / `DossierHeader` | `kicker` `title` `meta` `onClose` | §9 the only component that lifts — and only in light; dark uses `--border-strong` instead (D-15) |
 | `StatBlock` / `StatRow` | `value` `label` | §7 display figure + Martian label |
 | `Icon` | `name` (allow-list), `size` | §8's narrow exception — lucide only, stroke locked to 1.5, sized on `--icon`. Adding a name is a decision (D-13, D-17) |
+| `Wordmark` | `as` | §10 — `oN.c`, display face, the dot in `--accent`. One size (`--fs-wordmark`); §10's 12px floor is a constraint on shrinking it, not a second size. The dot is a colour swap only, so the mark survives monochrome (D-25) |
+| `ModeToggle` | `mode` `onModeChange` `label` | §4 — the second and last 999px component. Controlled only: mode lives in `src/mode/ModeProvider.jsx`, and reaching for that context here would break the gallery. Two fixed labels, no `options` prop — the brand has two interfaces (D-25) |
 | `PortalScope` | — | `AGENTS.md` §2 — re-scopes `.sakura` around portalled overlays |
 
 ### Not sourced from Magic UI or 21st.dev
@@ -175,7 +182,7 @@ interface. What changed for this library:
 
 ```bash
 node scripts/contrast-check.mjs            # 183/183 pairs pass, across all four themes
-npm run test:run                           # 353 unit tests
+npm run test:run                           # 441 unit tests (353 + the D-24 forwardRef sweep)
 npx playwright test e2e/gallery-shots.spec.js
 ```
 

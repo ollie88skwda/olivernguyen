@@ -26,11 +26,13 @@ function Tooltip(props) {
   return <TooltipPrimitive.Root data-slot="tooltip" {...props} />;
 }
 
-function TooltipTrigger(props) {
-  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />;
-}
+// D-24: `TooltipProvider` and `Tooltip` are context-only and render no DOM;
+// the trigger and the content forward their refs.
+const TooltipTrigger = React.forwardRef(function TooltipTrigger(props, ref) {
+  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" ref={ref} {...props} />;
+});
 
-function TooltipContent({ className, sideOffset = 6, ...props }) {
+const TooltipContent = React.forwardRef(function TooltipContent({ className, sideOffset = 6, ...props }, ref) {
   return (
     <TooltipPrimitive.Portal>
       <PortalScope>
@@ -38,11 +40,12 @@ function TooltipContent({ className, sideOffset = 6, ...props }) {
           data-slot="tooltip-content"
           sideOffset={sideOffset}
           className={cn("on-tooltip", className)}
+          ref={ref}
           {...props}
         />
       </PortalScope>
     </TooltipPrimitive.Portal>
   );
-}
+});
 
 export { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent };

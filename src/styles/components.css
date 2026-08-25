@@ -518,6 +518,90 @@
 .sakura .on-pill[data-status="error"] { border-color: var(--error); color: var(--danger-text); }
 .sakura .on-pill[data-status="error"] .on-pill-dot { background: var(--danger-text); }
 
+/* --------------------------------------------------------------------------
+ * WORDMARK — §10. `oN.c`, display face, the dot in --accent.
+ * The dot is the only thing that separates the mark from three letters, so it
+ * is a colour swap and nothing else: no weight change, no size change, no
+ * superscript. §10 requires the mark to survive monochrome, and a dot that
+ * carries shape would not survive being flattened.
+ * ------------------------------------------------------------------------ */
+.sakura .on-wordmark {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-wordmark);
+  letter-spacing: var(--track-display);
+  line-height: 1;
+  color: var(--text);
+  text-decoration: none;
+  transition: color var(--dur-state) var(--ease-state);
+}
+.sakura .on-wordmark-dot {
+  color: var(--accent);
+}
+/* Only the letters move on hover; the dot holds --accent so the mark never
+   flattens into one colour (§10 — the dot is the idea). */
+.sakura a.on-wordmark:hover {
+  color: var(--accent-hi);
+}
+
+/* --------------------------------------------------------------------------
+ * MODE TOGGLE — the second and last 999px component (§4).
+ * Two equal cells with one thumb sliding between them. The cells are a grid so
+ * the thumb is exactly 50% wide at any label length, which is what lets the
+ * slide be a pure transform (§6: transform/opacity only).
+ * No overflow:hidden — it would clip the focus ring; the thumb sits inside the
+ * pill on its own because it shares the radius and is inset by the border.
+ * ------------------------------------------------------------------------ */
+.sakura .on-mode-toggle {
+  position: relative;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  height: var(--ctl-h-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  background: var(--surface);
+}
+.sakura .on-mode-thumb {
+  position: absolute;
+  inset: 0 50% 0 0;
+  z-index: 0;
+  border-radius: var(--r-pill);
+  background: var(--accent);
+  transition: transform var(--dur-state) var(--ease-state);
+}
+.sakura .on-mode-toggle[data-mode="graph"] .on-mode-thumb {
+  transform: translateX(100%);
+}
+.sakura .on-mode-btn {
+  position: relative;
+  z-index: 1;
+  appearance: none;
+  margin: 0;
+  padding: 0 var(--s-3);
+  border: 0;
+  border-radius: var(--r-pill);
+  background: none;
+  cursor: pointer;
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  line-height: 1;
+  color: var(--text-muted);
+  white-space: nowrap;
+  transition: color var(--dur-state) var(--ease-state);
+}
+.sakura .on-mode-btn:hover {
+  color: var(--text);
+}
+.sakura .on-mode-btn[aria-pressed="true"],
+.sakura .on-mode-btn[aria-pressed="true"]:hover {
+  color: var(--on-accent);
+}
+
 /* key hint — §7 puts key hints in the label mono */
 .sakura .on-kbd {
   box-sizing: border-box;

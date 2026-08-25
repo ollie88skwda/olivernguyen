@@ -17,9 +17,19 @@ import { Glyph } from "@/components/brand/glyph";
 import { PortalScope } from "@/components/brand/portal-scope";
 import "@/styles/components.css";
 
-function Command({ className, ...props }) {
-  return <CommandPrimitive data-slot="command" className={cn("on-command", className)} {...props} />;
-}
+// D-24: DOM-rendering parts forward refs. `CommandDialog` is a Dialog Root and
+// renders no node of its own, so it stays plain. `CommandInput` forwards to the
+// input element, not the prompt row — the input is what a caller wants to focus.
+const Command = React.forwardRef(function Command({ className, ...props }, ref) {
+  return (
+    <CommandPrimitive
+      data-slot="command"
+      className={cn("on-command", className)}
+      ref={ref}
+      {...props}
+    />
+  );
+});
 
 function CommandDialog({ title = "Command palette", description = "Run a command", children, className, ...props }) {
   return (
@@ -41,62 +51,74 @@ function CommandDialog({ title = "Command palette", description = "Run a command
   );
 }
 
-function CommandInput({ className, ...props }) {
+const CommandInput = React.forwardRef(function CommandInput({ className, ...props }, ref) {
   return (
     <div data-slot="command-input-wrapper" className="on-command-row">
       <Glyph name="prompt" className="on-command-sigil" />
       <CommandPrimitive.Input
         data-slot="command-input"
         className={cn("on-command-input", className)}
+        ref={ref}
         {...props}
       />
     </div>
   );
-}
+});
 
-function CommandList({ className, ...props }) {
+const CommandList = React.forwardRef(function CommandList({ className, ...props }, ref) {
   return (
     <CommandPrimitive.List
       data-slot="command-list"
       className={cn("on-command-list", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
-function CommandEmpty({ className, ...props }) {
+const CommandEmpty = React.forwardRef(function CommandEmpty({ className, ...props }, ref) {
   return (
     <CommandPrimitive.Empty
       data-slot="command-empty"
       className={cn("on-command-empty", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
-function CommandGroup({ className, ...props }) {
-  return <CommandPrimitive.Group data-slot="command-group" className={className} {...props} />;
-}
+const CommandGroup = React.forwardRef(function CommandGroup({ className, ...props }, ref) {
+  return (
+    <CommandPrimitive.Group
+      data-slot="command-group"
+      className={className}
+      ref={ref}
+      {...props}
+    />
+  );
+});
 
-function CommandSeparator({ className, ...props }) {
+const CommandSeparator = React.forwardRef(function CommandSeparator({ className, ...props }, ref) {
   return (
     <CommandPrimitive.Separator
       data-slot="command-separator"
       className={cn("on-menu-sep", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
-function CommandItem({ className, ...props }) {
+const CommandItem = React.forwardRef(function CommandItem({ className, ...props }, ref) {
   return (
     <CommandPrimitive.Item
       data-slot="command-item"
       className={cn("on-menu-item on-command-item", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
 const CommandShortcut = React.forwardRef(function CommandShortcut({ className, ...props }, ref) {
   return (

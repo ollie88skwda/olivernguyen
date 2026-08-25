@@ -5,6 +5,10 @@ export { Glyph, GLYPHS } from "./glyph.jsx";
 // `@/components/brand` import path; the allow-list in icon.jsx still gates it.
 export { Icon, ICONS } from "./icon.jsx";
 export { MonoLabel, Display, SectionHead } from "./typography.jsx";
+// D-25: the two brand marks the chrome used to draw by hand — §10's wordmark
+// and §4's mode toggle (the only 999px component besides StatusPill).
+export { Wordmark } from "./wordmark.jsx";
+export { ModeToggle, MODES } from "./mode-toggle.jsx";
 export { Log, LogLine, CodeBlock } from "./log.jsx";
 export { Statusline, StatuslineSpacer, StatusPill } from "./statusline.jsx";
 export { PromptBar } from "./prompt-bar.jsx";

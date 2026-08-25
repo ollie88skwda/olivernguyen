@@ -6,12 +6,12 @@ Precondition: library audited complete + rulebook-matching (see COMPONENTS.md, B
 ## CURRENT STATUS / NEXT TASK  ← executors MUST keep this block updated
 
 ```
-Last updated : (planner) not started
-exec-chrome     : not started · next = R-C1
-exec-graph-home : not started · next = R-G1
-exec-terminal   : not started · next = R-T1
+Last updated : exec-chrome, R-C1 + R-C2 done
+exec-chrome     : R-C1 ✅ R-C2 ✅ · next = R-C3 (chrome rebuild)
+exec-graph-home : R-G1 IN PROGRESS (graph.css + surface components → library/brand) · then R-G2
+exec-terminal   : R-T1 IN PROGRESS (token/surface port + panes) · then R-T2
 Integration     : blocked until chrome gate + both home gates pass
-Blockers        : none
+Blockers        : exec-terminal R-T3 and exec-graph-home R-G3 wait on GATE CHROME (R-C4) — not ticked yet
 Notes for Oliver: —
 ```
 
@@ -35,7 +35,7 @@ Replace bespoke surface CSS with existing library components + `components.css` 
 
 ## 4 · Gates (run all before a session ends; all must pass)
 - `node scripts/contrast-check.mjs` → exit 0 (183 pairs, 4 themes).
-- `npm run test:run` → 353 green (may grow with new specs, not shrink).
+- `npm run test:run` → 441 green (was 353; R-C1 added the forwardRef sweep). May grow, not shrink.
 - `npx playwright test e2e/gallery-shots.spec.js` → green, no console errors.
 - Screenshot home + chrome in all four themes at 1440px and 375px (graph + terminal). Verify theme-color follows ladder; mode/theme round-trip; reduced-motion static fallbacks.
 
@@ -49,8 +49,15 @@ Replace bespoke surface CSS with existing library components + `components.css` 
 
 ## 8 · LIVE TASK CHECKLIST — tick as you go
 ### exec-chrome
-- [ ] **R-C1** forwardRef added to the plain `src/components/ui/**` primitives (D-24); unit green
-- [ ] **R-C2** `Wordmark` + `ModeToggle` brand components (D-25, incl. §10 accent dot); logged in COMPONENTS.md
+- [x] **R-C1** forwardRef added to the plain `src/components/ui/**` primitives (D-24); unit green
+      — 441 unit tests (was 353). `src/components/ui/forward-ref.test.jsx` is the standing gate: it
+      fails on any DOM-rendering export that is a plain function. Radix context Roots (`Dialog`,
+      `Sheet`, `Select`, `Popover`, `DropdownMenu`, `DropdownMenuSub`, `Tooltip`,
+      `TooltipProvider`, `CommandDialog`) stay plain — no DOM, no ref target. `brand/icon.jsx` was
+      swept too: it renders inside controls.
+- [x] **R-C2** `Wordmark` + `ModeToggle` brand components (D-25, incl. §10 accent dot); logged in COMPONENTS.md
+      — exported from `@/components/brand`, specimens in the gallery under `#marks`, verified in all
+      four themes. `--fs-wordmark: 20px` names §10's stated nav size in `src/styles/sakura.css`.
 - [ ] **R-C3** SiteChrome rebuilt on library; chrome.css replaced (D-26); theme control + TERM|GRAPH toggle + nav all from library pieces
 - [ ] **R-C4** chrome gate: screenshots + theme-color + round-trip → **GATE CHROME ✅**
 ### exec-graph-home

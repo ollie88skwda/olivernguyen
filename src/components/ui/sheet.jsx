@@ -12,19 +12,21 @@ import { Glyph } from "@/components/brand/glyph";
 import { PortalScope } from "@/components/brand/portal-scope";
 import "@/styles/components.css";
 
+// D-24: DOM-rendering parts forward refs; `Sheet` is the context Root and
+// renders nothing, so it stays a plain function.
 function Sheet(props) {
   return <SheetPrimitive.Root data-slot="sheet" {...props} />;
 }
 
-function SheetTrigger(props) {
-  return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />;
-}
+const SheetTrigger = React.forwardRef(function SheetTrigger(props, ref) {
+  return <SheetPrimitive.Trigger data-slot="sheet-trigger" ref={ref} {...props} />;
+});
 
-function SheetClose(props) {
-  return <SheetPrimitive.Close data-slot="sheet-close" {...props} />;
-}
+const SheetClose = React.forwardRef(function SheetClose(props, ref) {
+  return <SheetPrimitive.Close data-slot="sheet-close" ref={ref} {...props} />;
+});
 
-function SheetContent({ className, children, side = "right", showClose = true, ...props }) {
+const SheetContent = React.forwardRef(function SheetContent({ className, children, side = "right", showClose = true, ...props }, ref) {
   return (
     <SheetPrimitive.Portal>
       <PortalScope>
@@ -33,6 +35,7 @@ function SheetContent({ className, children, side = "right", showClose = true, .
           data-slot="sheet-content"
           data-side={side}
           className={cn("on-sheet", className)}
+          ref={ref}
           {...props}
         >
           {children}
@@ -45,35 +48,51 @@ function SheetContent({ className, children, side = "right", showClose = true, .
       </PortalScope>
     </SheetPrimitive.Portal>
   );
-}
+});
 
-function SheetHeader({ className, ...props }) {
-  return <div data-slot="sheet-header" className={cn("on-dialog-header", className)} {...props} />;
-}
+const SheetHeader = React.forwardRef(function SheetHeader({ className, ...props }, ref) {
+  return (
+    <div
+      data-slot="sheet-header"
+      className={cn("on-dialog-header", className)}
+      ref={ref}
+      {...props}
+    />
+  );
+});
 
-function SheetTitle({ className, ...props }) {
+const SheetTitle = React.forwardRef(function SheetTitle({ className, ...props }, ref) {
   return (
     <SheetPrimitive.Title
       data-slot="sheet-title"
       className={cn("on-dialog-title", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
-function SheetDescription({ className, ...props }) {
+const SheetDescription = React.forwardRef(function SheetDescription({ className, ...props }, ref) {
   return (
     <SheetPrimitive.Description
       data-slot="sheet-description"
       className={cn("on-dialog-desc", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
-function SheetFooter({ className, ...props }) {
-  return <div data-slot="sheet-footer" className={cn("on-dialog-footer", className)} {...props} />;
-}
+const SheetFooter = React.forwardRef(function SheetFooter({ className, ...props }, ref) {
+  return (
+    <div
+      data-slot="sheet-footer"
+      className={cn("on-dialog-footer", className)}
+      ref={ref}
+      {...props}
+    />
+  );
+});
 
 export {
   Sheet,

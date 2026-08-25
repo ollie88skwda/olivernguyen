@@ -214,6 +214,11 @@ html[data-theme="light"][data-mode="terminal"] .sakura {
   --fs-mono: 13px; /* §7 range 13–14 */
   --lh-mono: 1.7;
   --fs-label: 11px; /* §7 range 10–11 */
+  /* §10 fixes the wordmark's own size: "Nav: ~20px. Minimum legible size:
+   * 12px." This names the nav value — it is not a new decision, and it is a
+   * 4px-ladder rung. The 12px floor is a constraint on shrinking it, not a
+   * second size, so no token is minted for it. */
+  --fs-wordmark: 20px;
 
   /* --- icons (§8) --- */
   /* §8: real icons are sized "on an 18px grid". This is that grid unit. It is

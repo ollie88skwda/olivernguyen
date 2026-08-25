@@ -31,7 +31,9 @@ const ICONS = {
   moon: Moon, // D-23: dark ladder
 };
 
-function Icon({ name, size = 18, className, ...props }) {
+// D-24: forwards its ref like the ui primitives, so an icon-only control can be
+// handed to a Radix `asChild` slot (a tooltip trigger, most often).
+const Icon = React.forwardRef(function Icon({ name, size = 18, className, ...props }, ref) {
   const Cmp = ICONS[name];
   if (!Cmp) {
     throw new Error(
@@ -47,9 +49,10 @@ function Icon({ name, size = 18, className, ...props }) {
       height={size}
       strokeWidth={1.5}
       className={cn("on-icon", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
 export { Icon, ICONS };

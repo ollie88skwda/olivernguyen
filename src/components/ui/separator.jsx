@@ -6,16 +6,17 @@ import { Separator as SeparatorPrimitive } from "radix-ui";
 import { cn } from "@/lib/utils";
 import "@/styles/components.css";
 
-function Separator({ className, orientation = "horizontal", decorative = true, ...props }) {
+const Separator = React.forwardRef(function Separator({ className, orientation = "horizontal", decorative = true, ...props }, ref) {
   return (
     <SeparatorPrimitive.Root
       data-slot="separator"
       decorative={decorative}
       orientation={orientation}
       className={cn("on-separator", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
 export { Separator };

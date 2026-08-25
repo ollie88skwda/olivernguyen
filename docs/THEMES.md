@@ -91,7 +91,7 @@ Consumers of both must keep their fallback: `var(--border-strong, var(--border))
 
 ```bash
 node scripts/contrast-check.mjs      # 183 pairs across all four themes; exit 0 or it does not land
-npm run test:run                     # 353 unit tests
+npm run test:run                     # 441 unit tests
 npx playwright test e2e/gallery-shots.spec.js   # 4 combos × 1440px + 375px, fails on console errors
 ```
 

@@ -10,11 +10,12 @@ import { cn } from "@/lib/utils";
 import { Icon } from "@/components/brand/icon";
 import "@/styles/components.css";
 
-function Checkbox({ className, ...props }) {
+const Checkbox = React.forwardRef(function Checkbox({ className, ...props }, ref) {
   return (
     <CheckboxPrimitive.Root
       data-slot="checkbox"
       className={cn("on-check", className)}
+      ref={ref}
       {...props}
     >
       <CheckboxPrimitive.Indicator data-slot="checkbox-indicator" className="on-check-glyph">
@@ -22,6 +23,6 @@ function Checkbox({ className, ...props }) {
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
   );
-}
+});
 
 export { Checkbox };

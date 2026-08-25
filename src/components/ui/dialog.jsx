@@ -14,19 +14,22 @@ import { Glyph } from "@/components/brand/glyph";
 import { PortalScope } from "@/components/brand/portal-scope";
 import "@/styles/components.css";
 
+// D-24: every part that renders DOM forwards its ref, so it can be an `asChild`
+// child (a Tooltip trigger, most often). `Dialog` itself is Radix's context
+// Root — it renders nothing, so there is no node to point a ref at.
 function Dialog(props) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />;
 }
 
-function DialogTrigger(props) {
-  return <DialogPrimitive.Trigger data-slot="dialog-trigger" {...props} />;
-}
+const DialogTrigger = React.forwardRef(function DialogTrigger(props, ref) {
+  return <DialogPrimitive.Trigger data-slot="dialog-trigger" ref={ref} {...props} />;
+});
 
-function DialogClose(props) {
-  return <DialogPrimitive.Close data-slot="dialog-close" {...props} />;
-}
+const DialogClose = React.forwardRef(function DialogClose(props, ref) {
+  return <DialogPrimitive.Close data-slot="dialog-close" ref={ref} {...props} />;
+});
 
-function DialogContent({ className, children, showClose = true, ...props }) {
+const DialogContent = React.forwardRef(function DialogContent({ className, children, showClose = true, ...props }, ref) {
   return (
     <DialogPrimitive.Portal>
       <PortalScope>
@@ -34,6 +37,7 @@ function DialogContent({ className, children, showClose = true, ...props }) {
         <DialogPrimitive.Content
           data-slot="dialog-content"
           className={cn("on-panel on-dialog", className)}
+          ref={ref}
           {...props}
         >
           {children}
@@ -46,35 +50,51 @@ function DialogContent({ className, children, showClose = true, ...props }) {
       </PortalScope>
     </DialogPrimitive.Portal>
   );
-}
+});
 
-function DialogHeader({ className, ...props }) {
-  return <div data-slot="dialog-header" className={cn("on-dialog-header", className)} {...props} />;
-}
+const DialogHeader = React.forwardRef(function DialogHeader({ className, ...props }, ref) {
+  return (
+    <div
+      data-slot="dialog-header"
+      className={cn("on-dialog-header", className)}
+      ref={ref}
+      {...props}
+    />
+  );
+});
 
-function DialogTitle({ className, ...props }) {
+const DialogTitle = React.forwardRef(function DialogTitle({ className, ...props }, ref) {
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
       className={cn("on-dialog-title", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
-function DialogDescription({ className, ...props }) {
+const DialogDescription = React.forwardRef(function DialogDescription({ className, ...props }, ref) {
   return (
     <DialogPrimitive.Description
       data-slot="dialog-description"
       className={cn("on-dialog-desc", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
-function DialogFooter({ className, ...props }) {
-  return <div data-slot="dialog-footer" className={cn("on-dialog-footer", className)} {...props} />;
-}
+const DialogFooter = React.forwardRef(function DialogFooter({ className, ...props }, ref) {
+  return (
+    <div
+      data-slot="dialog-footer"
+      className={cn("on-dialog-footer", className)}
+      ref={ref}
+      {...props}
+    />
+  );
+});
 
 export {
   Dialog,

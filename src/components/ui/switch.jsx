@@ -9,12 +9,17 @@ import { Switch as SwitchPrimitive } from "radix-ui";
 import { cn } from "@/lib/utils";
 import "@/styles/components.css";
 
-function Switch({ className, ...props }) {
+const Switch = React.forwardRef(function Switch({ className, ...props }, ref) {
   return (
-    <SwitchPrimitive.Root data-slot="switch" className={cn("on-switch", className)} {...props}>
+    <SwitchPrimitive.Root
+      data-slot="switch"
+      className={cn("on-switch", className)}
+      ref={ref}
+      {...props}
+    >
       <SwitchPrimitive.Thumb data-slot="switch-thumb" className="on-switch-thumb" />
     </SwitchPrimitive.Root>
   );
-}
+});
 
 export { Switch };

@@ -8,19 +8,21 @@ import { cn } from "@/lib/utils";
 import { PortalScope } from "@/components/brand/portal-scope";
 import "@/styles/components.css";
 
+// D-24: DOM-rendering parts forward refs; `Popover` is the context Root and
+// renders nothing, so it stays a plain function.
 function Popover(props) {
   return <PopoverPrimitive.Root data-slot="popover" {...props} />;
 }
 
-function PopoverTrigger(props) {
-  return <PopoverPrimitive.Trigger data-slot="popover-trigger" {...props} />;
-}
+const PopoverTrigger = React.forwardRef(function PopoverTrigger(props, ref) {
+  return <PopoverPrimitive.Trigger data-slot="popover-trigger" ref={ref} {...props} />;
+});
 
-function PopoverAnchor(props) {
-  return <PopoverPrimitive.Anchor data-slot="popover-anchor" {...props} />;
-}
+const PopoverAnchor = React.forwardRef(function PopoverAnchor(props, ref) {
+  return <PopoverPrimitive.Anchor data-slot="popover-anchor" ref={ref} {...props} />;
+});
 
-function PopoverContent({ className, align = "center", sideOffset = 4, ...props }) {
+const PopoverContent = React.forwardRef(function PopoverContent({ className, align = "center", sideOffset = 4, ...props }, ref) {
   return (
     <PopoverPrimitive.Portal>
       <PortalScope>
@@ -29,12 +31,13 @@ function PopoverContent({ className, align = "center", sideOffset = 4, ...props 
           align={align}
           sideOffset={sideOffset}
           className={cn("on-panel on-popover", className)}
+          ref={ref}
           {...props}
         />
       </PortalScope>
     </PopoverPrimitive.Portal>
   );
-}
+});
 
 const PopoverTitle = React.forwardRef(function PopoverTitle({ className, ...props }, ref) {
   return <p data-slot="popover-title" className={cn("on-popover-title", className)} ref={ref}

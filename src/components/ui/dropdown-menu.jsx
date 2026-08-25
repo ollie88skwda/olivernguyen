@@ -15,15 +15,17 @@ import { Icon } from "@/components/brand/icon";
 import { PortalScope } from "@/components/brand/portal-scope";
 import "@/styles/components.css";
 
+// D-24: DOM-rendering parts forward refs; `DropdownMenu` and `DropdownMenuSub`
+// are context Roots and render nothing, so they stay plain functions.
 function DropdownMenu(props) {
   return <DropdownMenuPrimitive.Root data-slot="dropdown-menu" {...props} />;
 }
 
-function DropdownMenuTrigger(props) {
-  return <DropdownMenuPrimitive.Trigger data-slot="dropdown-menu-trigger" {...props} />;
-}
+const DropdownMenuTrigger = React.forwardRef(function DropdownMenuTrigger(props, ref) {
+  return <DropdownMenuPrimitive.Trigger data-slot="dropdown-menu-trigger" ref={ref} {...props} />;
+});
 
-function DropdownMenuContent({ className, sideOffset = 4, ...props }) {
+const DropdownMenuContent = React.forwardRef(function DropdownMenuContent({ className, sideOffset = 4, ...props }, ref) {
   return (
     <DropdownMenuPrimitive.Portal>
       <PortalScope>
@@ -31,33 +33,36 @@ function DropdownMenuContent({ className, sideOffset = 4, ...props }) {
           data-slot="dropdown-menu-content"
           sideOffset={sideOffset}
           className={cn("on-panel on-menu", className)}
+          ref={ref}
           {...props}
         />
       </PortalScope>
     </DropdownMenuPrimitive.Portal>
   );
-}
+});
 
-function DropdownMenuGroup(props) {
-  return <DropdownMenuPrimitive.Group data-slot="dropdown-menu-group" {...props} />;
-}
+const DropdownMenuGroup = React.forwardRef(function DropdownMenuGroup(props, ref) {
+  return <DropdownMenuPrimitive.Group data-slot="dropdown-menu-group" ref={ref} {...props} />;
+});
 
-function DropdownMenuItem({ className, tone, ...props }) {
+const DropdownMenuItem = React.forwardRef(function DropdownMenuItem({ className, tone, ...props }, ref) {
   return (
     <DropdownMenuPrimitive.Item
       data-slot="dropdown-menu-item"
       data-tone={tone}
       className={cn("on-menu-item", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
-function DropdownMenuCheckboxItem({ className, children, ...props }) {
+const DropdownMenuCheckboxItem = React.forwardRef(function DropdownMenuCheckboxItem({ className, children, ...props }, ref) {
   return (
     <DropdownMenuPrimitive.CheckboxItem
       data-slot="dropdown-menu-checkbox-item"
       className={cn("on-menu-item", className)}
+      ref={ref}
       {...props}
     >
       <span className="on-menu-glyph">
@@ -68,17 +73,24 @@ function DropdownMenuCheckboxItem({ className, children, ...props }) {
       {children}
     </DropdownMenuPrimitive.CheckboxItem>
   );
-}
+});
 
-function DropdownMenuRadioGroup(props) {
-  return <DropdownMenuPrimitive.RadioGroup data-slot="dropdown-menu-radio-group" {...props} />;
-}
+const DropdownMenuRadioGroup = React.forwardRef(function DropdownMenuRadioGroup(props, ref) {
+  return (
+    <DropdownMenuPrimitive.RadioGroup
+      data-slot="dropdown-menu-radio-group"
+      ref={ref}
+      {...props}
+    />
+  );
+});
 
-function DropdownMenuRadioItem({ className, children, ...props }) {
+const DropdownMenuRadioItem = React.forwardRef(function DropdownMenuRadioItem({ className, children, ...props }, ref) {
   return (
     <DropdownMenuPrimitive.RadioItem
       data-slot="dropdown-menu-radio-item"
       className={cn("on-menu-item", className)}
+      ref={ref}
       {...props}
     >
       <span className="on-menu-glyph">
@@ -89,27 +101,29 @@ function DropdownMenuRadioItem({ className, children, ...props }) {
       {children}
     </DropdownMenuPrimitive.RadioItem>
   );
-}
+});
 
-function DropdownMenuLabel({ className, ...props }) {
+const DropdownMenuLabel = React.forwardRef(function DropdownMenuLabel({ className, ...props }, ref) {
   return (
     <DropdownMenuPrimitive.Label
       data-slot="dropdown-menu-label"
       className={cn("on-menu-label", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
-function DropdownMenuSeparator({ className, ...props }) {
+const DropdownMenuSeparator = React.forwardRef(function DropdownMenuSeparator({ className, ...props }, ref) {
   return (
     <DropdownMenuPrimitive.Separator
       data-slot="dropdown-menu-separator"
       className={cn("on-menu-sep", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
 const DropdownMenuShortcut = React.forwardRef(function DropdownMenuShortcut({ className, ...props }, ref) {
   return (
@@ -126,32 +140,34 @@ function DropdownMenuSub(props) {
   return <DropdownMenuPrimitive.Sub data-slot="dropdown-menu-sub" {...props} />;
 }
 
-function DropdownMenuSubTrigger({ className, children, ...props }) {
+const DropdownMenuSubTrigger = React.forwardRef(function DropdownMenuSubTrigger({ className, children, ...props }, ref) {
   return (
     <DropdownMenuPrimitive.SubTrigger
       data-slot="dropdown-menu-sub-trigger"
       className={cn("on-menu-item", className)}
+      ref={ref}
       {...props}
     >
       {children}
       <Glyph name="right" className="on-menu-shortcut" />
     </DropdownMenuPrimitive.SubTrigger>
   );
-}
+});
 
-function DropdownMenuSubContent({ className, ...props }) {
+const DropdownMenuSubContent = React.forwardRef(function DropdownMenuSubContent({ className, ...props }, ref) {
   return (
     <DropdownMenuPrimitive.Portal>
       <PortalScope>
         <DropdownMenuPrimitive.SubContent
           data-slot="dropdown-menu-sub-content"
           className={cn("on-panel on-menu", className)}
+          ref={ref}
           {...props}
         />
       </PortalScope>
     </DropdownMenuPrimitive.Portal>
   );
-}
+});
 
 export {
   DropdownMenu,

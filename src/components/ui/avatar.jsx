@@ -9,29 +9,38 @@ import { Avatar as AvatarPrimitive } from "radix-ui";
 import { cn } from "@/lib/utils";
 import "@/styles/components.css";
 
-function Avatar({ className, size = "default", ...props }) {
+const Avatar = React.forwardRef(function Avatar({ className, size = "default", ...props }, ref) {
   return (
     <AvatarPrimitive.Root
       data-slot="avatar"
       data-size={size}
       className={cn("on-avatar", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
-function AvatarImage({ className, ...props }) {
-  return <AvatarPrimitive.Image data-slot="avatar-image" className={className} {...props} />;
-}
+const AvatarImage = React.forwardRef(function AvatarImage({ className, ...props }, ref) {
+  return (
+    <AvatarPrimitive.Image
+      data-slot="avatar-image"
+      className={className}
+      ref={ref}
+      {...props}
+    />
+  );
+});
 
-function AvatarFallback({ className, ...props }) {
+const AvatarFallback = React.forwardRef(function AvatarFallback({ className, ...props }, ref) {
   return (
     <AvatarPrimitive.Fallback
       data-slot="avatar-fallback"
       className={cn("on-avatar-fallback", className)}
+      ref={ref}
       {...props}
     />
   );
-}
+});
 
 export { Avatar, AvatarImage, AvatarFallback };

@@ -7,11 +7,12 @@ import { Progress as ProgressPrimitive } from "radix-ui";
 import { cn } from "@/lib/utils";
 import "@/styles/components.css";
 
-function Progress({ className, value = 0, ...props }) {
+const Progress = React.forwardRef(function Progress({ className, value = 0, ...props }, ref) {
   return (
     <ProgressPrimitive.Root
       data-slot="progress"
       className={cn("on-progress", className)}
+      ref={ref}
       {...props}
     >
       <ProgressPrimitive.Indicator
@@ -21,6 +22,6 @@ function Progress({ className, value = 0, ...props }) {
       />
     </ProgressPrimitive.Root>
   );
-}
+});
 
 export { Progress };

@@ -7,11 +7,12 @@ import { ScrollArea as ScrollAreaPrimitive } from "radix-ui";
 import { cn } from "@/lib/utils";
 import "@/styles/components.css";
 
-function ScrollArea({ className, children, orientation = "vertical", ...props }) {
+const ScrollArea = React.forwardRef(function ScrollArea({ className, children, orientation = "vertical", ...props }, ref) {
   return (
     <ScrollAreaPrimitive.Root
       data-slot="scroll-area"
       className={cn("on-scroll", className)}
+      ref={ref}
       {...props}
     >
       <ScrollAreaPrimitive.Viewport data-slot="scroll-area-viewport" className="on-scroll-viewport">
@@ -21,14 +22,15 @@ function ScrollArea({ className, children, orientation = "vertical", ...props })
       <ScrollAreaPrimitive.Corner />
     </ScrollAreaPrimitive.Root>
   );
-}
+});
 
-function ScrollBar({ className, orientation = "vertical", ...props }) {
+const ScrollBar = React.forwardRef(function ScrollBar({ className, orientation = "vertical", ...props }, ref) {
   return (
     <ScrollAreaPrimitive.ScrollAreaScrollbar
       data-slot="scroll-area-scrollbar"
       orientation={orientation}
       className={cn("on-scrollbar", className)}
+      ref={ref}
       {...props}
     >
       <ScrollAreaPrimitive.ScrollAreaThumb
@@ -37,6 +39,6 @@ function ScrollBar({ className, orientation = "vertical", ...props }) {
       />
     </ScrollAreaPrimitive.ScrollAreaScrollbar>
   );
-}
+});
 
 export { ScrollArea, ScrollBar };
