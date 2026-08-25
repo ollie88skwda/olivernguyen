@@ -102,14 +102,20 @@ Mode and theme are **independent switches**. Theme does not follow mode.
 |---|---|
 | terminal · dark (Night Plum) | shipped |
 | graph · light (Sakura Paper) | shipped |
-| terminal · **light** | **to derive** — must exist before v1 |
-| graph · **dark** | **to derive** — must exist before v1 |
+| terminal · **light** | **derived** 2026-08-26 — `04-sakura-palette.md` §6.1/§6.2 |
+| graph · **dark** | **derived** 2026-08-26 — `04-sakura-palette.md` §6.3/§6.4 |
 
 **Derivation rule for the two new themes:** hold the hue slice, move only the ladder position.
 Light terminal = plum ink on sakura paper; because it cannot lean on glow, the log leans on
 hairlines and weight instead. Dark graph = the existing dark ladder with node, edge, dot-grid
-and pulse values placed on it. Both need their own contrast pass and a new section in
-`04-sakura-palette.md` before they ship.
+and pulse values placed on it. Both carry their own contrast pass in `04-sakura-palette.md` §6 and
+all four combinations are enforced by `scripts/contrast-check.mjs`.
+
+**Switching:** the ladder is keyed off `<html data-theme="light|dark">`, the interface off
+`<html data-mode="graph|terminal">` — two attributes, never one implying the other. `.sakura` with
+no `data-theme` is the light ladder, so sakura UI is never token-less. One back-compat clause in
+`src/styles/sakura.css` keeps `data-mode="terminal"` dark until a theme switch is wired; it is
+marked for deletion at that point (04 §5).
 
 First-visit default: follow the OS `prefers-color-scheme`; mode defaults per `05-v1-spec.md` §6.2.
 An explicit user choice always wins and persists.
@@ -264,7 +270,8 @@ initials at once; the dot is the same colour as the routing pulse.
 ## 11. Working rules for agents
 
 1. **Reference tokens, never hex.** All values live in `src/styles/sakura.css` under the
-   `.sakura` scope, keyed off `<html data-mode>`. Components read `var(--token)`.
+   `.sakura` scope, keyed off `<html data-theme>` (ladder) and `<html data-mode>` (interface).
+   Components read `var(--token)`.
 2. **Legacy pages are frozen.** Files under `src/pages/` keep their own stylesheets until a
    restyle is explicitly scheduled (see `05-v1-spec.md` §2.3). Do not bleed sakura into them.
 3. **New surfaces mount inside `.sakura`.** Never put these tokens on `:root`.
@@ -281,7 +288,8 @@ initials at once; the dot is the same colour as the routing pulse.
 ```
 targets   phone: terminal + graph-as-list · desktop ≥768 fine-pointer: full canvas
 colour    sakura · 60/30/10 · jade = "it worked" only
-themes    4 independent combinations (2 shipped, 2 to derive)
+themes    4 independent combinations, all derived
+          data-theme = ladder · data-mode = interface
 radius    0 surfaces · 3 controls · 999 toggles, pills and the radio only
 controls  40 default · 32 small · both 44 on coarse pointer · 24 checkbox + switch
 spacing   4px ladder · card 28 · row 24 · section 144

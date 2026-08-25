@@ -6,6 +6,42 @@ If you want to reverse one of these, say so explicitly — do not quietly re-ope
 
 ---
 
+## 2026-08-26 · The other two themes
+
+Derived by the theme pass on `feat/component-library`, under the rule `BRAND.md` §3 had already
+ratified ("hold the hue slice, move only the ladder position"). No new hue, no rejected direction
+re-opened. Values, OKLCH and full contrast tables: **`docs/redesign-research/04-sakura-palette.md`
+§6**. Not yet reviewed by Oliver against live renders — the screenshots exist, the sign-off does not.
+
+### D-19 · Theme and mode are two attributes, not one
+`<html data-theme="light|dark">` picks the ladder; `<html data-mode="graph|terminal">` picks the
+interface. `.sakura` with no `data-theme` stays the light ladder, so sakura UI is never token-less
+before hydration. `--node-*`/`--edge`/`--dot-grid` ship with the **ladder** and are read only under
+`data-mode="graph"`; `--term-*` ships per ladder under `data-mode="terminal"`.
+*Rejected:* a `data-theme` value duplicated onto a wrapper class in the gallery (two copies of the
+palette, one of them ungated); making dark the base and light the override (the un-themed default
+would then be a dark page inside a light legacy site).
+*Interim:* one back-compat clause, `html:not([data-theme])[data-mode="terminal"]`, keeps the shipped
+terminal dark until a `ThemeProvider` exists. Delete it then — `src/styles/sakura.css` says so too.
+
+### D-20 · Light terminal marks the active row with a hairline, not a wash
+The binding constraint is measured, not stylistic: a wash matching dark's step (1.23:1) drops
+`--error` to 4.16:1 and `--success` to 4.29:1 on top of it. Holding every state colour at 4.5:1
+caps the wash at roughly `--surface-2` luminance, so the executing row is carried by a 1px
+`--border-strong` rule plus the mono's ratified 500 weight — exactly what §3 predicted this theme
+would need. One theme-scoped rule in `components.css`; no other theme changes.
+*Rejected:* a louder wash with `--error`/`--success` swapped for deeper variants (invents colour to
+solve a lightness problem); marking the row with `--accent` text (breaks the log's colour grammar).
+
+### D-21 · Light `--border-strong` and `--error-hi` are scoped to the terminal, pending a call
+Both exist on the light ladder now, but **only** under `data-mode="terminal"`, because
+`components.css` reads `var(--border-strong, var(--text-faint))` for control hairlines — putting
+`--border-strong` on the light core would restyle shipped graph · light controls (5.53:1 → 3.51:1
+borders). That is a brand decision and is **open**: promoting both to the light core is what closes
+the `COMPONENTS.md` "still open" item properly. See 04 §6.5 item 10.
+
+---
+
 ## 2026-08-25 · Component library review
 
 Decided by Oliver in a Lavish review of the `/_components` gallery, over three rounds. Every

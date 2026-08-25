@@ -6,14 +6,33 @@
  * NEVER on :root — new chrome + GraphHome mount inside `.sakura`; legacy page
  * bodies are untouched.
  *
- * Mode is carried by <html data-mode="graph|terminal"> (set by ModeProvider).
- * Light (graph) tokens are the `.sakura` default so sakura UI is never
- * un-themed even before ModeProvider hydrates; dark (terminal) overrides key
- * off the html attribute. Contrast pairs are enforced by
- * scripts/contrast-check.mjs (04 §2.3 / §3.4 tables).
+ * SCOPING SCHEME — theme and mode are INDEPENDENT switches (BRAND.md §3).
+ *
+ *   <html data-theme="light|dark">   which LADDER the tokens sit on
+ *   <html data-mode="graph|terminal"> which INTERFACE is mounted
+ *
+ * Four combinations, two axes, one palette:
+ *
+ *   ladder  → `.sakura`                      light  (Sakura Paper) — the safe
+ *                                            un-themed default, so sakura UI is
+ *                                            never token-less before hydration
+ *             `html[data-theme="dark"]`      dark   (Night Plum)
+ *   console → `[data-mode="terminal"]`       adds --term-* on whichever ladder
+ *   canvas  → --node-, --edge, --dot-grid     ship WITH the ladder (each ladder
+ *                                            declares its own), and are only
+ *                                            READ under html[data-mode="graph"]
+ *                                            (components.css / graph.css).
+ *
+ * BACK-COMPAT BRIDGE: ModeProvider sets data-mode and nothing sets data-theme
+ * yet, so `html:not([data-theme])[data-mode="terminal"]` keeps the shipped
+ * terminal · dark combination rendering dark until a theme switch is wired.
+ * Remove that selector clause the day a ThemeProvider sets data-theme.
+ *
+ * Contrast pairs for ALL FOUR themes are enforced by scripts/contrast-check.mjs
+ * (04 §2.3 / §3.4 dark+light cores, §6.2 / §6.4 the two derived themes).
  * ========================================================================== */
 
-/* ---- LIGHT SAKURA — "Sakura Paper" (graph mode, default) ---- */
+/* ---- LIGHT SAKURA LADDER — "Sakura Paper" (default, and the graph canvas) ---- */
 .sakura {
   --bg: #faf1f5;
   --surface: #fdf8fa;
@@ -37,6 +56,13 @@
   --routing-pulse: #15734f;
   --dot-grid: #e8d3dc;
 
+  /* NOTE: --border-strong and --error-hi are deliberately NOT declared on the
+   * light core. Adding them here would change shipped graph · light rendering
+   * (components.css reads `var(--border-strong, var(--text-faint))` for control
+   * hairlines), which is a brand decision, not part of deriving a theme. They
+   * are declared on the terminal · light block below, which needs them, and are
+   * a candidate for promotion to the core in a later decision (04 §6.5). */
+
   /* Fonts — BRAND.md §7 / DECISIONS D-07 + D-08. Re-declared here so sakura
    * never depends on legacy theme.css being loaded (which still points its
    * own :root --font-display at Big Shoulders; that stack is frozen).
@@ -56,8 +82,9 @@
   font-family: var(--font-sans);
 }
 
-/* ---- DARK SAKURA — "Night Plum" (terminal mode) ---- */
-html[data-mode="terminal"] .sakura {
+/* ---- DARK SAKURA LADDER — "Night Plum" (04 §2.1) ---- */
+html[data-theme="dark"] .sakura,
+html:not([data-theme])[data-mode="terminal"] .sakura {
   --bg: #180f14;
   --surface: #1f1319;
   --surface-2: #2a1b22;
@@ -74,7 +101,25 @@ html[data-mode="terminal"] .sakura {
   --error: #e15647;
   --error-hi: #ea897e;
   --selection: #3a2430;
-  /* terminal-specific (04 §2.2) */
+
+  /* graph-specific on the dark ladder — GRAPH · DARK, derived 2026-08-26
+   * (04 §6.3/§6.4). Same rule the light set was built with: hold the hue
+   * slice, move only the ladder position. node-fill is --surface (elevation
+   * goes lighter in both ladders); node-border is roseDim, the value BRAND.md
+   * §2.3 reserves for decorative strokes — 3.49:1 on the canvas, mirroring
+   * light's 3.51:1; edge and dot-grid mirror light's 1.66 / 1.28 canvas
+   * ratios so the canvas texture is exactly as quiet at night. */
+  --node-fill: #1f1319;
+  --node-border: #8f5b70;
+  --node-border-active: #ffb7d1;
+  --edge: #4f323e;
+  --routing-pulse: #46b989;
+  --dot-grid: #34242b;
+}
+
+/* ---- TERMINAL CONSOLE · DARK LADDER (04 §2.2) ---- */
+html[data-theme="dark"][data-mode="terminal"] .sakura,
+html:not([data-theme])[data-mode="terminal"] .sakura {
   --term-log: #d888a8;
   --term-log-dim: #b0788f;
   --term-prompt: #ff6fb0;
@@ -82,6 +127,33 @@ html[data-mode="terminal"] .sakura {
   --term-cursor: #ff6fb0;
   --term-success-line: #182520;
   --term-error-line: #2b1917;
+}
+
+/* ---- TERMINAL CONSOLE · LIGHT LADDER — plum ink on sakura paper.
+ * TERMINAL · LIGHT, derived 2026-08-26 (04 §6.1/§6.2).
+ *
+ * The console roles keep their dark job description and take the light
+ * ladder's rung for it: log = --text-muted, dim = --text-faint, prompt and
+ * cursor = --accent-hi. What changes is the emphasis mechanism. Dark marks the
+ * executing line with a wash it can afford to make loud, because everything
+ * around it is near-black. Paper cannot: a wash dark enough to read at a glance
+ * pushes --error and --success under 4.5:1 on top of it. So per BRAND.md §3
+ * the light log leans on HAIRLINES AND WEIGHT — the washes sit at the same
+ * quietness as --surface-2 (1.11:1 on the page) and the active row is carried
+ * by a --border-strong rule plus 500 weight. See 04 §6.5 for the ledger. */
+html[data-theme="light"][data-mode="terminal"] .sakura {
+  /* the console's own hairline, and the deep red its .err class needs. Scoped
+   * here rather than to the light core on purpose — see the note above. */
+  --border-strong: #a97188;
+  --error-hi: #95241a;
+
+  --term-log: #6f4459;
+  --term-log-dim: #84536a;
+  --term-prompt: #93275a;
+  --term-active-line: #f9e2ed;
+  --term-cursor: #93275a;
+  --term-success-line: #daece3;
+  --term-error-line: #fae3de;
 }
 
 /* ::selection uses --selection in both modes (04 §5 rationing rules). */
@@ -154,8 +226,9 @@ html[data-mode="terminal"] .sakura {
 
   /* --- derived roles (no new colour: aliases onto §2 tokens) --- */
   /* §2.3: `--error` on `--surface-2` fails contrast; dark ships `--error-hi`
-   * for exactly that. Light has no `--error-hi`, so it falls back to its own
-   * `--error` — see the open question in docs/COMPONENTS.md. */
+   * for exactly that. Light's own `--error` clears 4.5:1 on all three surfaces
+   * (04 §3.4), so it stays the danger text even now that terminal · light
+   * defines an `--error-hi` — changing that is a decision, not a derivation. */
   --danger-text: var(--error);
   /* the backdrop behind an overlay — same recipe chrome.css and terminal.css
    * already use, expressed once. */
@@ -173,7 +246,11 @@ html[data-mode="terminal"] .sakura {
   --focus-ring-w: 2px;
 }
 
-html[data-mode="terminal"] .sakura {
+/* Derived roles that follow the LADDER, not the interface. These keyed off
+ * data-mode while mode implied theme; they are theme-keyed now (D-15 says
+ * "sideways in light, none in dark" — that is a statement about the ladder). */
+html[data-theme="dark"] .sakura,
+html:not([data-theme])[data-mode="terminal"] .sakura {
   --danger-text: var(--error-hi);
   /* D-15: on Night Plum a shadow is near-invisible whatever value it takes — a
    * shadow reads by being darker than its background, and --bg is already
@@ -186,8 +263,10 @@ html[data-mode="terminal"] .sakura {
 }
 
 @media (max-width: 767px) {
-  .sakura,
-  html[data-mode="terminal"] .sakura {
+  /* --pad-card is declared once, on the base .sakura block, and no ladder
+   * overrides it — so one selector at the same specificity, later in the file,
+   * covers every theme. */
+  .sakura {
     --pad-card: 20px; /* §5: card padding drops a rung on phone */
   }
 }

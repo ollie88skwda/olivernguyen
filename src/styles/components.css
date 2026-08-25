@@ -1165,9 +1165,9 @@
 .sakura .on-glyph[data-tone="error"] { color: var(--danger-text); }
 
 /* log line: timestamp · glyph · text. Density is allowed here and only here
-   plus the statusline (§5). Colours come from the terminal ladder when it is
-   defined and fall back to the shared ladder otherwise — the light-terminal
-   theme is still "to derive" (BRAND.md §3) — that is the next job. */
+   plus the statusline (§5). Colours come from the terminal ladder — both
+   ladders now define --term-* (BRAND.md §3, 04 §6). The var() fallbacks stay:
+   a Log rendered in graph mode has no console ladder to read. */
 .sakura .on-log {
   display: block;
   border: 1px solid var(--border);
@@ -1211,6 +1211,15 @@
 .sakura .on-log-line[data-state="error"] {
   background: var(--term-error-line, var(--surface-2));
   color: var(--danger-text);
+}
+/* TERMINAL · LIGHT only. On paper the active-row wash has to stay quiet or the
+ * state colours sitting on it drop under 4.5:1 (04 §6.5 note 7), so BRAND.md §3
+ * gives this theme a different emphasis mechanism: the §9 hairline, plus the
+ * ratified 500 weight of the mono body face (§7). No other theme changes. */
+html[data-theme="light"][data-mode="terminal"] .sakura .on-log-line[data-state="active"] {
+  border-left: 1px solid var(--border-strong);
+  padding-left: calc(var(--s-4) - 1px);
+  font-weight: 500;
 }
 
 /* code / log block — a surface, so square (§4) */
@@ -1296,11 +1305,10 @@
 
 /* node card — the graph's unit.
  *
- * The --node-* tokens are declared in the LIGHT block of sakura.css and the
- * dark block does not override them, because BRAND.md §3 still lists
- * graph · dark as "to derive". So they are only safe to read when graph mode
- * is actually on; in terminal mode the card falls back to the shared ladder.
- * Reading them unconditionally paints a Sakura-Paper card inside Night Plum. */
+ * Both ladders now declare --node-* (graph · dark was derived 2026-08-26), so
+ * the values always match the active ladder. The data-mode guard stays: --node-*
+ * describes the CANVAS, and a node card rendered inside the terminal should
+ * take the shared surface ladder, not the canvas one. */
 .sakura .on-node {
   box-sizing: border-box;
   display: flex;

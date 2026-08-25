@@ -1,39 +1,61 @@
-// Dev-only: screenshots the component gallery in both SHIPPED themes
-// (BRAND.md §3) plus the 375px phone render, and fails on any console error.
-// AGENTS.md §4 requires exactly these three renders before visual work is
+// Dev-only: screenshots the component gallery in ALL FOUR themes (BRAND.md §3
+// — theme and mode are independent) plus the 375px phone render, and fails on
+// any console error. AGENTS.md §4 requires those renders before visual work is
 // called done. Output lands in e2e/__shots__/ and is gitignored — these are
 // eyeballing artefacts, not visual-regression baselines.
+//
+// The ladder is set by <html data-theme>, which no provider writes yet, so the
+// combos are driven by an init script. `null` means "leave it unset" — that is
+// the shipped path today, through sakura.css's back-compat clause.
 import { test, expect } from "@playwright/test";
 
 const THEMES = ["terminal", "graph"];
+const COMBOS = [
+  { mode: "terminal", theme: null, id: "terminal" }, // shipped: dark, via the bridge
+  { mode: "graph", theme: null, id: "graph" }, // shipped: light
+  { mode: "terminal", theme: "light", id: "terminal-light" }, // derived 04 §6.1
+  { mode: "graph", theme: "dark", id: "graph-dark" }, // derived 04 §6.3
+];
 
-for (const mode of THEMES) {
-  test(`gallery renders clean: ${mode}`, async ({ page }) => {
+const setTheme = (page, theme) =>
+  theme
+    ? page.addInitScript((t) => {
+        // init scripts run before <html> exists, hence the readiness guard.
+        const apply = () => document.documentElement.setAttribute("data-theme", t);
+        if (document.documentElement) apply();
+        else document.addEventListener("readystatechange", apply, { once: true });
+      }, theme)
+    : Promise.resolve();
+
+for (const { mode, theme, id } of COMBOS) {
+  test(`gallery renders clean: ${id}`, async ({ page }) => {
     const errors = [];
     page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
     page.on("pageerror", (e) => errors.push(String(e)));
 
+    await setTheme(page, theme);
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto(`/_components?mode=${mode}`, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(400);
 
     await expect(page.locator("html")).toHaveAttribute("data-mode", mode);
-    await page.screenshot({ path: `e2e/__shots__/gallery-${mode}.png`, fullPage: true });
+    await page.screenshot({ path: `e2e/__shots__/gallery-${id}.png`, fullPage: true });
     expect(errors, `console errors: ${errors.join(" | ")}`).toEqual([]);
   });
 
-  test(`gallery renders clean at 375px: ${mode}`, async ({ page }) => {
+  test(`gallery renders clean at 375px: ${id}`, async ({ page }) => {
     const errors = [];
     page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
     page.on("pageerror", (e) => errors.push(String(e)));
 
+    await setTheme(page, theme);
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto(`/_components?mode=${mode}`, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(400);
 
-    await page.screenshot({ path: `e2e/__shots__/gallery-${mode}-375.png`, fullPage: true });
+    await page.screenshot({ path: `e2e/__shots__/gallery-${id}-375.png`, fullPage: true });
     expect(errors, `console errors: ${errors.join(" | ")}`).toEqual([]);
   });
 }

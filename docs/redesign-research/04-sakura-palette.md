@@ -269,8 +269,12 @@ measured ladder without needing correction.
 
 ## 5 · Implementation notes
 
+Shipped scoping (see `src/styles/sakura.css` — tokens live under `.sakura`, never `:root`).
+**Theme and mode are independent axes**, so the ladder is keyed off `data-theme` and the
+interface-specific tokens off `data-mode`:
+
 ```css
-:root[data-mode="graph"] {            /* LIGHT SAKURA — sakura paper */
+.sakura {                              /* LIGHT LADDER — sakura paper (default) */
   --bg: #faf1f5;        --surface: #fdf8fa;    --surface-2: #f2e2ea;
   --border: #e2c9d4;
   --text: #3a1e2b;      --text-muted: #6f4459; --text-faint: #84536a;
@@ -280,23 +284,180 @@ measured ladder without needing correction.
   --node-fill: #fdf8fa; --node-border: #a97188; --node-border-active: #a83a68;
   --edge: #d9b6c4;      --routing-pulse: #15734f; --dot-grid: #e8d3dc;
 }
-:root[data-mode="terminal"] {         /* DARK SAKURA — night plum */
+html[data-theme="dark"] .sakura {       /* DARK LADDER — night plum */
   --bg: #180f14;        --surface: #1f1319;    --surface-2: #2a1b22;
   --border: #3a2430;    --border-strong: #5c3a48;
   --text: #f5dce6;      --text-muted: #d888a8; --text-faint: #b0788f;
   --accent: #ffb7d1;    --accent-hi: #ff6fb0;  --on-accent: #1f1319;
   --success: #46b989;   --warning: #e8a94a;    --error: #e15647; --error-hi: #ea897e;
   --selection: #3a2430;
+  --node-fill: #1f1319; --node-border: #8f5b70; --node-border-active: #ffb7d1;
+  --edge: #4f323e;      --routing-pulse: #46b989; --dot-grid: #34242b;   /* §6.3 */
+}
+html[data-theme="dark"][data-mode="terminal"] .sakura {     /* console · dark, §2.2 */
   --term-log: #d888a8;  --term-log-dim: #b0788f; --term-prompt: #ff6fb0;
   --term-active-line: #31202a; --term-cursor: #ff6fb0;
   --term-success-line: #182520; --term-error-line: #2b1917;
 }
+html[data-theme="light"][data-mode="terminal"] .sakura {    /* console · light, §6.1 */
+  --border-strong: #a97188; --error-hi: #95241a;
+  --term-log: #6f4459;  --term-log-dim: #84536a; --term-prompt: #93275a;
+  --term-active-line: #f9e2ed; --term-cursor: #93275a;
+  --term-success-line: #daece3; --term-error-line: #fae3de;
+}
 ```
+
+The `--node-*` / `--edge` / `--dot-grid` set ships with the **ladder** (each ladder declares its
+own) and is read only under `html[data-mode="graph"]` — they describe the canvas, so a node card
+rendered inside the terminal takes the shared surface ladder instead.
+
+Until a theme switch is wired, `src/styles/sakura.css` carries one back-compat selector clause,
+`html:not([data-theme])[data-mode="terminal"]`, so the shipped terminal keeps rendering dark while
+`ModeProvider` is the only thing setting an attribute. Delete that clause when a `ThemeProvider`
+lands.
 
 Rationing rules carried over from the concept docs: jade appears **only** on
 success/routing; `--accent-hi` is for the single loudest element per view (prompt, active
 node, primary CTA); gold and red only for genuine states, never decoration. `::selection`
 uses `--selection` in both modes.
+
+---
+
+## 6 · The two derived themes (2026-08-26)
+
+`BRAND.md` §3 makes theme and mode independent, which means four combinations, not two.
+§2 and §3 above ship the diagonal (terminal · dark, graph · light). This section derives the
+other two under the same rule that built §3 from §2:
+
+> **Hold the hue slice. Move only the ladder position.**
+
+No new hue is introduced here. Every value below is either an existing token reused in a new
+role, or a point placed on a ladder that already exists, at a hue inside the 344–356° pink slice
+(or the ratified jade / red / gold satellites).
+
+### 6.1 TERMINAL · LIGHT — plum ink on sakura paper
+
+Core ladder is §3.2 unchanged. The console roles keep their §2.2 job descriptions and take the
+light ladder's rung for each: log = `--text-muted`, dim = `--text-faint`, prompt and cursor =
+`--accent-hi`.
+
+| Token | Hex | OKLCH (L / C / H) | Derivation |
+|---|---|---|---|
+| `--term-log` | `#6f4459` | 0.444 / 0.066 / 349.4 | `--text-muted` — the log body is the reading tier, exactly as rose is in dark |
+| `--term-log-dim` | `#84536a` | 0.504 / 0.072 / 350.4 | `--text-faint` — timestamps, decision numbers, tree pipes |
+| `--term-prompt` | `#93275a` | 0.458 / 0.150 / 356.0 | `--accent-hi` — the one loudest element, deeper not brighter |
+| `--term-cursor` | `#93275a` | 0.458 / 0.150 / 356.0 | same as the prompt, per §2.2 |
+| `--term-active-line` | `#f9e2ed` | 0.934 / 0.029 / 347.1 | blossom wash at `--surface-2` quietness (1.11:1 on the page) |
+| `--term-success-line` | `#daece3` | 0.927 / 0.023 / 164.5 | same rung, hue held at jade |
+| `--term-error-line` | `#fae3de` | 0.933 / 0.026 / 32.2 | same rung, hue held at petalRed |
+| `--border-strong` | `#a97188` | 0.614 / 0.077 / 353.3 | the light ladder's ratified non-text stroke (= `--node-border`) |
+| `--error-hi` | `#95241a` | 0.444 / 0.151 / 29.5 | `--error` pushed one rung deeper; the console's `.err` class needs it |
+
+**Why the washes are quiet, and what carries emphasis instead.** Dark can afford a loud active-row
+wash because everything around it is near-black — `#31202a` is 1.23:1 on the page and still leaves
+`--text` at 11.86:1. Paper cannot: a wash dark enough to read at a glance drops `--error` to 4.16
+and `--success` to 4.29 on top of it. The binding constraint is the lightest state colour
+(`--error` `#b93a2c`), and holding it at 4.5:1 caps every wash at roughly `--surface-2` luminance.
+That is the mechanical reason `BRAND.md` §3 says light terminal **leans on hairlines and weight**:
+the active row is marked by a `--border-strong` rule plus 500 weight, and the wash only tints.
+
+### 6.2 Terminal · light contrast table
+
+Requirement, as §2.3: body + small mono ≥ 4.5:1, large display ≥ 3:1, non-text UI ≥ 3:1.
+The core tiers are §3.4 and unchanged; this table covers what the theme adds.
+
+| Foreground | on `--bg` #faf1f5 | on `--surface` #fdf8fa | on `--surface-2` #f2e2ea | Verdict |
+|---|---|---|---|---|
+| `--term-log` #6f4459 | **7.16** | **7.55** | **6.36** | AA+ everywhere |
+| `--term-log-dim` #84536a | **5.53** | **5.83** | **4.92** | AA everywhere |
+| `--term-prompt` #93275a | **7.08** | **7.46** | **6.29** | AA+ everywhere |
+| `--error-hi` #95241a | **7.45** | **7.85** | **6.62** | AA+ everywhere |
+
+Every text tier and every state colour on all three line washes — the bar dark does not clear:
+
+| Foreground | on `--term-active-line` #f9e2ed | on `--term-success-line` #daece3 | on `--term-error-line` #fae3de | Verdict |
+|---|---|---|---|---|
+| `--text` #3a1e2b | **12.23** | **12.20** | **12.22** | AAA everywhere |
+| `--term-log` #6f4459 | **6.47** | **6.46** | **6.46** | AA+ everywhere |
+| `--term-log-dim` #84536a | **5.00** | **4.99** | **4.99** | AA everywhere |
+| `--term-prompt` #93275a | **6.40** | **6.38** | **6.39** | AA+ everywhere |
+| `--accent` #a83a68 | **4.94** | **4.92** | **4.93** | AA everywhere |
+| `--success` #15734f | **4.76** | **4.75** | **4.76** | AA everywhere |
+| `--warning` #835b10 | **4.94** | **4.93** | **4.93** | AA everywhere |
+| `--error` #b93a2c | **4.62** | **4.61** | **4.62** | AA everywhere |
+| `--error-hi` #95241a | **6.73** | **6.71** | **6.72** | AA+ everywhere |
+
+Other measured pairs:
+
+| Pair | Ratio | Requirement | Verdict |
+|---|---|---|---|
+| `--border-strong` #a97188 vs `--bg` | **3.51** | 3.0 (non-text UI) | ✓ |
+| `--border-strong` #a97188 vs `--surface` | **3.70** | 3.0 | ✓ |
+| `--border-strong` #a97188 vs `--surface-2` | **3.12** | 3.0 | ✓ |
+| `--term-active-line` vs `--bg` | 1.11 | — (surface step, not a signal) | ✓ |
+| `--term-success-line` vs `--bg` | 1.11 | — | ✓ |
+| `--term-error-line` vs `--bg` | 1.11 | — | ✓ |
+
+### 6.3 GRAPH · DARK — the canvas at night
+
+Core ladder is §2.1 unchanged; only the §3.3 canvas set is re-placed on it.
+
+| Token | Hex | OKLCH (L / C / H) | Derivation |
+|---|---|---|---|
+| `--node-fill` | `#1f1319` | 0.205 / 0.023 / 347.8 | `--surface` — elevation goes *lighter* on both ladders |
+| `--node-border` | `#8f5b70` | 0.535 / 0.074 / 354.1 | pi roseDim — the value §4.1 retains for decorative strokes, never glyphs. 3.49:1 on the canvas mirrors light's 3.51 |
+| `--node-border-active` | `#ffb7d1` | 0.854 / 0.089 / 355.7 | `--accent`, as light uses its own `--accent` |
+| `--edge` | `#4f323e` | 0.356 / 0.046 / 353.2 | new rung, sat midway between `--border` (L 0.292) and `--border-strong` (L 0.393); 1.66:1 on the canvas, the exact ratio light's `#d9b6c4` holds |
+| `--routing-pulse` | `#46b989` | 0.708 / 0.126 / 162.4 | `--success` — jade still means "currently routing" |
+| `--dot-grid` | `#34242b` | 0.282 / 0.027 / 351.0 | new rung just under `--border`; 1.28:1, the exact ratio light's `#e8d3dc` holds |
+
+Both new rungs (`--edge`, `--dot-grid`) were solved for their light counterpart's **canvas ratio**
+rather than eyeballed, so the texture is measurably as quiet at night as it is on paper, and both
+sit inside the ladder's chroma arch (C 0.046 and 0.027 at L 0.36 and 0.28).
+
+### 6.4 Graph · dark contrast table
+
+| Foreground | on `--bg` #180f14 (canvas) | on `--node-fill` #1f1319 | on `--surface-2` #2a1b22 | Verdict |
+|---|---|---|---|---|
+| `--text` #f5dce6 | **14.56** | **13.95** | **12.72** | AAA everywhere |
+| `--text-muted` #d888a8 | **7.17** | **6.87** | **6.26** | AA+ everywhere — the node-label tier |
+| `--text-faint` #b0788f | **5.31** | **5.09** | **4.64** | AA everywhere |
+| `--accent` #ffb7d1 | **11.59** | **11.11** | **10.13** | AAA everywhere |
+
+Non-text UI and signal pairs:
+
+| Pair | Ratio | Requirement | Verdict |
+|---|---|---|---|
+| `--node-border` #8f5b70 vs canvas #180f14 | **3.49** | 3.0 (non-text UI) | ✓ |
+| `--node-border` #8f5b70 vs `--node-fill` #1f1319 | **3.34** | 3.0 | ✓ |
+| `--node-border-active` #ffb7d1 vs canvas | **11.59** | 3.0 | ✓ |
+| `--routing-pulse` #46b989 vs canvas | **7.66** | 3.0 (and 4.5 if used as label text) | ✓ |
+| `--routing-pulse` #46b989 vs `--node-fill` | **7.35** | 4.5 | ✓ |
+| `--edge` #4f323e vs canvas | 1.66 | — decorative, exempt (§3.3) | ✓ |
+| `--dot-grid` #34242b vs canvas | 1.28 | — decorative, exempt (§3.3) | ✓ |
+
+### 6.5 Adjustments and open items (the honest ledger, continued from §4)
+
+7. **Light `--term-active-line` deliberately quieter than its dark twin** (1.11 vs 1.23 on the
+   page). Mirroring dark's step exactly gave `#edd7e2`, on which `--error` measured **4.16** and
+   `--success` **4.29**. Rather than bend a state colour, the wash was lifted until the lightest
+   state colour cleared 4.5. Emphasis moves to the hairline + weight, which is what `BRAND.md` §3
+   already specifies for this theme.
+8. **Light `--border-strong` takes the 3:1 rung, not dark's 1.93 rung.** Dark's `#5c3a48` is
+   1.93:1 on its page — fine there, because dark's emphasis comes from the wash and the glow.
+   Light terminal has neither, so its strong hairline is the value the light ladder already
+   ratified for non-text UI (`--node-border` `#a97188`, 3.51:1). Same value, second role.
+9. **Dark `--text-faint` / `--error` on `--term-active-line` are below 4.5 (4.33 / 4.10).** This is
+   pre-existing and shipped: §2.3 only ever measured the log, prompt and text tiers on that wash.
+   Not reopened here (§2 is locked); the gate holds *light* to the stricter bar it was built to
+   meet and leaves dark on its documented §2.3 pair set. Worth a decision before v1 if timestamps
+   are ever rendered on the active row.
+10. **Light `--border-strong` and `--error-hi` are scoped to terminal · light, not to the light
+    core.** `src/styles/components.css` reads `var(--border-strong, var(--text-faint))` for control
+    hairlines, so declaring `--border-strong` on the light core would change *shipped* graph · light
+    rendering (checkbox / switch / field-hover borders 5.53:1 → 3.51:1). That is a brand decision,
+    not part of deriving a theme. Promoting both to the light core closes the `COMPONENTS.md`
+    "Still open" item properly and should be taken as one.
 
 ---
 

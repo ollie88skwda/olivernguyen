@@ -135,18 +135,25 @@ and what was rejected: `docs/DECISIONS.md` D-12…D-18. Summary of what changed 
 | Dialog shadow uncertain | confirmed none | `.on-dialog` |
 | Avatar font queried | already Familjen Grotesk 700, no change | `.on-avatar-fallback` |
 
-### Still open — one item, deferred on purpose
+### Closed 2026-08-26 — the four themes
 
-**The light-terminal and dark-graph themes (`BRAND.md` §3) do not exist.** This is the next job
-and the last real blocker before v1. It carries two dependencies:
+**The light-terminal and dark-graph themes now exist** (`BRAND.md` §3, values and contrast tables in
+`docs/redesign-research/04-sakura-palette.md` §6). Theme and mode are independent attributes:
+`<html data-theme="light|dark">` picks the ladder, `<html data-mode="graph|terminal">` picks the
+interface. What changed for this library:
 
-- `--term-*` exists only in dark and `--node-*` only in light, so `LogLine` and `NodeCard` each
-  fall back outside the theme they were designed for. `NodeCard` reads `--node-*` **only** under
-  `html[data-mode="graph"]`; reading them unconditionally paints a Sakura-Paper card inside Night
-  Plum, which is a bug that shipped and was caught in review.
-- `--border-strong` and `--error-hi` exist only in dark. Light falls back to `--border` and
-  `--error`; every fallback pair was contrast-checked and passes 4.5:1, so this is tidiness, not
-  a defect. Both gain light values with the theme work.
+- `--node-*` is now declared on **both** ladders. `NodeCard` still reads them only under
+  `html[data-mode="graph"]` — that guard is about the *canvas*, not about a missing theme: a node
+  card rendered inside the terminal takes the shared surface ladder on purpose.
+- `--term-*` is declared on both ladders too, under `[data-mode="terminal"]`.
+- `--border-strong` and `--error-hi` gained light values, but **scoped to terminal · light only**.
+  `components.css` reads `var(--border-strong, var(--text-faint))` for control hairlines, so putting
+  `--border-strong` on the light core would restyle shipped graph · light controls (5.53:1 → 3.51:1
+  borders). Promoting both to the light core is a live decision — 04 §6.5 item 10.
+
+**Still open:** nothing sets `data-theme` yet. `src/styles/sakura.css` carries one back-compat
+clause (`html:not([data-theme])[data-mode="terminal"]`) so the shipped terminal stays dark; a
+`ThemeProvider` (and `sonner.jsx`, which still derives its `theme` prop from mode) is the next job.
 
 ## Follow-up work this created
 
@@ -167,7 +174,7 @@ and the last real blocker before v1. It carries two dependencies:
 ## Verification
 
 ```bash
-node scripts/contrast-check.mjs            # 63/63 pairs pass
+node scripts/contrast-check.mjs            # 181/181 pairs pass, across all four themes
 npm run test:run                           # 353 unit tests
 npx playwright test e2e/gallery-shots.spec.js
 ```
