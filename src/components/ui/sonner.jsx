@@ -17,6 +17,7 @@ import * as React from "react";
 import { Toaster as Sonner } from "sonner";
 
 import { Glyph } from "@/components/brand/glyph";
+import { Icon } from "@/components/brand/icon";
 import { useMode } from "@/mode/ModeProvider";
 import "@/styles/components.css";
 
@@ -30,7 +31,7 @@ const Toaster = (props) => {
       theme={theme}
       className="on-toaster"
       icons={{
-        success: <Glyph name="check" tone="success" />,
+        success: <Icon name="check" />,
         info: <Glyph name="decision" tone="accent" />,
         warning: <Glyph name="decision" tone="warning" />,
         error: <Glyph name="close" tone="error" />,

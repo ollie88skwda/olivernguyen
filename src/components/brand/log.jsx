@@ -11,7 +11,7 @@
 //
 // STATES: dim | default | active | success | error. In terminal-dark these use
 // the --term-* ladder; the light terminal theme is still "to derive"
-// (BRAND.md §3), so each one falls back to a shared-ladder token — see OQ-1.
+// (BRAND.md §3), so each one falls back to a shared-ladder token until then.
 import * as React from "react";
 
 import { cn } from "@/lib/utils";

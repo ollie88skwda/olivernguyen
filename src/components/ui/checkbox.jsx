@@ -1,11 +1,13 @@
 // Checkbox — shadcn/ui (Radix Checkbox), restyled to BRAND.md.
-// The registry version drew the tick with a lucide CheckIcon; BRAND.md §8 /
-// D-09 put typographic marks first, so the indicator is a mono glyph.
+//
+// The tick is the one ratified §8 icon exception (D-13). It went glyph → icon
+// after review: the mono ✓ read thin and lopsided at 18px. It is drawn through
+// components/brand/icon.jsx so the 1.5 stroke and 18px grid are enforced once.
 import * as React from "react";
 import { Checkbox as CheckboxPrimitive } from "radix-ui";
 
 import { cn } from "@/lib/utils";
-import { Glyph } from "@/components/brand/glyph";
+import { Icon } from "@/components/brand/icon";
 import "@/styles/components.css";
 
 function Checkbox({ className, ...props }) {
@@ -16,7 +18,7 @@ function Checkbox({ className, ...props }) {
       {...props}
     >
       <CheckboxPrimitive.Indicator data-slot="checkbox-indicator" className="on-check-glyph">
-        <Glyph name="check" />
+        <Icon name="check" />
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
   );

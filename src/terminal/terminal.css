@@ -5,6 +5,12 @@
  * "terminal"] .sakura) — zero hexes here. Class-scoped, no ids: several
  * buffers coexist once panes land. CRT texture: none (P8).
  *
+ * TEXTURE: BRAND.md §9 / D-10 wants exactly one material layer per mode —
+ * scanline in terminal. It had been removed under P8; reinstated 2026-08-25 at
+ * 3% (D-16) after four strengths were compared on the live page. 3%, not §9's
+ * 6% ceiling: the scanline is the fastest way a terminal aesthetic tips into
+ * costume, and 6% is visible banding on OLED.
+ *
  * Cell grid (§3.1.7): sizes in ch/row multiples off --term-fs/--row. Initial
  * values are a first guess for Martian Mono (much wider than the prototype's
  * system stack) — the dedicated type pass C-3.4 retunes them vs screenshots.
@@ -24,6 +30,7 @@
   --term-fs: 14px;
   --row: 22px; /* one cell row; all vertical rhythm sits on this */
 
+  position: relative; /* the ::after texture layer anchors here */
   height: 100dvh;
   display: grid;
   grid-template-rows: 1fr auto auto; /* main (buffer/panes) / promptline / statusbar */
@@ -35,8 +42,21 @@
   font: 400 var(--term-fs) / var(--row) var(--font-mono-body);
 }
 
-/* Chromed "/" integration glue lives in chrome.css at X-2, not here — the
-   harness mounts the screen bare. */
+/* The ONE texture layer for terminal mode (§9, D-16). Static, non-interactive,
+   tinted off --text so it holds in any theme, and sits under the overlays
+   (z-index 80) and the site chrome (1000). */
+.term-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    0deg,
+    color-mix(in srgb, var(--text) 3%, transparent) 0 1px,
+    transparent 1px 3px
+  );
+}
 
 .term-screen button {
   font: inherit;

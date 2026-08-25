@@ -1,6 +1,6 @@
 // ScrollArea — shadcn/ui (Radix ScrollArea), restyled to BRAND.md.
 // Thumb uses --border-strong where the theme defines it (dark) and falls back
-// to --border otherwise; see docs/COMPONENTS.md OQ-8.
+// to --border otherwise. Light gains its own value with the two missing themes.
 import * as React from "react";
 import { ScrollArea as ScrollAreaPrimitive } from "radix-ui";
 

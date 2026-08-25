@@ -8,6 +8,7 @@ import { Select as SelectPrimitive } from "radix-ui";
 
 import { cn } from "@/lib/utils";
 import { Glyph } from "@/components/brand/glyph";
+import { Icon } from "@/components/brand/icon";
 import { PortalScope } from "@/components/brand/portal-scope";
 import "@/styles/components.css";
 
@@ -76,7 +77,7 @@ function SelectItem({ className, children, ...props }) {
       {/* the glyph column is always reserved so selecting never shifts text */}
       <span className="on-menu-glyph">
         <SelectPrimitive.ItemIndicator>
-          <Glyph name="check" />
+          <Icon name="check" />
         </SelectPrimitive.ItemIndicator>
       </span>
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>

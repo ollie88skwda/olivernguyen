@@ -31,9 +31,8 @@
 
 /* --------------------------------------------------------------------------
  * Shared control metrics.
- * BRAND.md does not specify control HEIGHTS (see docs/COMPONENTS.md, open
- * question OQ-2); these are 4px-ladder multiples, and coarse pointers get the
- * 44px minimum tap target required by §1.
+ * Control heights, ratified 2026-08-25 (D-12) and now in BRAND.md §4. All are
+ * 4px-ladder rungs; coarse pointers get the 44px minimum tap target from §1.
  * ------------------------------------------------------------------------ */
 .sakura {
   --ctl-h: 40px;
@@ -270,7 +269,7 @@
 /* ==========================================================================
  * CHECKBOX · RADIO · SWITCH
  * Checkbox is a control → 3px. Radio is a circle by convention, which §4
- * does not cover (docs/COMPONENTS.md OQ-3) — it stays round.
+ * does not cover — it is §4's third named exception and stays round (D-12).
  * The switch is the one place besides the mode toggle and status pills that
  * needs 999px, so it is drawn as a 3px track instead (§4 is explicit that
  * 999px is the mode toggle and pills ONLY).
@@ -283,8 +282,10 @@
   align-items: center;
   justify-content: center;
   flex: none;
-  width: 18px;
-  height: 18px;
+  /* D-17: sized so the §8 18px icon inside it sits clear of the hairline.
+     24 is a §5 ladder rung; it also gives a friendlier tap target. */
+  width: var(--s-6);
+  height: var(--s-6);
   padding: 0;
   border: 1px solid var(--border-strong, var(--text-faint));
   border-radius: var(--r-control);
@@ -305,11 +306,28 @@
   border-color: var(--border);
   cursor: not-allowed;
 }
+/* the tick: the one ratified §8 icon exception (D-13). §8 fixes the 1.5 stroke
+   and the 18px grid; components/brand/icon.jsx applies both. Inside an 18px
+   control the icon is stepped down one rung so it sits off the hairline. */
 .sakura .on-check-glyph {
-  font-family: var(--font-mono-body);
-  font-size: var(--fs-mono);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
   color: var(--on-accent);
+}
+.sakura .on-icon {
+  stroke-width: 1.5;
+  color: currentColor;
+  flex: none;
+}
+/* D-17: the tick is drawn at the §8 grid size. Because the 1.5 stroke is
+   defined in the icon's own coordinate space, drawing it at 18 rather than the
+   12 it was shrunk to renders the line ~50% thicker WITHOUT touching the
+   locked stroke width. */
+.sakura .on-check .on-icon {
+  width: var(--icon);
+  height: var(--icon);
 }
 
 .sakura .on-radio {
@@ -335,11 +353,15 @@
   display: inline-flex;
   align-items: center;
   flex: none;
-  width: var(--s-8);
-  height: var(--s-4);
-  /* hairline-scale inset, not §5 ladder spacing — the ladder governs gaps
-     between things, and a 4px gutter in a 16px track leaves no thumb. */
-  padding: 1px;
+  /* D-17 knock-on: the checkbox grew to 24 to hold an §8-sized tick, which left
+     the old 32x16 switch looking undersized beside it. Track is now --ctl-h
+     wide x --s-6 tall so the two controls share a height. */
+  width: var(--ctl-h);
+  height: var(--s-6);
+  /* optical inset, not §5 ladder spacing — the ladder governs gaps between
+     things; this is the gutter that makes the thumb travel land exactly on
+     one --s-4 step. */
+  padding: 3px;
   border: 1px solid var(--border-strong, var(--text-faint));
   border-radius: var(--r-control);
   background: var(--surface-2);
@@ -359,8 +381,8 @@
 }
 .sakura .on-switch-thumb {
   display: block;
-  width: var(--s-3);
-  height: var(--s-3);
+  width: var(--s-4);
+  height: var(--s-4);
   /* §4 has three radii and 1px is not one of them; the track already carries
      the control radius, so the thumb is square. */
   border-radius: var(--r-surface);
@@ -369,8 +391,8 @@
 }
 .sakura .on-switch[data-state="checked"] .on-switch-thumb {
   background: var(--on-accent);
-  /* track inner width 28 − thumb 12 = 16 = 100% of the thumb + one ladder step */
-  transform: translateX(calc(100% + var(--s-1)));
+  /* inner track 32 − thumb 16 = 16, exactly one thumb width */
+  transform: translateX(100%);
 }
 
 /* field row: label → control, §5 says label→content is 12 */
@@ -589,12 +611,19 @@
   align-self: stretch;
 }
 
-/* No shimmer: §6 bans infinite loops. The loading signal is aria-busy plus a
-   flat surface block (docs/COMPONENTS.md OQ-4). */
+/* Skeleton pulse — the SECOND ratified exception to §6's infinite-loop ban
+   (D-18; the terminal cursor blink is the first). Opacity only, no shimmer
+   sweep, no transform, and slow enough to read as breathing rather than
+   loading-spinner urgency. Off entirely under prefers-reduced-motion, where
+   the block stays at its resting opacity and aria-busy carries the state. */
+@keyframes on-skeleton-pulse {
+  50% { opacity: 0.55; }
+}
 .sakura .on-skeleton {
   display: block;
   background: var(--surface-2);
   border-radius: var(--r-surface);
+  animation: on-skeleton-pulse var(--dur-pulse) var(--ease-state) infinite;
 }
 .sakura .on-skeleton[data-shape="control"] {
   border-radius: var(--r-control);
@@ -1138,7 +1167,7 @@
 /* log line: timestamp · glyph · text. Density is allowed here and only here
    plus the statusline (§5). Colours come from the terminal ladder when it is
    defined and fall back to the shared ladder otherwise — the light-terminal
-   theme is still "to derive" (BRAND.md §3, docs/COMPONENTS.md OQ-1). */
+   theme is still "to derive" (BRAND.md §3) — that is the next job. */
 .sakura .on-log {
   display: block;
   border: 1px solid var(--border);
@@ -1318,10 +1347,13 @@ html[data-mode="graph"] .sakura .on-node[data-active="true"] {
   margin: 0;
 }
 
-/* dossier — §9's ONE exception: the only element in the system that lifts */
+/* dossier — §9's ONE exception: the only element in the system that lifts.
+ * D-15: it lifts in LIGHT (sideways, the direction it slides from). In dark it
+ * does not pretend to — --shadow-dossier is `none` there and the separation is
+ * carried by --dossier-border stepping up to the strong hairline. */
 .sakura .on-dossier {
   box-sizing: border-box;
-  border: 1px solid var(--border);
+  border: 1px solid var(--dossier-border);
   border-radius: var(--r-surface);
   background: var(--surface);
   box-shadow: var(--shadow-dossier);

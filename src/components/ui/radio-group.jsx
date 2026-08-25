@@ -1,6 +1,6 @@
 // RadioGroup — shadcn/ui (Radix RadioGroup), restyled to BRAND.md.
 // The dot indicator is a shape, not a glyph — a radio is the one control the
-// brand's radius rule does not cover (docs/COMPONENTS.md OQ-3); it stays round.
+// brand's radius rule does not cover; it is §4's third named exception (D-12).
 import * as React from "react";
 import { RadioGroup as RadioGroupPrimitive } from "radix-ui";
 

@@ -3,6 +3,8 @@
 Built 2026-08-25 on branch `feat/component-library`. Source of truth for the components; the
 source of truth for the *values* they use is `docs/BRAND.md`, and nothing here overrides it.
 
+All twelve open questions were reviewed and closed the same day — see `docs/DECISIONS.md` D-12…D-18.
+
 Gallery: `/_components` (dev server only). `docs/DECISIONS.md` follow-on item 4 is this work.
 
 ---
@@ -35,7 +37,9 @@ Gallery: `/_components` (dev server only). `docs/DECISIONS.md` follow-on item 4 
 | Type | `--fs-display` `--fs-section` `--fs-title-lg` `--fs-title` `--fs-body` `--fs-mono` `--fs-label` `--lh-body` `--lh-mono` `--track-display` `--track-label` | §7 |
 | Fonts | `--font-display` `--font-sans` `--font-mono-body` `--font-mono-label` | §7 / D-07 / D-08 |
 | Derived | `--danger-text` `--overlay` `--shadow-dossier` `--focus-ring` `--focus-ring-w` | §2.3 / §9 |
-| Controls | `--ctl-h` `--ctl-h-sm` | not in BRAND.md — see OQ-2 |
+| Controls | `--ctl-h` `--ctl-h-sm` | §4 (added D-12) |
+| Icons | `--icon` (the §8 18px grid unit) | §8 (added D-17) |
+| Motion | `--dur-pulse` | §6 (added D-18) |
 
 `--font-mono` is retained as an alias of `--font-mono-label`, because every pre-existing
 sakura-scoped use of it (`chrome.css`, `graph.css`) is a label. New code should name the role.
@@ -54,21 +58,21 @@ from the file, not just left unstyled.
 | `input` | shadcn/ui | `face` `sans\|mono`, native input props | §4 3px · §7 16px sans body (`face="mono"` → JetBrains, D-08) |
 | `textarea` | shadcn/ui | `face`, native textarea props | as `input` |
 | `select` | shadcn/ui | Radix Select parts, `SelectTrigger/Content/Item/Label/Separator/Group/Value` | trigger 3px, panel 0 · §8 glyph chevron and tick, no lucide |
-| `checkbox` | shadcn/ui | Radix Checkbox props | §4 3px · §8 `✓` glyph indicator |
-| `radio-group` | shadcn/ui | Radix RadioGroup props | round by convention — OQ-3 |
-| `switch` | shadcn/ui | Radix Switch props (`size` deleted) | §4 — redrawn as a 3px track, **not** a 999px pill |
+| `checkbox` | shadcn/ui | Radix Checkbox props | §4 3px · 24px so an §8 18px icon fits (D-17) · tick is the one ratified icon exception (D-13) |
+| `radio-group` | shadcn/ui | Radix RadioGroup props | §4's third named exception — round (D-12) |
+| `switch` | shadcn/ui | Radix Switch props (`size` deleted) | §4 — redrawn as a 3px track, **not** a 999px pill · 24px tall to match the checkbox (D-17) |
 | `label` | shadcn/ui | `role` `label\|inline` | §7 label role is uppercase Martian; `inline` is sans for checkbox text |
 | `badge` | shadcn/ui | `tone` `neutral\|accent\|success\|warning\|danger`, `solid`, `asChild` | §4 3px · §2 tones limited to rationed states |
 | `card` | shadcn/ui | `interactive`; `CardHeader/Title/Description/Content/Footer` (`CardAction` deleted) | §4 radius 0 · §9 hairline, no shadow · §5 `--pad-card` |
 | `separator` | shadcn/ui | `orientation` `decorative` | §9 the 1px hairline |
 | `avatar` | shadcn/ui | `size` `sm\|default\|lg`; `AvatarImage` `AvatarFallback` (badge/group/count deleted) | §10 **square, 3px, `oN` on `--bg`** — not a circle |
-| `skeleton` | shadcn/ui | `shape` `surface\|control\|text` | §6 no pulse — OQ-4 |
+| `skeleton` | shadcn/ui | `shape` `surface\|control\|text` | §6's second permitted loop: 1800ms opacity pulse, off under reduced motion (D-18) |
 | `progress` | shadcn/ui | `value` 0–100 | §4 radius 0 · §5 4px tall · §6 140ms |
-| `scroll-area` | shadcn/ui | `orientation`; `ScrollBar` | §9 hairline thumb — OQ-8 |
+| `scroll-area` | shadcn/ui | `orientation`; `ScrollBar` | §9 hairline thumb |
 | `table` | shadcn/ui | `numeric` on `TableHead`/`TableCell` | §7 header is a label row · §9 hairline rows · D-08 numerics in JetBrains |
 | `tabs` | shadcn/ui | Radix Tabs parts (pill/segmented list variants deleted) | §4 no 999px tabs · active = accent hairline on the §9 rail |
 | `tooltip` | shadcn/ui | Radix Tooltip parts, `TooltipProvider` required | §7 label mono · §9 no shadow, no arrow · §1 never the only carrier of a label |
-| `dialog` | shadcn/ui | `showClose`; Radix Dialog parts | §4 radius 0 · §9 **no shadow** — OQ-7 · §6 140ms fade, no scale |
+| `dialog` | shadcn/ui | `showClose`; Radix Dialog parts | §4 radius 0 · §9 no shadow, confirmed in review · §6 140ms fade, no scale |
 | `sheet` | shadcn/ui | `side` `right\|left\|top\|bottom`, `showClose` | §4 radius 0 · §6 enters on the 640ms camera curve |
 | `dropdown-menu` | shadcn/ui | Radix DropdownMenu parts incl. checkbox/radio items, sub-menus, `tone="danger"` on items | panel 0 / item 3px · §8 glyph indicators |
 | `popover` | shadcn/ui | Radix Popover parts, `PopoverTitle` `PopoverDescription` | §4/§9 as dialog |
@@ -83,19 +87,20 @@ rather than a generic UI part.
 
 | Component | Props | Brand rules encoded |
 |---|---|---|
-| `Glyph` | `name` (see `GLYPHS`), `tone`, `label` | §8 / D-09 — a mono character in a `<span>`, never an SVG path. Unlabelled marks get `aria-hidden` |
+| `Glyph` | `name` (see `GLYPHS`), `tone`, `label` | §8 / D-09 — a mono character in a `<span>`, never an SVG path. Unlabelled marks get `aria-hidden`. `checkText` is text-only (D-14) |
 | `MonoLabel` | `tone` `faint\|muted\|text\|accent`, `as` | §7 the uppercase Martian label role |
 | `Display` | `as` | §7 Familjen Grotesk 700 at `-0.02em` |
 | `SectionHead` | `kicker` `title` `as` `rule` | §7 section head · §5 12px label→content · §9 optional hairline rule |
-| `Log` / `LogLine` | `time` `glyph` `state` `dim\|default\|active\|success\|error` | §5 the one place density is allowed, 880px column cap · §7 JetBrains body + Martian timestamp · §8 glyph · §1 readable at 375px |
+| `Log` / `LogLine` | `time` `glyph` `state` `dim\|default\|active\|success\|error` | §5 the one place density is allowed, 880px column cap · §7 JetBrains body + Martian timestamp · §8 glyph, incl. the text-only tick (D-14) · §1 readable at 375px |
 | `CodeBlock` | `title` `meta` | §4 radius 0 · §7 mono body · §9 hairline header strip |
 | `Statusline` / `StatuslineSpacer` | — | §5 density · §7 Martian |
 | `StatusPill` | `status` `neutral\|live\|routing\|warning\|error`, `dot` | §4 — one of the only two components allowed 999px · §2 jade means "it worked" |
 | `PromptBar` | `placeholder` `onSubmit`, native input props | §4 3px control · §8 `▸` sigil · §6 140ms focus |
-| `NodeCard` | `kicker` `title` `description` `tech[]` `active` `as` | §4 radius 0 · §7 display title · §9 hairline. Reads `--node-*` **only** under `html[data-mode="graph"]` — see OQ-1 |
+| `NodeCard` | `kicker` `title` `description` `tech[]` `active` `as` | §4 radius 0 · §7 display title · §9 hairline. Reads `--node-*` **only** under `html[data-mode="graph"]` — see "Still open" below |
 | `TechToken` / `TechRow` | — | §4 3px · §5 8px inline token gap · §2 low-contrast so a stack list is not the loudest thing on screen |
-| `Dossier` / `DossierHeader` | `kicker` `title` `meta` `onClose` | §9 **the only component in the library with a shadow** |
+| `Dossier` / `DossierHeader` | `kicker` `title` `meta` `onClose` | §9 the only component that lifts — and only in light; dark uses `--border-strong` instead (D-15) |
 | `StatBlock` / `StatRow` | `value` `label` | §7 display figure + Martian label |
+| `Icon` | `name` (allow-list), `size` | §8's narrow exception — lucide only, stroke locked to 1.5, sized on `--icon`. Adding a name is a decision (D-13, D-17) |
 | `PortalScope` | — | `AGENTS.md` §2 — re-scopes `.sakura` around portalled overlays |
 
 ### Not sourced from Magic UI or 21st.dev
@@ -111,23 +116,37 @@ rather than a generic UI part.
 
 ---
 
-## Open questions — values `BRAND.md` does not define
+## Decisions taken 2026-08-25
 
-Per `BRAND.md` §11.4 these are raised, not invented. Each one names the placeholder in use so it can
-be found and replaced when the value is decided.
+Every gap this library hit was reviewed by Oliver against live renders and closed. Full rationale
+and what was rejected: `docs/DECISIONS.md` D-12…D-18. Summary of what changed in the code:
 
-| # | Gap | Placeholder in use |
+| Was | Decision | Where it lives now |
 |---|---|---|
-| OQ-1 | §3 lists **terminal · light** and **graph · dark** as "to derive". The log line's `--term-*` ladder exists only in dark, and `--node-*` only in light. | `LogLine` falls back to `--text-muted` / `--selection` / `--surface-2`; `NodeCard` reads `--node-*` only under `html[data-mode="graph"]`. Both are wrong-but-legible placeholders. |
-| OQ-2 | No **control height** anywhere in `BRAND.md`. | `--ctl-h: 40px`, `--ctl-h-sm: 32px`, both 4px-ladder rungs; 44px on coarse pointer per §1. |
-| OQ-3 | §4 covers surfaces, controls and pills. A **radio button** is none of them cleanly — 3px looks broken. | `--r-pill` on the radio only. |
-| OQ-4 | §6 bans infinite loops, so a **skeleton cannot shimmer**. A flat block may read as broken rather than loading. | Static `--surface-2` block plus `aria-busy` on the container. |
-| OQ-5 | §7 fixes hero, section head, body and mono sizes but **nothing between a section head and body** — card, dialog and node titles live there. | `--fs-title: 24px`, `--fs-title-lg: 32px`. |
-| OQ-6 | §8's glyph list has no **check, chevron, bullet or ellipsis**, which controls need. | `✓ ▾ ▴ ▸ ◂ ▪ …` added to `GLYPHS` and flagged in `src/components/brand/glyph.jsx`. Same mechanism as the ratified set, but not ratified. |
-| OQ-7 | §9 allows a shadow **only** on the open dossier, so a modal dialog sits on the same surface colour as the page with just a hairline and the backdrop. Confirm that is intended. | Hairline + `--overlay` backdrop, no shadow. |
-| OQ-8 | `--border-strong` exists in dark only; `--error-hi` likewise. Light has no equivalent. | `var(--border-strong, var(--border))`; `--danger-text` aliases to `--error-hi` in dark and `--error` in light (both clear 4.5:1 on `--surface-2` — verified). |
-| OQ-9 | §9 names the dossier shadow but gives **no value**. | Light: the recipe already in `src/graph/graph.css`. Dark: `color-mix(--bg 72%)`, a placeholder — a `--text`-tinted shadow on Night Plum is a pink halo, which §9 bans. |
-| OQ-10 | §9 wants **one texture layer per mode** (grain/scanline in terminal). `src/terminal/terminal.css` records that P8 removed it. | None added. The gallery and all surfaces are untextured. |
+| Control heights invented | `40 / 32 / 44-coarse`; checkbox + switch `24` | `--ctl-h`, `--ctl-h-sm`, `.on-check`, `.on-switch` |
+| Mid-tier type sizes invented | card/dialog/node `24`, dossier `32` | `--fs-title`, `--fs-title-lg` |
+| Radio shape unruled | round, third named §4 exception | `.on-radio` |
+| 7 unratified glyphs | 6 ratified; the tick became an icon | `glyph.jsx`, `icon.jsx` |
+| Tick weak at control size | lucide, 1.5 stroke, full 18px grid | `icon.jsx`, `--icon` |
+| Tick also used in log text | character kept for text ONLY, named `checkText` | `glyph.jsx` |
+| Skeleton frozen | 1800ms opacity pulse, second permitted loop | `--dur-pulse`, `.on-skeleton` |
+| Dossier shadow guessed | sideways in light, none in dark | `--shadow-dossier`, `--dossier-border` |
+| Terminal untextured | scanline reinstated at 3% | `.term-screen::after` |
+| Dialog shadow uncertain | confirmed none | `.on-dialog` |
+| Avatar font queried | already Familjen Grotesk 700, no change | `.on-avatar-fallback` |
+
+### Still open — one item, deferred on purpose
+
+**The light-terminal and dark-graph themes (`BRAND.md` §3) do not exist.** This is the next job
+and the last real blocker before v1. It carries two dependencies:
+
+- `--term-*` exists only in dark and `--node-*` only in light, so `LogLine` and `NodeCard` each
+  fall back outside the theme they were designed for. `NodeCard` reads `--node-*` **only** under
+  `html[data-mode="graph"]`; reading them unconditionally paints a Sakura-Paper card inside Night
+  Plum, which is a bug that shipped and was caught in review.
+- `--border-strong` and `--error-hi` exist only in dark. Light falls back to `--border` and
+  `--error`; every fallback pair was contrast-checked and passes 4.5:1, so this is tidiness, not
+  a defect. Both gain light values with the theme work.
 
 ## Follow-up work this created
 
@@ -142,6 +161,8 @@ be found and replaced when the value is decided.
    (verified by stashing). `/pull` and `/college` pass. Unrelated pre-existing baseline drift.
 4. Nothing shipped consumes this library yet, so `components.css` is absent from the production
    bundle. Entry chunk is 48.18 kB gz, inside the 180 kB budget.
+5. **Do not strip the terminal scanline.** It was removed once under P8 and reinstated
+   deliberately at 3% (D-16). Reversing it needs a new decision entry.
 
 ## Verification
 

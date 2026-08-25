@@ -3,7 +3,7 @@
 // The registry ships a rounded, shadowed, scale-animated modal. All three go:
 //   §4  a dialog is a surface → radius 0
 //   §9  shadows exist on the open dossier and nowhere else → hairline + the
-//       --overlay backdrop do the separating (raised as OQ-7)
+//       --overlay backdrop do the separating (confirmed in review, 2026-08-25)
 //   §6  no scale/spring entrance; the backdrop and panel cross-fade at 140ms
 // The close affordance is the §8 ✕ glyph.
 import * as React from "react";

@@ -584,7 +584,7 @@ function Specimens() {
             <LogLine time="09:14:03" glyph="decision" state="active">
               route → tool:search (confidence 0.91)
             </LogLine>
-            <LogLine time="09:14:05" glyph="check" state="success">
+            <LogLine time="09:14:05" glyph="checkText" state="success">
               committed 3 changes
             </LogLine>
             <LogLine time="09:14:06" glyph="close" state="error">

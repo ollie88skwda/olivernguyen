@@ -11,6 +11,7 @@ import { DropdownMenu as DropdownMenuPrimitive } from "radix-ui";
 
 import { cn } from "@/lib/utils";
 import { Glyph } from "@/components/brand/glyph";
+import { Icon } from "@/components/brand/icon";
 import { PortalScope } from "@/components/brand/portal-scope";
 import "@/styles/components.css";
 
@@ -61,7 +62,7 @@ function DropdownMenuCheckboxItem({ className, children, ...props }) {
     >
       <span className="on-menu-glyph">
         <DropdownMenuPrimitive.ItemIndicator>
-          <Glyph name="check" />
+          <Icon name="check" />
         </DropdownMenuPrimitive.ItemIndicator>
       </span>
       {children}

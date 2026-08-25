@@ -125,6 +125,9 @@ html[data-mode="terminal"] .sakura {
   --dur-camera: 640ms;
   --ease-camera: cubic-bezier(0.16, 1, 0.3, 1);
   --type-cadence: 28ms; /* signature 1: terminal typing, per character */
+  /* D-18: the second ratified exception to §6's infinite-loop ban (the cursor
+   * blink is the first). Skeleton breathing — opacity only, deliberately slow. */
+  --dur-pulse: 1800ms;
 
   /* --- type (§7) --- */
   --fs-display: clamp(40px, 5.5vw, 64px);
@@ -132,7 +135,7 @@ html[data-mode="terminal"] .sakura {
   /* §7 fixes hero, section head, body, mono body and mono label, but not the
    * sizes between a section head and body copy — card, dialog and node titles
    * live there. These two are 4px-ladder rungs chosen to sit under §7's
-   * "section heads ~32–40px"; flagged as OQ-5 in docs/COMPONENTS.md. */
+   * "section heads ~32–40px"; ratified 2026-08-25 (D-12). */
   --fs-title-lg: 32px;
   --fs-title: 24px;
   --fs-body: 16px;
@@ -140,6 +143,12 @@ html[data-mode="terminal"] .sakura {
   --fs-mono: 13px; /* §7 range 13–14 */
   --lh-mono: 1.7;
   --fs-label: 11px; /* §7 range 10–11 */
+
+  /* --- icons (§8) --- */
+  /* §8: real icons are sized "on an 18px grid". This is that grid unit. It is
+   * NOT a spacing-ladder value and must not be used for layout. D-17 fixed the
+   * checkbox tick at exactly this size after it had been drawn smaller. */
+  --icon: 18px;
   --track-display: -0.02em;
   --track-label: 0.12em; /* §7 range 0.08–0.16em */
 
@@ -151,11 +160,12 @@ html[data-mode="terminal"] .sakura {
   /* the backdrop behind an overlay — same recipe chrome.css and terminal.css
    * already use, expressed once. */
   --overlay: color-mix(in srgb, var(--bg) 65%, transparent);
-  /* §9: the ONE permitted shadow, on the open dossier only. §9 does not give
-   * it a value; this is the recipe graph.css already ships for the real
-   * dossier, expressed as a token. The dark variant below is a placeholder
-   * until graph · dark is derived (§3) — see docs/COMPONENTS.md OQ-9. */
-  --shadow-dossier: 0 18px 56px color-mix(in srgb, var(--text) 8%, transparent);
+  /* §9: the ONE permitted shadow, on the open dossier only. §9 names it but
+   * gives no value; settled 2026-08-25 (D-15). LIGHT casts SIDEWAYS, because
+   * that is the direction the panel slides in from — same recipe graph.css
+   * already ships for the real dossier. */
+  --shadow-dossier: -18px 0 56px color-mix(in srgb, var(--text) 8%, transparent);
+  --dossier-border: var(--border);
   /* focus: 2px --accent-hi at 1px offset, the treatment terminal.css already
    * ships. BRAND.md §4 fixes the focus-ring RADIUS (3px) but not its colour or
    * width — flagged in docs/COMPONENTS.md. */
@@ -165,9 +175,14 @@ html[data-mode="terminal"] .sakura {
 
 html[data-mode="terminal"] .sakura {
   --danger-text: var(--error-hi);
-  /* on Night Plum a --text-tinted shadow is a pink halo, and §9 bans border +
-   * shadow + glow on one element. Shadow downward off --bg instead. */
-  --shadow-dossier: 0 18px 56px color-mix(in srgb, var(--bg) 72%, transparent);
+  /* D-15: on Night Plum a shadow is near-invisible whatever value it takes — a
+   * shadow reads by being darker than its background, and --bg is already
+   * nearly black. Rendered side by side, five candidates were indistinguish-
+   * able. So dark does not fake depth: no shadow, and the dossier is separated
+   * by the strong hairline instead. (A --text-tinted shadow here would be a
+   * pink halo, which §9 bans outright.) */
+  --shadow-dossier: none;
+  --dossier-border: var(--border-strong);
 }
 
 @media (max-width: 767px) {
