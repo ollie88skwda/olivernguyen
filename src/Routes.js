@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Switch, Route, useHistory, useLocation } from 
 import React, { Suspense, lazy } from "react";
 import { SiteChrome as ChromeBar } from "./chrome/SiteChrome";
 import { ModeProvider } from "./mode/ModeProvider";
+import { ThemeProvider } from "./theme/ThemeProvider";
 import { ClerkProvider } from "@clerk/react";
 import { NotFoundPage } from "./pages/not_found_page.js";
 // X-1 (P4): src/pages/home.js is unmounted but left in the tree, flagged.
@@ -87,6 +88,10 @@ const Blank = () => <div style={{ minHeight: "100dvh" }} />;
 export const Routes = () => {
   return (
     <Router>
+      {/* D-19: two independent axes, two providers. ThemeProvider writes
+          data-theme (the palette ladder), ModeProvider writes data-mode (the
+          interface). Neither reads the other. */}
+      <ThemeProvider>
       <ModeProvider>
       <SiteChrome />
       <ClerkBridge>
@@ -174,6 +179,7 @@ export const Routes = () => {
       </Suspense>
       </ClerkBridge>
       </ModeProvider>
+      </ThemeProvider>
     </Router>
   );
 };

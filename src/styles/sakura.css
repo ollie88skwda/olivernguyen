@@ -23,10 +23,11 @@
  *                                            READ under html[data-mode="graph"]
  *                                            (components.css / graph.css).
  *
- * BACK-COMPAT BRIDGE: ModeProvider sets data-mode and nothing sets data-theme
- * yet, so `html:not([data-theme])[data-mode="terminal"]` keeps the shipped
- * terminal · dark combination rendering dark until a theme switch is wired.
- * Remove that selector clause the day a ThemeProvider sets data-theme.
+ * src/theme/ThemeProvider.jsx writes data-theme (?theme= → localStorage →
+ * prefers-color-scheme → light) and src/mode/ModeProvider.jsx writes data-mode.
+ * The two never read each other. The `html:not([data-theme])` back-compat
+ * bridge that kept the shipped terminal dark before the provider existed is
+ * gone as of the provider landing (THEMES.md §2, D-19).
  *
  * Contrast pairs for ALL FOUR themes are enforced by scripts/contrast-check.mjs
  * (04 §2.3 / §3.4 dark+light cores, §6.2 / §6.4 the two derived themes).
@@ -83,8 +84,7 @@
 }
 
 /* ---- DARK SAKURA LADDER — "Night Plum" (04 §2.1) ---- */
-html[data-theme="dark"] .sakura,
-html:not([data-theme])[data-mode="terminal"] .sakura {
+html[data-theme="dark"] .sakura {
   --bg: #180f14;
   --surface: #1f1319;
   --surface-2: #2a1b22;
@@ -118,8 +118,7 @@ html:not([data-theme])[data-mode="terminal"] .sakura {
 }
 
 /* ---- TERMINAL CONSOLE · DARK LADDER (04 §2.2) ---- */
-html[data-theme="dark"][data-mode="terminal"] .sakura,
-html:not([data-theme])[data-mode="terminal"] .sakura {
+html[data-theme="dark"][data-mode="terminal"] .sakura {
   --term-log: #d888a8;
   --term-log-dim: #b0788f;
   --term-prompt: #ff6fb0;
@@ -249,8 +248,7 @@ html[data-theme="light"][data-mode="terminal"] .sakura {
 /* Derived roles that follow the LADDER, not the interface. These keyed off
  * data-mode while mode implied theme; they are theme-keyed now (D-15 says
  * "sideways in light, none in dark" — that is a statement about the ladder). */
-html[data-theme="dark"] .sakura,
-html:not([data-theme])[data-mode="terminal"] .sakura {
+html[data-theme="dark"] .sakura {
   --danger-text: var(--error-hi);
   /* D-15: on Night Plum a shadow is near-invisible whatever value it takes — a
    * shadow reads by being darker than its background, and --bg is already

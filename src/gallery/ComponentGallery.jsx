@@ -68,6 +68,7 @@ import {
 } from "@/components/brand";
 
 import { useMode } from "@/mode/ModeProvider";
+import { useTheme } from "@/theme/ThemeProvider";
 
 import "@/styles/sakura.css";
 import "@/styles/components.css";
@@ -682,36 +683,16 @@ const LADDERS = [
 ];
 
 // BRAND.md §3: theme and mode are independent, so the gallery needs BOTH
-// switches to reach all four combinations. Mode goes through the real
-// ModeProvider; the ladder is written straight onto <html data-theme> here,
-// because no ThemeProvider exists yet (04 §5) and this route is dev-only. Both
-// are mirrored into the URL so every combination is a screenshot-able link:
+// switches to reach all four combinations. Both now go through the real
+// providers — mode through ModeProvider, the ladder through ThemeProvider,
+// which reads ?theme= and mirrors it back into the URL. So every combination
+// stays a screenshot-able link, and the gallery no longer owns any switching
+// logic of its own:
 //   /_components?mode=terminal&theme=light   /_components?mode=graph&theme=dark
-const readTheme = (mode) => {
-  try {
-    const param = new URLSearchParams(window.location.search).get("theme");
-    if (LADDERS.some((l) => l.theme === param)) return param;
-  } catch {
-    /* ignore */
-  }
-  return mode === "terminal" ? "dark" : "light"; // the two shipped combinations
-};
-
 export function ComponentGallery() {
   const { mode, setMode } = useMode();
-  const [theme, setTheme] = React.useState(() => readTheme(mode));
+  const { theme, setTheme } = useTheme();
   const ladder = LADDERS.find((l) => l.theme === theme) ?? LADDERS[0];
-
-  React.useEffect(() => {
-    const html = document.documentElement;
-    html.setAttribute("data-theme", theme);
-    const url = new URL(window.location.href);
-    url.searchParams.set("theme", theme);
-    window.history.replaceState(window.history.state, "", url);
-    // leave the attribute off when the gallery unmounts, so the rest of the
-    // site goes back to the shipped data-mode bridge.
-    return () => html.removeAttribute("data-theme");
-  }, [theme]);
 
   return (
     <div className="sakura gx-root">

@@ -1,11 +1,11 @@
 // Toaster — shadcn/ui on sonner, restyled to BRAND.md.
 //
 // Two changes to the registry file:
-//  1. It imported `useTheme` from next-themes. This is a Vite app with no
-//     next-themes and no theme provider; the shipped themes are keyed off
-//     <html data-mode> (ModeProvider), so the toaster reads that instead.
-//     BRAND.md §3 will make theme independent of mode once the two remaining
-//     combinations are derived — at that point this reads the theme switch.
+//  1. It imported `useTheme` from next-themes. This is a Vite app; the ladder
+//     is our own src/theme/ThemeProvider.jsx, keyed off <html data-theme>, and
+//     that is what sonner's `theme` prop must follow. It read <html data-mode>
+//     while terminal implied dark; D-19 split the two axes and THEMES.md §6.3
+//     called this fix in.
 //  2. Its colours came from the shadcn token set and its corners from
 //     --radius. A toast is a surface: sakura tokens, radius 0, no shadow
 //     (§4/§9). Icons are §8 glyphs, not lucide.
@@ -18,13 +18,11 @@ import { Toaster as Sonner } from "sonner";
 
 import { Glyph } from "@/components/brand/glyph";
 import { Icon } from "@/components/brand/icon";
-import { useMode } from "@/mode/ModeProvider";
+import { useTheme } from "@/theme/ThemeProvider";
 import "@/styles/components.css";
 
 const Toaster = (props) => {
-  const { mode } = useMode();
-  // Shipped themes (BRAND.md §3): terminal · dark, graph · light.
-  const theme = mode === "terminal" ? "dark" : "light";
+  const { theme } = useTheme();
 
   return (
     <Sonner

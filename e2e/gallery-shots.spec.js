@@ -4,11 +4,18 @@
 // called done. Output lands in e2e/__shots__/ and is gitignored — these are
 // eyeballing artefacts, not visual-regression baselines.
 //
-// The gallery reads ?mode= and ?theme= and writes both attributes itself, so a
-// combination is just a URL.
+// ?mode= and ?theme= are read by ModeProvider and ThemeProvider respectively,
+// so a combination is just a URL. Since the back-compat bridge went away with
+// the ThemeProvider, a URL with no ?theme= follows prefers-color-scheme (light
+// under Playwright's default) whatever the mode is — so the specs below that
+// care about the dark ladder now ask for it.
 import { test, expect } from "@playwright/test";
 
-const THEMES = ["terminal", "graph"];
+// mode → the ladder its shipped combination pairs with (D-22).
+const OVERLAY_COMBOS = [
+  { mode: "terminal", theme: "dark" },
+  { mode: "graph", theme: "light" },
+];
 const COMBOS = [
   { mode: "terminal", theme: "dark", id: "terminal" }, // shipped
   { mode: "graph", theme: "light", id: "graph" }, // shipped
@@ -56,13 +63,15 @@ for (const { mode, theme, id } of COMBOS) {
 // This exists because the registry's CommandDialog dropped cmdk children
 // outside the <Command> root and threw the moment the palette opened — a crash
 // no static screenshot could have caught (2026-08-25).
-for (const mode of THEMES) {
+for (const { mode, theme } of OVERLAY_COMBOS) {
   test(`overlays open without error: ${mode}`, async ({ page }) => {
     const errors = [];
     page.on("pageerror", (e) => errors.push(String(e)));
 
     await page.setViewportSize({ width: 1100, height: 780 });
-    await page.goto(`/_components?mode=${mode}`, { waitUntil: "networkidle" });
+    await page.goto(`/_components?mode=${mode}&theme=${theme}`, {
+      waitUntil: "networkidle",
+    });
 
     const open = async (name, how = "click") => {
       const trigger = page.getByRole("button", { name, exact: true });
@@ -86,7 +95,9 @@ for (const mode of THEMES) {
 // tokens attached. If it ever regresses, a portalled panel inherits the legacy
 // navy :root and this catches it.
 test("portalled overlays keep the sakura tokens", async ({ page }) => {
-  await page.goto("/_components?mode=terminal", { waitUntil: "networkidle" });
+  await page.goto("/_components?mode=terminal&theme=dark", {
+    waitUntil: "networkidle",
+  });
   await page.getByRole("button", { name: "Dialog" }).click();
   const dialog = page.locator('[data-slot="dialog-content"]');
   await expect(dialog).toBeVisible();

@@ -12,7 +12,9 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import ScrollProgress from "../components/ScrollProgress";
+import { Icon } from "../components/brand/icon";
 import { useMode } from "../mode/ModeProvider";
+import { useTheme } from "../theme/ThemeProvider";
 import {
   FOCUS_PARAM,
   dispatchGraphIntent,
@@ -58,6 +60,7 @@ const MENU = [
 
 export const SiteChrome = () => {
   const { mode, setMode } = useMode();
+  const { theme, setTheme } = useTheme();
   const { pathname } = useLocation();
   const [visible, setVisible] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -125,6 +128,24 @@ export const SiteChrome = () => {
               </button>
             ))}
           </div>
+          {/* D-23: the theme control. Square (40px, 3px radius) precisely so it
+              does NOT read as part of the round mode toggle beside it — §4's
+              round exception list is closed. It shows the icon of the CURRENT
+              theme and names the ACTION in its accessible name; the two icons
+              crossfade over §6's 140ms state change, no rotation. Placed before
+              SEARCH ⌘K because that button only exists in graph mode on "/",
+              and the control must not move when the mode does. */}
+          <button
+            type="button"
+            className="sc-theme-btn"
+            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} theme`}
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          >
+            <span className="sc-theme-icons" aria-hidden="true">
+              <Icon name="sun" className="sc-theme-icon" data-on={theme === "light"} />
+              <Icon name="moon" className="sc-theme-icon" data-on={theme === "dark"} />
+            </span>
+          </button>
           {/* X-2: the palette lives in GraphCanvas and opens on the one
               sanctioned chord (⌘K/Ctrl-K, lib/keys.js isPaletteCombo) — the
               button synthesizes that keydown. Rendered only where a palette

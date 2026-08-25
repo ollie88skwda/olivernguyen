@@ -33,15 +33,17 @@ Two axes, independent. Theme never follows mode.
 <html data-theme="light|dark" data-mode="terminal|graph">
 ```
 
-- `data-theme` selects the ladder. Absent → the light ladder, because `.sakura` declares it as the
-  base. Never leave the page token-less.
+- `data-theme` selects the ladder. Owned by `src/theme/ThemeProvider.jsx`. Absent → the light
+  ladder, because `.sakura` declares it as the base. Never leave the page token-less.
 - `data-mode` selects the interface. Owned by `src/mode/ModeProvider.jsx`.
-- An explicit user choice on either axis wins and persists. First-visit theme follows
-  `prefers-color-scheme`; first-visit mode follows `05-v1-spec.md` §6.2.
-- **Interim (2026-08-26):** nothing writes `data-theme` outside `/_components`.
-  `src/styles/sakura.css` carries one back-compat clause,
-  `html:not([data-theme])[data-mode="terminal"]`, so the shipped terminal stays dark. **Delete that
-  clause in the same change that adds a `ThemeProvider`** — see §6.
+- Two providers, no shared state. Mounted side by side in `src/Routes.js`.
+- Theme resolution: `?theme=` → `localStorage['on.theme']` → `prefers-color-scheme` → `light`.
+  Mode resolution is `05-v1-spec.md` §6.2.
+- An explicit user choice on either axis wins and persists. `ThemeProvider` watches the
+  `prefers-color-scheme` media query only until that choice is made, and stores nothing before it.
+- The `html:not([data-theme])[data-mode="terminal"]` back-compat clause is **gone** (deleted with
+  the provider, 2026-08-26). Terminal no longer implies dark: a URL with no `?theme=` follows the
+  OS in either mode.
 
 ## 3. Selector scheme
 
@@ -100,17 +102,19 @@ npx playwright test e2e/gallery-shots.spec.js   # 4 combos × 1440px + 375px, fa
   to no theme fails the run. Adding a fifth block means registering it in `THEMES` in the script.
 - Every combination is a URL: `/_components?mode=terminal&theme=light` (dev-only route).
 
-## 6. Follow-ups this scheme created
+## 6. Plumbing — done 2026-08-26
 
-1. **`ThemeProvider`** — resolve `?theme=` → `localStorage` → `prefers-color-scheme`, write
-   `data-theme`, and delete the back-compat clause in `src/styles/sakura.css`. Mirror
-   `ModeProvider`'s shape; the two must not share state.
-2. **`<meta name="theme-color">`** currently follows mode in `ModeProvider` (`graph` → `#faf1f5`,
-   `terminal` → `#180f14`). It must follow **theme**.
-3. **`src/components/ui/sonner.jsx`** derives sonner's `theme` prop from mode. Same fix.
-4. **A theme control in the UI** — specified by D-23, not yet built. Sun/moon `lucide` icons on the
-   18px `--icon` grid, 40px square button at `3px` radius (44px coarse, **never** 999px), in
-   `.sc-right` immediately after the TERM|GRAPH toggle and before the conditional `SEARCH ⌘K`
-   button. Shows the current theme; `aria-label` names the action and flips with state; 140ms
-   crossfade. `sun` and `moon` join `check` on `src/components/brand/icon.jsx`'s allow-list.
-5. **`docs/redesign-research/05-v1-spec.md` §6.3** is superseded by D-03 and now by this file.
+All of §6's follow-ups shipped in one change on `feat/component-library`. No palette value moved.
+
+1. **`src/theme/ThemeProvider.jsx`** — writes `data-theme`, `useTheme() → { theme, setTheme }`,
+   URL synced with `history.replaceState`. Back-compat clause deleted from `src/styles/sakura.css`
+   and from the `THEMES` map in `scripts/contrast-check.mjs` in the same commit.
+2. **`<meta name="theme-color">`** moved out of `ModeProvider` into `ThemeProvider`:
+   `light` → `#faf1f5`, `dark` → `#180f14`.
+3. **`src/components/ui/sonner.jsx`** reads `useTheme()`, not `useMode()`.
+4. **The theme control** (D-23) — `.sc-theme-btn` in `src/chrome/SiteChrome.jsx`, styled in
+   `src/chrome/chrome.css`. `sun` and `moon` joined `check` on `src/components/brand/icon.jsx`'s
+   allow-list.
+5. **`/_components`** no longer owns theme state; its ladder switch calls `setTheme()`.
+
+`docs/redesign-research/05-v1-spec.md` §6.3 is superseded by D-03 and by this file.

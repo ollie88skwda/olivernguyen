@@ -37,14 +37,8 @@ const blocks = [...stripped.matchAll(/([^{}]+)\{([^}]*)\}/g)].map(([, sel, body]
 // coverage guard at the bottom — so a fifth block cannot be added and go
 // unchecked.
 const LIGHT_LADDER = ".sakura";
-const DARK_LADDER = [
-  'html[data-theme="dark"] .sakura',
-  'html:not([data-theme])[data-mode="terminal"] .sakura',
-];
-const TERM_DARK = [
-  'html[data-theme="dark"][data-mode="terminal"] .sakura',
-  'html:not([data-theme])[data-mode="terminal"] .sakura',
-];
+const DARK_LADDER = ['html[data-theme="dark"] .sakura'];
+const TERM_DARK = ['html[data-theme="dark"][data-mode="terminal"] .sakura'];
 const TERM_LIGHT = ['html[data-theme="light"][data-mode="terminal"] .sakura'];
 
 const THEMES = {

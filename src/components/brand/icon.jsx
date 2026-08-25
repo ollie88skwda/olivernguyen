@@ -16,7 +16,7 @@
 // allow-list below is the full set of cases where a glyph was ruled out; grow
 // it only with a DECISIONS.md entry.
 import * as React from "react";
-import { Check } from "lucide-react";
+import { Check, Moon, Sun } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import "@/styles/components.css";
@@ -24,6 +24,11 @@ import "@/styles/components.css";
 // name → lucide component. Ratified exceptions only.
 const ICONS = {
   check: Check, // D-13: checkbox / menu tick
+  // D-23: the theme control. ☀ and ☾ are outside §8's ratified glyph set and
+  // fail at control size the way the tick did, so the switch is drawn — at the
+  // full 18px --icon grid, 1.5 stroke, currentColor, like every icon here.
+  sun: Sun, // D-23: light ladder
+  moon: Moon, // D-23: dark ladder
 };
 
 function Icon({ name, size = 18, className, ...props }) {

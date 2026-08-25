@@ -8,9 +8,10 @@
 //   2. localStorage 'on.mode'  (returning visitors)
 //   3. 'graph'
 //
-// Side effects: <html data-mode>, <meta name="theme-color">, localStorage,
-// and history.replaceState URL sync on user toggles (no router navigation,
-// no scroll reset — 05 §6.2).
+// Side effects: <html data-mode>, localStorage, and history.replaceState URL
+// sync on user toggles (no router navigation, no scroll reset — 05 §6.2).
+// <meta name="theme-color"> is NOT ours: it follows the palette ladder, which
+// is src/theme/ThemeProvider.jsx's axis (D-19 / THEMES.md §6.2).
 //
 // X-2 contract (exec-graph): the graph's ⌘K/prompt "switch to terminal"
 // intent dispatches a cancelable CustomEvent 'on:set-mode' on window with
@@ -27,8 +28,6 @@ import React, {
 
 const MODES = ["graph", "terminal"];
 const STORAGE_KEY = "on.mode";
-// theme-color follows the mode's --bg (04 §5).
-const THEME_COLOR = { graph: "#faf1f5", terminal: "#180f14" };
 
 const ModeContext = createContext(null);
 
@@ -51,8 +50,6 @@ export const ModeProvider = ({ children }) => {
   useEffect(() => {
     modeRef.current = mode;
     document.documentElement.setAttribute("data-mode", mode);
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if (meta) meta.setAttribute("content", THEME_COLOR[mode]);
     try {
       window.localStorage.setItem(STORAGE_KEY, mode);
     } catch {

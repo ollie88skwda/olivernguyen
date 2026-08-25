@@ -26,8 +26,9 @@ before hydration. `--node-*`/`--edge`/`--dot-grid` ship with the **ladder** and 
 *Rejected:* a `data-theme` value duplicated onto a wrapper class in the gallery (two copies of the
 palette, one of them ungated); making dark the base and light the override (the un-themed default
 would then be a dark page inside a light legacy site).
-*Interim:* one back-compat clause, `html:not([data-theme])[data-mode="terminal"]`, keeps the shipped
-terminal dark until a `ThemeProvider` exists. Delete it then — `src/styles/sakura.css` says so too.
+*Closed 2026-08-26:* `src/theme/ThemeProvider.jsx` shipped and the interim back-compat clause
+`html:not([data-theme])[data-mode="terminal"]` was deleted with it. Terminal no longer implies dark.
+Plumbing ledger: `docs/THEMES.md` §6.
 
 ### D-20 · Light terminal marks the active row with a hairline, not a wash
 The binding constraint is measured, not stylistic: a wash matching dark's step (1.23:1) drops

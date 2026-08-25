@@ -119,6 +119,51 @@
   transform: translateX(100%);
 }
 
+/* Theme control (D-23). An ORDINARY control on §4's rules: 40px square, 3px
+   radius, 44px on a coarse pointer — deliberately not a pill, so it reads as a
+   separate control rather than a second half of the round mode toggle. The two
+   icons are stacked and crossfaded over §6's 140ms state change; nothing
+   rotates or morphs. Fallbacks are carried on every token because the chrome
+   loads on legacy routes where components.css may not be. */
+.sc-theme-btn {
+  appearance: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--r-control, 3px);
+  background: var(--surface);
+  color: var(--text-muted);
+  transition:
+    color var(--dur-state, 140ms) var(--ease-state, ease-out),
+    border-color var(--dur-state, 140ms) var(--ease-state, ease-out);
+}
+.sc-theme-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.sc-theme-icons {
+  position: relative;
+  display: block;
+  width: var(--icon, 18px);
+  height: var(--icon, 18px);
+}
+.sc-theme-icon {
+  position: absolute;
+  inset: 0;
+  width: var(--icon, 18px);
+  height: var(--icon, 18px);
+  opacity: 0;
+  transition: opacity var(--dur-state, 140ms) var(--ease-state, ease-out);
+}
+.sc-theme-icon[data-on="true"] {
+  opacity: 1;
+}
+
 .sc-cmdk {
   appearance: none;
   cursor: pointer;
@@ -208,7 +253,9 @@
 @media (prefers-reduced-motion: reduce) {
   .site-chrome-bar,
   .sc-mode-thumb,
-  .sc-mode-btn {
+  .sc-mode-btn,
+  .sc-theme-btn,
+  .sc-theme-icon {
     transition: none;
   }
   .sc-menu {
@@ -222,6 +269,16 @@
 @media (max-width: 767px), (pointer: coarse) {
   .sc-cmdk {
     display: none;
+  }
+}
+
+/* §4/D-12: controls go to 44px on a coarse pointer. Size only — the theme
+   control stays on the page at every width; it is not an affordance that can
+   go missing. */
+@media (pointer: coarse) {
+  .sc-theme-btn {
+    width: 44px;
+    height: 44px;
   }
 }
 
