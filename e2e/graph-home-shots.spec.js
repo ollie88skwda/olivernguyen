@@ -79,6 +79,57 @@ for (const theme of THEMES) {
   });
 }
 
+// The framing contract, and the two things that broke when the shimmer went in.
+test("the canvas frames clear of the chrome bar and keeps its labels", async ({
+  page,
+}) => {
+  const errors = watch(page);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/?mode=graph&theme=dark");
+  await page.waitForSelector(".g-stage");
+  await page.evaluate(() => document.fonts.ready);
+  await page.waitForTimeout(1600);
+
+  // graph.css hands the camera the bar height; the harness gets 0
+  const inset = await page
+    .locator(".graph-root")
+    .evaluate((el) => getComputedStyle(el).getPropertyValue("--graph-chrome-inset"));
+  expect(inset.trim()).toBe("64px");
+
+  // nothing hides behind the fixed bar, or behind the prompt bar
+  const [minTop, maxBottom] = await page.locator(".node .card").evaluateAll((els) => {
+    const r = els.map((e) => e.getBoundingClientRect());
+    return [Math.min(...r.map((b) => b.top)), Math.max(...r.map((b) => b.bottom))];
+  });
+  expect(minTop).toBeGreaterThanOrEqual(64);
+  expect(maxBottom).toBeLessThanOrEqual(900 - 120);
+
+  // semantic zoom must not be engaged at rest, or every card loses its labels
+  await expect(page.locator(".g-stage.far")).toHaveCount(0);
+
+  // …and the shimmer must not blank the text it drifts. A CSS animation here
+  // promotes each node to a layer rasterised before .g-world's scale(), which
+  // drops the glyphs entirely — src/graph/drift.js exists because of that.
+  const drift = page.locator('[data-id="mac-agent"] .drift');
+  const before = await drift.evaluate((el) => el.style.transform);
+  await page.waitForTimeout(900);
+  const after = await drift.evaluate((el) => el.style.transform);
+  expect(before, "shimmer is running").not.toBe("");
+  expect(after, "shimmer is moving").not.toBe(before);
+  await expect(page.locator('[data-id="mac-agent"] .card .t')).toHaveText("Mac-Agent");
+
+  await page.screenshot({ path: "e2e/__shots__/graph-home-framing.png" });
+  expect(errors, `console errors: ${errors.join(" | ")}`).toEqual([]);
+});
+
+test("?still freezes the shimmer", async ({ page }) => {
+  await page.goto("/?mode=graph&theme=dark&still");
+  await page.waitForSelector(".g-stage");
+  await page.waitForTimeout(1600);
+  const drift = page.locator('[data-id="mac-agent"] .drift');
+  expect(await drift.evaluate((el) => el.style.transform)).toBe("");
+});
+
 test("graph home is static under prefers-reduced-motion", async ({ browser }) => {
   const ctx = await browser.newContext({ reducedMotion: "reduce" });
   const page = await ctx.newPage();
@@ -90,6 +141,15 @@ test("graph home is static under prefers-reduced-motion", async ({ browser }) =>
 
   // no entry draw-in, and the node card carries no transition to animate
   await expect(page.locator(".g-stage")).not.toHaveClass(/ready/);
+
+  // §6: the shimmer is never started, and the DOM is the same either way
+  await page.waitForTimeout(1200);
+  const drift = page.locator('[data-id="mac-agent"] .drift');
+  expect(await drift.evaluate((el) => el.style.transform)).toBe("");
+  const b1 = await drift.boundingBox();
+  await page.waitForTimeout(900);
+  const b2 = await drift.boundingBox();
+  expect(Math.hypot(b2.x - b1.x, b2.y - b1.y)).toBeLessThan(0.01);
   const cardTransition = await page
     .locator('.node[data-id="mac-agent"] .card')
     .evaluate((el) => getComputedStyle(el).transitionDuration);

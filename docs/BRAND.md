@@ -184,11 +184,13 @@ the same DOM content. There is no shared hook. CSS motion is killed in one `@med
 bottom of `src/styles/components.css`; JS-driven motion queries the media query itself
 (`src/graph/components/GraphCanvas.jsx`).
 
-**Infinite loops — exactly two are permitted (D-18):**
+**Infinite loops — exactly three are permitted (D-18, D-27):**
 1. the terminal cursor blink;
-2. the skeleton/loading pulse — **opacity only**, `1800ms`, no shimmer sweep, no transform.
+2. the skeleton/loading pulse — **opacity only**, `1800ms`, no shimmer sweep, no transform;
+3. the graph canvas's idle node shimmer — **transform only**, ±2.5 world px, 6–9.5s per cycle,
+   each node on its own phase (D-27). Not a CSS animation: see `src/graph/drift.js`.
 
-A third requires a decision. Shimmer sweeps stay banned.
+A fourth requires a decision. Shimmer sweeps stay banned.
 
 ---
 
@@ -298,7 +300,7 @@ radius    0 surfaces · 3 controls · 999 toggles, pills and the radio only
 controls  40 default · 32 small · both 44 on coarse pointer · 24 checkbox + switch
 spacing   4px ladder · card 28 · row 24 · section 144
 motion    140ms ease-out · typing 28ms/char · camera 640ms (.16,1,.3,1)
-          two loops only: cursor blink + 1800ms skeleton opacity pulse
+          three loops only: cursor blink + 1800ms skeleton pulse + graph shimmer
 type      Familjen Grotesk 700 / Hanken Grotesk / JetBrains Mono + Martian Mono
           hero clamp(40,5.5vw,64) · section 32-40 · dossier 32 · card 24 · body 16
 icons     mono glyphs first · lucide 1.5 stroke on the 18px grid when unavoidable

@@ -2,11 +2,12 @@
  * src/graph/components/GraphNode.jsx — one node card per kind (G-2.3).
  * DOM is .node > .drift > .card so graph.css applies 1:1.
  *
- * R-G1: the ±2px idle drift garnish was REMOVED. BRAND.md §6 bans infinite
- * loops and D-18 ratifies exactly two (the terminal cursor blink and the
- * 1800ms skeleton pulse); a third needs a decision, and this was a third.
- * The `.drift` wrapper stays as the card's positioning element so the entry
- * transform and the DOM contract are unchanged.
+ * The `.drift` wrapper carries the idle shimmer — BRAND.md §6's third ratified
+ * infinite loop (D-27). It is driven imperatively by src/graph/drift.js, which
+ * owns one rAF loop for the whole field; see that file for why this cannot be
+ * a CSS animation (it blanks every card's text at the resting zoom). Nothing
+ * about the shimmer lives in this component — under reduced motion or ?still
+ * the loop is simply never started and the wrapper stays untouched.
  */
 import React, { useEffect, useRef, useState } from 'react';
 import { KINDS } from '../../content/site.js';

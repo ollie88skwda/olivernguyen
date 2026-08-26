@@ -6,6 +6,60 @@ If you want to reverse one of these, say so explicitly — do not quietly re-ope
 
 ---
 
+## 2026-08-25 · The graph canvas at rest
+
+Both taken by Oliver after reviewing the ported graph home on `/`. They are the two things the
+library port got visibly wrong once it was mounted under the real chrome.
+
+### D-27 · The idle shimmer is the THIRD permitted infinite loop
+`BRAND.md` §6 bans infinite loops and D-18 ratified exactly two (the terminal cursor blink and the
+1800ms skeleton pulse). The graph's ±2.5px idle node drift was removed under R-G1 as an unratified
+third. **Reinstated deliberately: the canvas is a living field of nodes, and dead still it reads as
+a screenshot of a diagram rather than a running system.** It is bound by the same rules as the
+other two — transform only, no opacity flicker, no sweep, no spring, 6–9.5s per cycle, each node on
+its own phase, and nothing starts under `prefers-reduced-motion` or `?still`.
+**A fourth loop still needs a decision.**
+
+*Rejected:* leaving it out (what §6 says, but the still canvas was the thing Oliver called out
+first); running it only on hover (the point is the field breathing at rest, and it does not exist
+on touch); a slower/larger drift (at the resting zoom ±2.5 world px is already under one screen
+pixel — bigger reads as drifting layout, not life).
+
+*Implementation note, and the reason this entry names a file:* it CANNOT be a CSS animation.
+A running transform animation makes Chromium promote each node to its own composited layer, and
+the layer is rasterised in its own space **before** `.g-world`'s `scale(k)`. At the resting fit
+(k ≈ 0.42) every card's text is rasterised then squashed and the glyphs are dropped — the whole
+canvas renders as empty boxes. Confirmed by A/B screenshot of one frame. `src/graph/drift.js`
+drives it from a single throttled rAF loop instead; discrete style writes repaint without promoting
+a layer. Do not "simplify" it back into `@keyframes` — `e2e/graph-home-shots.spec.js` asserts both
+that the shimmer moves and that the card text still renders while it does.
+
+### D-28 · The camera frames clear of the chrome, and semantic zoom follows the fit
+Two linked changes in `src/graph/lib/camera.js`, made because the top node sat behind the fixed
+64px site bar on `/`, and because Oliver plans to keep adding nodes.
+
+1. **`topInset`.** `boundsTransform` already framed clear of the bottom chrome (`bottomInset: 120`,
+   the prompt bar); it now does the same at the top. The value is not hardcoded in JS — `graph.css`
+   declares `--graph-chrome-inset` (0, or the bar height when `body:has(.site-chrome-bar)`) and
+   `useCamera` reads it, so the dev harness stays correct at 0 with no special case and the number
+   lives with the rest of the chrome offsets.
+2. **`farThreshold(fitK)`.** Semantic zoom used a fixed `FAR_K = 0.45`. The resting fit at
+   1440×900 is ≈ 0.42, so the moment the inset landed, the canvas was in "far" mode **at rest** and
+   every card lost its kicker and description. The threshold is now
+   `min(FAR_K, fitK × 0.85)` — "far" means *zoomed out past where you started*, which is what it
+   always meant, and it stays true at any graph size.
+3. **Zoom floor `0.35 → 0.25`.** `fitTransform` clamps to `SCALE_EXTENT[0]`, so a graph that needs
+   less than the floor to fit **silently stops fitting** — nodes fall off the edge at rest. The old
+   floor left room for barely half again as many nodes. This only ever permits more zoom-out.
+
+*Rejected:* insetting the stage element instead (`.g-stage { top: 64px }`) — one line and no camera
+change, but shrinking the stage drops the fit to 0.42 → and under the old fixed `FAR_K` that hid
+every label at rest, which is how the interaction between the two was found. Also rejected: nudging
+the authored layout in `lib/layout.js` to move the top node down (fixes one node at one viewport,
+and breaks again on the next node added).
+
+---
+
 ## 2026-08-26 · The other two themes
 
 > **The theme scheme lives in `docs/THEMES.md`.** That file is the reference for how the four

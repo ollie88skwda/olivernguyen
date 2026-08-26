@@ -15,8 +15,8 @@ import { zoom as d3zoom, zoomIdentity } from 'd3-zoom';
 import { interpolateZoom } from 'd3-interpolate';
 import 'd3-transition';
 import {
-  SCALE_EXTENT, FAR_K, worldCss, gridCss, viewOf, translateExtent,
-  fitTransform, boundsTransform, focusTransform, flyDuration,
+  SCALE_EXTENT, worldCss, gridCss, viewOf, translateExtent,
+  fitTransform, boundsTransform, focusTransform, flyDuration, farThreshold,
   releaseVelocity, inertiaStep, CLUSTER_FIT,
 } from './lib/camera.js';
 
@@ -29,12 +29,30 @@ export default function useCamera({
   const inertiaRAF = useRef(null);
   const zoomRef = useRef(null);
   const farRef = useRef(false);
+  const farKRef = useRef(farThreshold(1));
 
   const api = useMemo(() => {
     const viewport = () => {
       const el = stageRef.current;
       return { w: el ? el.clientWidth : 1440, h: el ? el.clientHeight : 900 };
     };
+    /**
+     * Height of the chrome overlapping the TOP of the stage, in px.
+     *
+     * The stage is the full viewport and the site bar is `position: fixed` on
+     * top of it, so nothing in the layout tells the camera that band is spoken
+     * for. graph.css declares `--graph-chrome-inset` (0 by default, the bar's
+     * height when a bar is present), which keeps the number in CSS with the
+     * rest of the chrome offsets and leaves the dev harness — which has no bar
+     * — correct at 0 without a special case.
+     */
+    const chromeInset = () => {
+      const el = stageRef.current;
+      if (!el) return 0;
+      const v = getComputedStyle(el).getPropertyValue('--graph-chrome-inset');
+      return Number.parseFloat(v) || 0;
+    };
+    const fitNow = () => fitTransform(bbox, viewport(), chromeInset());
     const cancelInertia = () => {
       if (inertiaRAF.current) cancelAnimationFrame(inertiaRAF.current);
       inertiaRAF.current = null;
@@ -56,12 +74,19 @@ export default function useCamera({
     };
     return {
       viewport,
+      chromeInset,
       cancelInertia,
       flyTo,
       current: () => cur.current,
-      fitView: () => flyTo(fitTransform(bbox, viewport())),
-      flyToBounds: (bb) => flyTo(boundsTransform(bb, viewport(), CLUSTER_FIT)),
-      flyToNode: (node, pos) => flyTo(focusTransform(node, pos, viewport())),
+      /** The resting transform, chrome-aware — the owner's divergence check. */
+      fitTransform: fitNow,
+      fitView: () => flyTo(fitNow()),
+      flyToBounds: (bb) => flyTo(
+        boundsTransform(bb, viewport(), { ...CLUSTER_FIT, topInset: chromeInset() }),
+      ),
+      flyToNode: (node, pos) => flyTo(
+        focusTransform(node, pos, viewport(), chromeInset()),
+      ),
       zoomBy: (f) => {
         select(stageRef.current)
           .transition('cam')
@@ -89,7 +114,7 @@ export default function useCamera({
       if (zoomLabelRef && zoomLabelRef.current) {
         zoomLabelRef.current.textContent = `${Math.round(t.k * 100)}%`;
       }
-      const far = t.k < FAR_K;
+      const far = t.k < farKRef.current;
       if (far !== farRef.current) {
         farRef.current = far;
         if (onFarChange) onFarChange(far);
@@ -147,8 +172,12 @@ export default function useCamera({
     const sel = select(stage);
     sel.call(zoom).on('dblclick.zoom', null);
 
-    // initial camera: fit, instantly
-    api.setInstant(fitTransform(bbox, api.viewport()));
+    // initial camera: fit, instantly. The far threshold is derived from that
+    // resting zoom (see farThreshold) so leaf detail is never hidden at rest,
+    // whatever the graph grows to.
+    const fit = api.fitTransform();
+    farKRef.current = farThreshold(fit.k);
+    api.setInstant(fit);
 
     return () => {
       api.cancelInertia();

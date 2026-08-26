@@ -10,10 +10,18 @@
 
 /* ---- constants (prototype-tuned; do not retune without screenshots) ---- */
 
-export const SCALE_EXTENT = [0.35, 2.2];
+// Zoom-out floor lowered 0.35 → 0.25 (2026-08-25). fitTransform clamps to this
+// floor, so a bbox that needs less than the floor to fit STOPS FITTING — nodes
+// fall off the edge at rest. The authored layout needs ~0.42 at 1440×900, so
+// 0.35 left room for barely half again as many nodes. 0.25 roughly doubles the
+// world that can be framed, and only ever permits more zoom-out.
+export const SCALE_EXTENT = [0.25, 2.2];
 export const TRANSLATE_PAD = { x: 700, y: 600 };     // world-units slack around bbox
-export const FIT = { pad: 90, kMax: 1.1, bottomInset: 120 };
-export const CLUSTER_FIT = { pad: 130, kMax: 1.2, bottomInset: 120 };
+// topInset/bottomInset are chrome the camera must frame CLEAR of: the site bar
+// overlays the top of the stage, the prompt bar the bottom. topInset defaults
+// to 0 and is supplied per-call, because the dev harness has no site bar.
+export const FIT = { pad: 90, kMax: 1.1, topInset: 0, bottomInset: 120 };
+export const CLUSTER_FIT = { pad: 130, kMax: 1.2, topInset: 0, bottomInset: 120 };
 export const FLY_MIN_MS = 380;                       // van Wijk duration clamp
 export const FLY_MAX_MS = 1050;
 export const FLY_SCALE = 0.9;                        // × d3.interpolateZoom's duration
@@ -24,6 +32,12 @@ export const INERTIA_STALE_MS = 100;                 // release long after last 
 export const INERTIA_MAX_FRAME_MS = 40;
 export const GRID_BASE = 26;                         // dot-grid cell at k=1
 export const FAR_K = 0.45;                           // below this: semantic-zoom far mode
+// …but never above this fraction of the RESTING zoom. Semantic zoom means "you
+// zoomed out past the view you started at", and the resting view is the fit.
+// With a fixed 0.45 the two collide as soon as the graph is big enough to fit
+// below 0.45 — every card loses its kicker and description at rest, which is
+// exactly when more nodes make labels matter more. See farThreshold().
+export const FAR_RATIO = 0.85;
 export const FOCUS_K = { root: 1, day: 1.3, default: 1.15 };
 
 export const identity = { k: 1, x: 0, y: 0 };
@@ -64,21 +78,29 @@ export function transformOfView(view, vp) {
 
 /* ------------------------------- framing ------------------------------- */
 
-/** Transform that frames a world bbox in the viewport (prototype
- *  boundsTransform): clamped scale, centered, clear of bottom chrome. */
-export function boundsTransform(bb, vp, { pad, kMax, bottomInset = 0 } = FIT) {
-  const vh = vp.h - bottomInset;
+/** Transform that frames a world bbox in the viewport: clamped scale, centered
+ *  in the band left between the top and bottom chrome. */
+export function boundsTransform(bb, vp, opts = FIT) {
+  const { pad, kMax, topInset = 0, bottomInset = 0 } = opts;
+  const vh = vp.h - topInset - bottomInset;
   const k = Math.max(
     SCALE_EXTENT[0],
     Math.min(kMax, Math.min(vp.w / (bb.w + pad * 2), vh / (bb.h + pad * 2))),
   );
   const cx = bb.x + bb.w / 2;
   const cy = bb.y + bb.h / 2;
-  return { k, x: vp.w / 2 - k * cx, y: vh / 2 - k * cy };
+  return { k, x: vp.w / 2 - k * cx, y: topInset + vh / 2 - k * cy };
 }
 
-export function fitTransform(bb, vp) {
-  return boundsTransform(bb, vp, FIT);
+export function fitTransform(bb, vp, topInset = 0) {
+  return boundsTransform(bb, vp, { ...FIT, topInset });
+}
+
+/** The zoom below which leaf detail is hidden (semantic zoom).
+ *  Never above FAR_RATIO of the resting fit, so the resting view always keeps
+ *  its labels however many nodes the graph grows to. */
+export function farThreshold(fitK) {
+  return Math.min(FAR_K, fitK * FAR_RATIO);
 }
 
 /** Dossier panel width at a viewport width (prototype). */
@@ -88,10 +110,10 @@ export function dossierWidth(vw) {
 
 /** Focus transform: node eased to the center of the space left of the
  *  dossier, at a kind-dependent zoom. */
-export function focusTransform(node, pos, vp) {
+export function focusTransform(node, pos, vp, topInset = 0) {
   const k = FOCUS_K[node.kind] ?? FOCUS_K.default;
   const px = (vp.w - dossierWidth(vp.w)) / 2;
-  const py = vp.h * 0.5;
+  const py = topInset + (vp.h - topInset) * 0.5;
   return { k, x: px - k * pos.x, y: py - k * pos.y };
 }
 

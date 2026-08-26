@@ -3,13 +3,16 @@ import {
   identity, worldCss, gridCss, worldToScreen, screenToWorld,
   viewOf, transformOfView, boundsTransform, fitTransform, dossierWidth,
   focusTransform, translateExtent, flyDuration, releaseVelocity, inertiaStep,
-  SCALE_EXTENT, FIT, FLY_MIN_MS, FLY_MAX_MS, FAR_K, GRID_BASE,
+  SCALE_EXTENT, FIT, FLY_MIN_MS, FLY_MAX_MS, FAR_K, FAR_RATIO, GRID_BASE,
+  farThreshold,
 } from './camera.js';
 import { worldBBox } from './layout.js';
 import { allEntities } from '../../content/site.js';
 
 const VP = { w: 1440, h: 900 };
 const BB = worldBBox(allEntities);
+// the site bar's height (--s-16), the value graph.css feeds the camera on "/"
+const FIT_TOP = 64;
 
 describe('camera — transform math', () => {
   it('world↔screen round-trip', () => {
@@ -36,6 +39,26 @@ describe('camera — transform math', () => {
 });
 
 describe('camera — framing', () => {
+  it('fitTransform frames the graph clear of BOTH insets', () => {
+    const t = fitTransform(BB, VP, FIT_TOP);
+    const tl = worldToScreen(t, { x: BB.x, y: BB.y });
+    const br = worldToScreen(t, { x: BB.x + BB.w, y: BB.y + BB.h });
+    // nothing hides behind the fixed site bar, and nothing behind the prompt
+    expect(tl.y).toBeGreaterThanOrEqual(FIT_TOP);
+    expect(br.y).toBeLessThanOrEqual(VP.h - FIT.bottomInset);
+    // …centred in the band that is left
+    const c = worldToScreen(t, { x: BB.x + BB.w / 2, y: BB.y + BB.h / 2 });
+    expect(c.y).toBeCloseTo(FIT_TOP + (VP.h - FIT_TOP - FIT.bottomInset) / 2, 6);
+  });
+
+  it('the authored layout still fits at the zoom floor with room to grow', () => {
+    // fitTransform CLAMPS at SCALE_EXTENT[0]; once a bbox needs less than the
+    // floor it silently stops fitting, so the floor is the ceiling on how many
+    // nodes the graph can hold. Guard the headroom.
+    const t = fitTransform(BB, VP, FIT_TOP);
+    expect(t.k).toBeGreaterThan(SCALE_EXTENT[0] * 1.5);
+  });
+
   it('fitTransform centers the graph bbox above the bottom chrome', () => {
     const t = fitTransform(BB, VP);
     const c = worldToScreen(t, { x: BB.x + BB.w / 2, y: BB.y + BB.h / 2 });
@@ -137,5 +160,23 @@ describe('camera — release inertia (exp(-dt/240))', () => {
 
   it('far-fade threshold matches the prototype', () => {
     expect(FAR_K).toBe(0.45);
+  });
+
+  it('far-fade never hides leaf detail at the resting zoom', () => {
+    // the ceiling still applies when the graph fits comfortably
+    expect(farThreshold(1.1)).toBe(FAR_K);
+    // …and drops below the fit once the graph is big enough to fit under it,
+    // so "far" always means "zoomed out past where you started"
+    expect(farThreshold(0.42)).toBeCloseTo(0.42 * FAR_RATIO, 9);
+    expect(farThreshold(0.42)).toBeLessThan(0.42);
+
+    // the real graph, framed under the site bar, keeps its labels at rest
+    const restingK = fitTransform(BB, VP, FIT_TOP).k;
+    expect(restingK).toBeGreaterThan(farThreshold(restingK));
+  });
+
+  it('leaves room to zoom out past the resting view', () => {
+    const restingK = fitTransform(BB, VP, FIT_TOP).k;
+    expect(SCALE_EXTENT[0]).toBeLessThan(farThreshold(restingK));
   });
 });

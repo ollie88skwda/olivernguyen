@@ -297,15 +297,17 @@ is **137.9 kB gz in graph mode and 150.8 kB gz in terminal mode**, against the 1
    43 kB — re-measure at Integration, when the two home surfaces land.
 5. **Do not strip the terminal scanline.** It was removed once under P8 and reinstated
    deliberately at 3% (D-16). Reversing it needs a new decision entry.
-6. **Do not reinstate the graph's idle node drift.** R-G1 removed it: §6 bans infinite loops and
-   D-18 ratifies exactly two (cursor blink, skeleton pulse), so it was a third. `e2e/graph.spec.js`
-   waited on it by accident — its `clickNode` now settles the camera explicitly instead.
-7. **Graph fit framing under the fixed chrome bar.** At 1440×900 the topmost node sits partly
-   behind the 64px bar. The one-line fix (`.g-stage { top: var(--s-16) }` in chrome.css, where the
-   other graph HUD offsets live) was measured and **rejected**: shrinking the stage drops fit zoom
-   from 46% to 42%, under `camera.js` `FAR_K` (0.45), which hides every leaf card's kicker and
-   description at rest. One clipped node beats a canvas with no labels. Reopening it means moving
-   `FAR_K` too — a camera decision, not a styling one.
+6. ~~Do not reinstate the graph's idle node drift.~~ **REVERSED by Oliver — D-27.** The shimmer is
+   back and is now §6's third ratified infinite loop. It lives in `src/graph/drift.js` and is
+   **not** a CSS animation: `@keyframes` on the node promotes it to a composited layer that is
+   rasterised before `.g-world`'s `scale()`, which blanks the text on every card at the resting
+   zoom. Read that file before touching it. `e2e/graph.spec.js` is unaffected — it runs the harness
+   with `?still`, and its `clickNode` settles the camera explicitly either way.
+7. ~~Graph fit framing under the fixed chrome bar.~~ **CLOSED by D-28.** The camera now takes a
+   `topInset` (fed from `--graph-chrome-inset` in graph.css, 0 in the dev harness), the semantic-zoom
+   threshold follows the resting fit instead of a fixed 0.45, and the zoom floor dropped 0.35 → 0.25
+   so the layout keeps fitting as nodes are added. All three are covered by `camera.test.js` and
+   `e2e/graph-home-shots.spec.js`.
 
 ## Verification
 

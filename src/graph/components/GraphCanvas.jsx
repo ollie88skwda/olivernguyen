@@ -13,7 +13,6 @@ import { Kbd } from '@/components/ui/kbd';
 import { Glyph, MonoLabel, Wordmark } from '@/components/brand';
 import { allEntities, entityById, groups, meta } from '../../content/site.js';
 import { POSITIONS, worldBBox } from '../lib/layout.js';
-import { fitTransform } from '../lib/camera.js';
 import {
   buildEdges, buildAdjacency, buildIndex, clusterMembers, pathFromRoot,
 } from '../lib/structure.js';
@@ -24,6 +23,7 @@ import { TOUR_STOPS, TOUR_IDLE_AUTOSTART_MS, TOUR_STOP_DWELL_MS, stepTour } from
 import { escAction, isTypingTarget, isModifierChord, isPaletteCombo, cycleId } from '../lib/keys.js';
 import useCamera from '../useCamera.js';
 import runPulse from '../runPulse.js';
+import startDrift from '../drift.js';
 import GraphNode from './GraphNode.jsx';
 import GraphEdges from './GraphEdges.jsx';
 import Dossier from './Dossier.jsx';
@@ -329,6 +329,21 @@ export default function GraphCanvas() {
     camera, focusNode, closeDossier, closeFilter, endTour, tourStep,
   ]);
 
+  // idle shimmer (§6 / D-27) — one rAF loop for the whole field, never started
+  // under reduced motion or ?still. Runs after the entry assemble so it does
+  // not fight the entry transform.
+  useEffect(() => {
+    if (still) return undefined;
+    const world = worldRef.current;
+    if (!world) return undefined;
+    let stop = null;
+    const t = setTimeout(() => { stop = startDrift(world); }, 900);
+    return () => {
+      clearTimeout(t);
+      if (stop) stop();
+    };
+  }, [still]);
+
   useEffect(() => () => {
     if (pulseCancel.current) pulseCancel.current();
     clearTimeout(toastTimer.current);
@@ -359,7 +374,8 @@ export default function GraphCanvas() {
       // above still detaches on this same unmount.
       const { focusId: fid, dossierOpen: dopen } = liveView.current;
       const cam = camera.current();
-      const fit = fitTransform(BBOX, camera.viewport());
+      // chrome-aware resting transform (useCamera owns the inset)
+      const fit = camera.fitTransform();
       const diverged =
         Boolean(fid) || dopen ||
         Math.abs(cam.k - fit.k) > 1e-3 ||

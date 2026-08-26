@@ -18,7 +18,7 @@
  * scrolling to the target group header / entry — the canvas never mounts
  * here (P6), so the list is the deep-link's landing surface.
  */
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Display,
@@ -36,6 +36,17 @@ import {
 import { allEntities, entityById, groups, KINDS, meta, formatBeat } from '../../content/site.js';
 import { beatLine } from '../beats.js';
 import { consumeFocusParam, resolveGraphIntent } from '../lib/focusIntent.js';
+
+/**
+ * The ?focus= target, held across React 18 StrictMode's dev double-invoke.
+ *
+ * consumeFocusParam() is one-shot by design (it strips the param), so the
+ * mount → cleanup → mount cycle would consume it on the first pass and find
+ * nothing on the second, leaving the alignment below torn down. Module scope
+ * outlives that cycle; the 2s settle timer clears it, so a genuine later
+ * remount does not re-hijack the reader's scroll position.
+ */
+let pendingFocusId = null;
 
 function memberIdsOf(groupId) {
   // group's subtree in authored order, excluding the group node itself
@@ -116,22 +127,55 @@ function ListEntry({ entity, heading: H = 'h3' }) {
 
 export default function GraphList({ srOnly = false }) {
   const root = entityById.get('oliver');
+  const listRef = useRef(null);
 
   // ?focus= deep-link → scroll to the section/entry. Non-srOnly only: on
   // desktop the SR copy of this list must not steal the canvas's deep-link.
   useEffect(() => {
     if (srOnly) return;
     const detail = consumeFocusParam();
-    if (!detail) return;
-    const it = resolveGraphIntent(detail);
-    const id = it?.run?.type === 'node' ? it.run.id : null;
-    if (!id) return;
+    if (detail) {
+      const it = resolveGraphIntent(detail);
+      pendingFocusId = it?.run?.type === 'node' ? it.run.id : null;
+    }
+    const id = pendingFocusId;
+    if (!id) return undefined;
     const el =
       document.getElementById(`gl-h-${id}`) || document.getElementById(`gl-${id}`);
-    el?.scrollIntoView({ block: 'start' });
+    if (!el) return undefined;
+
+    // Align, then KEEP aligning while the list is still settling. These entries
+    // are display-type heavy, so the fallback-to-webfont reflow grows the list
+    // above the target by ~140px — align once on mount and the deep-link lands
+    // in the middle of the previous section. Waiting on document.fonts.ready is
+    // not enough on a warm cache: it resolves before the reflow is laid out.
+    const align = () => el.scrollIntoView({ block: 'start' });
+    align();
+
+    const ro = typeof ResizeObserver === 'function' ? new ResizeObserver(align) : null;
+    if (ro && listRef.current) ro.observe(listRef.current);
+
+    // Stop on a timer, and immediately if the reader takes over — re-aligning
+    // under someone who is already scrolling would yank the page from them.
+    const stop = () => {
+      if (ro) ro.disconnect();
+      window.removeEventListener('wheel', stop, true);
+      window.removeEventListener('touchstart', stop, true);
+      window.removeEventListener('keydown', stop, true);
+    };
+    window.addEventListener('wheel', stop, true);
+    window.addEventListener('touchstart', stop, true);
+    window.addEventListener('keydown', stop, true);
+    const t = setTimeout(() => { pendingFocusId = null; stop(); }, 2000);
+
+    return () => { clearTimeout(t); stop(); };
   }, [srOnly]);
   return (
-    <div className={srOnly ? 'g-list visually-hidden' : 'g-list'} aria-label="Site graph as a list">
+    <div
+      ref={listRef}
+      className={srOnly ? 'g-list visually-hidden' : 'g-list'}
+      aria-label="Site graph as a list"
+    >
       <header className="gl-head">
         <div className="gl-brand">
           <Wordmark />

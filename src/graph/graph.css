@@ -49,6 +49,19 @@
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
+
+  /* How much chrome overlaps the TOP of the stage. The stage is the whole
+     viewport and the site bar is fixed on top of it, so nothing in the layout
+     tells the camera that band is taken — useCamera reads this value and frames
+     the fit view below it (lib/camera.js `topInset`). Default 0: the graph-dev
+     harness renders on a bare viewport and must not gain a phantom gutter. */
+  --graph-chrome-inset: 0px;
+}
+/* The bar is `position: fixed`, so it is not an ancestor and cannot be measured
+   by containment — :has() is the only way to ask "is the chrome mounted?".
+   Where it is unsupported the value stays 0, i.e. today's framing. */
+body:has(.site-chrome-bar) .graph-root {
+  --graph-chrome-inset: var(--s-16);
 }
 
 .graph-root ::selection { background: var(--selection); }
@@ -134,9 +147,14 @@
 
 .graph-root .node { position: absolute; left: 0; top: 0; }
 
-/* `.drift` is kept as the card's positioning wrapper. Its ±2px idle animation
-   was removed in the port: BRAND.md §6 bans infinite loops and D-18 ratifies
-   exactly two (cursor blink, skeleton pulse). A third is a decision. */
+/* Idle shimmer — BRAND.md §6's THIRD ratified infinite loop (D-27): transform
+   only, no opacity flicker, no sweep. There is deliberately NO @keyframes here.
+   src/graph/drift.js drives it from one rAF loop, because a CSS animation on
+   this element promotes every node to its own composited layer and the layer
+   is rasterised BEFORE .g-world's scale() — which blanks the text on every card
+   at the resting zoom. That file carries the full explanation. Reduced motion
+   and ?still simply never start the loop, so the wrapper stays at rest with
+   identical DOM. */
 .graph-root .drift { display: block; }
 
 /* the canvas card — the world-space variant of the library's node card.

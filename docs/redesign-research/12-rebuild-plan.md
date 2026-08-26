@@ -65,23 +65,25 @@ Notes for Oliver:
      committed immediately, so nothing is lost, but three agents sharing one
      checkout means any `git reset --hard` / `git checkout -- .` silently
      deletes the other two's work. Worth one worktree per executor next time.
-  10. R-G1 removed the graph's idle node drift (§6 bans infinite loops; D-18
-     ratifies exactly two and that was a third). The canvas is now completely
-     still at rest. It reads more deliberate and less "alive" — if you want
-     the shimmer back it is a new decision entry, not a bug.
+  10. RESOLVED — you asked for the shimmer back, so it is back and ratified as
+     D-27 (§6's third permitted infinite loop; BRAND.md §6 updated). It is
+     driven from src/graph/drift.js rather than CSS, because a CSS animation
+     here promotes each node to a composited layer that is rasterised before
+     the canvas zoom is applied — which blanked the text on every card. Off
+     under reduced motion and ?still.
   11. R-G1 also squared the group nodes, the tour HUD, the toast, the legend
      chips and the tech tokens (§4 gives 999px to the mode toggle, status
      pills and the radio, and nothing else), and deleted the bespoke card
      shadow the canvas used for depth (§9 allows one shadow in the system).
      Depth on the canvas is now carried entirely by hairlines.
-  12. FOR R-I1 / exec-chrome, measured and NOT actioned: at 1440x900 the
-     topmost node sits partly behind the fixed 64px bar. The one-line fix
-     (`.g-stage { top: var(--s-16) }` alongside the other graph HUD offsets in
-     chrome.css) was tried and rejected — shrinking the stage drops fit zoom
-     from 46% to 42%, under camera.js FAR_K (0.45), which hides every leaf
-     card's kicker and description at rest. One clipped node beats a canvas
-     with no labels. Fixing it properly means moving FAR_K too, which is a
-     camera decision. Left as-is on purpose.
+  12. RESOLVED — D-28. The camera now frames clear of the bar (a `topInset`
+     fed from `--graph-chrome-inset`, which graph.css sets only when the chrome
+     is actually mounted, so the dev harness is unaffected). Two follow-ons
+     came with it, both aimed at you adding nodes later: the semantic-zoom
+     threshold now follows the resting zoom instead of a fixed number, so
+     labels can never vanish at rest however big the graph gets; and the
+     zoom-out floor moved 0.35 → 0.25, because the old floor would have made
+     the graph silently stop fitting after roughly half again as many nodes.
      R-I1 re-checked and agrees: nothing in chrome.css can move the camera, so
      the real fix is graph-side (fit padding + FAR_K together) and it is your
      call, not a bug to squash. Every OTHER top-anchored element on both
