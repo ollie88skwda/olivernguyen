@@ -18,7 +18,10 @@ const THEME_COLOR = { light: "#faf1f5", dark: "#180f14" };
 test.describe("site chrome — R-C4", () => {
   test("§10 wordmark: oN.c with the dot in --accent", async ({ page }) => {
     await page.goto("/?mode=graph&theme=light");
-    const mark = page.locator('[data-slot="wordmark"]');
+    // Scoped to the bar: R-G3 put a second <Wordmark> in the graph's list layer,
+    // which is the point of D-25 — the mark is a library piece now, so more
+    // than one surface is allowed to render it.
+    const mark = page.locator('.site-chrome-bar [data-slot="wordmark"]');
     await expect(mark).toHaveText("oN.c");
 
     const dot = mark.locator(".on-wordmark-dot");

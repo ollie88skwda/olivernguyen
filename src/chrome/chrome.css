@@ -146,6 +146,16 @@ html[data-mode="graph"] .graph-root .tourhud {
 html[data-mode="graph"] .graph-root .dossier {
   top: var(--s-16, 64px);
 }
+/* R-I1: the mobile fallback is the third top-anchored graph surface, and the
+   only one that was missing an offset — `.g-list` starts at y=0 with its own
+   32px of padding, so the whole `oN.c GRAPH MODE` brand line rendered BEHIND
+   the bar at 375px. Add the bar height to the list's own padding rather than
+   replacing it, so the gap survives a change to either value. (It sums to 96,
+   a §5 rung.) The list scrolls inside itself, not the window, so the bar never
+   hides out from under it and a static offset is correct. */
+html[data-mode="graph"] .graph-root.listing .g-list {
+  padding-top: calc(var(--s-16, 64px) + var(--s-8, 32px));
+}
 /* Terminal: same problem, other mode. Clear the bar with padding — the buffer
    row shrinks and the page still never scrolls. */
 html[data-mode="terminal"] .term-screen {

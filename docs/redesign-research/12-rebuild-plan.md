@@ -6,12 +6,13 @@ Precondition: library audited complete + rulebook-matching (see COMPONENTS.md, B
 ## CURRENT STATUS / NEXT TASK  ← executors MUST keep this block updated
 
 ```
-Last updated : exec-graph-home, R-G3 done — GATE GRAPH-HOME ✅
-exec-chrome     : R-C1 ✅ R-C2 ✅ R-C3 ✅ R-C4 ✅ · next = R-I1 (Integration) — UNBLOCKED, both home gates pass
+Last updated : exec-chrome, R-I1 done — **REBUILD DONE ✅**
+exec-chrome     : R-C1 ✅ R-C2 ✅ R-C3 ✅ R-C4 ✅ R-I1 ✅ — nothing outstanding
 exec-graph-home : R-G1 ✅ R-G2 ✅ R-G3 ✅ — GATE GRAPH-HOME ✅, nothing outstanding
 exec-terminal   : R-T1 ✅ R-T2 ✅ R-T3 ✅ — GATE TERMINAL ✅, nothing outstanding
-Integration     : ready to start (R-I1, exec-chrome leads)
-Blockers        : none
+Integration     : R-I1 ✅ — the plan is complete. Branch `feat/component-library`, NOT merged.
+Blockers        : none. Every checklist box in §8 is ticked; the only open items are
+                  Oliver's calls in the notes below (5, 6, 7, 9, 10, 11, 12).
 Notes for Oliver:
   1. exec-terminal moved a gate assertion. The console body went from a bespoke
      14px to the library's --fs-mono (13px, BRAND.md §7's ratified point inside
@@ -54,10 +55,10 @@ Notes for Oliver:
   7. §10 also fixes the favicon as "`oN` on --bg, square, 3px radius".
      index.html still points at /on_logo_navy.png. That needs an asset, not
      code, so it was left alone.
-  8. Entry-chunk cost of putting the chrome on the library: 58.4 → 90.6 kB gz.
-     First-party JS on `/` before the graph chunk is 137 kB gz against the
-     180 kB budget (05 §8). Fine, but the headroom is 43 kB and both home
-     surfaces still have to land — re-measured at R-I1.
+  8. RE-MEASURED at R-I1, closed. First-party JS on `/` before the graph chunk
+     is 137.9 kB gz in graph mode and 150.8 kB gz in terminal mode, against the
+     180 kB budget (05 §8). The lazy graph chunk is 24.8 kB gz and is still
+     never fetched on a phone. No action needed.
   9. PROCESS, needs your call. Mid-session an executor ran a hard reset that
      wiped every uncommitted file in the shared working tree, destroying the
      whole first pass of R-G1 (nine files). It was rebuilt from scratch and
@@ -81,6 +82,28 @@ Notes for Oliver:
      card's kicker and description at rest. One clipped node beats a canvas
      with no labels. Fixing it properly means moving FAR_K too, which is a
      camera decision. Left as-is on purpose.
+     R-I1 re-checked and agrees: nothing in chrome.css can move the camera, so
+     the real fix is graph-side (fit padding + FAR_K together) and it is your
+     call, not a bug to squash. Every OTHER top-anchored element on both
+     surfaces clears the bar exactly — now asserted, see R-I1.
+  13. THE REBUILD IS DONE, on `feat/component-library`, unmerged as instructed.
+     All three surfaces — chrome, graph home, terminal home — are on the
+     component library and the brand tokens, in all four theme × mode
+     combinations. No executor has work outstanding. What waits on YOU, in
+     rough order of how much it changes:
+       · note 5  — three things R-C3 removed from the chrome on brand grounds
+                   (backdrop blur, ☰, ScrollProgress). One-line reverts.
+       · note 10 — the graph's idle node drift is gone (§6 bans a third loop).
+       · note 11 — group nodes, tour HUD, toast, legend chips and tech tokens
+                   are square now, and the canvas's bespoke card shadow is
+                   gone (§4 / §9).
+       · note 12 — one node clipped by the bar at 1440, traded against every
+                   leaf card keeping its labels.
+       · note 6  — the wordmark dot is subtle on the dark ladder.
+       · note 7  — the §10 favicon (`oN` on --bg, square) needs an asset.
+       · note 9  — process: one worktree per executor next time.
+     The one red test in the suite, `/permit`, predates this branch entirely
+     (note 3). Merging is your call — nobody merged anything.
 ```
 
 Update rules: tick §8 checkboxes as tasks complete; rewrite this block each session; human questions → "Notes for Oliver".
@@ -150,4 +173,16 @@ Replace bespoke surface CSS with existing library components + `components.css` 
       independently (D-19) with a fresh remount on the mode flip (P3). Gates: contrast 183/183,
       441 unit, gallery-shots green, zero console errors.
 ### Integration (exec-chrome leads)
-- [ ] **R-I1** home + chrome together, four themes, full suite + ship-check → **REBUILD DONE ✅**
+- [x] **R-I1** home + chrome together, four themes, full suite + ship-check → **REBUILD DONE ✅**
+      — `e2e/integration-shots.spec.js` (11 tests) is the standing gate: four theme × mode
+      combinations on `/` at 1440 and 375, both axes round-tripping without dragging each other
+      (D-19), and the reduced-motion fallback for both homes plus the chrome. It asserts the thing
+      only integration can see — that the fixed bar occludes nothing — and that assertion caught a
+      real bug: at 375px the graph's mobile list rendered its whole `oN.c GRAPH MODE` brand line
+      behind the bar, invisibly, because a page that starts at its headline looks fine in a
+      screenshot. Fixed in `chrome.css` by adding the bar height to the list's own top padding.
+      Gates: contrast 183/183 · 441 unit · gallery-shots 11/11 · full suite 145 passed, 1 failed
+      (`/permit`, pre-existing drift — note 3). Ship-check: 10 renders across `/` (both modes), two
+      legacy chromed routes and the gallery at 1440×900 and 390×844, plus the ⌘K palette and the
+      pages menu open over the canvas in both ladders — zero console errors anywhere.
+      Budget: see note 8.

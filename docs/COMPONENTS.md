@@ -252,6 +252,31 @@ the reduced-motion fallback. Use `page.emulateMedia({ reducedMotion })` there, *
 `test.use({ reducedMotion })`: under this config's Desktop Chrome device the latter leaves
 `matchMedia()` false, so the assertion passes for the wrong reason.
 
+### Integration — R-I1, 2026-08-26
+
+The three surfaces assembled on `/`. `e2e/integration-shots.spec.js` is the gate: four theme × mode
+combinations at 1440 and 375, both axes round-tripping without dragging each other (D-19), and the
+reduced-motion fallback for both homes plus the chrome.
+
+**The invariant it exists for.** The chrome is `position: fixed`, so it sits ON TOP of whatever a
+home surface puts at `y=0`. The only thing keeping them apart is the per-selector glue at the bottom
+of `src/chrome/chrome.css` — which means a surface can gain a new top-anchored element and be
+silently swallowed. That already happened: at 375px the graph's mobile list rendered its whole
+`oN.c GRAPH MODE` brand line behind the bar, and **every static screenshot looked fine**, because
+what you see is a page that simply starts at the headline. So the spec asserts, per mode, that the
+first readable element clears the bar's bottom edge.
+
+Assert on content, never on the container: `.g-list` is a full-height scroll box whose top is
+legitimately `0` and whose padding is what clears the bar. `.term-skip` is excluded by name — it is
+the skip link, parked off-screen until it takes focus.
+
+Measured offsets on `/`, all four combinations: legend and filterbar at 80 (bar + `--s-4`), dossier
+flush at 64, `.term-main` flush at 64, mobile list brand line at 96 (bar + the list's own `--s-8`).
+
+Budget re-measure (the R-C3 note asked for one here): first-party JS on `/` before the graph chunk
+is **137.9 kB gz in graph mode and 150.8 kB gz in terminal mode**, against the 180 kB budget
+(05 §8). The lazy graph chunk is 24.8 kB gz and is still never fetched on a phone.
+
 ## Follow-up work this created
 
 1. ~~`src/graph/graph.css` sizes its display type for a **condensed** face.~~ **CLOSED by R-G1.**
