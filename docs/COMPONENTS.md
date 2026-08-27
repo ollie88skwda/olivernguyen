@@ -230,17 +230,25 @@ to ~130 lines and no longer draws a single control.
 | nav links | `<a>` + `MonoLabel tone="muted"` | a nav link is a link, not a boxed button; §7's label role supplies the type. `min-height: var(--ctl-h)` gives §1's 44px tap target |
 | ⌘K | `Button variant="ghost" size="sm"` + `Glyph name="key"` | ⌘ is §8's glyph. The chord is one span or `.on-btn`'s 8px gap lands between ⌘ and K |
 | pages menu | `DropdownMenu` (+ `Label`, `Separator`, items `asChild`) | replaced ~70 lines of bespoke panel CSS carrying a drop shadow and a 12px radius, both §4/§9 violations |
+| pages-menu icon | `Icon name="menu"` | D-29. R-C3 shipped `Glyph name="more"` (`…`); restored to ☰ after an A/B — see below |
 
-Three things the rebuild removed on brand grounds:
+#### The three removals, settled 2026-08-26 (D-29)
 
-- **The bar's `backdrop-filter: blur(8px)`.** §9 bans glassmorphism and blurred backdrops outright.
-  The bar is solid `--bg` on the §9 hairline now.
-- **The ☰ hamburger.** §8's ratified set has no hamburger; `…` (`Glyph name="more"`, ratified D-13)
-  is the mark for "there is more here".
-- **`<ScrollProgress>`.** It probes `#about/#work/#skills/#contact` — ids of the retired old home —
-  so on `/` it can only read "U0 / Hero", and the 100dvh terminal screen never scrolls, so it never
-  became visible at all. Where it did show (legacy routes) it was painted by the frozen navy/gold
-  `theme.css` inside a sakura bar. The component stays in the tree for `src/pages/top_bar.js`.
+R-C3 removed three things on brand grounds **without rendering any of them**. All three were then
+rendered both ways on the real site — four `data-theme` × `data-mode` combinations at 1440 and 375,
+plus legacy routes. **One restored, two confirmed removed.** Full A/B and the measurements:
+`docs/redesign-research/14-chrome-restorations.md`. Decision: `docs/DECISIONS.md` D-29.
+
+| Removal | Outcome | Deciding evidence |
+|---|---|---|
+| bar `backdrop-filter: blur(8px)` | **stays out** — §9 unchanged | terminal render is pixel-identical (nothing scrolls under a 100dvh screen); on `/college` the navy legacy headline smears up through the pink bar; and the blur promotes the fixed bar to its own composited layer, which re-rasterises the **whole graph canvas** soft — node subtitles 200px below the bar go fuzzy |
+| `…` → `☰` on the pages menu | **restored, as an `Icon`** | `…` promises "more of this list", not "site menu", and at control size next to the moon button it reads as truncation. And ☰ is **not in JetBrains Mono** — measured advance 11.44px against the mono's 7.81px (`M`, `…` and the .notdef box all 7.81px), i.e. a system fallback draws it — so it cannot be a `Glyph`. That is §8's own "a glyph genuinely cannot work" test, on the D-23 sun/moon precedent |
+| `<ScrollProgress>` | **stays out** | on `/`, `scrollHeight === innerHeight` in all four combinations at both widths, and mounted it renders `opacity: 0` reading `00%`; its four probe ids exist on **no route on the site**, so the section designator can never appear; nine of the ten legacy routes scroll ≤216px (only `/permit` really scrolls); and restoring it as-is drags in `.scroll-station` from the **frozen** `theme.css` — `backdrop-filter: blur(6px)` over hardcoded cream, the same §9 violation rejected in row 1 |
+
+`icon.jsx`'s allow-list is now four names — `check` · `sun` · `moon` · `menu` — and §8 gained the test
+that produced this one: **measure a candidate character's advance against the mono's before calling
+it a glyph.** `ScrollProgress` stays in the tree unmounted for `src/pages/top_bar.js` (P4). Rebuilding
+it on `Progress` is deferred until the legacy pages are restyled and have real section ids.
 
 Also: the hide-on-scroll slide now runs at §6's `--dur-state` (140ms ease-out) instead of a bespoke
 350ms curve, and `index.html`'s static `theme-color` is the light ladder's `--bg` (`#faf1f5`), not

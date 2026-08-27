@@ -16,7 +16,7 @@
 // allow-list below is the full set of cases where a glyph was ruled out; grow
 // it only with a DECISIONS.md entry.
 import * as React from "react";
-import { Check, Moon, Sun } from "lucide-react";
+import { Check, Menu, Moon, Sun } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import "@/styles/components.css";
@@ -29,6 +29,12 @@ const ICONS = {
   // full 18px --icon grid, 1.5 stroke, currentColor, like every icon here.
   sun: Sun, // D-23: light ladder
   moon: Moon, // D-23: dark ladder
+  // D-29: the pages-menu trigger. Same shape of exception as D-23's sun/moon.
+  // ☰ (U+2630) is not in §8's ratified set AND is not in JetBrains Mono — it
+  // was measured falling back to a system face (11.44px advance against the
+  // mono's 7.81px), so as a <Glyph> it is a per-platform lottery, not a
+  // typographic mark. §8's own test — "a glyph genuinely cannot work" — is met.
+  menu: Menu, // D-29: pages menu
 };
 
 // D-24: forwards its ref like the ui primitives, so an icon-only control can be

@@ -6,6 +6,76 @@ If you want to reverse one of these, say so explicitly — do not quietly re-ope
 
 ---
 
+## 2026-08-26 · The three things the chrome rebuild removed
+
+R-C3 dropped three pieces of chrome on brand grounds without rendering any of them (`docs/COMPONENTS.md`
+§"Chrome — R-C3"). Oliver asked for all three to be tried BOTH ways and the stronger one kept.
+All three were rendered on the real site; **one is restored, two are confirmed removed.**
+Working file and the full A/B: `docs/redesign-research/14-chrome-restorations.md`.
+
+### D-29 · The pages menu is a hamburger, and it is an ICON — not a glyph
+The pages-menu trigger goes back to `☰`, drawn as `<Icon name="menu" />` (lucide `Menu`, 1.5 stroke,
+18px grid), not as `<Glyph name="more" />` (`…`, ratified D-13).
+
+**Two separate findings, and the second is the one that decides the form.**
+
+1. *`…` promises the wrong thing.* §8's ellipsis means "more of the list you are already looking at".
+   This control opens site navigation, which is a different promise. Rendered at 375 and 1440 in all
+   four `data-theme` × `data-mode` combinations, at control size and next to the moon/sun button, the
+   ellipsis sits on the baseline as three small dots and reads as truncation or a loading placeholder.
+   The hamburger reads as "site menu" with no thought at all and matches the theme button's weight.
+2. *`☰` cannot be a glyph.* U+2630 is **not in JetBrains Mono**. Measured in the real page at the real
+   size: the mono advance is 7.81px (`M`, `…`, and even the .notdef box all measure 7.81px) while `☰`
+   measures 11.44px — it is being served by a system fallback face. A `<Glyph>` is a typographic mark
+   in a face we ship; a character resolved by whatever the OS happens to have is a per-platform
+   lottery, tofu included. §8's own test is "a glyph genuinely cannot work", and here it measurably
+   cannot.
+
+So this **does not narrow §8** — it lands in the existing carve-out, on exactly the D-23 precedent
+(`☀`/`☾` were rejected as glyphs and drawn as lucide `Sun`/`Moon` for the same class of reason).
+`icon.jsx`'s allow-list goes from three names to four: `check`, `sun`, `moon`, `menu`. That list stays
+closed; a fifth needs its own decision.
+
+*Rejected:* keeping `…` (loses the "site menu" read — this was rendered and compared, not argued);
+`☰` as a `<Glyph>` (the fallback-font measurement above); keeping `…` and adding a visible `PAGES`
+text label (unambiguous, but at 375 it takes the last spare width in the bar and squeezes the mode
+toggle — and the trailing ellipsis next to the word is then pure decoration, which §8 bans).
+
+### The bar's backdrop blur stays REMOVED — §9 is not narrowed
+R-C3 dropped `backdrop-filter: blur(8px)` under §9's ban on blurred backdrops. Restoring it was
+rendered anyway. It loses on its own merits, so §9 is untouched and there is no amendment here.
+
+- **Terminal mode is pixel-identical.** The screen is `100dvh` and never scrolls; nothing passes under
+  the bar, so the effect does not exist there.
+- **On a legacy route it is the cheap version of itself.** `/college` scrolled: the navy legacy
+  headline smears up through the pink sakura bar and sits behind the nav labels. Two palettes mixing
+  into mud is exactly the look §9 was written against.
+- **It damages the graph canvas from a distance.** Turning the blur on promotes the fixed bar to its
+  own composited layer, and Chromium then re-rasterises the whole canvas: node subtitles 200px BELOW
+  the bar ("the formal record", "PDF · one page") go visibly soft. Same failure family as D-27's
+  implementation note. A decorative effect on the chrome is not worth softening the content.
+
+### `ScrollProgress` stays REMOVED — measured, not assumed
+No brand rule is involved; R-C3's claim was that it is dead. Verified, and it is worse than dead.
+
+- On `/`, `scrollHeight === innerHeight` in all four combinations at 1440 **and** 375. Mounted, it
+  renders at `opacity: 0` reading `00%` — an always-on scroll listener that can never be seen.
+- Its four probe ids (`#about #work #skills #contact`) exist on **no route on the site**, so the
+  section designator that is the whole point of the instrument can never appear. It degrades to a
+  bare percent readout duplicating the native scrollbar it was built to replace.
+- Of the ten legacy routes, **nine scroll ≤216px** at 1440 (four of them 56px, three 0px). Only
+  `/permit` genuinely scrolls.
+- Restoring it as-is drags in `.scroll-station` from the **frozen** `src/styles/theme.css`, which is
+  `backdrop-filter: blur(6px)` over a hardcoded cream — the same §9 violation rejected above — with
+  legacy accent cells and no label. At 375 on `/permit` the chip overlaps the numbered list under it.
+
+*Rejected:* restore as-is (the render above); rebuilding it on `Progress` from the library (§4 radius
+0, 4px, 140ms). The rebuild is the only honest version, but it would serve **one** page and still have
+no section ids to read — those live in frozen `src/pages/**`. Revisit **if and when** the legacy pages
+are restyled; the component stays in the tree unmounted for `src/pages/top_bar.js` under P4 either way.
+
+---
+
 ## 2026-08-25 · The graph canvas at rest
 
 Both taken by Oliver after reviewing the ported graph home on `/`. They are the two things the

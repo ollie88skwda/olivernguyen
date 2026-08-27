@@ -18,18 +18,33 @@
 //   pages menu → <DropdownMenu>                 (was ~70 lines of bespoke panel
 //                                                CSS with its own shadow and
 //                                                12px radius, both off-brand)
+//   menu icon  → <Icon name="menu">             (D-29; see below)
 //
-// Three things the rebuild removes on brand grounds, all flagged in the plan:
-//   1. The bar's backdrop-filter blur. §9 bans glassmorphism and blurred
-//      backdrops outright; the bar is now solid --bg on a hairline.
-//   2. The ☰ hamburger. §8's ratified set has no hamburger; `…` (Glyph "more",
-//      ratified D-13) is the mark for "there is more here".
-//   3. <ScrollProgress>. It reads #about/#work/#skills/#contact — ids of the
-//      retired old home — so on "/" it can only ever read "U0 / Hero", and the
-//      terminal screen is 100dvh and never scrolls, so it never even becomes
-//      visible. Where it did show (legacy routes) it was painted by the frozen
-//      navy/gold theme.css inside a sakura bar. The component stays in the tree
-//      for src/pages/top_bar.js (P4 policy), just unmounted from here.
+// R-C3 removed three things on brand grounds WITHOUT rendering any of them.
+// All three were rendered both ways on 2026-08-26 and settled as D-29
+// (docs/redesign-research/14-chrome-restorations.md). Outcome: 1 restored,
+// 2 confirmed removed.
+//
+//   1. The bar's backdrop-filter blur — STAYS OUT, §9 upheld. Terminal mode is
+//      pixel-identical (100dvh, nothing scrolls under the bar); on a legacy
+//      route the navy headline smears up through the pink bar; and turning it
+//      on promotes the fixed bar to its own composited layer, which makes
+//      Chromium re-rasterise the whole graph canvas soft — node subtitles 200px
+//      BELOW the bar go visibly fuzzy. Same failure family as D-27's note.
+//   2. The ☰ hamburger — RESTORED, as an ICON (D-29). `…` means "more of this
+//      list"; this control opens site navigation. And ☰ is not in JetBrains
+//      Mono (11.44px advance against the mono's 7.81px — a system fallback is
+//      drawing it), so it cannot be a <Glyph> at all. That is §8's own
+//      "a glyph genuinely cannot work" test, on the D-23 sun/moon precedent.
+//   3. <ScrollProgress> — STAYS OUT. Measured: on "/" scrollHeight ===
+//      innerHeight in all four combinations at 1440 and 375, and mounted it
+//      renders at opacity 0 reading "00%". Its four probe ids exist on NO route
+//      on the site, so the section designator can never appear. Nine of the ten
+//      legacy routes scroll <=216px; only /permit really scrolls. Restoring it
+//      as-is also drags in .scroll-station from the frozen theme.css, which is
+//      backdrop-filter: blur(6px) over hardcoded cream — the same §9 violation
+//      rejected in (1). The component stays in the tree for
+//      src/pages/top_bar.js (P4 policy), just unmounted from here.
 //
 // X-3 still holds: chrome motion is CSS, never framer-motion — the chrome is
 // eager on every route and framer's ~35KB gz in the entry chunk cost the mobile
@@ -205,8 +220,15 @@ export const SiteChrome = () => {
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
+                {/* X-2 / D-29: ONE LINE TO UNDO — swap the <Icon name="menu" />
+                    below back to <Glyph name="more" /> and the R-C3 state
+                    returns. … is §8's mark for "more of this list"; this control
+                    opens site navigation, which is not the same promise, and at
+                    control size the ellipsis reads as truncation or a loading
+                    placeholder next to the moon beside it. Rendered both ways at
+                    375 and 1440 in all four combinations before choosing. */}
                 <Button variant="ghost" size="icon" aria-label="Open pages menu">
-                  <Glyph name="more" />
+                  <Icon name="menu" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="sc-menu">

@@ -31,7 +31,14 @@
   padding: 0 var(--s-6, 24px);
   z-index: 1000;
   /* §9 bans glassmorphism and blurred backdrops. The bar was translucent with
-     an 8px backdrop blur; it is now solid, separated by the §9 hairline. */
+     an 8px backdrop blur; it is now solid, separated by the §9 hairline.
+     RE-TESTED AGAINST A RENDER, 2026-08-26 (D-29) — the blur was put back and
+     compared, and it loses on its own merits, not just on §9: invisible in
+     terminal (100dvh, nothing scrolls under the bar), muddy over a legacy
+     route's navy headline, and — the real cost — a backdrop-filter here
+     promotes the fixed bar to its own composited layer, and Chromium then
+     re-rasterises the WHOLE graph canvas soft, blurring node subtitles 200px
+     below the bar. Do not reinstate it without reading D-29. */
   background: var(--bg);
   border-bottom: 1px solid var(--border);
   color: var(--text);

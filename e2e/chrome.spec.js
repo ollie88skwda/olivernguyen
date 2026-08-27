@@ -52,6 +52,18 @@ test.describe("site chrome — R-C4", () => {
     await expect(themeBtn).toHaveCSS("border-radius", "3px");
     const box = await themeBtn.boundingBox();
     expect(box.width).toBe(box.height);
+
+    // D-29: the pages-menu trigger is ☰ drawn as an ICON, not `…` as a Glyph.
+    // U+2630 is absent from JetBrains Mono — measured, it renders from a system
+    // fallback face — so as a <Glyph> it is a per-platform lottery. Assert the
+    // §8 icon contract (lucide, 1.5 stroke, 18px grid) and that no glyph is
+    // left in the trigger, which is what regressing to `…` would put back.
+    const menuBtn = page.getByRole("button", { name: "Open pages menu" });
+    const menuIcon = menuBtn.locator('[data-slot="icon"][data-icon="menu"]');
+    await expect(menuIcon).toHaveCount(1);
+    await expect(menuIcon).toHaveAttribute("stroke-width", "1.5");
+    await expect(menuIcon).toHaveAttribute("width", "18");
+    await expect(menuBtn.locator('[data-slot="glyph"]')).toHaveCount(0);
   });
 
   for (const { mode, theme } of COMBOS) {

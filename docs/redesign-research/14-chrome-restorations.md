@@ -6,11 +6,99 @@ Handed off 2026-08-26 by the exec-chrome that shipped the rebuild (`docs/redesig
 ## CURRENT STATUS / NEXT TASK ← keep updated
 
 ```
-Last updated : handoff, not started
-next         : X-1 (backdrop blur)
+Last updated : 2026-08-26 — DONE, all three settled as D-29
+next         : nothing. Oliver reviews the A/B; see "A/B for Oliver" below.
 Blockers     : none
-Notes for Oliver: —
+Notes for Oliver:
+  1. X-2 came back as an ICON, not a glyph. ☰ is not in JetBrains Mono — measured
+     11.44px advance against the mono's 7.81px, so a system font was drawing it.
+     That satisfies §8's own carve-out instead of narrowing it, so §8 gained one
+     allow-list name (`menu`) rather than a new glyph.
+  2. §9 was NOT narrowed. The blur was rendered and lost on merit — including a
+     cost nobody had spotted: it re-rasterises the whole graph canvas soft.
+  3. X-3's rebuild-on-`Progress` option is DEFERRED, not rejected. It needs real
+     section ids, and those live in frozen `src/pages/**`. Revisit at the legacy
+     restyle. Say the word if you want it built for `/permit` alone anyway.
+  4. Bar height and background are unchanged, so `--graph-chrome-inset` (D-28,
+     exec-graph's files) needed nothing. Nothing was raised to exec-graph.
 ```
+
+## OUTCOME — 1 restored, 2 confirmed removed
+
+All three rendered both ways on the real site before choosing: four `data-theme` × `data-mode`
+combinations at 1440 and 375 (coarse pointer via `devices["iPhone 13"]`), plus legacy routes.
+Decision logged as **D-29** in `docs/DECISIONS.md`. Component notes: `docs/COMPONENTS.md`
+§"Chrome — R-C3" → "The three removals, settled 2026-08-26".
+
+| Item | Verdict | One line to undo |
+|---|---|---|
+| X-1 backdrop blur | **stays out** — §9 upheld, not narrowed | n/a, no code change |
+| X-2 pages-menu icon | **restored** as `<Icon name="menu" />` | `src/chrome/SiteChrome.jsx` — swap that one element back to `<Glyph name="more" />` |
+| X-3 `ScrollProgress` | **stays out** | n/a, no code change |
+
+### X-1 — rejected on three counts, only one of which was the brand rule
+1. **Terminal is pixel-identical.** `100dvh`, never scrolls, nothing passes under the bar.
+2. **Legacy routes go muddy.** `/college` scrolled: the navy legacy headline smears up through the
+   pink sakura bar and sits behind the nav labels. Two palettes mixing is what §9 was written against.
+3. **It softens the graph canvas.** New finding. `backdrop-filter` promotes the fixed bar to its own
+   composited layer; Chromium then re-rasterises the whole canvas, and node subtitles 200px BELOW the
+   bar ("the formal record", "PDF · one page") go visibly fuzzy. Same failure family as D-27's note.
+   Shots: `e2e/__shots__/x1-raster-{A-solid,B-blur}.png`.
+
+### X-2 — restored, but as an icon
+- `…` promises "more of this list"; the control opens site navigation. At control size beside the
+  moon button it reads as truncation or a loading placeholder.
+- **`☰` cannot be a `<Glyph>`.** Measured in the live bar: mono advance 7.81px (`M`, `…`, and the
+  .notdef box all 7.81px) vs `☰` at 11.44px — a system fallback face is drawing it. Tofu risk on any
+  machine without one. §8's "a glyph genuinely cannot work" test is met, on the D-23 sun/moon precedent.
+- Variant C (`…` plus a visible `PAGES` label) was rendered too: unambiguous, but at 375 it takes the
+  last spare width and squeezes the mode toggle, and the trailing `…` next to the word is decoration.
+- Changed: `src/components/brand/icon.jsx` (allow-list `check` · `sun` · `moon` · **`menu`**),
+  `src/chrome/SiteChrome.jsx` (the trigger), `docs/BRAND.md` §8 + §12, `e2e/chrome.spec.js` (folded
+  into the existing §4 radius test, so the count stays 9).
+
+### X-3 — measured, and it is worse than dead
+| Evidence | Result |
+|---|---|
+| `/` scrollability, 4 combos × {1440, 375} | `scrollHeight === innerHeight` every time |
+| mounted on `/` | renders `opacity: 0`, text `00%` |
+| probe ids `#about #work #skills #contact` | present on **no route on the site** — the section designator can never appear |
+| legacy scroll range @1440 | `/permit` 3020 · `/college` 216 · `/transfer /major /apply /studio` 56 · `/pull` 40 · `/license /sat-resources /sat-signup` 0 |
+| restore-as-is paint | `.scroll-station` in **frozen** `src/styles/theme.css` = `backdrop-filter: blur(6px)` over hardcoded cream — the same §9 violation rejected in X-1 |
+| restore-as-is @375 on `/permit` | the chip overlaps the numbered list under it |
+
+Nine of ten legacy routes do not scroll enough to justify an instrument. A rebuild on `Progress`
+would serve one page and still have no ids to read. Deferred to the legacy restyle.
+
+## A/B for Oliver
+
+Side-by-side page at **`/ab/`** on the dist server (`127.0.0.1:4180`), tunnelled at
+`http://100.69.165.32:14180/ab/`.
+
+Both the page and its shots are gitignored review artefacts, and `npm run build` wipes `dist/`.
+Regenerate after any rebuild:
+
+```bash
+npm run build && node e2e/__shots__/.ab-build.mjs
+```
+
+The shots themselves come from a scratch Playwright harness that was deleted after use, so it does not
+move the committed 147/1/4 count. To re-shoot them, copy the harness from `e2e/integration-shots.spec.js`
+and apply each variant to the live page (`page.addStyleTag` for the blur, `page.evaluate` for the
+trigger contents) — that way both sides of a pair come from one build and one run.
+
+## Gate results, 2026-08-26
+
+```
+node scripts/contrast-check.mjs                   183 pairs, 4 themes · pass
+npm run test:run                                  450 passed (unchanged)
+npx playwright test e2e/chrome.spec.js            9 passed (count held; D-29 folded into the §4 test)
+npx playwright test e2e/integration-shots.spec.js 11 passed — bar height and background unchanged
+npx playwright test                               147 passed / 1 failed / 4 skipped
+```
+
+The one failure is the permitted `e2e/legacy-visual.spec.js → /permit`, unchanged from the branch
+baseline.
 
 ## Objective
 

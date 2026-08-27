@@ -1,9 +1,11 @@
 # BRAND.md — olivernguyen.com master design system
 
-**Status: LOCKED (2026-08-24, amended 2026-08-25).** This file is the single source of truth for
-how the site looks and moves. Every component, page, and restyle must come from here.
+**Status: LOCKED (2026-08-24, amended 2026-08-25 and 2026-08-26).** This file is the single source of
+truth for how the site looks and moves. Every component, page, and restyle must come from here.
 
-The 2026-08-25 amendments (D-12 … D-18) add values; they reverse nothing.
+The 2026-08-25 amendments (D-12 … D-18) add values; they reverse nothing. The 2026-08-26 amendment
+(D-29, §8) adds one name to the icon allow-list and one test for telling a glyph from an icon; §9's
+blur ban was re-tested against a render in the same pass and is **upheld unchanged**.
 
 Use these tokens. Do not invent new values. If something you need is not defined here, stop and
 ask — adding a token is a decision, not an implementation detail.
@@ -230,9 +232,15 @@ a monospace grid, and an SVG has no column width — so text uses the character.
 icon below. `src/components/brand/glyph.jsx` names it `checkText` so a control cannot reach for it.
 
 Real icons only where a glyph genuinely cannot work: external link, download, GitHub / LinkedIn
-marks, **the checkbox / menu tick (D-13)**, and **the theme toggle's sun / moon (D-23)**.
-`src/components/brand/icon.jsx` allow-lists `check`; `sun` and `moon` are ratified and land with the
-theme control. Adding a name is a decision — those three are the only ones taken.
+marks, **the checkbox / menu tick (D-13)**, **the theme toggle's sun / moon (D-23)**, and **the
+pages-menu hamburger (D-29)**. `src/components/brand/icon.jsx` allow-lists `check`, `sun`, `moon`
+and `menu`. Adding a name is a decision — those four are the only ones taken.
+
+**The hamburger is an icon, not a glyph, and the reason generalises (D-29).** `☰` (U+2630) is not in
+JetBrains Mono: measured in the live bar, the mono advance is 7.81px — `M`, `…` and even the .notdef
+box all measure 7.81px — while `☰` measures 11.44px, i.e. a system fallback face is drawing it. A
+glyph is a mark in a face we ship. **Before adding a character to `glyph.jsx`, measure its advance
+against the mono's; if it does not match, it is not a glyph and it belongs in `icon.jsx`.**
 When an icon is needed: **one family only** — the
 project already depends on `lucide-react`; keep it, lock `strokeWidth` to `1.5`, size on an
 **18px grid (`--icon`)**, `currentColor` only. Never hand-roll SVG paths. Never a decorative icon
@@ -258,7 +266,10 @@ apparent thickness scales with icon size: draw an icon at the full 18px grid rat
   with `--dossier-border` stepping up to `--border-strong` instead. Nothing else lifts, in
   either theme.
 - Banned: glassmorphism, blurred gradient backdrops, border + shadow + glow on the same element,
-  borderless floating cards.
+  borderless floating cards. **Re-tested and upheld 2026-08-26 (D-29)** — a `backdrop-filter` on the
+  fixed chrome bar was rendered both ways: invisible in terminal (nothing scrolls under it), muddy on
+  a legacy route, and it re-rasterises the whole graph canvas soft by promoting the bar to its own
+  composited layer. The ban is not just taste; it costs content sharpness.
 
 ---
 
@@ -305,7 +316,8 @@ type      Familjen Grotesk 700 / Hanken Grotesk / JetBrains Mono + Martian Mono
           hero clamp(40,5.5vw,64) · section 32-40 · dossier 32 · card 24 · body 16
 icons     mono glyphs first · lucide 1.5 stroke on the 18px grid when unavoidable
           ✓ is an icon in controls, a character in log text
-          icon.jsx allow-list is `check` only
+          icon.jsx allow-list: check · sun · moon · menu (D-29) — closed
+          a character not in the mono is not a glyph: measure the advance first
 surface   hairlines · terminal scanline 3% · graph dot grid
           dossier shadow: sideways in light, none in dark (strong hairline instead)
 mark      oN.c with the accent dot · favicon "oN"
