@@ -6,6 +6,72 @@ If you want to reverse one of these, say so explicitly — do not quietly re-ope
 
 ---
 
+## 2026-08-26 · The bar blur comes back, scoped
+
+### D-30 · §9 is narrowed to permit ONE blurred surface — partially reversing D-29
+Oliver, 2026-08-26, by name: **"can we actually do the blurred top bar? I do like that."** That is the
+explicit reversal the top of this file asks for, so this entry reverses the blur half of D-29. D-29's
+other half (the hamburger, `<Icon name="menu" />`) is untouched and still stands.
+
+`.site-chrome-bar` gets `backdrop-filter: blur(8px)` over a new `--chrome-veil` token, **only** under
+`html[data-mode="graph"] body:has(.graph-root)` at `min-width: 768px` and `pointer: fine`. Solid
+`--bg` everywhere else. Working file: `docs/redesign-research/15-blur-restore.md`.
+
+**D-29's third and decisive objection was wrong, and it was a measurement error.** It claimed a
+`backdrop-filter` on the bar promotes it to its own composited layer and makes Chromium re-rasterise
+the whole graph canvas soft. Reproduced exactly — 47% of canvas pixels change — and then killed by
+control: injecting an **inert** stylesheet changes 47.2%, and injecting **nothing at all** changes
+48.3%. The cause is `TOUR_IDLE_AUTOSTART_MS = 6000` (`src/graph/lib/tour.js:19`): the guided tour
+autostarts 6s after mount and flies the camera, and D-29's harness took frame A at 2.5s and frame B
+after the 6s mark. `.tourhud` is in frame B whenever the effect appears and absent whenever it does
+not. With the tour cancelled the same blur injection moves 1.89% (that residue is D-27's shimmer).
+With `?still`, blur vs solid is **0 pixels different** at `deviceScaleFactor` 1 and 2. Fully settled
+with the shimmer running, node-subtitle sharpness is 2524.4 solid vs 2529.4 blurred. D-29's own
+evidence shot measures against it: `x1-raster-B-blur.png` is the *sharper* of its pair.
+**Any future graph A/B must pass `?still` or cancel the tour, or it is measuring the camera.**
+
+**D-29's other two objections held on re-render, and they are why this is scoped rather than global.**
+Measured as the largest single-channel delta inside the bar, solid vs blurred, 1440×900:
+
+| Where | Delta | Call |
+|---|---|---|
+| graph canvas, world panned so nodes pass under the bar | 4–7/255 | **ships** |
+| graph canvas at its resting fit (dot grid only) | 1–2/255 | ships — same surface |
+| terminal, either theme | 2/255 | opt out |
+| 375 / coarse pointer | 1–2/255 | opt out |
+| legacy `/permit`, scrolled then scrolled back up | 10/255 | opt out |
+
+Terminal is `100dvh` and never scrolls, so 2/255 is rounding, not an effect — and an invisible
+effect still costs a composited layer. On phone nothing passes under the bar either (the graph list
+scrolls inside itself), and `src/styles/Top_Bar.css:139` already ships a coarse-pointer
+`backdrop-filter: none` opt-out for GPU cost. Legacy routes are the only place on the site where the
+WINDOW scrolls: on `/permit` the navy legacy body text smears up through the pink sakura bar, which
+is exactly the two-palette mud §9 was written against. The bar auto-hides on scroll DOWN, so this is
+only reachable by scrolling back UP — reachable is still shipped.
+
+`:has(.graph-root)` is load-bearing, not decoration: legacy routes carry `data-mode="graph"` too, so
+the attribute alone would blur the bar on precisely the routes rejected above. Verified
+— `/permit?mode=graph` computes `backdrop-filter: none`.
+
+**The 82% veil is a contrast floor, not a taste value.** The bar's nav labels are `--text-muted`, and
+a translucent bar composites with whatever is under it. Worst case (bar over `--text`): 5.04:1 in
+graph · light, 4.52:1 in graph · dark — both clear §2.3's 4.5. At 78% graph · dark drops to 3.99:1
+and fails. So the removed declaration's 8px/82%, which D-29's brief called "the old value, not a
+chosen one", turns out to be the only value the palette permits.
+
+*Rejected:* `--overlay` (65%) as the veil — it is the modal scrim, whose job is to dim what is behind
+it, and it fails contrast on the bar at 2.60:1; radius 12px and 16px (16 smears the backdrop into a
+flat wash, so the depth cue it exists for disappears — 8px keeps node-card edges legible as ghosts);
+radius 4px at 88% (below the threshold of visibility, 5/255); blurring in terminal for consistency
+across modes (an invisible effect that still costs a layer); blurring legacy routes (the render
+above); a `will-change`/`translateZ(0)` pin on `.g-world` — unnecessary once B-1 turned out not to
+exist, and it is `src/graph/**`, which is exec-graph's.
+
+*Bar height is unchanged at 64px*, so `--graph-chrome-inset` and `src/graph/lib/camera.js` (D-28)
+need nothing. Nothing was raised to exec-graph.
+
+---
+
 ## 2026-08-26 · The three things the chrome rebuild removed
 
 R-C3 dropped three pieces of chrome on brand grounds without rendering any of them (`docs/COMPONENTS.md`
@@ -42,6 +108,11 @@ text label (unambiguous, but at 375 it takes the last spare width in the bar and
 toggle — and the trailing ellipsis next to the word is then pure decoration, which §8 bans).
 
 ### The bar's backdrop blur stays REMOVED — §9 is not narrowed
+> **PARTIALLY REVERSED by D-30, 2026-08-26, at Oliver's explicit instruction.** The blur ships in
+> graph mode on the graph home at ≥768px / fine pointer. The terminal and legacy-route findings below
+> were re-rendered and held, and are why it is scoped; the canvas-softening finding was a measurement
+> artefact (the 6s guided-tour autostart). Read D-30 before acting on this section.
+
 R-C3 dropped `backdrop-filter: blur(8px)` under §9's ban on blurred backdrops. Restoring it was
 rendered anyway. It loses on its own merits, so §9 is untouched and there is no amendment here.
 

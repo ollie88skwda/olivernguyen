@@ -266,10 +266,21 @@ apparent thickness scales with icon size: draw an icon at the full 18px grid rat
   with `--dossier-border` stepping up to `--border-strong` instead. Nothing else lifts, in
   either theme.
 - Banned: glassmorphism, blurred gradient backdrops, border + shadow + glow on the same element,
-  borderless floating cards. **Re-tested and upheld 2026-08-26 (D-29)** — a `backdrop-filter` on the
-  fixed chrome bar was rendered both ways: invisible in terminal (nothing scrolls under it), muddy on
-  a legacy route, and it re-rasterises the whole graph canvas soft by promoting the bar to its own
-  composited layer. The ban is not just taste; it costs content sharpness.
+  borderless floating cards.
+- **Exactly one blurred surface, and this is it (D-30):** the fixed chrome bar, `blur(8px)` over
+  `--chrome-veil`, **only** where `html[data-mode="graph"]` and the graph home is mounted
+  (`body:has(.graph-root)`), at `min-width: 768px` and `pointer: fine`. Solid `--bg` everywhere else
+  — terminal, legacy routes, phone. Nothing else on the site may blur a backdrop; the rest of the ban
+  above stands unchanged.
+  - `--chrome-veil` is 82% and that is a §2.3 floor, not a taste value: over the worst possible
+    backdrop `--text-muted` measures 5.04:1 in graph · light and 4.52:1 in graph · dark. At 78% dark
+    falls to 3.99:1. **Do not make it more transparent.**
+  - Wrap any use in `@supports (backdrop-filter: …)`. A translucent bar with no blur is worse than a
+    solid one.
+  - D-29 rejected this on three counts and D-30 re-measured all three. Two held (invisible in
+    terminal, muddy on legacy) and are the reason for the scope. The third — "it re-rasterises the
+    graph canvas soft" — **did not exist**: it was the graph's 6s guided-tour autostart moving the
+    camera between the two screenshots. Detail: `docs/redesign-research/15-blur-restore.md`.
 
 ---
 
@@ -320,5 +331,7 @@ icons     mono glyphs first · lucide 1.5 stroke on the 18px grid when unavoidab
           a character not in the mono is not a glyph: measure the advance first
 surface   hairlines · terminal scanline 3% · graph dot grid
           dossier shadow: sideways in light, none in dark (strong hairline instead)
+          ONE blurred surface: the chrome bar, blur(8px) over --chrome-veil 82%,
+          graph mode + graph home + ≥768px + fine pointer only (D-30)
 mark      oN.c with the accent dot · favicon "oN"
 ```

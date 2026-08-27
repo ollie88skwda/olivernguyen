@@ -6,11 +6,102 @@ Handed off 2026-08-26 by exec-chrome-restore, who had just ruled the blur OUT in
 ## CURRENT STATUS / NEXT TASK ← keep updated
 
 ```
-Last updated : handoff, not started
-next         : B-1 (reproduce the canvas-softening cost)
+Last updated : 2026-08-26 — DONE. Blur shipped scoped, logged as D-30.
+next         : nothing. Oliver reviews the A/B: http://100.69.165.32:14180/ab/
 Blockers     : none
-Notes for Oliver: —
+Notes for Oliver:
+  1. B-1 did not exist. D-29's "the blur re-rasterises the graph canvas soft"
+     was the graph's 6s guided-tour autostart moving the camera between the
+     two screenshots. Injecting NOTHING produces the same 47% pixel change.
+     Nothing was raised to exec-graph; no src/graph/** change is wanted.
+  2. D-29's other two blur findings were re-rendered and HELD, so the blur is
+     scoped to graph mode on the graph home at ≥768px / fine pointer. It is
+     off in terminal, on every legacy route, and on phone.
+  3. The 8px/82% recipe is not nostalgia — 82% is the lowest opacity that
+     keeps the bar's nav labels above 4.5:1 over the worst backdrop. 78% fails
+     in graph · dark at 3.99:1. If you want the effect STRONGER, the labels
+     have to change colour first, and that is a palette decision.
+  4. At the resting fit almost nothing is under the bar, so the effect only
+     shows once the canvas moves — dragging it, zooming, or the guided tour.
+     Worth knowing before you judge the static screenshots.
+  5. Question, not blocking: the bar hides on scroll DOWN and returns on
+     scroll UP. On legacy routes that is the only way content is ever under a
+     visible bar. If the legacy pages get restyled onto the sakura palette,
+     the mud reason disappears and the legacy opt-out could go. Flagged for
+     the legacy restyle, not doing it now.
 ```
+
+## OUTCOME — shipped, scoped
+
+| Surface | Blur | Why |
+|---|---|---|
+| graph home, ≥768px, fine pointer | **on**, `blur(8px)` over `--chrome-veil` | the only place canvas content passes under the bar |
+| terminal, either theme | off | `100dvh`, never scrolls — measured 2/255, invisible, still costs a layer |
+| legacy routes | off | navy legacy text smears through the pink bar — D-29 was right |
+| 375 / coarse pointer | off | nothing passes under the bar; `Top_Bar.css:139` GPU precedent |
+
+One line to undo: delete the `@supports` block at the bottom of `src/chrome/chrome.css`
+(and `--chrome-veil` in `src/styles/sakura.css`, which nothing else reads).
+
+Decision: `docs/DECISIONS.md` **D-30**. Brand: `docs/BRAND.md` §9 + §12.
+Regression: `e2e/chrome.spec.js` — folded into the nav test, so the file is still 9.
+
+### Gate results, 2026-08-26
+
+```
+node scripts/contrast-check.mjs                   183 pairs, 4 themes · pass
+npm run test:run                                  450 passed (unchanged)
+npx playwright test e2e/chrome.spec.js            9 passed (count held)
+npx playwright test e2e/integration-shots.spec.js 11 passed — bar height still 64px
+npx playwright test                               147 passed / 1 failed / 4 skipped
+```
+
+The one failure is the permitted `e2e/legacy-visual.spec.js → /permit`. Re-verified by stashing:
+it fails identically without any of this branch's changes.
+
+### Re-shooting the A/B shots
+
+The `x1-d30-*` shots came from a scratch Playwright spec that was deleted after use, so it does not
+move the 147 count. To re-shoot: copy the harness from `e2e/integration-shots.spec.js`, shoot the
+SHIPPED build, and get side A by injecting
+`.site-chrome-bar{background:var(--bg)!important;backdrop-filter:none!important}` — that way both
+sides of every pair come from one build and one run. **Cancel the tour first**
+(`window.dispatchEvent(new KeyboardEvent("keydown",{key:"Shift"}))`) or pass `?still`, or you are
+measuring the camera. Then:
+
+```bash
+npm run build && node e2e/__shots__/.ab-build.mjs
+```
+
+### B-1 RESULT — the canvas softening does not exist
+
+Reproduced D-29's observation exactly, then killed it with a control.
+
+| Run | Pixels changed | Sharpness (var-of-Laplacian) |
+|---|---|---|
+| D-29's harness, blur injected | 47.1–47.5% | 980 → 1194 / 1384 / 1438 (wanders) |
+| Same harness, **inert** stylesheet injected | 47.2% | 986 → 1473 |
+| Same harness, **nothing injected at all** | 48.3% | 979 → 1664 |
+| Same harness, blur, tour autostart cancelled | 1.89% | 975 → 1002 |
+
+**Root cause: `TOUR_IDLE_AUTOSTART_MS = 6000` (`src/graph/lib/tour.js:19`).** The guided tour
+autostarts 6s after mount and flies the camera. D-29's harness settled 2.5s, took frame A, injected
+the blur, waited, took frame B — and the 6s mark fell between the two frames. Frame B is the canvas
+at a different camera transform, which is why 47% of pixels move and why the sharpness number wanders
+run to run. Confirmed directly: `.tourhud` is present in frame B when the effect appears and absent
+when it does not.
+
+Controls that show the blur itself costs nothing:
+
+- `?still` (shimmer + tour off), fresh load both sides, 1440×900: **0 pixels differ**, sharpness
+  1000.0 vs 1000.0. Same at `deviceScaleFactor: 2` — 0 pixels.
+- Shimmer running, both sides fresh-loaded and settled past the tour, 6 samples each: node-subtitle
+  sharpness median **2524.4 solid vs 2529.4 blur** (+0.2%); whole canvas 1487.5 vs 1491.8.
+- D-29's own committed evidence measures against it: `x1-raster-A-solid.png` = 1632.5,
+  `x1-raster-B-blur.png` = **1681.3**. The "blurred" frame is the sharper one.
+
+Harness kept as `e2e/lib/png-sharpness.mjs` (not a spec, does not move the e2e count).
+**Any future graph A/B must pass `?still` or cancel the tour, or it is measuring the camera.**
 
 ## Objective
 

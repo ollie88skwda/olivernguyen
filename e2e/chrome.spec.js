@@ -5,6 +5,7 @@
 // is here is the set of things R-C3 changed and a screenshot cannot catch:
 // §4's radius split, the theme axis, and the reduced-motion fallback.
 import { test, expect } from "@playwright/test";
+import { decodePng, sharpness } from "./lib/png-sharpness.mjs";
 
 const COMBOS = [
   { mode: "terminal", theme: "dark" },
@@ -94,11 +95,98 @@ test.describe("site chrome — R-C4", () => {
     await expect(page.locator("html")).toHaveAttribute("data-mode", "terminal");
   });
 
-  test("nav is graph-only; the terminal carries its own", async ({ page }) => {
+  // D-30 rides along here because this test already crosses the exact boundary
+  // the blur is scoped to: graph home -> terminal, on the same page instance.
+  // Folded in rather than added so the file's count stays 9 (as D-29 did).
+  test("nav and the §9 blur are both graph-home-only; the terminal has neither", async ({
+    page,
+  }) => {
+    const barStyle = () =>
+      page
+        .locator(".site-chrome-bar")
+        .evaluate((el) => {
+          const s = getComputedStyle(el);
+          return {
+            filter: s.backdropFilter || s.webkitBackdropFilter,
+            bg: s.backgroundColor,
+            height: s.height,
+            veil: getComputedStyle(el).getPropertyValue("--chrome-veil").trim(),
+          };
+        });
+
     await page.goto("/?mode=graph&theme=light");
+    await expect(page.locator(".graph-root")).toBeVisible();
     await expect(page.locator(".sc-nav").getByRole("link")).toHaveCount(3);
+
+    const graph = await barStyle();
+    // §9 permits exactly one blurred surface and this is it (D-30).
+    expect(graph.filter).toBe("blur(8px)");
+    // 82% is a §2.3 contrast floor, not a taste value — at 78% the worst-case
+    // composite drops --text-muted to 3.99:1 in graph · dark. Do not lower it.
+    expect(graph.veil).toContain("82%");
+    expect(graph.bg).toMatch(/0\.82/);
+    // D-28: the camera and --graph-chrome-inset are keyed off the bar HEIGHT.
+    // Changing the background must never move it.
+    expect(graph.height).toBe("64px");
+
     await page.getByRole("button", { name: "TERM" }).click();
     await expect(page.locator(".sc-nav")).toHaveCount(0);
+
+    const terminal = await barStyle();
+    // the terminal screen is 100dvh and never scrolls, so the blur measured
+    // 2/255 there — invisible, and an invisible effect still costs a layer
+    expect(terminal.filter).toBe("none");
+    expect(terminal.bg).toBe("rgb(250, 241, 245)");
+    expect(terminal.height).toBe("64px");
+
+    // Legacy routes carry data-mode="graph" too, so the scope leans on
+    // :has(.graph-root). Without it the bar would blur over the navy legacy
+    // palette, which is the two-palette mud §9 exists to stop.
+    await page.goto("/permit?mode=graph");
+    await expect(page.locator("html")).toHaveAttribute("data-mode", "graph");
+    expect(await page.locator(".graph-root").count()).toBe(0);
+    const legacy = await barStyle();
+    expect(legacy.filter).toBe("none");
+    expect(legacy.height).toBe("64px");
+
+    // ---- and it costs the canvas nothing (D-30) -------------------------
+    // D-29 rejected the blur partly because it supposedly re-rasterised the
+    // whole graph canvas soft. It does not; that was the 6s guided-tour
+    // autostart moving the camera between the two frames. `?still` disables
+    // BOTH the tour and the shimmer, which is the only way to compare two
+    // frames of this canvas at all. Anything below the bar must be identical
+    // with the blur on and with it suppressed.
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/?mode=graph&theme=light&still", { waitUntil: "networkidle" });
+    await page.evaluate(() => document.fonts.ready);
+    await page.waitForTimeout(1500);
+    const clip = { x: 0, y: 64, width: 1440, height: 700 };
+    const withBlur = await page.screenshot({ clip });
+    await page.addStyleTag({
+      content: `.site-chrome-bar{background:var(--bg)!important;
+        -webkit-backdrop-filter:none!important;backdrop-filter:none!important;}`,
+    });
+    await page.waitForTimeout(800);
+    const withoutBlur = await page.screenshot({ clip });
+
+    const A = decodePng(withBlur);
+    const B = decodePng(withoutBlur);
+    let differing = 0;
+    for (let i = 0; i < A.data.length; i += 4) {
+      if (
+        A.data[i] !== B.data[i] ||
+        A.data[i + 1] !== B.data[i + 1] ||
+        A.data[i + 2] !== B.data[i + 2]
+      )
+        differing++;
+    }
+    const total = A.width * A.height;
+    expect(
+      differing / total,
+      `${differing}/${total} canvas pixels changed when the bar blur was switched off`,
+    ).toBeLessThan(0.0005);
+    // and the same said as "still sharp", which is the claim D-30 disproved
+    expect(sharpness(A) / sharpness(B)).toBeGreaterThan(0.98);
   });
 
   // §6: every animated element needs a static fallback carrying the same DOM

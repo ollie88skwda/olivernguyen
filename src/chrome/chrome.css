@@ -30,15 +30,9 @@
   gap: var(--s-4, 16px);
   padding: 0 var(--s-6, 24px);
   z-index: 1000;
-  /* §9 bans glassmorphism and blurred backdrops. The bar was translucent with
-     an 8px backdrop blur; it is now solid, separated by the §9 hairline.
-     RE-TESTED AGAINST A RENDER, 2026-08-26 (D-29) — the blur was put back and
-     compared, and it loses on its own merits, not just on §9: invisible in
-     terminal (100dvh, nothing scrolls under the bar), muddy over a legacy
-     route's navy headline, and — the real cost — a backdrop-filter here
-     promotes the fixed bar to its own composited layer, and Chromium then
-     re-rasterises the WHOLE graph canvas soft, blurring node subtitles 200px
-     below the bar. Do not reinstate it without reading D-29. */
+  /* SOLID is the default, on every route and in both modes. §9 permits exactly
+     one blurred surface on this site and it is scoped IN at the bottom of this
+     file rather than declared here — see D-30. */
   background: var(--bg);
   border-bottom: 1px solid var(--border);
   color: var(--text);
@@ -167,6 +161,42 @@ html[data-mode="graph"] .graph-root.listing .g-list {
    row shrinks and the page still never scrolls. */
 html[data-mode="terminal"] .term-screen {
   padding-top: var(--s-16, 64px);
+}
+
+/* -------------------------------------------------------------------------
+   §9's ONE permitted blurred surface (D-30, 2026-08-26, partially reversing
+   D-29 at Oliver's explicit instruction). ONE LINE TO UNDO: delete this block.
+
+   Scoped to the only place the effect actually exists. Each opt-out is a
+   render, not an opinion — measured as the largest single-channel delta inside
+   the bar, solid vs blurred, at 1440×900:
+
+     graph canvas, world panned so nodes pass under the bar   4–7/255  SHIPS
+     graph canvas at its resting fit (dot grid only)          1–2/255
+     terminal, either theme (100dvh, nothing ever scrolls)    2/255    opt out
+     375 / coarse pointer (the list scrolls inside itself)    1–2/255  opt out
+     legacy /permit scrolled back up                          10/255   opt out
+
+   The legacy opt-out is the one that is about looks rather than cost: those
+   routes are the only place on the site where the WINDOW scrolls, and their
+   navy body text smears up through the pink sakura bar. Two palettes mixing is
+   what §9 was written against, and D-29 was right about it.
+
+   :has(.graph-root) is load-bearing: legacy routes carry data-mode="graph" too
+   (the mode toggle works everywhere), so the attribute alone would blur the bar
+   on exactly the routes rejected above. .graph-root only mounts on "/".
+
+   @supports guards the whole thing: without backdrop-filter a translucent bar
+   would show unblurred content straight through it, which is worse than solid.
+   No prefers-reduced-motion fallback — a backdrop-filter does not animate. */
+@supports (backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px)) {
+  @media (min-width: 768px) and (pointer: fine) {
+    html[data-mode="graph"] body:has(.graph-root) .site-chrome-bar {
+      background: var(--chrome-veil);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+    }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -237,6 +237,14 @@ html[data-theme="light"][data-mode="terminal"] .sakura {
   /* the backdrop behind an overlay — same recipe chrome.css and terminal.css
    * already use, expressed once. */
   --overlay: color-mix(in srgb, var(--bg) 65%, transparent);
+  /* §9's ONE permitted blurred surface: the fixed chrome bar (D-30). Not
+   * --overlay — 65% is the modal scrim, whose job is to DIM what is behind it,
+   * while the bar has to stay a surface you read controls on. 82% is not a
+   * taste value, it is the §2.3 floor: over the worst possible backdrop (the
+   * bar sitting on --text) --text-muted still measures 5.04:1 in graph · light
+   * and 4.52:1 in graph · dark. One step more transparent, 78%, drops
+   * graph · dark to 3.99:1 and fails the 4.5 gate. Do not lower it. */
+  --chrome-veil: color-mix(in srgb, var(--bg) 82%, transparent);
   /* §9: the ONE permitted shadow, on the open dossier only. §9 names it but
    * gives no value; settled 2026-08-25 (D-15). LIGHT casts SIDEWAYS, because
    * that is the direction the panel slides in from — same recipe graph.css

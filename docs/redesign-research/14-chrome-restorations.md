@@ -37,6 +37,14 @@ Decision logged as **D-29** in `docs/DECISIONS.md`. Component notes: `docs/COMPO
 | X-3 `ScrollProgress` | **stays out** | n/a, no code change |
 
 ### X-1 — rejected on three counts, only one of which was the brand rule
+
+> **SUPERSEDED 2026-08-26 by `docs/redesign-research/15-blur-restore.md` and `DECISIONS.md` D-30.**
+> Oliver reversed this by name and the blur now ships in graph mode on the graph home at ≥768px /
+> fine pointer. Findings 1 and 2 below were re-rendered and **held** — they are exactly why it is
+> scoped that narrowly. Finding 3 was a **measurement artefact**: the graph's 6s guided-tour
+> autostart (`TOUR_IDLE_AUTOSTART_MS`) moved the camera between the harness's two frames. An inert
+> stylesheet, and injecting nothing at all, produce the same 47% pixel change. The rest of this file
+> is unchanged and still correct.
 1. **Terminal is pixel-identical.** `100dvh`, never scrolls, nothing passes under the bar.
 2. **Legacy routes go muddy.** `/college` scrolled: the navy legacy headline smears up through the
    pink sakura bar and sits behind the nav labels. Two palettes mixing is what §9 was written against.
