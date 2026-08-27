@@ -11,6 +11,8 @@ Use these tokens. Do not invent new values. If something you need is not defined
 ask — adding a token is a decision, not an implementation detail.
 
 - Decision history and rationale: `docs/DECISIONS.md`.
+- What is still **un**decided, and who it waits on: `docs/OPEN-DECISIONS.md`. Defer something, add it
+  there — never leave an open call in a plan doc's status block.
 - Theme scheme — the four combinations, switching, scoping, verification: `docs/THEMES.md`.
 - Colour science, contrast tables, derivations: `docs/redesign-research/04-sakura-palette.md`.
 - Component inventory and token-to-file index: `docs/COMPONENTS.md`.

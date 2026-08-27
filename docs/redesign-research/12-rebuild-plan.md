@@ -105,19 +105,22 @@ Notes for Oliver:
   13. THE REBUILD IS DONE, on `feat/component-library`, unmerged as instructed.
      All three surfaces — chrome, graph home, terminal home — are on the
      component library and the brand tokens, in all four theme × mode
-     combinations. No executor has work outstanding. What waits on YOU, in
-     rough order of how much it changes:
-       · note 5  — IN FLIGHT with exec-chrome-restore (backdrop blur, ☰,
-                   ScrollProgress). See 14-chrome-restorations.md.
-       · note 10 — CLOSED by D-27. · note 12 — CLOSED by D-28.
-       · note 11 — group nodes, tour HUD, toast, legend chips and tech tokens
-                   are square now, and the canvas's bespoke card shadow is
-                   gone (§4 / §9).
-       · note 6  — the wordmark dot is subtle on the dark ladder.
-       · note 7  — the §10 favicon (`oN` on --bg, square) needs an asset.
-       · note 9  — process: one worktree per executor next time.
-     The one red test in the suite, `/permit`, predates this branch entirely
-     (note 3). Merging is your call — nobody merged anything.
+     combinations. No executor has work outstanding.
+
+     WHAT WAITS ON YOU HAS MOVED. This block went stale (it still called note 5
+     "in flight" after that work shipped as D-29 … D-32), so the open items now
+     live in ONE place: `docs/OPEN-DECISIONS.md`. Add and close them there.
+
+     Closed since this plan: note 5 — D-29 (chrome removals: ☰ restored,
+     ScrollProgress out) and D-30 … D-32 (bar blur restored, scoped to the
+     graph home, veil at 50%). note 10 — D-27. note 12 — D-28. note 11 — group
+     nodes, tour HUD, toast, legend chips and tech tokens are square, and the
+     canvas's bespoke card shadow is gone (§4 / §9). note 8 — re-measured at
+     R-I1, inside budget.
+     Still open, carried into OPEN-DECISIONS.md: note 6 (wordmark dot on dark),
+     note 7 (§10 favicon asset), note 9 (one worktree per executor).
+     The one red test, `/permit`, predates this branch entirely (note 3) and is
+     item 1 there. Merging is your call — nobody merged anything.
 ```
 
 Update rules: tick §8 checkboxes as tasks complete; rewrite this block each session; human questions → "Notes for Oliver".

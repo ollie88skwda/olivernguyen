@@ -4,6 +4,9 @@ Append-only log of decisions that outlive a single task. Newest block on top.
 Each entry: what was decided, what was rejected and why, and where the detail lives.
 If you want to reverse one of these, say so explicitly — do not quietly re-open it.
 
+Still OPEN, not decided: `docs/OPEN-DECISIONS.md`. Closing an item there means adding an entry here
+and deleting it there.
+
 ---
 
 ## 2026-08-26 · The bar's labels get louder so the glass can get stronger

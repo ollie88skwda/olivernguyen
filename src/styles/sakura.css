@@ -266,7 +266,10 @@ html[data-theme="light"][data-mode="terminal"] .sakura {
   --dossier-border: var(--border);
   /* focus: 2px --accent-hi at 1px offset, the treatment terminal.css already
    * ships. BRAND.md §4 fixes the focus-ring RADIUS (3px) but not its colour or
-   * width — flagged in docs/COMPONENTS.md. */
+   * width, so these two values were PICKED, not decided — they are the only
+   * visual tokens in the system with no brand authority behind them.
+   * Tracked as item 4 in docs/OPEN-DECISIONS.md. (This comment used to say
+   * "flagged in docs/COMPONENTS.md"; it never was — that flag did not exist.) */
   --focus-ring: var(--accent-hi);
   --focus-ring-w: 2px;
 }
