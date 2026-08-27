@@ -5,6 +5,15 @@ General engineering rules also live in `CLAUDE.md` and in the global `~/AGENTS.m
 
 ---
 
+## 0. What to work on next
+
+- **Handed no specific task, or asked "what's next"? Read `docs/OPEN-DECISIONS.md` first.** It is the
+  one ranked list of every design call still open and what each one unblocks.
+- Deferring something → add it to `docs/OPEN-DECISIONS.md` in the same change.
+- Closing something → log it in `docs/DECISIONS.md`, then delete it from `docs/OPEN-DECISIONS.md`.
+- **Never hunt `docs/redesign-research/` for open work.** Those plan status blocks go stale:
+  `12-rebuild-plan.md` note 13 still called shipped work "IN FLIGHT" (found 2026-08-27).
+
 ## 1. Design comes from ONE place
 
 **`docs/BRAND.md` is the master design system. Read it before writing any UI, and build only
