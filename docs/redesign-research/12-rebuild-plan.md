@@ -6,13 +6,23 @@ Precondition: library audited complete + rulebook-matching (see COMPONENTS.md, B
 ## CURRENT STATUS / NEXT TASK  ← executors MUST keep this block updated
 
 ```
-Last updated : exec-chrome, R-I1 done — **REBUILD DONE ✅**
+Last updated : exec-graph-home, closing out — **REBUILD DONE ✅ + D-27/D-28 landed**
 exec-chrome     : R-C1 ✅ R-C2 ✅ R-C3 ✅ R-C4 ✅ R-I1 ✅ — nothing outstanding
-exec-graph-home : R-G1 ✅ R-G2 ✅ R-G3 ✅ — GATE GRAPH-HOME ✅, nothing outstanding
+exec-graph-home : R-G1 ✅ R-G2 ✅ R-G3 ✅ — GATE GRAPH-HOME ✅, nothing outstanding.
+                  Post-gate, on Oliver's review: D-27 (idle shimmer reinstated as §6's
+                  third permitted loop) and D-28 (camera frames clear of the chrome bar;
+                  semantic zoom follows the fit; zoom floor 0.35 → 0.25 for headroom as
+                  nodes are added). Both ratified in DECISIONS.md, BRAND.md §6 amended.
 exec-terminal   : R-T1 ✅ R-T2 ✅ R-T3 ✅ — GATE TERMINAL ✅, nothing outstanding
 Integration     : R-I1 ✅ — the plan is complete. Branch `feat/component-library`, NOT merged.
 Blockers        : none. Every checklist box in §8 is ticked; the only open items are
-                  Oliver's calls in the notes below (5, 6, 7, 9, 10, 11, 12).
+                  Oliver's calls in the notes below (5, 6, 7, 9, 11).
+
+All three executors are closed out. Known-failing, both pre-existing and documented:
+  - e2e/legacy-visual.spec.js → /permit (baseline drift, COMPONENTS.md follow-up 3)
+  - e2e/terminal-panes.spec.js + terminal-shots.spec.js time out under `--workers=3`
+    and pass with `--workers=1`. Load contention, not a regression.
+NEXT HUMAN STEP: review `/`, then decide whether to merge `feat/component-library`.
 Notes for Oliver:
   1. exec-terminal moved a gate assertion. The console body went from a bespoke
      14px to the library's --fs-mono (13px, BRAND.md §7's ratified point inside
