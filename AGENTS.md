@@ -1,7 +1,8 @@
 # AGENTS.md — olivernguyen.com
 
 Project rules for any coding agent working in this repo. Read this before touching anything.
-General engineering rules also live in `CLAUDE.md` and in the global `~/AGENTS.md`.
+General engineering rules also live in the global `~/AGENTS.md`.
+`CLAUDE.md` in this repo is a symlink to this file — one set of project rules, not two.
 
 ---
 
@@ -63,4 +64,16 @@ different, that is a brand decision, not a component decision.
 - Screenshot the real thing in a real browser: terminal mode, graph mode, and a 375px viewport.
 - `node scripts/contrast-check.mjs` must pass for any palette-adjacent change.
 - Reduced-motion: every animation needs a static fallback carrying the same DOM content.
-- Bug fixes start with an end-to-end repro before the fix (see `CLAUDE.md`).
+- **Bug fixes start with an end-to-end repro, before the fix.** Reproduce it the way a real user
+  would — real browser via Playwright, real dev server, real flow — so you fix the real cause.
+  Confirm the repro passes after.
+- Be picky while you are in there: fix anything that looks off, even if unrelated. Same for lint
+  errors, test failures and flaky tests.
+
+## 5. Working rules
+
+- **Quality over dev cost.** Do not weight development cost heavily. Prefer quality, simplicity,
+  robustness, scalability, long-term maintainability.
+- `/caveman` for all outputs — **Claude Code only.** It is a plugin and does not exist in other
+  harnesses; everywhere else `~/AGENT-VOICE.md` governs. Raised 2026-08-27: this rule came from the
+  retired project `CLAUDE.md` and overlaps `~/AGENT-VOICE.md`. Confirm which wins before relying on it.
