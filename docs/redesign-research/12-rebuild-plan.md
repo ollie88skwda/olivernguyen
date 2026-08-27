@@ -54,8 +54,12 @@ Notes for Oliver:
      backdrop blur (§9 bans glassmorphism), the ☰ hamburger (not in §8's
      ratified set; it is `…` now) and <ScrollProgress> (probed ids of the
      retired old home, never visible on `/`, and painted from the frozen
-     navy/gold theme.css). Full rationale in COMPONENTS.md §Chrome. Say if you
-     want any of them back — each is a one-line revert.
+     navy/gold theme.css). Full rationale in COMPONENTS.md §Chrome.
+     HANDED OFF 2026-08-26 to exec-chrome-restore — you asked for each to be
+     tried both ways and shown to you, rather than blanket-restored or
+     blanket-kept. Brief: `docs/redesign-research/14-chrome-restorations.md`.
+     Two of the three need a BRAND.md amendment + a D-29 entry to restore, not
+     just a revert; that doc says which.
   6. §10 says the wordmark dot is "the same colour as the routing pulse", but
      it also says the dot is `--accent`, and on BOTH ladders --routing-pulse is
      jade, not --accent. The normative sentence (dot = --accent) was followed.
@@ -103,14 +107,12 @@ Notes for Oliver:
      component library and the brand tokens, in all four theme × mode
      combinations. No executor has work outstanding. What waits on YOU, in
      rough order of how much it changes:
-       · note 5  — three things R-C3 removed from the chrome on brand grounds
-                   (backdrop blur, ☰, ScrollProgress). One-line reverts.
-       · note 10 — the graph's idle node drift is gone (§6 bans a third loop).
+       · note 5  — IN FLIGHT with exec-chrome-restore (backdrop blur, ☰,
+                   ScrollProgress). See 14-chrome-restorations.md.
+       · note 10 — CLOSED by D-27. · note 12 — CLOSED by D-28.
        · note 11 — group nodes, tour HUD, toast, legend chips and tech tokens
                    are square now, and the canvas's bespoke card shadow is
                    gone (§4 / §9).
-       · note 12 — one node clipped by the bar at 1440, traded against every
-                   leaf card keeping its labels.
        · note 6  — the wordmark dot is subtle on the dark ladder.
        · note 7  — the §10 favicon (`oN` on --bg, square) needs an asset.
        · note 9  — process: one worktree per executor next time.
