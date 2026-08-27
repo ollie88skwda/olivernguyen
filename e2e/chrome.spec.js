@@ -118,14 +118,41 @@ test.describe("site chrome — R-C4", () => {
     await expect(page.locator(".graph-root")).toBeVisible();
     await expect(page.locator(".sc-nav").getByRole("link")).toHaveCount(3);
 
+    // D-32: the veil above is only affordable because NOTHING muted and
+    // nothing in --accent-hi sits directly on it. The bar's labels are --text,
+    // and nav hover is an underline rather than a colour swap. Both of these
+    // are load-bearing for contrast, not decoration — --accent-hi on this veil
+    // measured 4.06–4.47:1 in graph · dark, which fails §2.3.
+    const navLabel = page.locator(".sc-nav-link .on-label").first();
+    const [labelColor, barText] = await Promise.all([
+      navLabel.evaluate((el) => getComputedStyle(el).color),
+      page
+        .locator(".site-chrome-bar")
+        .evaluate((el) => getComputedStyle(el).getPropertyValue("--text").trim()),
+    ]);
+    expect(barText).toBe("#3a1e2b");
+    expect(labelColor).toBe("rgb(58, 30, 43)");
+
+    const link = page.locator(".sc-nav-link").first();
+    await link.hover();
+    await page.waitForTimeout(300); // §6's 140ms fade on the underline colour
+    const hovered = await navLabel.evaluate((el) => {
+      const s = getComputedStyle(el);
+      return { color: s.color, line: s.textDecorationLine, dc: s.textDecorationColor };
+    });
+    // colour must NOT move on hover, and the underline must be the signal
+    expect(hovered.color).toBe("rgb(58, 30, 43)");
+    expect(hovered.line).toContain("underline");
+    expect(hovered.dc).toBe("rgb(58, 30, 43)");
+
     const graph = await barStyle();
     // §9 permits exactly one blurred surface and this is it (D-30).
     expect(graph.filter).toBe("blur(8px)");
-    // 74% is a MEASURED §2.3 floor (D-31), not a taste value: over 60 canvas
-    // states the worst composite gives --text-muted 5.01:1 in graph · dark.
-    // At 70% dark lands 4.55–4.89 run to run, which is inside the noise.
-    expect(graph.veil).toContain("74%");
-    expect(graph.bg).toMatch(/0\.74/);
+    // 50% is a MEASURED §2.3 floor (D-32), not a taste value: over 60 canvas
+    // states the worst composite gives --text 5.29:1 in graph · dark and
+    // 6.82:1 in graph · light. 40% fails.
+    expect(graph.veil).toContain("50%");
+    expect(graph.bg).toMatch(/0\.5\b/);
     // D-28: the camera and --graph-chrome-inset are keyed off the bar HEIGHT.
     // Changing the background must never move it.
     expect(graph.height).toBe("64px");

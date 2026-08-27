@@ -6,9 +6,56 @@ If you want to reverse one of these, say so explicitly — do not quietly re-ope
 
 ---
 
+## 2026-08-26 · The bar's labels get louder so the glass can get stronger
+
+### D-32 · Bar labels are `--text`, nav hover is an UNDERLINE, and the veil opens to 50%
+Oliver picked this against the D-31 render (option C): **"i like that much more."** He was choosing
+the trade the A/B put to him — louder nav labels in exchange for a much more see-through bar — so
+this supersedes D-31's 74% and §7's muted label tone *for the chrome bar only*.
+
+**Three changes, and the second one is the one nobody asked for but the maths demands.**
+
+1. **Labels.** `.sakura.site-chrome-bar .on-label[data-tone="muted"]` → `--text`. Applied in BOTH
+   modes and on legacy routes, not just where the bar is blurred: scoping it to the blur would make
+   the labels change weight as you flip TERM/GRAPH, on a bar D-26 deliberately made one component.
+   Off the blur it only raises contrast (`--text` on `--bg` is 13.5:1 vs `--text-muted`'s 7.16:1).
+2. **Nav hover is an underline, not `--accent-hi`.** Promoting the labels alone did *not* work, and
+   finding out why corrected D-31: measured over the real blurred backdrop, `--accent-hi` reads
+   **4.06–4.47:1 in graph · dark and 4.32:1 in graph · light** — it fails §2.3, and **it fails at
+   D-31's 74% too**. D-31 certified 74% off a run where `--text-muted` happened to be the minimum;
+   the hover colour was always the real cap and the run-to-run noise hid it. Hover now keeps the
+   label at `--text` and fades in an underline, which also stops it being colour-alone signalling.
+   `.on-btn[data-variant="link"]` in `components.css` already ships that treatment.
+3. **`--chrome-veil` 74% → 50%.** With `--text` the only foreground sitting directly on the veil,
+   the measured worst composite over 60 canvas states is **5.29:1 in graph · dark and 6.82–6.96:1 in
+   graph · light**, stable across repeat runs. 40% fails at 4.44:1.
+
+The ghost buttons and the mode toggle were checked and needed nothing: ghost hover paints an opaque
+`--surface-2` behind itself and the toggle carries its own fill, so neither sits on the veil.
+
+The wordmark dot (`--accent`) is the one thing on the veil that is not `--text`. Measured **in its
+own region** (it lives at x≈49, so the bar-wide worst pixel is not its worst pixel) it reads 8.41:1
+in dark and 4.21:1 in light, against §1.4.11's 3:1 for graphical objects — and it is part of a
+logotype, which §1.4.3 exempts anyway. It stays `--accent`.
+
+*Rejected:* promoting the labels but leaving hover on `--accent-hi` (what option C was rendered as —
+it fails on hover, which the render could not show); scoping the louder labels to graph mode only
+(the labels would visibly change weight on the mode toggle); darkening `--accent-hi` instead of
+dropping it (a palette change to serve one hover state, when an underline is both cheaper and more
+accessible); keeping 74% (it was never actually passing).
+
+*Consequence for §7:* the muted label tone is still the default everywhere else. The chrome bar is
+now a named exception, because it is the only surface whose background is not opaque.
+
+---
+
 ## 2026-08-26 · How see-through the bar is allowed to be
 
 ### D-31 · `--chrome-veil` opens up 82% → 74%, and the cap is the LABEL colour, not the blur
+> **SUPERSEDED by D-32 the same day.** The veil is 50%, and 74% was not actually a passing value:
+> this entry's own measurement missed that `--accent-hi` (nav hover) fails on the veil at 74%. The
+> method and the warning below are right; the conclusion was one lucky run.
+
 Oliver, on the D-30 render: **"Currently the bar isn't blurred enough for me. If we could blur it
 more honestly, uh like meaning so we can see the stuff behind it more, that'd be cool."** So: more
 transparent, not a wider radius. Working file: `docs/redesign-research/15-blur-restore.md`.

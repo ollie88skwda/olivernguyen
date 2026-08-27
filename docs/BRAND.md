@@ -272,13 +272,14 @@ apparent thickness scales with icon size: draw an icon at the full 18px grid rat
   (`body:has(.graph-root)`), at `min-width: 768px` and `pointer: fine`. Solid `--bg` everywhere else
   — terminal, legacy routes, phone. Nothing else on the site may blur a backdrop; the rest of the ban
   above stands unchanged.
-  - `--chrome-veil` is **74%** (D-31) and that is a *measured* §2.3 floor, not a taste value: over 60
-    canvas states the worst composite gives `--text-muted` 5.01:1 in graph · dark and `--accent-hi`
-    5.64:1 in graph · light. At 70% dark lands 4.55–4.89 run to run — inside the noise, so not safe.
+  - `--chrome-veil` is **50%** (D-32) and that is a *measured* §2.3 floor, not a taste value: over 60
+    canvas states the worst composite gives `--text` 5.29:1 in graph · dark and 6.82:1 in
+    graph · light. 40% fails at 4.44:1.
     **Do not make it more transparent without re-running that measurement.**
-  - The cap comes from the bar's **muted label colour**, not from the blur. Promoting the bar's
-    labels to `--text` moves the floor to ~50%. That is a hierarchy decision, not an implementation
-    one — raise it, do not just do it.
+  - **Nothing muted and nothing in `--accent-hi` may sit directly on the veil.** That is what pays
+    for 50%. On the veil `--accent-hi` measures 4.06–4.47:1 in graph · dark — it fails. The bar's
+    labels are therefore `--text`, and nav hover is an underline rather than a colour swap (D-32).
+    Adding a muted or accent label to the bar silently breaks the veil.
   - Radius stays **8px**. 12–20px measurably buy contrast headroom (a wider average pulls the
     backdrop's extremes toward `--bg`) but smear the backdrop into a flat wash, which destroys the
     only thing the effect is for.
@@ -338,8 +339,10 @@ icons     mono glyphs first · lucide 1.5 stroke on the 18px grid when unavoidab
           a character not in the mono is not a glyph: measure the advance first
 surface   hairlines · terminal scanline 3% · graph dot grid
           dossier shadow: sideways in light, none in dark (strong hairline instead)
-          ONE blurred surface: the chrome bar, blur(8px) over --chrome-veil 74%,
-          graph mode + graph home + ≥768px + fine pointer only (D-30, D-31)
-          74% and 8px are both measured floors — re-measure before changing
+          ONE blurred surface: the chrome bar, blur(8px) over --chrome-veil 50%,
+          graph mode + graph home + ≥768px + fine pointer only (D-30/31/32)
+          50% and 8px are both measured floors — re-measure before changing
+          the bar's labels are --text, not muted, and nav hover is an underline:
+          both are load-bearing for the veil's contrast (D-32)
 mark      oN.c with the accent dot · favicon "oN"
 ```

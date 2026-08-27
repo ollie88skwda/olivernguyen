@@ -227,7 +227,7 @@ to ~130 lines and no longer draws a single control.
 | wordmark | `Wordmark as="a"` | D-25. Was a hand-set `.sc-logo` that could silently lose the §10 dot |
 | mode toggle | `ModeToggle` | D-25. §4's 999px exception, owned in one place |
 | theme control | `Button variant="ghost" size="icon"` + `Icon` | D-23 calls it "an ordinary 3px icon button" — that is this variant exactly. The sun/moon crossfade stays in `chrome.css`: it is a D-23 behaviour, not a Button one |
-| nav links | `<a>` + `MonoLabel tone="muted"` | a nav link is a link, not a boxed button; §7's label role supplies the type. `min-height: var(--ctl-h)` gives §1's 44px tap target |
+| nav links | `<a>` + `MonoLabel tone="muted"`, repainted `--text` | a nav link is a link, not a boxed button; §7's label role supplies the type. `min-height: var(--ctl-h)` gives §1's 44px tap target. **D-32: `chrome.css` overrides the muted tone to `--text` and makes hover an underline instead of `--accent-hi`. Both are load-bearing for `--chrome-veil` — `--accent-hi` on the veil measures 4.06:1 and fails §2.3. Do not put a muted or accent label in this bar** |
 | ⌘K | `Button variant="ghost" size="sm"` + `Glyph name="key"` | ⌘ is §8's glyph. The chord is one span or `.on-btn`'s 8px gap lands between ⌘ and K |
 | pages menu | `DropdownMenu` (+ `Label`, `Separator`, items `asChild`) | replaced ~70 lines of bespoke panel CSS carrying a drop shadow and a 12px radius, both §4/§9 violations |
 | pages-menu icon | `Icon name="menu"` | D-29. R-C3 shipped `Glyph name="more"` (`…`); restored to ☰ after an A/B — see below |

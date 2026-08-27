@@ -64,12 +64,44 @@
 }
 /* [data-tone] is carried so this beats components.css's own
    `.sakura .on-label[data-tone="muted"]`, which is one class heavier. */
+/* D-32: hover is an UNDERLINE, not a colour change.
+   The nav labels are the only foreground in the bar that sits directly on the
+   veil with no background of its own — the ghost buttons paint --surface-2 on
+   hover and the mode toggle carries its own fill, so both are already safe.
+   Hovering used to swap the label to --accent-hi, and measured over the real
+   blurred backdrop that reads 4.06–4.47:1 in graph · dark: it FAILS §2.3, and
+   it failed at D-31's 74% too. It is also colour-alone signalling.
+   An underline fixes both, keeps the label at --text (8.10–8.91:1), and is the
+   treatment components.css already ships for `.on-btn[data-variant="link"]`.
+   The transparent underline is declared at rest so only its COLOUR animates —
+   §6's 140ms state change, killed under reduced motion at the bottom. */
 .sc-nav-link .on-label[data-tone] {
-  transition: color var(--dur-state) var(--ease-state);
+  text-decoration: underline solid transparent;
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--dur-state) var(--ease-state);
+}
+
+/* D-32: the bar's labels are FULL STRENGTH, not §7's muted label tone.
+   Chosen by Oliver against a render, and it is what pays for the blur: the
+   veil's floor is set by the weakest foreground sitting on it, so muted labels
+   capped it at 74% (D-31) and --text lets it open to 56%.
+
+   Applied in BOTH modes and on legacy routes, not just where the bar is
+   blurred. Scoping it to the blur would make the labels change weight as you
+   flip TERM/GRAPH, on a bar that D-26 deliberately made one component. Off the
+   blur this only raises contrast (--text on --bg is 13.5:1 against
+   --text-muted's 7.16:1), so it costs nothing there.
+
+   Doubled up as `.sakura.site-chrome-bar` on purpose: components.css's
+   `.sakura .on-label[data-tone="muted"]` is the same weight as a single-class
+   version of this, and equal weight means load order decides — which is not
+   something this file should depend on. */
+.sakura.site-chrome-bar .on-label[data-tone="muted"] {
+  color: var(--text);
 }
 .sc-nav-link:hover .on-label[data-tone],
 .sc-nav-link:focus-visible .on-label[data-tone] {
-  color: var(--accent-hi);
+  text-decoration-color: currentColor;
 }
 @media (max-width: 700px) {
   .sc-nav {

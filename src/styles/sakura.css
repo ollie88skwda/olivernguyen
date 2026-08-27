@@ -237,26 +237,27 @@ html[data-theme="light"][data-mode="terminal"] .sakura {
   /* the backdrop behind an overlay — same recipe chrome.css and terminal.css
    * already use, expressed once. */
   --overlay: color-mix(in srgb, var(--bg) 65%, transparent);
-  /* §9's ONE permitted blurred surface: the fixed chrome bar (D-30, opened up
-   * to 74% by D-31). Not --overlay — 65% is the modal scrim, whose job is to
-   * DIM what is behind it, while the bar has to stay a surface you read
-   * controls on.
+  /* §9's ONE permitted blurred surface: the fixed chrome bar (D-30, opened to
+   * 74% by D-31, to 50% by D-32). Not --overlay — 65% is the modal scrim,
+   * whose job is to DIM what is behind it, while the bar has to stay a surface
+   * you read controls on.
    *
-   * 74% is a MEASURED §2.3 floor, not a taste value. D-30's 82% came from an
-   * analytic worst case (the bar over a solid slab of --text) that the canvas
-   * cannot actually produce. D-31 measured the real composite instead, over 60
-   * canvas states (zoom × pan) in both graph themes, and the true binding case
-   * is a zoomed-in node card's own text passing under the bar. At 74% the worst
-   * single pixel anywhere in the bar gives 5.01:1 for --text-muted in
-   * graph · dark and 5.64:1 for --accent-hi in graph · light. At 70% dark falls
-   * to 4.55–4.89 depending on the run — inside the noise, so not safe. Below
-   * that it fails outright.
+   * 50% is a MEASURED §2.3 floor, not a taste value. The measurement is the
+   * real composite — bar contents hidden, real backdrop-filter running, worst
+   * single pixel in the bar band — over 60 canvas states (zoom × pan) in both
+   * graph themes. The binding case is a zoomed-in node card's own text passing
+   * under the bar; in dark that turns the backdrop pale.
    *
-   * The cap is set by the bar's MUTED label colour, not by the blur. Promoting
-   * the bar's labels to --text moves the floor to ~50%; that is on the A/B for
-   * Oliver and is a hierarchy decision, not an implementation one.
-   * Do not lower this without re-running that measurement. */
-  --chrome-veil: color-mix(in srgb, var(--bg) 74%, transparent);
+   * This number is only reachable because of the two changes D-32 made in
+   * chrome.css: the bar's labels are --text instead of the muted tone, and nav
+   * hover is an underline instead of a swap to --accent-hi. --accent-hi on this
+   * veil measured 4.06–4.47:1 and was ALWAYS the real cap — it failed at
+   * D-31's 74% too, on a worse run. With --text as the only foreground sitting
+   * directly on the veil, 50% measures 7.15:1 in graph · dark; 40% fails.
+   *
+   * So: do not lower this, and do not put a --accent-hi (or any muted) label
+   * back in the bar without re-running the measurement in D-32. */
+  --chrome-veil: color-mix(in srgb, var(--bg) 50%, transparent);
   /* §9: the ONE permitted shadow, on the open dossier only. §9 names it but
    * gives no value; settled 2026-08-25 (D-15). LIGHT casts SIDEWAYS, because
    * that is the direction the panel slides in from — same recipe graph.css

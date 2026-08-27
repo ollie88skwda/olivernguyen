@@ -6,12 +6,20 @@ Handed off 2026-08-26 by exec-chrome-restore, who had just ruled the blur OUT in
 ## CURRENT STATUS / NEXT TASK ← keep updated
 
 ```
-Last updated : 2026-08-26 — round 2 DONE. Veil opened 82% -> 74% (D-31).
-next         : Oliver picks between B (shipped) and C (louder labels, ~2x more
-               see-through) on http://100.69.165.32:14180/ab/
-Blockers     : none — C is a question, not a blocker; B is shipped either way
+Last updated : 2026-08-26 — round 3 DONE. Option C shipped: bar labels are
+               --text, nav hover is an underline, veil 74% -> 50% (D-32).
+next         : nothing. Review http://100.69.165.32:14180/ab/ and say when to merge.
+Blockers     : none
 Notes for Oliver:
-  0. ROUND 2. You said it wasn't blurred enough and you wanted to see more of
+  -1. ROUND 3. You picked the bolder option, it is shipped. One thing changed
+     that you did not ask for and could not have seen in the render: hovering
+     a nav word used to turn it pink, and pink is not readable on a veil this
+     thin. It measured 4.06-4.47:1 against a 4.5 minimum -- and it was ALREADY
+     failing at round 2's setting, which my round-2 measurement missed on a
+     lucky run. Hover is now an underline instead. Same signal, readable, and
+     better for anyone who cannot pick the colour out.
+     The terminal bar has no nav words, so nothing moved there.
+  0. ROUND 2 (superseded by round 3, kept for the record). You said it wasn't blurred enough and you wanted to see more of
      what's behind it. The bar is now more see-through (74% instead of 82%).
      It cannot go much further as things stand, and the reason is NOT the blur
      — it is that the nav labels are quiet grey. Promote them to full-strength
@@ -48,7 +56,42 @@ Notes for Oliver:
      the legacy restyle, not doing it now.
 ```
 
-## ROUND 2 — how transparent the bar is allowed to be (D-31)
+## ROUND 3 — option C shipped (D-32)
+
+Oliver picked option C off the round-2 A/B: **"i like that much more."** Three changes.
+
+| Change | Why |
+|---|---|
+| bar labels `--text-muted` → `--text` | what Oliver picked; it is also what pays for the veil |
+| nav hover: `--accent-hi` → underline | `--accent-hi` on the veil measures 4.06–4.47:1 — **fails** |
+| `--chrome-veil` 74% → 50% | with `--text` the only foreground on the veil, worst is 5.29:1 dark / 6.82:1 light |
+
+**Round 2 was wrong and this is how.** Promoting the labels alone did not work. Measuring option C
+properly showed `--accent-hi` (the nav hover colour) failing at every veil tried — **including
+D-31's shipped 74%**, where it reads 4.47:1. D-31 certified 74% off a run where `--text-muted`
+happened to be the minimum of the three foregrounds; the hover colour was always the real cap and
+the run-to-run noise hid it. This is exactly the failure mode D-31's own warning describes, and it
+caught D-31.
+
+Measured at the shipped 50%, two runs each, `--workers=4`:
+
+```
+graph · dark   --text 5.29  PASS (both runs)
+graph · light  --text 6.82 / 6.96  PASS
+```
+
+Other foregrounds checked and cleared:
+- ghost buttons paint an opaque `--surface-2` on hover, so `--accent-hi` there never touches the veil
+- the mode toggle carries its own fill
+- the wordmark dot (`--accent`) measured **in its own region** — it sits at x≈49, so the bar-wide
+  worst pixel is not its worst pixel — reads 8.41:1 dark / 4.21:1 light, against §1.4.11's 3:1 for
+  graphical objects, and it is part of a logotype which §1.4.3 exempts anyway
+
+The louder labels apply in **both modes and on legacy routes**, not only where the bar is blurred:
+scoping them to the blur would make the labels change weight on the mode toggle. Off the blur it
+only raises contrast. Rendered — the terminal bar has no muted labels visible, so nothing moved.
+
+## ROUND 2 — how transparent the bar is allowed to be (D-31, superseded by D-32)
 
 D-30 set the veil at 82% from an ANALYTIC worst case (bar over a solid slab of `--text`) that the
 canvas cannot produce. Round 2 measured the real thing: bar contents hidden, real `backdrop-filter`
@@ -84,7 +127,7 @@ is not a substitute for measuring.
 
 | Surface | Blur | Why |
 |---|---|---|
-| graph home, ≥768px, fine pointer | **on**, `blur(8px)` over `--chrome-veil` (74%, D-31) | the only place canvas content passes under the bar |
+| graph home, ≥768px, fine pointer | **on**, `blur(8px)` over `--chrome-veil` (50%, D-32) | the only place canvas content passes under the bar |
 | terminal, either theme | off | `100dvh`, never scrolls — measured 2/255, invisible, still costs a layer |
 | legacy routes | off | navy legacy text smears through the pink bar — D-29 was right |
 | 375 / coarse pointer | off | nothing passes under the bar; `Top_Bar.css:139` GPU precedent |
