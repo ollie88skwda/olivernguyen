@@ -121,10 +121,11 @@ test.describe("site chrome — R-C4", () => {
     const graph = await barStyle();
     // §9 permits exactly one blurred surface and this is it (D-30).
     expect(graph.filter).toBe("blur(8px)");
-    // 82% is a §2.3 contrast floor, not a taste value — at 78% the worst-case
-    // composite drops --text-muted to 3.99:1 in graph · dark. Do not lower it.
-    expect(graph.veil).toContain("82%");
-    expect(graph.bg).toMatch(/0\.82/);
+    // 74% is a MEASURED §2.3 floor (D-31), not a taste value: over 60 canvas
+    // states the worst composite gives --text-muted 5.01:1 in graph · dark.
+    // At 70% dark lands 4.55–4.89 run to run, which is inside the noise.
+    expect(graph.veil).toContain("74%");
+    expect(graph.bg).toMatch(/0\.74/);
     // D-28: the camera and --graph-chrome-inset are keyed off the bar HEIGHT.
     // Changing the background must never move it.
     expect(graph.height).toBe("64px");

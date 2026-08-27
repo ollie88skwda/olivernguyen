@@ -6,10 +6,22 @@ Handed off 2026-08-26 by exec-chrome-restore, who had just ruled the blur OUT in
 ## CURRENT STATUS / NEXT TASK ← keep updated
 
 ```
-Last updated : 2026-08-26 — DONE. Blur shipped scoped, logged as D-30.
-next         : nothing. Oliver reviews the A/B: http://100.69.165.32:14180/ab/
-Blockers     : none
+Last updated : 2026-08-26 — round 2 DONE. Veil opened 82% -> 74% (D-31).
+next         : Oliver picks between B (shipped) and C (louder labels, ~2x more
+               see-through) on http://100.69.165.32:14180/ab/
+Blockers     : none — C is a question, not a blocker; B is shipped either way
 Notes for Oliver:
+  0. ROUND 2. You said it wasn't blurred enough and you wanted to see more of
+     what's behind it. The bar is now more see-through (74% instead of 82%).
+     It cannot go much further as things stand, and the reason is NOT the blur
+     — it is that the nav labels are quiet grey. Promote them to full-strength
+     text and the bar can be about twice as see-through again. That is option
+     C on the A/B and it needs your call, because it makes the nav louder.
+     I did not take that decision for you.
+     Also: turning the blur radius UP was tried and thrown away. It sounds
+     like "more blur" but it smears everything behind the bar into a flat
+     wash, which is the opposite of what you asked for. Radius stays 8px.
+     Full numbers in DECISIONS.md D-31.
   1. B-1 did not exist. D-29's "the blur re-rasterises the graph canvas soft"
      was the graph's 6s guided-tour autostart moving the camera between the
      two screenshots. Injecting NOTHING produces the same 47% pixel change.
@@ -24,18 +36,55 @@ Notes for Oliver:
   4. At the resting fit almost nothing is under the bar, so the effect only
      shows once the canvas moves — dragging it, zooming, or the guided tour.
      Worth knowing before you judge the static screenshots.
-  5. Question, not blocking: the bar hides on scroll DOWN and returns on
+  5. The review link was dead after round 1 and I did not catch it: Tailscale
+     was stopped on this Mac, so `tailnet-expose` could not bind and the URL
+     silently 404'd from your side. Brought Tailscale back up and verified the
+     page and its images over the tunnel this time. If a local link ever looks
+     dead, check `tailscale status` first.
+  6. Question, not blocking: the bar hides on scroll DOWN and returns on
      scroll UP. On legacy routes that is the only way content is ever under a
      visible bar. If the legacy pages get restyled onto the sakura palette,
      the mud reason disappears and the legacy opt-out could go. Flagged for
      the legacy restyle, not doing it now.
 ```
 
+## ROUND 2 — how transparent the bar is allowed to be (D-31)
+
+D-30 set the veil at 82% from an ANALYTIC worst case (bar over a solid slab of `--text`) that the
+canvas cannot produce. Round 2 measured the real thing: bar contents hidden, real `backdrop-filter`
+running, worst single pixel in the bar band, 60 canvas states (zoom × pan) × both graph themes.
+
+| veil, blur 8px | graph · dark | graph · light | verdict |
+|---|---|---|---|
+| 82% | 6.10 | 6.11 | D-30, over-cautious |
+| **74%** | **5.01** | **5.64** | **ships** |
+| 70% | 4.55 / 4.60 / 4.89 | 5.19 | passes, but that spread IS the noise |
+| 64% | 3.85 | 5.12 | fails |
+| 50% | 2.77 | 4.59 | fails badly |
+
+Binding case, every time: a **zoomed-in node card's own text** passing under the bar. In dark that
+turns the backdrop pale and the bar's light `--text-muted` labels sink into it.
+
+Radius: 12 / 14 / 16 / 20px all buy headroom (70%·16px = 4.82 vs 70%·8px = 4.60) because a wider
+average pulls extremes toward `--bg`. **Rejected on a render** — at 14px+ the backdrop is a flat wash
+and you cannot tell what is behind the bar, which is the whole point. 8px stays.
+
+The real cap is the label colour. Re-measured with the bar's labels promoted to `--text`: dark passes
+at 50% (7.15:1) and fails at 40% (4.44). **~74% → ~50%, about twice as see-through, in exchange for
+louder nav labels.** That is a hierarchy decision, so it is rendered as option C on the A/B and NOT
+taken here.
+
+**Measurement warning:** the numbers move by up to 1.4 contrast points with Playwright worker count,
+because wheel-zoom lands the camera differently. Run at `--workers=4` and take the worst across runs.
+A single lucky run certifies values that actually fail — 70%, 66% and 60% all did that at least once.
+An analytic model of the composite (`veil×bg + (1−veil)×backdrop`) under-estimates the extremes and
+is not a substitute for measuring.
+
 ## OUTCOME — shipped, scoped
 
 | Surface | Blur | Why |
 |---|---|---|
-| graph home, ≥768px, fine pointer | **on**, `blur(8px)` over `--chrome-veil` | the only place canvas content passes under the bar |
+| graph home, ≥768px, fine pointer | **on**, `blur(8px)` over `--chrome-veil` (74%, D-31) | the only place canvas content passes under the bar |
 | terminal, either theme | off | `100dvh`, never scrolls — measured 2/255, invisible, still costs a layer |
 | legacy routes | off | navy legacy text smears through the pink bar — D-29 was right |
 | 375 / coarse pointer | off | nothing passes under the bar; `Top_Bar.css:139` GPU precedent |
@@ -242,6 +291,14 @@ npm run build && node e2e/__shots__/.ab-build.mjs
 
 The tunnel keeps serving the new dist. Add a section for the blur showing what shipped vs what was
 rejected, and hand Oliver the tunnelled URL.
+
+**Two gotchas, both hit on 2026-08-26:**
+- `npm run build` wipes `dist/`, which kills whatever was serving it. Restart the static server with
+  `npx serve dist -l 4180` — **not** `serve -s`, whose SPA fallback serves the app's `index.html`
+  for `/ab/` and hides the review page behind a 200.
+- `tailnet-expose` fails silently when Tailscale is stopped (`listen EADDRNOTAVAIL`, logged to
+  `/tmp/tailnet-expose/<port>.log`). Check `tailscale status` and curl the tunnelled URL before
+  handing it over.
 
 ## Rules
 

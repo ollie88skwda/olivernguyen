@@ -6,6 +6,52 @@ If you want to reverse one of these, say so explicitly — do not quietly re-ope
 
 ---
 
+## 2026-08-26 · How see-through the bar is allowed to be
+
+### D-31 · `--chrome-veil` opens up 82% → 74%, and the cap is the LABEL colour, not the blur
+Oliver, on the D-30 render: **"Currently the bar isn't blurred enough for me. If we could blur it
+more honestly, uh like meaning so we can see the stuff behind it more, that'd be cool."** So: more
+transparent, not a wider radius. Working file: `docs/redesign-research/15-blur-restore.md`.
+
+**D-30's 82% was derived from a worst case the canvas cannot actually produce.** It assumed the bar
+sitting on a solid slab of `--text`. D-31 measured the real composite instead: bar contents hidden,
+real `backdrop-filter` running, worst single pixel anywhere in the bar band, across 60 canvas states
+(zoom × pan × both graph themes). The true binding case is **a zoomed-in node card's own text passing
+under the bar** — in dark that turns the backdrop *light*, and the bar's light labels vanish into it.
+
+| veil, 8px | graph · dark | graph · light | |
+|---|---|---|---|
+| 82% | 6.10 | 6.11 | D-30, over-cautious |
+| **74%** | **5.01** | **5.64** | **ships** |
+| 70% | 4.55 / 4.60 / 4.89 | 5.19 | passes, but the spread is the run-to-run noise |
+| 64% | 3.85 | 5.12 | fails |
+| 50% | 2.77 | 4.59 | fails badly |
+
+Dark is always the binding theme and `--text-muted` is always the binding foreground.
+
+**Radius stays 8px.** 12, 14, 16 and 20px were measured and they *do* buy contrast headroom — a wider
+average pulls the backdrop's extremes toward `--bg`, so 70%·16px measures 4.82 where 70%·8px measures
+4.60. It was rejected anyway, on a render: at 14px+ the backdrop is a flat wash and you can no longer
+tell what is behind the bar, which is the entire point of the effect. Wider blur is the opposite of
+what Oliver asked for even though it sounds like it.
+
+**What actually caps this is the bar's muted label colour.** Re-running the same measurement with the
+bar's labels promoted to `--text` moves the floor from ~74% to ~50% (dark at 50% measures 7.15:1;
+40% fails at 4.44). That is roughly twice as see-through. It is a hierarchy change — the nav labels
+stop being quiet — so it is **not** taken here. Rendered as option C on the A/B for Oliver to call.
+
+*Rejected:* 70% (passes, but 4.55–4.89 across runs is inside the measurement noise — shipping a
+value whose margin is smaller than the error bar is not shipping a passing value); 64% and below
+(measurably fail in dark); any radius above 8px (the render above); modelling the composite
+analytically as `veil×bg + (1−veil)×backdrop` instead of measuring it — tried, and it
+under-estimates the extremes by enough to certify values that actually fail.
+
+*Note for anyone re-measuring:* results move by up to 1.4 contrast points depending on Playwright
+worker count, because wheel-zoom lands the camera differently. Run it at `--workers=4` and take the
+worst across runs; a single lucky run will certify a value that fails.
+
+---
+
 ## 2026-08-26 · The bar blur comes back, scoped
 
 ### D-30 · §9 is narrowed to permit ONE blurred surface — partially reversing D-29
@@ -53,7 +99,8 @@ only reachable by scrolling back UP — reachable is still shipped.
 the attribute alone would blur the bar on precisely the routes rejected above. Verified
 — `/permit?mode=graph` computes `backdrop-filter: none`.
 
-**The 82% veil is a contrast floor, not a taste value.** The bar's nav labels are `--text-muted`, and
+**The 82% veil is a contrast floor, not a taste value.** *(Superseded by D-31: the floor was measured
+rather than derived, and it is 74%. The reasoning below is right; the number was over-cautious.)* The bar's nav labels are `--text-muted`, and
 a translucent bar composites with whatever is under it. Worst case (bar over `--text`): 5.04:1 in
 graph · light, 4.52:1 in graph · dark — both clear §2.3's 4.5. At 78% graph · dark drops to 3.99:1
 and fails. So the removed declaration's 8px/82%, which D-29's brief called "the old value, not a

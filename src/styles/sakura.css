@@ -237,14 +237,26 @@ html[data-theme="light"][data-mode="terminal"] .sakura {
   /* the backdrop behind an overlay — same recipe chrome.css and terminal.css
    * already use, expressed once. */
   --overlay: color-mix(in srgb, var(--bg) 65%, transparent);
-  /* §9's ONE permitted blurred surface: the fixed chrome bar (D-30). Not
-   * --overlay — 65% is the modal scrim, whose job is to DIM what is behind it,
-   * while the bar has to stay a surface you read controls on. 82% is not a
-   * taste value, it is the §2.3 floor: over the worst possible backdrop (the
-   * bar sitting on --text) --text-muted still measures 5.04:1 in graph · light
-   * and 4.52:1 in graph · dark. One step more transparent, 78%, drops
-   * graph · dark to 3.99:1 and fails the 4.5 gate. Do not lower it. */
-  --chrome-veil: color-mix(in srgb, var(--bg) 82%, transparent);
+  /* §9's ONE permitted blurred surface: the fixed chrome bar (D-30, opened up
+   * to 74% by D-31). Not --overlay — 65% is the modal scrim, whose job is to
+   * DIM what is behind it, while the bar has to stay a surface you read
+   * controls on.
+   *
+   * 74% is a MEASURED §2.3 floor, not a taste value. D-30's 82% came from an
+   * analytic worst case (the bar over a solid slab of --text) that the canvas
+   * cannot actually produce. D-31 measured the real composite instead, over 60
+   * canvas states (zoom × pan) in both graph themes, and the true binding case
+   * is a zoomed-in node card's own text passing under the bar. At 74% the worst
+   * single pixel anywhere in the bar gives 5.01:1 for --text-muted in
+   * graph · dark and 5.64:1 for --accent-hi in graph · light. At 70% dark falls
+   * to 4.55–4.89 depending on the run — inside the noise, so not safe. Below
+   * that it fails outright.
+   *
+   * The cap is set by the bar's MUTED label colour, not by the blur. Promoting
+   * the bar's labels to --text moves the floor to ~50%; that is on the A/B for
+   * Oliver and is a hierarchy decision, not an implementation one.
+   * Do not lower this without re-running that measurement. */
+  --chrome-veil: color-mix(in srgb, var(--bg) 74%, transparent);
   /* §9: the ONE permitted shadow, on the open dossier only. §9 names it but
    * gives no value; settled 2026-08-25 (D-15). LIGHT casts SIDEWAYS, because
    * that is the direction the panel slides in from — same recipe graph.css

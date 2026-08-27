@@ -177,6 +177,12 @@ html[data-mode="terminal"] .term-screen {
      375 / coarse pointer (the list scrolls inside itself)    1–2/255  opt out
      legacy /permit scrolled back up                          10/255   opt out
 
+   The radius stayed at 8px when the veil opened up to 74% (D-31). Wider was
+   tried: 12px, 14px, 16px and 20px all buy contrast headroom, because a wider
+   average pulls the backdrop's extremes toward --bg — but they smear the
+   backdrop into a flat wash, and the point of the effect is that you can make
+   out WHAT is behind the bar. 8px keeps node-card edges legible as ghosts.
+
    The legacy opt-out is the one that is about looks rather than cost: those
    routes are the only place on the site where the WINDOW scrolls, and their
    navy body text smears up through the pink sakura bar. Two palettes mixing is
