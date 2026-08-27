@@ -74,6 +74,6 @@ different, that is a brand decision, not a component decision.
 
 - **Quality over dev cost.** Do not weight development cost heavily. Prefer quality, simplicity,
   robustness, scalability, long-term maintainability.
-- `/caveman` for all outputs — **Claude Code only.** It is a plugin and does not exist in other
-  harnesses; everywhere else `~/AGENT-VOICE.md` governs. Raised 2026-08-27: this rule came from the
-  retired project `CLAUDE.md` and overlaps `~/AGENT-VOICE.md`. Confirm which wins before relying on it.
+- **Output voice is `~/AGENT-VOICE.md`, in every harness. Nothing in this repo overrides it.**
+  Retired 2026-08-27: the old project `CLAUDE.md` said "`/caveman` for all outputs"; Oliver ruled the
+  voice file wins. Do not re-add it.
