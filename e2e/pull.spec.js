@@ -216,7 +216,8 @@ test("POST failure with failed reconciliation restores prior state", async ({ pa
   let reads = 0;
   await page.route("**/rest/v1/pull_picks*", (route) => {
     reads += 1;
-    if (reads === 1) {
+    // React StrictMode runs the mount effect twice in the dev server.
+    if (reads <= 2) {
       return route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -253,7 +254,8 @@ test("concurrent failed picks only roll back their own optimistic rows", async (
   let reads = 0;
   await page.route("**/rest/v1/pull_picks*", (route) => {
     reads += 1;
-    if (reads === 1) {
+    // React StrictMode runs the mount effect twice in the dev server.
+    if (reads <= 2) {
       return route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -294,7 +296,8 @@ test("rapid failed changes do not resurrect an earlier pick", async ({ page }) =
   let reads = 0;
   await page.route("**/rest/v1/pull_picks*", (route) => {
     reads += 1;
-    if (reads === 1) {
+    // React StrictMode runs the mount effect twice in the dev server.
+    if (reads <= 2) {
       return route.fulfill({
         status: 200,
         contentType: "application/json",

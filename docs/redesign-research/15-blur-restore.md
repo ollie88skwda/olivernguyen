@@ -36,7 +36,8 @@ Notes for Oliver:
      Nothing was raised to exec-graph; no src/graph/** change is wanted.
   2. D-29's other two blur findings were re-rendered and HELD, so the blur is
      scoped to graph mode on the graph home at ≥768px / fine pointer. It is
-     off in terminal, on every legacy route, and on phone.
+     off in terminal, on un-restyled legacy routes, and on phone; Sakura-restyled
+     `/pull` also stays solid by this scope.
   3. The 8px/82% recipe is not nostalgia — 82% is the lowest opacity that
      keeps the bar's nav labels above 4.5:1 over the worst backdrop. 78% fails
      in graph · dark at 3.99:1. If you want the effect STRONGER, the labels
@@ -51,9 +52,9 @@ Notes for Oliver:
      dead, check `tailscale status` first.
   6. Question, not blocking: the bar hides on scroll DOWN and returns on
      scroll UP. On legacy routes that is the only way content is ever under a
-     visible bar. If the legacy pages get restyled onto the sakura palette,
-     the mud reason disappears and the legacy opt-out could go. Flagged for
-     the legacy restyle, not doing it now.
+     visible bar. If any remaining legacy pages get restyled onto the sakura
+     palette, the mud reason disappears for those pages. Flagged for the
+     legacy restyle, not doing it now.
 ```
 
 ## ROUND 3 — option C shipped (D-32)
@@ -129,7 +130,7 @@ is not a substitute for measuring.
 |---|---|---|
 | graph home, ≥768px, fine pointer | **on**, `blur(8px)` over `--chrome-veil` (50%, D-32) | the only place canvas content passes under the bar |
 | terminal, either theme | off | `100dvh`, never scrolls — measured 2/255, invisible, still costs a layer |
-| legacy routes | off | navy legacy text smears through the pink bar — D-29 was right |
+| un-restyled legacy routes | off | navy legacy text smears through the pink bar — D-29 was right; Sakura-restyled `/pull` also stays solid by this scope |
 | 375 / coarse pointer | off | nothing passes under the bar; `Top_Bar.css:139` GPU precedent |
 
 One line to undo: delete the `@supports` block at the bottom of `src/chrome/chrome.css`
@@ -291,7 +292,7 @@ Yours: `src/chrome/**`, `src/styles/sakura.css` (token only, if you need one), `
 `docs/DECISIONS.md`, `docs/COMPONENTS.md`, `docs/redesign-research/14-*` and `15-*`, `e2e/chrome.spec.js`.
 
 **Do not touch:** `src/graph/**`, `src/terminal/**` (shipped and gated), `src/styles/theme.css`
-(frozen), `src/pages/**` (frozen). If the fix needs a graph-side change, write the exact requested
+(frozen), un-restyled `src/pages/**`. If the fix needs a graph-side change, write the exact requested
 diff into this file under "Notes for Oliver" and ship the scoped version instead.
 
 ## Gates — all must pass before you finish

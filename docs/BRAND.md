@@ -271,7 +271,7 @@ apparent thickness scales with icon size: draw an icon at the full 18px grid rat
 - **Exactly one blurred surface, and this is it (D-30):** the fixed chrome bar, `blur(8px)` over
   `--chrome-veil`, **only** where `html[data-mode="graph"]` and the graph home is mounted
   (`body:has(.graph-root)`), at `min-width: 768px` and `pointer: fine`. Solid `--bg` everywhere else
-  — terminal, remaining legacy routes, phone. Nothing else on the site may blur a backdrop; the rest of the ban
+  — terminal, un-restyled legacy routes, phone. Nothing else on the site may blur a backdrop; the rest of the ban
   above stands unchanged.
   - `--chrome-veil` is **50%** (D-32) and that is a *measured* §2.3 floor, not a taste value: over 60
     canvas states the worst composite gives `--text` 5.29:1 in graph · dark and 6.82:1 in
@@ -287,7 +287,7 @@ apparent thickness scales with icon size: draw an icon at the full 18px grid rat
   - Wrap any use in `@supports (backdrop-filter: …)`. A translucent bar with no blur is worse than a
     solid one.
   - D-29 rejected this on three counts and D-30 re-measured all three. Two held (invisible in
-    terminal, muddy on legacy) and are the reason for the scope. The third — "it re-rasterises the
+    terminal, muddy on un-restyled legacy routes) and are the reason for the scope. The third — "it re-rasterises the
     graph canvas soft" — **did not exist**: it was the graph's 6s guided-tour autostart moving the
     camera between the two screenshots. Detail: `docs/redesign-research/15-blur-restore.md`.
 

@@ -2,8 +2,8 @@
    Page-specific composition only: every value is a BRAND.md token from
    src/styles/sakura.css or a library rule in components.css. The route mounts
    at .pull.sakura (contract 1), so tokens are always in scope and this file
-   never reads :root or theme.css. Class names keep the pull-* prefix so the
-   scheduler logic is untouched; the 10px radii, navy/gold palette, shadows,
+   never reads :root or theme.css. Class names keep the pull-* prefix while the
+   scheduler behavior stays intact; the 10px radii, navy/gold palette, shadows,
    pill chips and transform-heavy transitions are gone. */
 
 /* ─── Page shell ─────────────────────────────────────────────────────────── */

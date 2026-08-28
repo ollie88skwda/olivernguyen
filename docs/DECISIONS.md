@@ -9,6 +9,22 @@ and deleting it there.
 
 ---
 
+## 2026-08-28 · `/pull` joins the Sakura restyle lanes
+
+### D-33 · `/pull` is a Sakura surface
+`/pull` now mounts its name and scheduler screens inside `.pull.sakura` and uses the existing Sakura
+library and token ladder. The scheduler's name flow, weekend availability, commitment choices, ranking
+banner, progress, Supabase reads/realtime, server-backed writes, clear action, change-name action, and
+loading, empty, unavailable, selected, and error states remain in place. The route stays lazy-loaded.
+
+The coverage record is `docs/pull-restyle-coverage.md`; the route gate is `e2e/pull.spec.js`.
+`docs/redesign-research/16-legacy-restyle.md` owns the route-set status.
+
+*Consequence:* `/pull` is no longer an un-restyled legacy route. The remaining Big Shoulders follow-up
+covers other frozen or excluded surfaces and remains tracked in `docs/COMPONENTS.md`.
+
+---
+
 ## 2026-08-26 · The bar's labels get louder so the glass can get stronger
 
 ### D-32 · Bar labels are `--text`, nav hover is an UNDERLINE, and the veil opens to 50%
