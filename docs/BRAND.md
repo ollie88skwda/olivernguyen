@@ -1,11 +1,13 @@
 # BRAND.md — olivernguyen.com master design system
 
-**Status: LOCKED (2026-08-24, amended 2026-08-25 and 2026-08-26).** This file is the single source of
-truth for how the site looks and moves. Every component, page, and restyle must come from here.
+**Status: LOCKED (2026-08-24, amended 2026-08-25, 2026-08-26, and 2026-08-28).** This file is the
+single source of truth for how the site looks and moves. Every component, page, and restyle must come
+from here.
 
 The 2026-08-25 amendments (D-12 … D-18) add values; they reverse nothing. The 2026-08-26 amendment
 (D-29, §8) adds one name to the icon allow-list and one test for telling a glyph from an icon; §9's
-blur ban was re-tested against a render in the same pass and is **upheld unchanged**.
+blur ban was re-tested against a render in the same pass and is **upheld unchanged**. The 2026-08-28
+amendments (D-34 and D-35) ratify the wordmark dot and focus-ring values without changing shipped UI.
 
 Use these tokens. Do not invent new values. If something you need is not defined here, stop and
 ask — adding a token is a decision, not an implementation detail.
@@ -146,6 +148,15 @@ misclicked. Nothing else joins this exception without a decision.
 **Control heights are not radius, but they are fixed here (D-12):** `40px` default, `32px` small.
 On a coarse pointer **both** become `44px` per §1. Checkbox and switch are `24px` tall so an §8
 icon fits inside (D-17). All are 4px-ladder rungs.
+
+### Focus ring
+
+| Value | Applies to |
+|---|---|
+| `--accent-hi` | Focus ring colour |
+| `2px` | Focus ring width |
+
+The focus ring keeps the 3px control radius above. These values are fixed by D-35.
 
 ---
 
@@ -295,8 +306,8 @@ apparent thickness scales with icon size: draw an icon at the full 18px grid rat
 
 ## 10. Wordmark
 
-`oN.c` — set in Familjen Grotesk 700, with the dot in `--accent`. Reads as a domain and as
-initials at once; the dot is the same colour as the routing pulse.
+`oN.c` — set in Familjen Grotesk 700, with the dot in `--accent`; it reads as a domain and as
+initials at once.
 
 - Nav: ~20px. Minimum legible size: 12px.
 - Favicon / avatar: **`oN`** on `--bg`, square, 3px radius.
