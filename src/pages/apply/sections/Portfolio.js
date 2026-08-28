@@ -1,6 +1,5 @@
 import React from 'react';
-import SectionHeading from '../../../components/SectionHeading';
-import Reveal from '../../../components/Reveal';
+import { SectionHead, MonoLabel, StatBlock } from '../../../components/brand';
 import Tip from '../../../components/Tooltip';
 import { probabilityAtLeastOne } from '../portfolio';
 import Profile from './Profile';
@@ -57,17 +56,17 @@ export const Portfolio = ({ doc, derived, updateDoc, profile, setProfile }) => {
 
   return (
     <section id="portfolio" className="ap-sec">
-      <SectionHeading eyebrow="S3 / Portfolio" title="The List As One Bet" />
+      <SectionHead kicker="S3 / Portfolio" title="The List As One Bet" />
 
-      <Reveal as="p" className="ap-hint">
+      <p className="on-prose ap-hint">
         Everything above scores schools. This scores the <Tip term="portfolio">set</Tip>. The
         question is not which school is best, it is how good the best school that actually admits
         you turns out to be, and whether the list has a floor under it.
-      </Reveal>
+      </p>
 
       <Profile profile={profile} setProfile={setProfile} />
 
-      <p className="ap-hint ap-hint-sub">
+      <p className="on-prose ap-hint ap-hint-sub">
         Split into <Tip term="tier">reach, target and likely</Tip> bands:
       </p>
 
@@ -85,9 +84,10 @@ export const Portfolio = ({ doc, derived, updateDoc, profile, setProfile }) => {
       <div className="ap-tiers">
         {TIERS.map((tier) => (
           <div className={`ap-tier ap-tier-${tier.id}`} key={tier.id}>
-            <span className="ap-tier-n">{outcome.byTier[tier.id]}</span>
-            <span className="ap-tier-k">{tier.label}</span>
-            <span className="ap-tier-note">{tier.note}</span>
+            <StatBlock value={outcome.byTier[tier.id]} label={tier.label} />
+            <MonoLabel tone="faint" className="ap-tier-note">
+              {tier.note}
+            </MonoLabel>
           </div>
         ))}
       </div>
@@ -101,7 +101,7 @@ export const Portfolio = ({ doc, derived, updateDoc, profile, setProfile }) => {
         </div>
         <input
           id="ap-rho-in"
-          className="ap-rho-in"
+          className="ap-range"
           type="range"
           min="0"
           max="0.95"
@@ -150,11 +150,11 @@ export const Portfolio = ({ doc, derived, updateDoc, profile, setProfile }) => {
       {reaches.length > 1 && (
         <>
           <h3 className="ap-sub">Where correlation actually bites</h3>
-          <Reveal as="p" className="ap-hint ap-hint-sub">
+          <p className="on-prose ap-hint ap-hint-sub">
             Narrow it to just the {reaches.length} reaches and the gap opens up. This is the
             comparison that matters, because reaches are the applications people add believing each
             one is a fresh roll of the dice.
-          </Reveal>
+          </p>
 
           <div className="ap-compare">
             <div className="ap-compare-row">
@@ -185,11 +185,11 @@ export const Portfolio = ({ doc, derived, updateDoc, profile, setProfile }) => {
       {curve.length > 0 && (
         <>
           <h3 className="ap-sub">Where the list stops paying</h3>
-          <Reveal as="p" className="ap-hint ap-hint-sub">
+          <p className="on-prose ap-hint ap-hint-sub">
             Each bar is what one more application adds to the expected best offer, in the order a
             greedy search would add them. When the bars flatten, more schools stop buying you
             anything and start costing essays for free.
-          </Reveal>
+          </p>
 
           <div className="ap-curve">
             {curve.map((point, index) => (

@@ -1,6 +1,4 @@
 import React, { useDeferredValue, useEffect, useMemo, useState } from 'react';
-import Reveal from '../../components/Reveal';
-import WordReveal from '../../components/WordReveal';
 import { GlossaryProvider } from '../../components/Tooltip';
 import { GLOSSARY } from './glossary';
 import useApplyStore from './store';
@@ -8,6 +6,9 @@ import { computeAHP, computeWSM, normalizeScores } from '../major/model';
 import { admitProbability, classifyTier, greedySelect, portfolioOutcome } from './portfolio';
 import { applyFilters, DEFAULT_FILTER_STATE } from './filters';
 import { loadProfile, saveProfile } from './profile';
+import { MonoLabel, Display, SectionHead, StatusPill } from '../../components/brand';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 import Status from './sections/Status';
 import Board from './sections/Board';
 import Duel from './sections/Duel';
@@ -18,8 +19,7 @@ import Filters from './sections/Filters';
 import Effort from './sections/Effort';
 import Evidence from './sections/Evidence';
 import Glossary from './sections/Glossary';
-import '../../styles/Apply.css';
-import '../../styles/ApplyB.css';
+import './apply.css';
 
 // The two dates that bind. Nov 1 is first because Early Decision is live, so it is the
 // real deadline even though the UC date is the one everyone quotes.
@@ -99,8 +99,8 @@ export const Apply = () => {
 
   if (loading || !doc || !derived) {
     return (
-      <main className="ap-page ap-loading">
-        <p>LOADING THE BOARD</p>
+      <main className="ap-page ap-loading sakura">
+        <MonoLabel tone="faint">LOADING THE BOARD</MonoLabel>
       </main>
     );
   }
@@ -116,24 +116,24 @@ export const Apply = () => {
 
   return (
     <GlossaryProvider value={GLOSSARY}>
-      <main className="ap-page">
+      <main className="ap-page sakura">
 
         <header className="ap-hero">
-          <Reveal as="p" className="ap-hero-eyebrow">
+          <MonoLabel tone="faint" className="ap-hero-eyebrow">
             Route /apply · private · unlinked
-          </Reveal>
-          <h1 className="ap-hero-title">
-            <WordReveal text="Where To Apply" />
-          </h1>
-          <div className="ap-hero-rule" aria-hidden="true" />
-          <Reveal as="p" className="ap-hero-sub" delay={0.4}>
+          </MonoLabel>
+          <Display as="h1" className="ap-hero-title">
+            Where To Apply
+          </Display>
+          <Separator className="ap-hero-rule" />
+          <p className="on-prose ap-hero-sub">
             /major decides what to study. This decides where to apply, and it scores the whole
             list rather than ranking schools one at a time.
-          </Reveal>
-          <Reveal as="p" className="ap-hero-note" delay={0.5}>
+          </p>
+          <p className="on-prose ap-hero-note">
             Every claim here came off a real university page and carries its link and the date it
             was read. Anything nobody checked yet says so instead of guessing.
-          </Reveal>
+          </p>
         </header>
 
         <Status {...sectionProps} clock={clock} />
@@ -149,18 +149,18 @@ export const Apply = () => {
 
         <div className="ap-tools">
           {editing && (
-            <span className={offline ? 'ap-stamp ap-stamp-off' : 'ap-stamp'}>
+            <StatusPill status={offline ? 'warning' : 'live'}>
               {offline ? 'OFFLINE, NOT SAVING' : stamp}
-            </span>
+            </StatusPill>
           )}
-          <button
+          <Button
             type="button"
-            className={editing ? 'ap-tool ap-tool-on' : 'ap-tool'}
+            variant={editing ? 'primary' : 'ghost'}
             aria-pressed={editing}
             onClick={() => setEditing((on) => !on)}
           >
             {editing ? 'DONE' : 'EDIT'}
-          </button>
+          </Button>
         </div>
       </main>
     </GlossaryProvider>

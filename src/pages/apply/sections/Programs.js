@@ -1,6 +1,9 @@
 import React, { useMemo, useState } from 'react';
-import SectionHeading from '../../../components/SectionHeading';
-import Reveal from '../../../components/Reveal';
+import { SectionHead, MonoLabel } from '../../../components/brand';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Card } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import Tip from '../../../components/Tooltip';
 
 const BUSINESS_LABEL = {
@@ -91,14 +94,14 @@ export const Programs = ({ doc }) => {
 
   return (
     <section id="programs" className="ap-sec">
-      <SectionHeading eyebrow="S4 / Programs" title="Doors That Close This Fall" />
+      <SectionHead kicker="S4 / Programs" title="Doors That Close This Fall" />
 
-      <Reveal as="p" className="ap-hint">
+      <p className="on-prose ap-hint">
         The highest-leverage thing on this page. A strong application to a good engineering school
         is a strong application; a <Tip term="senior-only">senior-only</Tip> programme is a door
         that shuts when high school ends. Every flag below was checked against the programme's own
         page, and the sentence that proves it is quoted underneath.
-      </Reveal>
+      </p>
 
       {urgent.length > 0 && (
         <div className="ap-urgent">
@@ -108,7 +111,7 @@ export const Programs = ({ doc }) => {
               <li key={program.id}>
                 <b>{daysUntil(program.deadline.value)}d</b> {program.name}
                 <span> · {program.school}</span>
-                {program.offList && <em className="ap-offlist">not on your list</em>}
+                {program.offList && <Badge tone="warning">not on your list</Badge>}
               </li>
             ))}
           </ul>
@@ -123,18 +126,22 @@ export const Programs = ({ doc }) => {
       )}
 
       {hiddenCount > 0 && (
-        <label className="ap-toggle">
-          <input
-            type="checkbox"
-            checked={showBusinessHeavy}
-            onChange={(event) => setShowBusinessHeavy(event.target.checked)}
-          />
-          Show the {hiddenCount} programmes that commit you to a business degree
+        <div className="ap-toggle">
+          <span className="on-check-row">
+            <Checkbox
+              id="show-business-heavy"
+              checked={showBusinessHeavy}
+              onCheckedChange={(checked) => setShowBusinessHeavy(!!checked)}
+            />
+            <Label htmlFor="show-business-heavy" role="inline">
+              Show the {hiddenCount} programmes that commit you to a business degree
+            </Label>
+          </span>
           <span className="ap-toggle-why">
             Hidden by default because you said business happens outside school. They are still here
             if a programme is worth it as pure differentiation.
           </span>
-        </label>
+        </div>
       )}
 
       {BUCKETS.map((bucket) => {
@@ -145,57 +152,67 @@ export const Programs = ({ doc }) => {
           <div className="ap-bucket" key={bucket.id}>
             <h3 className={`ap-bucket-h ap-bucket-${bucket.id}`}>
               {bucket.title}
-              <span>{list.length}</span>
+              <Badge solid={bucket.id === 'closing'} className="ap-bucket-count">
+                {list.length}
+              </Badge>
             </h3>
             <p className="ap-bucket-blurb">{bucket.blurb}</p>
 
             <ul className="ap-programs">
               {list.map((program) => {
                 const days = daysUntil(program.deadline && program.deadline.value);
+                const soon = days != null && days <= 100;
                 return (
-                  <li className="ap-program" key={program.id}>
-                    <div className="ap-program-top">
-                      <span className="ap-program-name">{program.name}</span>
-                      <span className="ap-program-school">{program.school}</span>
-                    </div>
+                  <li key={program.id}>
+                    <Card className="ap-program">
+                      <div className="ap-program-top">
+                        <span className="ap-program-name">{program.name}</span>
+                        <MonoLabel tone="faint" className="ap-program-school">
+                          {program.school}
+                        </MonoLabel>
+                      </div>
 
-                    <div className="ap-program-tags">
-                      <span className={`ap-tag ap-tag-${program.businessLoad || 'unknown'}`}>
-                        {BUSINESS_LABEL[program.businessLoad] || 'business load unknown'}
-                      </span>
-                      <span className="ap-tag">{program.category}</span>
-                      {program.deadline && program.deadline.value && (
-                        <span className={days != null && days <= 100 ? 'ap-tag ap-tag-soon' : 'ap-tag'}>
-                          {program.deadline.value}
-                          {days != null && days >= 0 ? ` · ${days}d` : ''}
-                        </span>
+                      <div className="ap-program-tags">
+                        <Badge>{BUSINESS_LABEL[program.businessLoad] || 'business load unknown'}</Badge>
+                        <Badge>{program.category}</Badge>
+                        {program.deadline && program.deadline.value && (
+                          <Badge tone={soon ? 'warning' : 'neutral'}>
+                            {program.deadline.value}
+                            {days != null && days >= 0 ? ` · ${days}d` : ''}
+                          </Badge>
+                        )}
+                        {program.requiresED && <Badge solid>needs ED</Badge>}
+                        <Badge
+                          tone={program.confidence === 'low' ? 'warning' : 'neutral'}
+                          className={program.confidence === 'low' ? 'ap-tag-conf-low' : undefined}
+                        >
+                          {program.confidence || 'low'} confidence
+                        </Badge>
+                      </div>
+
+                      {program.whyDifferentiating && (
+                        <p className="ap-program-why">{program.whyDifferentiating}</p>
                       )}
-                      {program.requiresED && <span className="ap-tag ap-tag-ed">needs ED</span>}
-                      <span className={`ap-tag ap-tag-conf-${program.confidence || 'low'}`}>
-                        {program.confidence || 'low'} confidence
-                      </span>
-                    </div>
+                      {program.fitForThisApplicant && (
+                        <p className="ap-program-why ap-program-fit">{program.fitForThisApplicant}</p>
+                      )}
+                      {program.eligibility && (
+                        <blockquote className="ap-program-quote">{program.eligibility}</blockquote>
+                      )}
 
-                    {program.whyDifferentiating && (
-                      <p className="ap-program-why">{program.whyDifferentiating}</p>
-                    )}
-                    {program.fitForThisApplicant && (
-                      <p className="ap-program-fit">{program.fitForThisApplicant}</p>
-                    )}
-                    {program.eligibility && (
-                      <blockquote className="ap-program-quote">{program.eligibility}</blockquote>
-                    )}
-
-                    {program.url && (
-                      <a
-                        className="ap-program-src"
-                        href={program.url}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        source · read {program.fetchedAt || 'recently'}
-                      </a>
-                    )}
+                      {program.url && (
+                        <MonoLabel
+                          tone="accent"
+                          as="a"
+                          className="ap-program-src"
+                          href={program.url}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          source · read {program.fetchedAt || 'recently'}
+                        </MonoLabel>
+                      )}
+                    </Card>
                   </li>
                 );
               })}

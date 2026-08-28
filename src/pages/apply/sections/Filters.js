@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import SectionHeading from '../../../components/SectionHeading';
-import Reveal from '../../../components/Reveal';
+import { SectionHead } from '../../../components/brand';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import Tip from '../../../components/Tooltip';
 import { FILTERS, DEFAULT_FILTER_STATE } from '../filters';
 
@@ -69,15 +70,15 @@ export const Filters = ({ doc, derived, updateDoc }) => {
 
   return (
     <section id="filters" className="ap-sec">
-      <SectionHeading eyebrow="S6 / Filters" title="Tighten Or Loosen, Live" />
+      <SectionHead kicker="S6 / Filters" title="Tighten Or Loosen, Live" />
 
-      <Reveal as="p" className="ap-hint">
+      <p className="on-prose ap-hint">
         None of these were made hard requirements, so all four start soft: they influence the
         scoring and exclude nobody. Turning one to <b>hard</b> removes every school that fails it,
         from the board and from the maths in S3, not just from view. That is why the research
         covered all four for every school, so changing your mind in November is a click rather
         than a reason to look everything up again.
-      </Reveal>
+      </p>
 
       <div className="ap-filters">
         {FILTERS.map((filter) => {
@@ -87,7 +88,12 @@ export const Filters = ({ doc, derived, updateDoc }) => {
             : 0;
 
           return (
-            <div className={`ap-filter ap-filter-${mode}`} key={filter.id}>
+            <div
+              className={`ap-filter${mode === 'hard' ? ' ap-filter-hard' : ''}${
+                mode === 'off' ? ' ap-filter-off' : ''
+              }`}
+              key={filter.id}
+            >
               <div className="ap-filter-top">
                 <span className="ap-filter-label">{filter.label}</span>
                 <div className="ap-modes" role="radiogroup" aria-label={filter.label}>
@@ -133,14 +139,14 @@ export const Filters = ({ doc, derived, updateDoc }) => {
       )}
 
       <h3 className="ap-sub">Add a school</h3>
-      <Reveal as="p" className="ap-hint ap-hint-sub">
+      <p className="on-prose ap-hint ap-hint-sub">
         For when a counselor suggests one. It enters <Tip term="unresearched">unresearched</Tip>{' '}
         and says so, with hatched cells on the board and wide ranges, so the Monte Carlo reports it
         as genuinely uncertain rather than quietly mediocre. Nothing gets invented on its behalf.
-      </Reveal>
+      </p>
 
       <form className="ap-add" onSubmit={addSchool}>
-        <input
+        <Input
           className="ap-add-in"
           type="text"
           value={name}
@@ -148,9 +154,7 @@ export const Filters = ({ doc, derived, updateDoc }) => {
           aria-label="School name"
           onChange={(event) => setName(event.target.value)}
         />
-        <button className="ap-add-go" type="submit">
-          add
-        </button>
+        <Button type="submit">add</Button>
       </form>
 
       {added.length > 0 && (
@@ -161,9 +165,9 @@ export const Filters = ({ doc, derived, updateDoc }) => {
               <em>
                 {school.addedBy} · {school.addedAt}
               </em>
-              <button type="button" onClick={() => removeSchool(school.id)}>
+              <Button type="button" variant="danger" size="sm" onClick={() => removeSchool(school.id)}>
                 remove
-              </button>
+              </Button>
             </li>
           ))}
         </ul>

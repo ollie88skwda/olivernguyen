@@ -1,42 +1,43 @@
 import React, { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
-import SectionHeading from '../../../components/SectionHeading';
-import Reveal from '../../../components/Reveal';
+import { SectionHead } from '../../../components/brand';
 import Tip from '../../../components/Tooltip';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 
 const EMPTY_SCORE = { lo: 0, mid: 0, hi: 0 };
+// The ink ramp is a flagged data encoding (see coverage record): the rating
+// darkness is drawn from --accent-hi via color-mix instead of legacy navy.
 const INK_FLOOR = 0.15;
 const INK_RANGE = 0.85;
-// Below this the navy is too pale to carry cream text.
+// Below this the ink is too pale to carry on-accent text.
 const INK_INVERT = 0.5;
 const RAMP = [0.2, 0.4, 0.6, 0.8, 1];
 const COLLAPSED_ROWS = 12;
 
 const dec2 = (value) => value.toFixed(2).replace(/^0/, '');
 const dec3 = (value) => value.toFixed(3).replace(/^0/, '');
-const ink = (value) => INK_FLOOR + INK_RANGE * value;
 
 const cellStyle = (value) => ({
-  background: `rgba(9, 36, 65, ${ink(value)})`,
-  color: ink(value) > INK_INVERT ? 'var(--on-accent)' : 'var(--text-muted)',
+  background: `color-mix(in srgb, var(--accent-hi) ${Math.round(
+    INK_FLOOR * 100 + INK_RANGE * value * 100
+  )}%, var(--surface))`,
+  color: value > INK_INVERT ? 'var(--on-accent)' : 'var(--text-muted)',
 });
 
 // A school nobody has researched gets hatching rather than a shade, because a mid-grey box
 // reads as "average" and the honest answer is "unknown". Ollie asked for counselor picks to
 // be addable mid-cycle, and this is what stops them inheriting scores they did not earn.
-const HATCH = {
-  background:
-    'repeating-linear-gradient(45deg, rgba(9,36,65,.10), rgba(9,36,65,.10) 5px, transparent 5px, transparent 10px)',
-  color: 'var(--text-faint)',
-};
-
 const isUnresearched = (school, criterionId) => {
   const basis = school.scores && school.scores[criterionId] && school.scores[criterionId].basis;
   return typeof basis === 'string' && basis === 'unresearched';
 };
 
 export const Board = ({ doc, derived, editing, updateDoc }) => {
-  const reduce = useReducedMotion();
   const [showAll, setShowAll] = useState(false);
   const [sortBy, setSortBy] = useState('total');
 
@@ -82,144 +83,162 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
     }));
   };
 
+  // The tooltip stays on top; only the horizontal align follows the column so a
+  // tooltip never falls off the viewport edge.
+  const tooltipAlign = (index) =>
+    index === 0 ? 'start' : index === criteria.length - 1 ? 'end' : 'center';
+
   return (
     <section id="board" className="ap-sec">
-      <SectionHeading eyebrow="S1 / The Board" title="Every School, As Ink" />
+      <SectionHead kicker="S1 / The Board" title="Every School, As Ink" />
 
-      <Reveal as="p" className="ap-hint">
+      <p className="on-prose ap-hint">
         Each column is one thing you care about and each box is how well a school does on it.
         Darker is better. The number at the end of a row is the whole{' '}
         <Tip term="weighted-matrix">weighted</Tip> result. Columns are even and the{' '}
         <Tip term="weight">weight</Tip> sits under each heading as a bar and a percentage, so the
         heading can just be the name of the thing.
-      </Reveal>
+      </p>
 
       <div className="ap-board-tools">
-        <label className="ap-sortlab">
-          Sort
-          <select
-            className="ap-sort"
-            value={sortBy}
-            onChange={(event) => setSortBy(event.target.value)}
-          >
-            <option value="total">by total</option>
+        <Select value={sortBy} onValueChange={setSortBy}>
+          <SelectTrigger className="ap-sort" aria-label="Sort the board">
+            <SelectValue placeholder="by total" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="total">by total</SelectItem>
             {criteria.map((criterion) => (
-              <option key={criterion.id} value={criterion.id}>
+              <SelectItem key={criterion.id} value={criterion.id}>
                 by {criterion.label.toLowerCase()}
-              </option>
+              </SelectItem>
             ))}
-          </select>
-        </label>
-        <span className="ap-count">
+          </SelectContent>
+        </Select>
+        <span className="on-label" data-tone="faint">
           {rows.length} of {schools.length}
         </span>
       </div>
 
-      <div className={editing ? 'ap-board ap-board-edit' : 'ap-board'}>
-        <div className="ap-head">
-          <span className="ap-head-name">School</span>
-          {criteria.map((criterion) => (
-            <span className="ap-head-col" key={criterion.id}>
-              <span className="ap-head-label">{criterion.label}</span>
-              <span className="ap-rail" aria-hidden="true">
-                <span className="ap-rail-track">
-                  <i style={{ width: `${((ahp.weights[criterion.id] || 0) / maxWeight) * 100}%` }} />
-                </span>
-                <em>{Math.round((ahp.weights[criterion.id] || 0) * 100)}%</em>
-              </span>
-            </span>
-          ))}
-          <span className="ap-head-total">total</span>
-        </div>
-
-        {rows.map((school) => (
-          <motion.div
-            className="ap-row"
-            key={school.id}
-            layout={!reduce}
-            transition={{ layout: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } }}
-          >
-            <div className="ap-name">
-              {school.name}
-              {school.addedBy && <small className="ap-added">{school.addedBy}</small>}
-            </div>
-
-            <div className="ap-cells">
-              {criteria.map((criterion, index) => {
-                const rating = ratingOf(school.id, criterion.id);
-                const score = scoreOf(school, criterion.id);
-                const unknown = isUnresearched(school, criterion.id);
-
-                if (editing) {
-                  return (
-                    <div className="ap-cell ap-cell-edit" key={criterion.id}>
-                      {['lo', 'mid', 'hi'].map((key) => (
-                        <span className="ap-in-row" key={key}>
-                          <i>{key}</i>
-                          <input
-                            className="ap-in"
-                            type="number"
-                            step="0.5"
-                            value={score[key]}
-                            aria-label={`${school.name}, ${criterion.label}, ${key}`}
-                            onChange={(event) =>
-                              setScore(school.id, criterion.id, key, event.target.value)
-                            }
-                          />
-                        </span>
-                      ))}
-                    </div>
-                  );
-                }
-
-                const side =
-                  index === 0 ? ' ap-pop-l' : index === criteria.length - 1 ? ' ap-pop-r' : '';
-                return (
-                  <button
-                    type="button"
-                    className="ap-cell"
-                    key={criterion.id}
-                    style={unknown ? HATCH : cellStyle(rating)}
-                    aria-label={
-                      unknown
-                        ? `${school.name}, ${criterion.label}: not researched yet`
-                        : `${school.name}, ${criterion.label}: rated ${dec2(rating)} of 1. Range ${score.lo} to ${score.hi}, best guess ${score.mid}. ${score.basis || ''}`.trim()
-                    }
-                  >
-                    <span className="ap-cell-v">{unknown ? '—' : dec2(rating)}</span>
-                    <span className={`ap-pop${side}`} aria-hidden="true">
-                      <b>
-                        {school.name} · {criterion.label}
-                      </b>
-                      {unknown ? (
-                        <span>Not researched yet. Wide on purpose, so it reads as unknown.</span>
-                      ) : (
-                        <>
-                          <span>
-                            {score.lo} to {score.hi}, best guess {score.mid}
-                          </span>
-                          <span>
-                            rated {dec2(rating)} of 1, adds{' '}
-                            {dec3(contributionOf(school.id, criterion.id))} to the row
-                          </span>
-                        </>
-                      )}
-                      {score.basis && <span className="ap-pop-note">{score.basis}</span>}
+      <TooltipProvider delayDuration={0}>
+        <div className="ap-board">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>School</TableHead>
+                {criteria.map((criterion) => (
+                  <TableHead key={criterion.id}>
+                    <span className="ap-head-label">{criterion.label}</span>
+                    <span className="ap-rail" aria-hidden="true">
+                      <Progress
+                        className="ap-rail-progress"
+                        value={((ahp.weights[criterion.id] || 0) / maxWeight) * 100}
+                      />
+                      <span className="ap-rail-val">
+                        {Math.round((ahp.weights[criterion.id] || 0) * 100)}%
+                      </span>
                     </span>
-                  </button>
-                );
-              })}
-            </div>
+                  </TableHead>
+                ))}
+                <TableHead numeric>total</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows.map((school) => (
+                <TableRow key={school.id}>
+                  <TableCell>
+                    <span className="ap-board-name">{school.name}</span>
+                    {school.addedBy && <Badge solid className="ap-added">{school.addedBy}</Badge>}
+                  </TableCell>
 
-            <div className="ap-total">{dec3(totalOf(school.id))}</div>
-          </motion.div>
-        ))}
-      </div>
+                  {criteria.map((criterion, index) => {
+                    const rating = ratingOf(school.id, criterion.id);
+                    const score = scoreOf(school, criterion.id);
+                    const unknown = isUnresearched(school, criterion.id);
+
+                    if (editing) {
+                      return (
+                        <TableCell className="ap-cell-edit" key={criterion.id}>
+                          {['lo', 'mid', 'hi'].map((key) => (
+                            <span className="ap-in-row" key={key}>
+                              <i>{key}</i>
+                              <Input
+                                className="ap-in"
+                                face="mono"
+                                type="number"
+                                step="0.5"
+                                value={score[key]}
+                                aria-label={`${school.name}, ${criterion.label}, ${key}`}
+                                onChange={(event) =>
+                                  setScore(school.id, criterion.id, key, event.target.value)
+                                }
+                              />
+                            </span>
+                          ))}
+                        </TableCell>
+                      );
+                    }
+
+                    const label = unknown
+                      ? `${school.name}, ${criterion.label}: not researched yet`
+                      : `${school.name}, ${criterion.label}: rated ${dec2(rating)} of 1. Range ${score.lo} to ${score.hi}, best guess ${score.mid}. ${score.basis || ''}`.trim();
+
+                    return (
+                      <TableCell key={criterion.id}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <button
+                              type="button"
+                              className="ap-cellbtn"
+                              style={unknown ? undefined : cellStyle(rating)}
+                              data-unknown={unknown || undefined}
+                              aria-label={label}
+                            >
+                              <span className="ap-cell-v">{unknown ? '—' : dec2(rating)}</span>
+                            </button>
+                          </TooltipTrigger>
+                          <TooltipContent align={tooltipAlign(index)} side="top" sideOffset={8} className="ap-cell-tip">
+                            <b>
+                              {school.name} · {criterion.label}
+                            </b>
+                            {unknown ? (
+                              <span>Not researched yet. Wide on purpose, so it reads as unknown.</span>
+                            ) : (
+                              <>
+                                <span>
+                                  {score.lo} to {score.hi}, best guess {score.mid}
+                                </span>
+                                <span>
+                                  rated {dec2(rating)} of 1, adds{' '}
+                                  {dec3(contributionOf(school.id, criterion.id))} to the row
+                                </span>
+                              </>
+                            )}
+                            {score.basis && <span className="ap-cell-tip-note">{score.basis}</span>}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TableCell>
+                    );
+                  })}
+
+                  <TableCell numeric className="ap-total">
+                    {dec3(totalOf(school.id))}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </TooltipProvider>
 
       {schools.length > COLLAPSED_ROWS && (
-        <button type="button" className="ap-more" onClick={() => setShowAll((on) => !on)}>
+        <Button
+          type="button"
+          variant="ghost"
+          className="ap-more"
+          onClick={() => setShowAll((on) => !on)}
+        >
           {showAll ? 'show top 12' : `show all ${schools.length}`}
-        </button>
+        </Button>
       )}
 
       <div className="ap-legend">
@@ -227,7 +246,7 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
           Darkness is how well a school does on that column
           <span className="ap-ramp" aria-hidden="true">
             {RAMP.map((step) => (
-              <i key={step} style={{ background: `rgba(9, 36, 65, ${step})` }} />
+              <i key={step} style={{ background: cellStyle(step).background }} />
             ))}
           </span>
         </span>
