@@ -131,11 +131,11 @@ Adding a project = adding one entity object; both modes pick it up.
 
 ### 2.3 Future public-page mapping (owner requirement c)
 
-How the currently-text-only public pages will be represented **later** in each mode. V1 keeps
-their information and working interactions under the new chrome; `/sat-resources` now uses its
-intentional Sakura empty state, while the table remains the committed direction for later page
-content (concretely: every page below already gets an `entities[]` stub with `kind: "page"` in
-v1 so both modes can link to them).
+How the currently-text-only public pages will be represented **later** in each mode. V1 ships
+them under the new chrome; route-specific restyles are recorded in their coverage documents.
+`/sat-resources` now uses its intentional Sakura empty state, while the table remains the
+committed direction for later page content (concretely: every page below already gets an
+`entities[]` stub with `kind: "page"` in v1 so both modes can link to them).
 
 | Route | Content today | Terminal treatment (later) | Graph treatment (later) | Phase |
 |---|---|---|---|---|
@@ -143,7 +143,7 @@ v1 so both modes can link to them).
 | `/permit` | driving-permit notes | `man permit` man page; checklist items as numbered log lines | node under `guides` cluster, edge to `/license` | v1: stub · v1.2 |
 | `/license` | driver's-license notes | `man license`, cross-linked in SEE ALSO ↔ permit | node under `guides`, edge to `/permit` | v1: stub · v1.2 |
 | `/sat-resources` | intentional empty state (`Coming soon`) | `ls sat/` directory listing; each resource a file row with description | `guides` cluster node; resources as leaf sub-nodes | v1: stub · v1.2 |
-| `/sat-signup` | signup form | form kept as-is inside terminal chrome (forms never fake-terminalized) | leaf node linking out | later, low priority |
+| `/sat-signup` | informational placeholder; signup form planned | future form kept as-is inside terminal chrome (forms never fake-terminalized) | leaf node linking out | v1: placeholder · form later, low priority |
 | `/articlewriter` | project archive page | `man articlewriter` + real pipeline output image | already a project node in v1 graph; dossier links here | v1: linked from entity |
 | `/emoji` | toy page | easter egg: listed only in `ls -a` (hidden index) | hidden node, revealed by `:emoji` | later, joke preserved |
 | `/college` (+ gated children) | hub for private tools | sakura hub with placeholder copy, gate badges, and links; auth flows unchanged | same page in both modes; theme and mode remain independent | shipped in the `/college` restyle lane |

@@ -4,7 +4,7 @@ import { Display } from "@/components/brand";
 import "@/styles/sakura.css";
 import "./sat_signup.css";
 
-// /sat-signup — legacy restyle lane (docs/redesign-research/16-legacy-restyle).
+// /sat-signup — see docs/sat-signup-restyle-coverage.md.
 // Informational placeholder: 05-v1-spec.md §2.3 commits this route's future
 // content to a real signup FORM (forms never fake-terminalized), so the page
 // stays heading + body copy until that form exists. No controls or surfaces
