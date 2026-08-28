@@ -242,41 +242,90 @@ test("POST failure with failed reconciliation restores prior state", async ({ pa
   expect(errors, `console errors: ${errors.join(" | ")}`).toEqual([]);
 });
 
-test("375px: no horizontal overflow; coarse pointer: 44px tap targets", async ({ page }) => {
-  const errors = await noPageErrors(page);
+test("concurrent failed picks only roll back their own optimistic rows", async ({ page }) => {
+  const errors = [];
+  page.on("console", (m) => {
+    if (m.type() === "error" && !/ERR_FAILED|500/.test(m.text())) errors.push(m.text());
+  });
+  page.on("pageerror", (e) => errors.push(String(e)));
   const saturdays = upcomingSaturdays(4);
-  await mockSupabase(page, pickRows(saturdays));
-  await page.setViewportSize({ width: 375, height: 812 });
+  const rows = pickRows(saturdays);
+  let reads = 0;
+  await page.route("**/rest/v1/pull_picks*", (route) => {
+    reads += 1;
+    if (reads === 1) {
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(rows),
+      });
+    }
+    return route.abort();
+  });
+  await page.route("**/api/pull/pick", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    return route.fulfill({ status: 500, contentType: "application/json", body: "{}" });
+  });
+  await page.setViewportSize({ width: 1440, height: 1000 });
   await gotoPull(page, "light");
   await enterName(page);
 
-  // no element pokes past the right edge
-  const overflow = await page.evaluate(() =>
-    Math.max(
-      0,
-      ...[...document.querySelectorAll("body *")].map(
-        (e) => e.getBoundingClientRect().right - window.innerWidth,
-      ),
-    ),
-  );
-  expect(overflow).toBeLessThanOrEqual(1);
-
-  // expand a card and measure the disclosure + level-row tap targets
+  const w2 = page.locator(".pull-grid-item").nth(1);
   const w3 = page.locator(".pull-grid-item").nth(2);
-  await w3.getByRole("button").click();
-  const heights = await page.evaluate(() => {
-    const toggle = document.querySelector(".pull-card-toggle");
-    const level = document.querySelector(".pull-level");
-    return {
-      toggle: toggle ? toggle.getBoundingClientRect().height : 0,
-      level: level ? level.getBoundingClientRect().height : 0,
-    };
-  });
-  expect(heights.toggle).toBeGreaterThanOrEqual(44);
-  expect(heights.level).toBeGreaterThanOrEqual(44);
+  await w2.locator(".pull-card-toggle").click();
+  await w3.locator(".pull-card-toggle").click();
+  await w2.getByRole("button", { name: /high priority/i }).click();
+  await w3.getByRole("button", { name: /high priority/i }).click();
 
-  await page.screenshot({ path: `${SHOT}-scheduler-375.png`, fullPage: true });
+  await expect(page.getByText(/couldn't save your pick/i).first()).toBeVisible();
+  await expect(w2.getByText("$5K committed")).toHaveCount(0);
+  await expect(w3.getByText("$5K committed")).toHaveCount(0);
   expect(errors, `console errors: ${errors.join(" | ")}`).toEqual([]);
+});
+
+test.describe("375px coarse pointer", () => {
+  test.use({
+    viewport: { width: 375, height: 812 },
+    isMobile: true,
+    hasTouch: true,
+  });
+
+  test("no horizontal overflow; controls meet 44px tap targets", async ({ page }) => {
+    const errors = await noPageErrors(page);
+    const saturdays = upcomingSaturdays(4);
+    await mockSupabase(page, pickRows(saturdays));
+    await gotoPull(page, "light");
+    await enterName(page);
+
+    // no element pokes past the right edge
+    const overflow = await page.evaluate(() =>
+      Math.max(
+        0,
+        ...[...document.querySelectorAll("body *")].map(
+          (e) => e.getBoundingClientRect().right - window.innerWidth,
+        ),
+      ),
+    );
+    expect(overflow).toBeLessThanOrEqual(1);
+
+    // expand a card and measure the disclosure + level-row tap targets
+    const w3 = page.locator(".pull-grid-item").nth(2);
+    await w3.getByRole("button").click();
+    const heights = await page.evaluate(() => {
+      const toggle = document.querySelector(".pull-card-toggle");
+      const level = document.querySelector(".pull-level");
+      return {
+        toggle: toggle ? toggle.getBoundingClientRect().height : 0,
+        level: level ? level.getBoundingClientRect().height : 0,
+      };
+    });
+    expect(heights.toggle).toBeGreaterThanOrEqual(44);
+    expect(heights.level).toBeGreaterThanOrEqual(44);
+    expect(await page.evaluate(() => matchMedia("(pointer: coarse)").matches)).toBe(true);
+
+    await page.screenshot({ path: `${SHOT}-scheduler-375.png`, fullPage: true });
+    expect(errors, `console errors: ${errors.join(" | ")}`).toEqual([]);
+  });
 });
 
 test("reduced motion kills the page animations", async ({ page }) => {

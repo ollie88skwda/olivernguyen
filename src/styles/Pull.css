@@ -376,15 +376,6 @@
 }
 
 /* ─── Focus + reduced motion ──────────────────────────────────────────────── */
-/* Library controls get their ring from components.css; these two page-owned
-   controls take the same shared tokens (§4's ring follows each element's
-   own radius). */
-.pull-card-toggle:focus-visible,
-.pull-level:focus-visible {
-  outline: var(--focus-ring-w) solid var(--focus-ring);
-  outline-offset: 1px;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .pull-card-toggle,
   .pull-level {

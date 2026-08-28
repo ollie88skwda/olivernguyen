@@ -114,7 +114,7 @@ function CommitmentSelector({ currentAmount, onSelect, onClear }) {
               type="button"
               onClick={() => onSelect(level.amount)}
               aria-pressed={selected}
-              className="pull-level"
+              className="pull-level on-focus"
             >
               <span className="pull-level-text">
                 <span className="pull-level-label">{level.label}</span>
@@ -152,7 +152,7 @@ function WeekendCard({ weekend, picks, myPick, playerName, onPick }) {
     <Card interactive className="pull-weekend">
       <button
         type="button"
-        className="pull-card-toggle"
+        className="pull-card-toggle on-focus"
         aria-expanded={expanded}
         onClick={() => setExpanded((e) => !e)}
       >
@@ -262,6 +262,7 @@ export const Pull = () => {
   const [playerName, setPlayerName] = useState(null);
   const [picks, setPicks] = useState([]);
   const picksRef = useRef([]);
+  const pickActionRef = useRef(0);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
   const weekends = getUpcomingWeekends();
@@ -328,6 +329,11 @@ export const Pull = () => {
       if (!playerName) return;
 
       const previousPicks = picksRef.current;
+      const previousPickIndex = previousPicks.findIndex(
+        (p) => p.player === playerName && p.weekend === weekend,
+      );
+      const previousPick = previousPickIndex >= 0 ? previousPicks[previousPickIndex] : null;
+      const optimisticId = `optimistic-${weekend}-${++pickActionRef.current}`;
       const without = previousPicks.filter(
         (p) => !(p.player === playerName && p.weekend === weekend),
       );
@@ -337,7 +343,7 @@ export const Pull = () => {
           : [
               ...without,
               {
-                id: `optimistic-${weekend}`,
+                id: optimisticId,
                 player: playerName,
                 weekend,
                 amount,
@@ -362,7 +368,25 @@ export const Pull = () => {
         // still reconciles if the write actually landed.
         toast.error("couldn't save your pick — check the connection and try again");
         const reconciled = await loadPicks({ silent: true });
-        if (!reconciled) setPicksFromSource(previousPicks);
+        if (!reconciled) {
+          const currentPicks = picksRef.current;
+          const currentPickIndex = currentPicks.findIndex(
+            (p) => p.player === playerName && p.weekend === weekend,
+          );
+          const currentPick = currentPickIndex >= 0 ? currentPicks[currentPickIndex] : null;
+          const stillOwnsOptimisticState =
+            amount === null ? currentPick === null : currentPick?.id === optimisticId;
+
+          if (stillOwnsOptimisticState) {
+            const restoredPicks = currentPicks.filter(
+              (p) => !(p.player === playerName && p.weekend === weekend),
+            );
+            if (previousPick) {
+              restoredPicks.splice(Math.min(previousPickIndex, restoredPicks.length), 0, previousPick);
+            }
+            setPicksFromSource(restoredPicks);
+          }
+        }
       }
     },
     [playerName, loadPicks, setPicksFromSource],
