@@ -139,10 +139,13 @@ one live prompt, tmux statusbar) **plus** Herdr-style panes per `09-herdr-panels
 ### 3.1 Immersion invariants (07 §4 — the prototype already does all of these; keep them true in the port)
 1. `#screen` grid `[buffer 1fr][promptline][statusbar]` at 100dvh; body never scrolls.
 2. Navigation = running a command: tabs/keys call `run('cat tools.txt')` → echo line +
-   section block appended, pinned to bottom. History accumulates; `clear` is real.
+   section block appended, pinned to bottom. `cd <destination>` navigates linked site routes;
+   `cd ..` and `cd /` return home. History accumulates; `clear` is real.
 3. One live prompt: focused on load (fine pointers), doc-click refocus, ↑/↓ history,
-   Tab completion, `:` is just a prefix in the same input, block cursor = full-cell
-   inverse, NORMAL/INSERT/COMMAND indicator in the statusbar.
+   Tab completion covers command names, files, entities, and linked `cd` destinations; unique
+   prefixes complete deterministically, while ambiguous prefixes print useful matches and keep
+   focus. `:` is just a prefix in the same input, block cursor = full-cell inverse,
+   NORMAL/INSERT/COMMAND indicator in the statusbar.
 4. Boot = motd + auto-typed `operator --replay --day 3` whose output is the hero
    (log frame, scramble-reveal name, tagline, CTA row).
 5. Cadence: commands TYPE (~26–52ms/char); output PRINTS line-at-a-time (34–74ms
@@ -249,6 +252,8 @@ Commands → panes: the command executor's ctx exposes
   implemented in TerminalHome (core) on top of tree ops. This is the ONLY surface
   commands use to touch panes.
 
+Commands → routes: ctx.navigate('/path')                   // linked graph destination
+
 StatusBar data: core renders; panes state arrives as props {paneCount, zoomed, prefix}.
 ```
 
@@ -267,9 +272,10 @@ console errors. Playwright: `e2e/terminal.spec.js` first cases. **Unblocks N-2.*
 **Phase C1 — exec-term-core: prompt, commands, sections, statusbar** (~2 days)
 Prompt (echo + block cursor + NORMAL/INSERT/COMMAND, history, Tab completion over
 files + terminal intents, doc-click refocus fine-pointer-only), command executor
-(`ls`, `cat FILE`, `day N` → prints that day's real beats from `site.week`, `open <entity>`
-→ artifact via `panes.open` (in-buffer until panes lands), `mode graph|term`, `email`
-copy + printed confirm, `help`, `clear`, `1–5`, `quit` line), terminalModel selectors
+(`ls`, `cat FILE`, `cd <destination>` from linked graph routes, `cd ..`, `cd /`, `day N` → prints
+that day's real beats from `site.week`, `open <entity>` → artifact via `panes.open` (in-buffer
+until panes lands), `mode graph|term`, `email` copy + printed confirm, `help`, `clear`, `1–5`,
+`quit` line; invalid destinations print inline errors with available matches), terminalModel selectors
 (ALL copy from site.js — zero hardcoded content), section renderers, boot sequence as
 command #1 (motd → auto-typed `operator --replay --day 3` → log frame + scramble name +
 tagline + CTA row), statusbar tabs + % + clock.

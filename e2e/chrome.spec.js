@@ -99,7 +99,7 @@ test.describe("site chrome — R-C4", () => {
     await page.getByRole("menuitemradio", { name: "Dark" }).click();
 
     const freshContext = await browser.newContext({
-      baseURL: "http://localhost:3100",
+      baseURL: new URL(page.url()).origin,
       colorScheme: "light",
       storageState: await page.context().storageState(),
     });
@@ -126,9 +126,10 @@ test.describe("site chrome — R-C4", () => {
     await page.keyboard.press("Escape");
   });
 
-  test("current OS theme becomes persistent after selection", async ({ browser }) => {
+  test("current OS theme becomes persistent after selection", async ({ browser }, testInfo) => {
+    const baseURL = testInfo.project.use.baseURL;
     const osContext = await browser.newContext({
-      baseURL: "http://localhost:3100",
+      baseURL,
       colorScheme: "dark",
     });
     try {
@@ -140,7 +141,7 @@ test.describe("site chrome — R-C4", () => {
       expect(await osPage.evaluate(() => localStorage.getItem("on.theme"))).toBe("dark");
 
       const freshContext = await browser.newContext({
-        baseURL: "http://localhost:3100",
+        baseURL,
         colorScheme: "light",
         storageState: await osContext.storageState(),
       });
@@ -156,9 +157,9 @@ test.describe("site chrome — R-C4", () => {
     }
   });
 
-  test("coarse pointer menu items meet the touch target", async ({ browser }) => {
+  test("coarse pointer menu items meet the touch target", async ({ browser }, testInfo) => {
     const context = await browser.newContext({
-      baseURL: "http://localhost:3100",
+      baseURL: testInfo.project.use.baseURL,
       colorScheme: "light",
       viewport: { width: 390, height: 844 },
       isMobile: true,

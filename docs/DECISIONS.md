@@ -9,6 +9,20 @@ and deleting it there.
 
 ---
 
+## 2026-08-28 · Theme choices move into the account-shaped menu
+
+### D-36 · Appearance lives under Account
+The always-visible theme control is replaced by an `Account` trigger and an `Appearance` section
+with Light/Dark radio items. `ThemeProvider` keeps the same independent theme axis, URL sync,
+local-storage persistence, OS fallback, and `sun`/`moon` icon exceptions. The account shape leaves
+room for future Clerk actions without adding Clerk, authentication, fake account state, or a sign-in
+placeholder.
+
+*Supersedes D-23's standalone placement and interaction, but keeps its 3px control geometry and
+sun/moon icon rationale.* Detail: `docs/THEMES.md` and `docs/COMPONENTS.md`.
+
+---
+
 ## 2026-08-28 · `/pull` joins the Sakura restyle lanes
 
 ### D-33 · `/pull` is a Sakura surface

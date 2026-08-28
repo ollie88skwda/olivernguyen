@@ -1,17 +1,16 @@
 // Shared chrome — rebuilt on the component library (plan R-C3, D-26).
 //
 // D-26 is greenfield, not an extension: every control in this bar is now a
-// library piece, and chrome.css is down to bar LAYOUT plus the one thing no
-// component owns (the theme control's icon crossfade). What each control comes
+// library piece, and chrome.css is down to bar LAYOUT. What each control comes
 // from and why it changed:
 //
 //   wordmark   → <Wordmark as="a">              (D-25; was a hand-set .sc-logo
 //                                                that could lose the §10 dot)
 //   mode       → <ModeToggle>                   (D-25; the §4 999px exception,
 //                                                now owned in one place)
-//   theme      → <Button size="icon" ghost>     (D-23 says the theme control is
-//                                                an ORDINARY 3px icon button —
-//                                                that is exactly this variant)
+//   account    → <Button size="sm" ghost> +     (D-36: account-shaped shell for
+//                <DropdownMenu>                  future Clerk actions; Appearance
+//                                                owns the Light/Dark choices)
 //   nav        → <a> + <MonoLabel>              (§7's label role; a nav link is
 //                                                a link, not a boxed button)
 //   ⌘K         → <Button ghost sm> + <Glyph key>(§8's ⌘ is a glyph)

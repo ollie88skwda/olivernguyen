@@ -112,9 +112,11 @@ All of §6's follow-ups shipped in one change on `feat/component-library`. No pa
 2. **`<meta name="theme-color">`** moved out of `ModeProvider` into `ThemeProvider`:
    `light` → `#faf1f5`, `dark` → `#180f14`.
 3. **`src/components/ui/sonner.jsx`** reads `useTheme()`, not `useMode()`.
-4. **The theme control** (D-23) — `.sc-theme-btn` in `src/chrome/SiteChrome.jsx`, styled in
-   `src/chrome/chrome.css`. `sun` and `moon` joined `check` on `src/components/brand/icon.jsx`'s
-   allow-list.
+4. **The account menu's Appearance section** (D-36) — the Account trigger and portalled
+   `DropdownMenu` live in `src/chrome/SiteChrome.jsx`. Its Light/Dark radio items call
+   `setTheme`; `sun` and `moon` remain on `src/components/brand/icon.jsx`'s allow-list. The
+   account-shaped menu leaves room for future Clerk actions without adding auth state or a
+   sign-in placeholder.
 5. **`/_components`** no longer owns theme state; its ladder switch calls `setTheme()`.
 
 `docs/redesign-research/05-v1-spec.md` §6.3 is superseded by D-03 and by this file.

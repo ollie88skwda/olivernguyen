@@ -24,11 +24,11 @@ import "@/styles/components.css";
 // name → lucide component. Ratified exceptions only.
 const ICONS = {
   check: Check, // D-13: checkbox / menu tick
-  // D-23: the theme control. ☀ and ☾ are outside §8's ratified glyph set and
-  // fail at control size the way the tick did, so the switch is drawn — at the
-  // full 18px --icon grid, 1.5 stroke, currentColor, like every icon here.
-  sun: Sun, // D-23: light ladder
-  moon: Moon, // D-23: dark ladder
+  // D-36: the Appearance menu choices. ☀ and ☾ are outside §8's ratified glyph
+  // set and fail at control size the way the tick did, so they are drawn — at
+  // the full 18px --icon grid, 1.5 stroke, currentColor, like every icon here.
+  sun: Sun, // D-36: light ladder
+  moon: Moon, // D-36: dark ladder
   // D-29: the pages-menu trigger. Same shape of exception as D-23's sun/moon.
   // ☰ (U+2630) is not in §8's ratified set AND is not in JetBrains Mono — it
   // was measured falling back to a system face (11.44px advance against the
