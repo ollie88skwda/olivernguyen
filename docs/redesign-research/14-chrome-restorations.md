@@ -46,8 +46,8 @@ Decision logged as **D-29** in `docs/DECISIONS.md`. Component notes: `docs/COMPO
 > stylesheet, and injecting nothing at all, produce the same 47% pixel change. The rest of this file
 > is unchanged and still correct.
 1. **Terminal is pixel-identical.** `100dvh`, never scrolls, nothing passes under the bar.
-2. **Legacy routes go muddy.** `/college` scrolled: the navy legacy headline smears up through the
-   pink sakura bar and sits behind the nav labels. Two palettes mixing is what §9 was written against.
+2. **The pre-restyle `/college` route went muddy.** It scrolled: the navy legacy headline smeared up
+   through the pink sakura bar and sat behind the nav labels. Two palettes mixing is what §9 was written against.
 3. **It softens the graph canvas.** New finding. `backdrop-filter` promotes the fixed bar to its own
    composited layer; Chromium then re-rasterises the whole canvas, and node subtitles 200px BELOW the
    bar ("the formal record", "PDF · one page") go visibly fuzzy. Same failure family as D-27's note.
@@ -71,11 +71,11 @@ Decision logged as **D-29** in `docs/DECISIONS.md`. Component notes: `docs/COMPO
 | `/` scrollability, 4 combos × {1440, 375} | `scrollHeight === innerHeight` every time |
 | mounted on `/` | renders `opacity: 0`, text `00%` |
 | probe ids `#about #work #skills #contact` | present on **no route on the site** — the section designator can never appear |
-| legacy scroll range @1440 | `/permit` 3020 · `/college` 216 · `/transfer /major /apply /studio` 56 · `/pull` 40 · `/license /sat-resources /sat-signup` 0 |
+| pre-restyle legacy scroll range @1440 | `/permit` 3020 · `/college` 216 · `/transfer /major /apply /studio` 56 · `/pull` 40 · `/license /sat-resources /sat-signup` 0 |
 | restore-as-is paint | `.scroll-station` in **frozen** `src/styles/theme.css` = `backdrop-filter: blur(6px)` over hardcoded cream — the same §9 violation rejected in X-1 |
 | restore-as-is @375 on `/permit` | the chip overlaps the numbered list under it |
 
-Nine of ten legacy routes do not scroll enough to justify an instrument. A rebuild on `Progress`
+At the time, nine of ten routes did not scroll enough to justify an instrument. A rebuild on `Progress`
 would serve one page and still have no ids to read. Deferred to the legacy restyle.
 
 ## A/B for Oliver

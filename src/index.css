@@ -1,6 +1,6 @@
 /* Tailwind v4 WITHOUT preflight: this file loads on every route, and the
-   legacy pages (Gate 1: pixel-identical) must not be re-reset. New sakura
-   surfaces bring their own resets inside `.sakura` (P2, sakura.css /
+   remaining legacy pages (Gate 1: pixel-identical) must not be re-reset. New
+   sakura surfaces bring their own resets inside `.sakura` (P2, sakura.css /
    graph.css). Theme + utilities are class-triggered, so legacy CSS coexists. */
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
@@ -53,8 +53,8 @@
 
 /* shadcn tokens. Two names collide with legacy theme.css (--accent, --border);
    theme.css is imported AFTER this file in src/index.js, so legacy values win
-   everywhere — legacy pages are untouched. New chrome/graph re-declare tokens
-   inside `.sakura` (sakura.css), which outranks both. */
+   everywhere — remaining legacy pages are untouched. New sakura surfaces
+   re-declare tokens inside `.sakura` (sakura.css), which outranks both. */
 :root {
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);

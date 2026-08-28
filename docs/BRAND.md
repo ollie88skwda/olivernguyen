@@ -271,7 +271,7 @@ apparent thickness scales with icon size: draw an icon at the full 18px grid rat
 - **Exactly one blurred surface, and this is it (D-30):** the fixed chrome bar, `blur(8px)` over
   `--chrome-veil`, **only** where `html[data-mode="graph"]` and the graph home is mounted
   (`body:has(.graph-root)`), at `min-width: 768px` and `pointer: fine`. Solid `--bg` everywhere else
-  — terminal, legacy routes, phone. Nothing else on the site may blur a backdrop; the rest of the ban
+  — terminal, remaining legacy routes, phone. Nothing else on the site may blur a backdrop; the rest of the ban
   above stands unchanged.
   - `--chrome-veil` is **50%** (D-32) and that is a *measured* §2.3 floor, not a taste value: over 60
     canvas states the worst composite gives `--text` 5.29:1 in graph · dark and 6.82:1 in
@@ -309,8 +309,8 @@ initials at once; the dot is the same colour as the routing pulse.
 1. **Reference tokens, never hex.** All values live in `src/styles/sakura.css` under the
    `.sakura` scope, keyed off `<html data-theme>` (ladder) and `<html data-mode>` (interface).
    Components read `var(--token)`.
-2. **Legacy pages are frozen.** Files under `src/pages/` keep their own stylesheets until a
-   restyle is explicitly scheduled (see `05-v1-spec.md` §2.3). Do not bleed sakura into them.
+2. **Remaining legacy pages are frozen.** Files under `src/pages/` keep their own stylesheets. `/college`
+   is the explicit sakura-restyle exception; do not bleed sakura into the rest.
 3. **New surfaces mount inside `.sakura`.** Never put these tokens on `:root`.
 4. **No new tokens without a decision.** If a component needs a value this doc does not define,
    raise it — then it gets added here and to `DECISIONS.md`.

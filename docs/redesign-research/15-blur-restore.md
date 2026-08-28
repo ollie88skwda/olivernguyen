@@ -247,8 +247,8 @@ Leads, in the order worth trying — none is prescribed, all need rendering:
 
 ## The other thing 14 found: legacy routes go muddy
 
-On `/college` scrolled, the blur smears the **navy legacy headline** up through the **pink sakura
-bar**, behind the nav labels. Two palettes mixing. Shots:
+In the pre-restyle `/college` experiment, scrolling made the blur smear the **navy legacy headline**
+through the **pink sakura bar**, behind the nav labels. Two palettes mixing. Shots:
 `e2e/__shots__/x1-legacy-college-{A-solid,B-blur}.png`.
 
 Legacy routes are the only place on the site where the window scrolls, so this is exactly where the

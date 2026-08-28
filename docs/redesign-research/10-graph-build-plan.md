@@ -255,8 +255,9 @@ Vitest suites green. `/api` verified on a Vercel preview deploy.
 `src/home/Home.jsx` (graph placeholder + terminal holding screen), top-bar rebuild + TERM|GRAPH
 toggle on all chromed routes (05 §6.4; drop dead `/debt` link), `NO_CHROME` preserved.
 ✅ **Gate 1:** toggle swaps `data-mode` + persists + URL-syncs on `/`; `?mode=graph` forces
-graph; legacy pages visually unchanged under new chrome (Playwright screenshot diff on
-`/pull`, `/permit`, `/college`); contrast script passes; zero console errors.
+graph; pages visually unchanged under new chrome at that point (Playwright screenshot diff on
+`/pull`, `/permit`, `/college`); contrast script passes; zero console errors. Later explicit
+restyle lanes may change individual page surfaces; `/college` is covered by its own lane gate.
 
 **Phase G1 — exec-graph: pure modules** (parallel with Phase 0)
 `src/content/site.js` (05 §2.2 schema, prototype copy + 30 nodes incl. week ring

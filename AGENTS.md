@@ -43,17 +43,17 @@ different, that is a brand decision, not a component decision.
 
 ## 2. Scoping rules (important — this repo is half-migrated)
 
-- Sakura tokens live under the `.sakura` scope class, keyed off `<html data-mode="terminal|graph">`.
-  **Never put them on `:root`.**
+- Sakura tokens live under the `.sakura` scope class, keyed off `<html data-theme="light|dark">` and
+  `<html data-mode="terminal|graph">`. **Never put them on `:root`.**
 - `src/styles/theme.css` owns the legacy `:root` tokens (navy/gold). Leave it alone.
-- Legacy pages under `src/pages/` are frozen and keep their own stylesheets until a restyle is
-  explicitly scheduled. Do not let new styles bleed into them.
+- Remaining legacy pages under `src/pages/` are frozen and keep their own stylesheets. `/college`
+  is the explicit sakura-restyle exception. Do not let new styles bleed into the rest.
 - New surfaces mount inside `.sakura`.
 
 ## 3. Stack facts
 
 - Vite + React 18 + React Router **v5** (do not "upgrade" it in passing).
-- Tailwind v4, **preflight disabled** on purpose — legacy pages must not be re-reset.
+- Tailwind v4, **preflight disabled** on purpose — remaining legacy pages must not be re-reset.
 - shadcn/ui is configured (`components.json`, JS not TS, `@/components/ui`). Components are ours
   once added; restyle them to the brand tokens rather than shipping registry defaults.
 - Motion (`motion/react`) for animation. `lucide-react` is the only icon family.

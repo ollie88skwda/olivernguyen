@@ -22,8 +22,8 @@ One portfolio, two renderings of the same content:
 
 The two modes are not skins; they are two *interfaces* over one content model (§2). The pitch
 is the medium: an agent builder whose site you can either **watch run** (terminal) or
-**operate yourself** (graph). Mode toggle is persistent chrome; the theme follows the mode
-(terminal = sakura-dark, graph = sakura-light).
+**operate yourself** (graph). Mode and theme are independent persistent controls; the four
+combinations and their defaults live in `docs/THEMES.md`.
 
 Discoverability is a first-class requirement (owner feedback): every capability reachable by
 search (⌘K / `:`) is also reachable by visible, clickable UI, and vice versa. No content is
@@ -43,11 +43,12 @@ does something real. Motion always gated behind `prefers-reduced-motion`.
 /                → Home (mode-aware: renders TerminalHome or GraphHome)
 /?mode=terminal  → forces terminal mode (and persists it)
 /?mode=graph     → forces graph mode (and persists it)
-all other routes → unchanged legacy pages, but wrapped in new shared chrome (§6.4)
+all other routes → existing pages wrapped in new shared chrome (§6.4); explicit restyle lanes may
+  move individual pages onto sakura without changing route behavior
 ```
 
-No new routes in v1. React Router v5 stays untouched. `Routes.js` keeps its `Switch`; only
-`SiteChrome` and `Home` change.
+No new routes in v1. React Router v5 stays untouched. `Routes.js` keeps its `Switch`; the shared
+`SiteChrome` and `Home` change, while explicit restyle lanes may update individual page surfaces.
 
 ### 2.2 Single source of truth: `src/content/site.js`
 
@@ -145,7 +146,7 @@ v1 so both modes can link to them).
 | `/sat-signup` | signup form | form kept as-is inside terminal chrome (forms never fake-terminalized) | leaf node linking out | later, low priority |
 | `/articlewriter` | project archive page | `man articlewriter` + real pipeline output image | already a project node in v1 graph; dossier links here | v1: linked from entity |
 | `/emoji` | toy page | easter egg: listed only in `ls -a` (hidden index) | hidden node, revealed by `:emoji` | later, joke preserved |
-| `/college` (+ gated children) | hub for private tools | listed in index as `college/ [locked]` rows; auth flows unchanged | `private` cluster with lock badges; clicking routes to sign-in as today | v1: stub · treatment later |
+| `/college` (+ gated children) | hub for private tools | sakura hub with placeholder copy, gate badges, and links; auth flows unchanged | same page in both modes; theme and mode remain independent | shipped in the `/college` restyle lane |
 | `/sign-in`, `/studio`, `/transfer`, `/major`, `/apply` | private/gated | not represented (never in public index) | not represented | never |
 | `/be-my-girlfriend` | full-bleed, own art | opts out of chrome (today's `NO_CHROME` behavior preserved) | not represented | never |
 
@@ -362,7 +363,7 @@ automatically surfaces it in ⌘K rows, `:` completions, and suggestion chips.
 | replay day N | “Replay day 4” | `:day 4` | scrub to day (terminal) / ring pulse (graph) |
 | week replay | “Replay the week” | `:week` | goto operator section/cluster |
 | mode switch | “Switch to graph/terminal mode” | `:mode graph` `:mode term` | §6 toggle |
-| theme note | — | — | (theme follows mode; no separate intent in v1) |
+| theme note | — | — | (theme is an independent chrome control; see `docs/THEMES.md`) |
 | guided tour | “Start the guided tour” | `:tour` | graph tour; in terminal, switches to graph then tours |
 | copy email | “Copy my email” | `:email` | clipboard + Sonner toast |
 | resume / github / linkedin | “Open resume” | `:resume` | external |
@@ -409,7 +410,7 @@ not a command` in the status bar (the one joke we allow, because the command lin
   future keys silently.
 - Focus is never programmatically moved by motions; `/` and `:` focus their input and
   restore focus on close. Tab order is untouched.
-- The engine unmounts entirely on legacy routes and inside `/studio` (which has its
+- The engine unmounts entirely on remaining legacy routes and inside `/studio` (which has its
   own vim).
 
 ### 5.5 Status/hint bar (non-vim visitors are never lost)
@@ -431,60 +432,40 @@ not a command` in the status bar (the one joke we allow, because the command lin
 
 ### 6.1 Toggle placement
 
-Top bar, right side, always visible in both modes: a two-position segmented switch
-labeled `TERM | GRAPH` (text, not icons — discoverability). Sliding thumb animates with
-Motion `layoutId`. Repeated in the contact/footer area and as ⌘K + `:mode` intents.
+Top bar, right side, always visible in both modes: a two-position switch labeled `TERM | GRAPH`
+(text, not icons — discoverability). Its thumb uses the 140ms state transition and jumps under
+reduced motion. The top-bar control is the visible mode switch; keyboard intents provide the other
+path.
 
 ### 6.2 Resolution order + persistence
 
 ```
 1. URL param  ?mode=terminal|graph   → wins, and writes localStorage (shareable links)
 2. localStorage on.mode              → returning visitors
-3. First visit heuristic:
-     coarse pointer / width < 768    → terminal   (graph canvas isn't shipped to phones)
-     else prefers-color-scheme: dark → terminal
-     else                            → graph
-4. Fallback                          → terminal
+3. Fallback                          → graph
 ```
 
 Toggling writes `on.mode` and updates the URL param via `history.replaceState` (no
-router navigation, no scroll reset). Switching modes preserves *semantic* position
-where possible: if a dossier/section for entity X is active, the other mode opens at X
-(the intent registry gives this for free — mode switch re-runs the last `goto` intent).
-
-**Recommendation (assumption unless owner objects):** the heuristic above — dark-OS
-desktop visitors land in the terminal (the signature), light-OS desktop visitors land
-in the graph, all mobile visitors land in the terminal. Rationale: mode carries theme,
-so first paint matches OS expectation and neither mode is "the hidden one."
+router navigation, no scroll reset). The selected interface remounts and owns its own view state;
+theme state remains independent.
 
 ### 6.3 Theming mechanics
 
-- Tailwind v4 + CSS custom properties. `04-sakura-palette.md` defines two token sets;
-  implementation contract: tokens exported as CSS variables under `[data-mode="terminal"]`
-  and `[data-mode="graph"]` on `<html>` — `--bg`, `--bg-raised`, `--ink`, `--ink-muted`,
-  `--accent`, `--accent-soft`, `--line`, `--glow` (final names come from 04; the code
-  references only variables, never hex).
-- Mode switch = swapping `data-mode` + cross-fade: overlay div fades in/out 250ms while
-  the mode component swaps under `AnimatePresence`. No View Transitions API dependency
-  in v1 (SPA + router v5; revisit later).
-- `prefers-color-scheme` does NOT live-switch modes after first visit (a user's explicit
-  choice always wins); it only feeds the first-visit heuristic. `<meta name="color-scheme">`
-  and `theme-color` update with mode.
-- `prefers-reduced-motion`: per-feature fallbacks specified in §3/§4; additionally the
-  global cross-fade becomes an instant swap, and Lenis is not initialized (native scroll).
+The implemented theme and mode contract is owned by `docs/THEMES.md`: `data-theme` selects the
+palette ladder, `data-mode` selects the interface, and the two providers never derive one from the
+other. Sakura tokens live under `.sakura`; components reference token variables rather than hexes.
 
 ### 6.4 Shared chrome (v1 scope)
 
 Replaces `top_bar.js` on all chromed routes:
 
 - **Top bar**: logo `oN.c` · links Work/About/Contact (on `/`, mode-aware jumps; on
-  legacy routes, plain links to `/#work` etc.) · mode toggle · `Search ⌘K` button ·
+  remaining legacy routes, plain links to `/#work` etc.) · mode toggle · `Search ⌘K` button ·
   hamburger for the pages menu (Pull, College, Driving, SAT — current sidebar content
   minus dead `/debt`). Hide-on-scroll-down behavior kept, rebuilt with Motion.
-- **Legacy routes** render inside the chrome with the mode's *theme tokens applied to
-  chrome only* — page bodies keep their existing stylesheets in v1 (no restyle;
-  mapping table §2.3 is later phases). Grain overlay retired; `ScrollProgress` kept
-  terminal-mode only.
+- **Remaining legacy routes** render inside the chrome with sakura tokens applied to chrome only;
+  page bodies keep their existing stylesheets. Explicit restyle lanes are the exception — `/college`
+  now mounts its own `.sakura` surface. Grain overlay retired; `ScrollProgress` remains unmounted.
 - `NO_CHROME` list behavior preserved exactly.
 
 ---
@@ -586,18 +567,18 @@ passphrase gates, essay studio editor + vim, `/api` functions on a Vercel previe
 Existing tests green under Vitest. No visual regressions on legacy pages.
 
 **Phase 1 — Foundations: tokens, content model, chrome (~2 days)**
-Sakura tokens from 04 as CSS variables under `data-mode`; contrast-check script; content
-model `src/content/site.js` fully populated (pending §10 content); `ModeProvider`
-(resolution order §6.2); new top bar + mode toggle mounted on all chromed routes; legacy
-pages verified under new chrome.
+Sakura tokens from 04 as CSS variables under `.sakura`, keyed by `data-theme` and `data-mode`;
+contrast-check script; content model `src/content/site.js` fully populated (pending §10 content);
+`ModeProvider` (resolution order §6.2); new top bar + mode toggle mounted on all chromed routes;
+remaining legacy pages verified under new chrome.
 ✅ **Gate:** toggling mode swaps `data-mode` + persists + syncs URL param on `/`;
 `?mode=graph` link opens graph placeholder; contrast script passes; Playwright chrome
-test on 3 legacy routes.
+test on remaining legacy routes and `/college`.
 
 **Phase 2 — Terminal mode (~3–4 days)**
 Sections [1]–[5] per §3, mobile fallbacks included. Registry components installed via
 shadcn CLI. `Reveal`/`WordReveal`/`TiltCard`/`MagneticButton`/`Marquee`/`ScrollProgress`
-usages on home replaced (components left in place for legacy pages — flag, don't delete).
+usages on home replaced (components left in place for remaining legacy pages — flag, don't delete).
 ✅ **Gate:** Playwright: scrub maps scroll→day 1..7 correctly; mobile viewport renders
 unpinned list; reduced-motion emulation renders all static fallbacks; Lighthouse on `/`
 ≥ 90 perf / ≥ 95 a11y (mobile emulation); mouse-only walkthrough reaches every section
@@ -609,7 +590,7 @@ Intent registry + all §5.3 intents; ⌘K palette + proactive suggestions; vim e
 ✅ **Gate:** Playwright: every intent runs from both ⌘K and `:`; typing `j` inside the
 ⌘K input types the letter (no motion — the never-trap test); space/arrows/PageDown
 still natively scroll; `gg`/`G`/`1-5`/`/`+`n` behave per table; engine absent on
-`/studio` and legacy routes; `?` opens help sheet.
+`/studio` and remaining legacy routes; `?` opens help sheet.
 
 **Phase 4 — Graph mode (~3–4 days)**
 React Flow stage, authored layout, custom nodes/edges, dossiers with layoutId morph,
