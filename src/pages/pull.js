@@ -276,6 +276,8 @@ export const Pull = () => {
   const [playerName, setPlayerName] = useState(null);
   const [picks, setPicks] = useState([]);
   const serverPicksRef = useRef([]);
+  const serverVersionRef = useRef(0);
+  const readRequestRef = useRef(0);
   const pendingPicksRef = useRef(new Map());
   const pickQueuesRef = useRef(new Map());
   const pickActionRef = useRef(0);
@@ -302,12 +304,20 @@ export const Pull = () => {
   // realtime refresh is silent so a transient blip never blanks a loaded list.
   const loadPicks = useCallback(async ({ silent = false } = {}) => {
     if (!silent) setLoading(true);
+    const requestVersion = serverVersionRef.current;
+    const requestId = ++readRequestRef.current;
     try {
       const { data, error } = await supabase
         .from("pull_picks")
         .select("*")
         .order("created_at", { ascending: true });
       if (error) throw error;
+      if (
+        requestVersion !== serverVersionRef.current ||
+        requestId !== readRequestRef.current
+      ) {
+        return false;
+      }
       setPicksFromSource(data);
       setFetchError(false);
       return true;
@@ -381,10 +391,12 @@ export const Pull = () => {
             body: JSON.stringify({ player: playerName, weekend, amount }),
           });
           if (!res.ok) throw new Error(`pick save failed: ${res.status}`);
+          serverVersionRef.current += 1;
           pendingPicksRef.current.delete(actionId);
           serverPicksRef.current = applyPickAction(serverPicksRef.current, action);
           displayPicks(serverPicksRef.current);
         } catch {
+          serverVersionRef.current += 1;
           pendingPicksRef.current.delete(actionId);
           toast.error("couldn't save your pick — check the connection and try again");
           await loadPicks({ silent: true });
