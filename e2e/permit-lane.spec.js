@@ -28,6 +28,10 @@ const EXPECTED_HEADINGS = [
 ];
 
 const EXPECTED_KICKERS = ["01", "02", "03", "04"];
+const EXPECTED_ACCENT = {
+  light: "rgb(168, 58, 104)",
+  dark: "rgb(255, 183, 209)",
+};
 
 async function assertPermit(page, { theme, mode, coarse }) {
   await expect(page.locator("main.sakura.permit")).toBeVisible();
@@ -89,12 +93,20 @@ async function assertPermit(page, { theme, mode, coarse }) {
   }
 
   const firstLink = links.first();
+  const shotLink = page.locator(".pm-shot-link");
   if (!coarse) {
     const linkColor = await firstLink.evaluate((element) => getComputedStyle(element).color);
     await firstLink.hover();
     await expect
       .poll(() => firstLink.evaluate((element) => getComputedStyle(element).textDecorationColor))
       .toBe(linkColor);
+
+    const restingBorder = await shotLink.evaluate((element) => getComputedStyle(element).borderTopColor);
+    await shotLink.hover();
+    await expect
+      .poll(() => shotLink.evaluate((element) => getComputedStyle(element).borderTopColor))
+      .toBe(EXPECTED_ACCENT[theme]);
+    expect(restingBorder).not.toBe(EXPECTED_ACCENT[theme]);
   }
   await firstLink.scrollIntoViewIfNeeded();
   for (let i = 0; i < 40; i += 1) {
@@ -109,7 +121,6 @@ async function assertPermit(page, { theme, mode, coarse }) {
 
   await page.keyboard.press("Tab");
   await page.keyboard.press("Tab");
-  const shotLink = page.locator(".pm-shot-link");
   await expect(shotLink).toBeFocused();
   await expect
     .poll(() => shotLink.evaluate((element) => getComputedStyle(element).outlineStyle))
