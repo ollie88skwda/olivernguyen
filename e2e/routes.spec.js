@@ -119,3 +119,24 @@ for (const [route, assertion] of routes) {
     expect(errors.console, "console errors").toEqual([]);
   });
 }
+
+test("SAT signup lazy loading stays on the Sakura surface", async ({ page }) => {
+  await page.route("**/src/pages/sat/sat_signup.js*", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await route.continue();
+  });
+
+  await page.goto("/sat-signup?theme=dark&mode=terminal", {
+    waitUntil: "domcontentloaded",
+  });
+
+  const loading = page.locator('[aria-busy="true"]');
+  await expect(loading).toBeVisible();
+  await expect(loading).toHaveClass(/\bsakura\b/);
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator("html")).toHaveAttribute("data-mode", "terminal");
+  expect(await loading.evaluate((element) => getComputedStyle(element).backgroundColor)).toBe(
+    "rgb(24, 15, 20)",
+  );
+  await expect(loading).toBeHidden({ timeout: 5000 });
+});

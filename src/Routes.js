@@ -94,6 +94,14 @@ const RouteFallback = () => {
   return pathname === "/sat-resources" ? <SATResourcesLoading /> : <Blank />;
 };
 
+const SATSignupLoading = () => (
+  <main
+    className="sakura"
+    style={{ minHeight: "100dvh", background: "var(--bg)" }}
+    aria-busy="true"
+  />
+);
+
 export const Routes = () => {
   return (
     <Router>
@@ -130,7 +138,9 @@ export const Routes = () => {
           <SATResources />
         </Route>
         <Route path="/sat-signup">
-          <SATSignup />
+          <Suspense fallback={<SATSignupLoading />}>
+            <SATSignup />
+          </Suspense>
         </Route>
         <Route path="/pull">
           <Pull />
