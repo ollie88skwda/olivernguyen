@@ -14,13 +14,13 @@ Ollie is choosing between **Industrial**, **Systems**, and **Mechanical** engine
 - Deadline: **college app deadlines this cycle**.
 - **From the mockup review round:** the writing read as AI-generated (fixed via humanizer pass, zero em dashes), and Ollie does not know the math/stats vocabulary being used (AHP, Monte Carlo, consistency ratio, flip-distance, VOI) — every technical term needs an inline tooltip, every section needs a "plain English" explainer, and there must be a glossary. This is now a hard product requirement, not polish.
 
-**Correction from the original plan draft:** that draft flagged a suspected env-var bug in `pull.js` (`REACT_APP_SUPABASE_*` vs `.env.local`'s `NEXT_PUBLIC_SUPABASE_*`). Re-checked during Phase 0: there is a separate `.env` file (not `.env.local`) that already defines `REACT_APP_SUPABASE_URL`/`REACT_APP_SUPABASE_ANON_KEY` correctly, and `pull.js` reads those fine. No bug, no fix needed. `.env.local`'s `NEXT_PUBLIC_*` pair is unused by CRA and harmless.
+**Correction from the original plan draft:** that draft flagged a suspected env-var bug in `pull.js` (`REACT_APP_SUPABASE_*` vs `.env.local`'s `NEXT_PUBLIC_SUPABASE_*`). Re-checked during Phase 0: there is a separate `.env` file (not `.env.local`) that already defines `REACT_APP_SUPABASE_URL`/`REACT_APP_SUPABASE_ANON_KEY` correctly, and `pull.js` reads those fine. No bug, no fix needed. `.env.local`'s `NEXT_PUBLIC_*` pair is unused by this client and harmless.
 
 Because he lacks information, a page that just declares a winner would be theater. The page's primary output is a **ranked research agenda** (what to go find out, ordered by how much resolving it would change the answer) with an honest confidence verdict underneath, and it must be understandable to someone who does not already know what a Monte Carlo simulation is.
 
-Design matches the existing site: cream paper + navy ink, Big Shoulders / Martian Mono / Hanken Grotesk, film grain, engineering-drawing motifs (`U1 / About` sheet numbers, `Fig. 01` captions, signal-path rails).
+Design follows the Sakura system: scoped paper/plum ladders, Familjen Grotesk / Hanken Grotesk / JetBrains Mono / Martian Mono, hairlines, and restrained data graphics.
 
-**Locked decisions:** live-editable + Supabase-persisted + Claude-editable (CLI) · private unlinked route · full method stack · verdict with confidence · research-agenda-first · majors-only board with school as a filter strip · external data seeding deferred to v2 · **plain-English layer (tooltips + per-section explainer + glossary) is v1, not deferred** · copy voice is plain and direct, no AI-sounding filler, zero em dashes.
+**Locked decisions:** live-editable + Supabase-persisted + Claude-editable (CLI) · private route, not a primary nav link · full method stack · verdict with confidence · research-agenda-first · majors-only board with school availability cards · external data seeding deferred to v2 · **plain-English layer (tooltips + per-section explainer + glossary) is v1, not deferred** · copy voice is plain and direct, no AI-sounding filler, zero em dashes.
 
 ---
 
@@ -32,26 +32,26 @@ src/pages/major/
   seed.js             canonical starting doc (bootstrap + offline fallback)
   store.js            zustand store + Supabase load/save/realtime
   model.js            ALL math, pure functions, zero React
-  model.test.js       jest tests for the math
-  Tooltip.js          shared <Tip> component: dotted underline, hover/tap bubble
+  model.test.js       Vitest tests for the math
   glossary.js         term -> plain-English definition map, shared by Tooltip + S9
   sections/           Status, Board, Duel, Ridges, Tornado, SwitchYard,
-                      Agenda, PreMortem, Assumptions, EvidenceLog, Glossary
-src/styles/Major.css
-scripts/decision.mjs  node CLI so Claude edits the same Supabase doc
+                      PreMortem, Assumptions, EvidenceLog, Glossary
+src/components/Tooltip.js  shared <Tip> component: dotted underline, hover/tap bubble
+src/pages/major/major.css   route-scoped Sakura stylesheet
+scripts/decision.mjs       node CLI so Claude edits the same Supabase doc
 ```
 
-Route added to `src/Routes.js` as `/major`, lazy-loaded via `Suspense` (same pattern as `BeMyGirlfriend`, `Routes.js:13,43-47`). **Not** added to `src/layouts/TopBar.js` nav.
+Route added to `src/Routes.js` as `/major`, lazy-loaded via `Suspense`, and listed in the central pages menu from `src/chrome/SiteChrome.jsx`. It is not a primary nav link.
 
 ### Persistence: two writers, one document
 
-Supabase table `major_decision` on the existing **`pull`** project (`lhiwhmcdqqwwurectxos`, already wired via `.env.local`) — reused rather than a new project, since it's already provisioned and already the pattern `pull.js` uses. Schema: `id text primary key`, `doc jsonb`, `updated_at timestamptz`. One row, `id = 'v1'`.
+Supabase table `major_decision` on the existing **`pull`** project (`lhiwhmcdqqwwurectxos`, already wired via `.env`) — reused rather than a new project, since it's already provisioned and already the pattern `pull.js` uses. Schema: `id text primary key`, `doc jsonb`, `updated_at timestamptz`. One row, `id = 'v1'`.
 
 - **Browser** reads on mount, writes debounced (800ms) on edit, subscribes to realtime — same shape as `src/pages/pull.js:236-273`.
 - **Claude** uses `node scripts/decision.mjs <get|set|patch|add-criterion|add-evidence|add-unknown> …`.
 - `seed.js` is the bootstrap and the offline fallback.
 
-**Privacy, stated plainly:** the route is gated behind a localStorage passphrase (precedent: the Iris gate on `/be-my-girlfriend`). UI privacy only — the Supabase anon key ships in the bundle. Acceptable trade for a personal doc; real protection needs Supabase Auth, out of scope for v1.
+**Privacy, stated plainly:** the route is gated behind the shared server-verified passphrase. UI access is gated, but the Supabase anon key ships in the bundle and the decision row needs its own data policy. Real row-level protection needs Supabase Auth or database rules, out of scope for v1.
 
 `/major` reuses the same `REACT_APP_SUPABASE_URL` / `REACT_APP_SUPABASE_ANON_KEY` already defined in `.env` and already working for `pull.js`. No env changes needed.
 
@@ -130,20 +130,20 @@ Section components live in `src/pages/major/sections/` and are otherwise self-co
 
 ## UI — sheet set, spatial by construction
 
-Section eyebrows continue the site's drawing-set convention (`S0 / Status`, `S1 / The Board`, …) via `SectionHeading` (`src/components/SectionHeading.js`). Reuse `Reveal`, `WordReveal`, `Marquee`, `MagneticButton`, honor `useReducedMotion` as `home.js` does.
+Section kickers continue the site's `S0 / Status`, `S1 / The Board`, … convention via `SectionHead` from `@/components/brand`. The restyle uses the approved Card, Badge, Button, Input, Select, Textarea, Checkbox, Progress, Log, Statusline, and Glyph primitives. Page-local motion is limited to sanctioned state changes and has a reduced-motion fallback.
 
 - **S0 · Status** — confidence dial (SVG arc + mono readout); mono countdown to app deadline; the **three top-VOI "GO FIND OUT" cards** with effort chips and a tooltip explaining the "flips answer X%" stat.
-- **S1 · The Board** *(centerpiece)* — mosaic. Column width ∝ criterion weight; each cell ink ∝ weighted contribution. Hover a cell → `lo/mid/hi` + note. Drag a column edge → live re-weight, rows re-sort (framer-motion `layout`).
-- **S2 · Weights (duel)** — full-bleed AHP pairwise comparisons, one pair at a time; consistency gauge; over threshold, names the contradicting triad in plain language.
+- **S1 · The Board** *(centerpiece)* — mosaic. Column width ∝ criterion weight; each cell ink ∝ weighted contribution. Hover or focus a cell → `lo/mid/hi` + note. EDIT exposes score inputs in a local horizontal scroll region; rows re-sort by total.
+- **S2 · Weights (duel)** — one AHP pairwise comparison at a time in a card; the consistency readout names the contradicting triad when it crosses the threshold.
 - **S3 · Uncertainty (ridges)** — overlapping distribution ridges from the MC histogram; mono readout `P(IE) 41% · P(SE) 38% · P(ME) 21%`.
 - **S4 · Fragility (tornado)** — bars sorted by flip-distance; click one → S1 previews that flipped world.
-- **S5 · Switchyard** — rail diagram reusing the `sig-path` visual language; switches at Yr1/Yr2/Yr3. School availability strip above it (which of the three each target school offers, switch policy).
-- **S6 · Pre-mortem** — "it's 2032 and this was the wrong call" margin annotations on a faint blueprint.
+- **S5 · Switchyard** — token-mapped rail diagram with switches at Yr1/Yr2/Yr3, followed by school cards showing availability and switch policy.
+- **S6 · Pre-mortem** — "it's 2032 and this was the wrong call" notes in plain surface cards with warning rails.
 - **S7 · Assumptions ledger** — beliefs as testable line items (`ME is saturated` → `UNTESTED` → test).
-- **S8 · Evidence log** — dated ticker rail, what moved and by how much.
+- **S8 · Evidence log** — dated table, what moved, and by how much.
 - **S9 · Glossary** — see Plain-English layer above.
 
-An `EDIT` toggle flips cells, weights, and notes into inputs; debounced save, mono `SAVED 14:22` stamp, realtime sync across devices.
+An `EDIT` toggle exposes board score inputs and add-entry forms; duel comparisons stay click-based. Changes save with a debounce, show a mono `SAVED 14:22` stamp, and sync across devices.
 
 ---
 
@@ -151,9 +151,9 @@ An `EDIT` toggle flips cells, weights, and notes into inputs; debounced save, mo
 
 1. `yarn test` — `model.test.js`: AHP against Saaty's published matrix, CR threshold behavior, MC determinism under a fixed seed, flip-distance monotonicity, VOI ranking sanity, triangular sampler bounds.
 2. Repro the `pull.js` env bug on the real dev server before touching it; confirm fixed after.
-3. Playwright CLI E2E against `yarn start`: load `/major` → passphrase gate → board renders → drag a weight → rows re-sort → reload → **value persisted** → open a second context → realtime propagates → hover a tooltip → glossary opens.
+3. Playwright E2E against `yarn start`: load `/major` → passphrase gate → board renders → edit a score → rows re-sort → reload → **value persisted** → open a second context → realtime propagates → hover a tooltip → glossary opens.
 4. `node scripts/decision.mjs add-criterion …` then reload the browser and confirm the new column appears.
-5. Pixel pass at 390 / 768 / 1440px, plus `prefers-reduced-motion` on. No horizontal scroll (`theme.css:38-41`).
+5. Pixel pass at 390 / 768 / 1440px, plus `prefers-reduced-motion` on. Keep horizontal scrolling local to wide data graphics and the edit board.
 
 ## Out of scope for v1
 
@@ -168,8 +168,8 @@ An `EDIT` toggle flips cells, weights, and notes into inputs; debounced save, mo
 - **Phase 1** (subagent): `model.js` + `model.test.js`. Pure math, no React, fully spec'd above.
 - **Phase 2** (subagent): `seed.js`, `store.js`, `scripts/decision.mjs`. Depends on Phase 1's data shape.
 - **Phase 3** (parallel subagents, 3-way split): `glossary.js` + `Tooltip.js` shared first, then section components: (A) Status + Board, (B) Duel + Ridges + Tornado, (C) SwitchYard + PreMortem + Assumptions + EvidenceLog + Glossary.
-- **Phase 4** (subagent): page shell `index.js`, `Major.css`, route wiring, passphrase gate, EDIT toggle wiring.
-- **Phase 5** (direct, this session): verification — tests, Playwright E2E, pixel pass, fix anything that looks off.
+- **Phase 4** (subagent): page shell `index.js`, `major.css`, route wiring, passphrase gate, EDIT toggle wiring.
+- **Phase 5** (direct, this session): verification — tests, Playwright E2E, pixel pass, and Sakura coverage review.
 
 ## Brand coverage — /major
 
@@ -179,15 +179,17 @@ An `EDIT` toggle flips cells, weights, and notes into inputs; debounced save, mo
 | Surfaces/cards/panels | Rounded legacy cards and panels | `BRAND.md §4/§9` / `Card` | `.mj-card`, `.mjc-form`, `.mjc-notes`, `.plain` |
 | Text and type roles | Big Shoulders, legacy mono, mixed local sizes | `BRAND.md §7` / `Display` / `MonoLabel` | `major.css` `--font-*`, `--fs-*`; brand components |
 | Spacing and layout | Page-local gaps and section rhythm | `BRAND.md §5` / `--s-*` | `.mj-shell`, `.mj-sec`, page layout selectors |
-| Evidence table geometry | Fixed date/source columns (`108px` / `26%`) | `BRAND.md §5` / tabular data geometry | `.mjc-col-date`, `.mjc-col-src`; explicitly flagged as data geometry |
+| Evidence table geometry | Fixed date/source columns (`108px` / `26%`) | `BRAND.md §5` / tabular data geometry | `.mjc-col-date`, `.mjc-col-src`; explicitly flagged as mapped data geometry |
 | Controls and inputs | Bespoke buttons, fields, and selectors | `BRAND.md §4/§8` / UI primitives | `Button`, `Input`, `Select`, `Textarea`, `Checkbox`, `Progress` |
 | Links and states | Legacy warning/good colours and hover states | `BRAND.md §2/§6` / state tokens | `--warning`, `--success`, `--error`, focus rings, 140ms transitions |
+| Warning rails | Repeated 3px warning rails | `BRAND.md §2/§9` / `--warning` + 1px hairline | `.mj-tie`, `.mjb-empty`, `.mjb-triad`, `.mjc-note`; 3px replaced by the sanctioned 1px rail |
 | Icons and marks | Inline legacy marks | `BRAND.md §8` / `Glyph` | `Status` uses `Glyph name="sep"`; no decorative SVG icons |
+| Glossary tooltips | Inherited legacy marker and bubble geometry | `BRAND.md §4/§7/§9` / Sakura tokens | `.sakura .tt::after`, `.sakura .tt .bub`; marker gap, bubble offset, and width limits use `--s-1`, `--s-2`, and `--s-8` |
 | Images/data graphics | Dial, board heatmap, ridges, tornado, and switchyard SVG | `BRAND.md §2/§8/§9` / token palette | `Status`, `Board`, `Ridges`, `Tornado`, `SwitchYard`; geometry remains a flagged data encoding, strokes/fills use Sakura tokens |
-| Motion | Reveal and bespoke transitions | `BRAND.md §6` / `--dur-state` | `major.css`; reduced-motion block disables page-local motion |
+| Motion | Reveal and bespoke transitions | `BRAND.md §6` / `--dur-state` | `major.css`; page-local state motion uses sanctioned tokens and the reduced-motion block disables it |
 | Responsive behavior | Desktop-first legacy layout | `BRAND.md §1/§5` | `@media` rules at 820/760/640px and coarse-pointer controls; Playwright 1440/375 |
 | Loading/error/empty states | Plain loading text and local empty states | `Skeleton`, `Badge`, state tokens | `.mj-loading`, `.mjb-empty`, offline/saved badge in `index.js`; Playwright gate |
 
-**Unmapped aspects:** none. The dial, board, ridges, tornado, and switchyard geometry are flagged as data encodings; all visible colour, type, stroke, fill, spacing, radius, and motion values map to the sources above.
+**Unmapped aspects:** none. The dial, board, ridges, tornado, and switchyard geometry are flagged as data encodings; the evidence-table columns are flagged as tabular data geometry; all visible colour, type, stroke, fill, spacing, radius, and motion values map to the sources above.
 
-**Hard-coded visual values:** none outside flagged data-graphic and tabular data geometry; all UI values use Sakura tokens or library component rules.
+**Hard-coded visual values:** fixed chart, diagram, board, and table geometry is recorded above as data-display geometry. Hairlines and state rails are sanctioned brand rules. All remaining UI values use Sakura tokens or library component rules.
