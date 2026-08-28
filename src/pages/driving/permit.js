@@ -7,7 +7,7 @@ import "./permit.css";
 const PermitSectionHead = ({ kicker, number, title }) => (
   <SectionHead
     as="h2"
-    kicker={kicker}
+    kicker={<span aria-hidden="true">{kicker}</span>}
     title={
       <>
         <span aria-hidden="true">{title}</span>

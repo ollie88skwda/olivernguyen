@@ -51,6 +51,7 @@ async function assertPermit(page, { theme, mode, coarse }) {
     await expect(sectionHeadings.nth(i)).toHaveAccessibleName(EXPECTED_HEADINGS[i]);
   }
   await expect(page.locator(".pm-section > .on-section-head > .on-label")).toHaveText(EXPECTED_KICKERS);
+  await expect(page.locator(".pm-section > .on-section-head > .on-label > [aria-hidden='true']")).toHaveText(EXPECTED_KICKERS);
   await expect(page.locator("ol.pm-steps")).toHaveCount(1);
   await expect(page.locator("ol.pm-steps li")).toHaveCount(23);
   const image = page.locator("img[alt='dmv permit requirements']");
