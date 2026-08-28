@@ -66,7 +66,8 @@ export const ArticleWriter = () => {
 
   return (
     <main className="sakura aw-page">
-      <SectionHead as="h1" title="Generate an Article" />
+      <div className="aw-content">
+        <SectionHead as="h1" title="Generate an Article" />
 
       <form className="aw-form" onSubmit={handleGenerateArticle}>
         <Label htmlFor="aw-product">Product name</Label>
@@ -94,9 +95,9 @@ export const ArticleWriter = () => {
         <div className="aw-loading" role="status" aria-busy="true">
           <MonoLabel>Generating article…</MonoLabel>
           <div className="aw-loading-lines">
-            <Skeleton shape="text" style={{ width: "92%" }} />
-            <Skeleton shape="text" style={{ width: "78%" }} />
-            <Skeleton shape="text" style={{ width: "55%" }} />
+            <Skeleton shape="text" className="aw-loading-line aw-loading-line--full" />
+            <Skeleton shape="text" className="aw-loading-line aw-loading-line--medium" />
+            <Skeleton shape="text" className="aw-loading-line aw-loading-line--short" />
           </div>
         </div>
       )}
@@ -120,7 +121,8 @@ export const ArticleWriter = () => {
             </Button>
           </CardFooter>
         </Card>
-      )}
+        )}
+      </div>
     </main>
   );
 };

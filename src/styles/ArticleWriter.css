@@ -8,15 +8,20 @@
 
 .aw-page {
   box-sizing: border-box;
-  min-height: 100dvh; /* the sakura bg covers the whole viewport; the legacy
-                         navy body must never bleed through */
-  max-width: 880px; /* §5: content column cap */
-  margin: 0 auto;
+  min-height: 100dvh;
+  margin: 0;
   /* top: the fixed 64px chrome bar plus one rung of air — the same
      calc(var(--s-16) + var(--s-8)) recipe chrome.css uses for the graph
      phone list. Bottom: §5 section gap. */
   padding: calc(var(--s-16) + var(--s-8)) var(--s-6) var(--s-36);
   background: var(--bg);
+}
+
+.aw-content {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 880px; /* §5: content column cap */
+  margin: 0 auto;
 }
 
 /* ---- form: label → field → action, stacked with §5 gaps ---- */
@@ -64,6 +69,9 @@
   gap: var(--s-2);
   max-width: 70ch;
 }
+.aw-loading-line--full { width: 100%; }
+.aw-loading-line--medium { width: calc(100% - var(--s-12)); }
+.aw-loading-line--short { width: calc(100% - var(--s-24)); }
 
 /* ---- success card: square surface, hairline, §5 card padding ---- */
 .aw-card {
@@ -100,7 +108,7 @@
 .aw-article h1 { font-size: var(--fs-title-lg); }
 .aw-article h2 { font-size: var(--fs-title); }
 .aw-article h3 { font-size: var(--fs-body); }
-.aw-article h4 { font-size: var(--fs-body); font-weight: 600; }
+.aw-article h4 { font-size: var(--fs-body); }
 .aw-article p {
   margin: 0 0 var(--s-4);
 }

@@ -8,10 +8,10 @@ gate `e2e/articlewriter.spec.js`. Base `origin/feat/component-library`.
 
 | Aspect | Existing behavior | New source | Evidence |
 |---|---|---|---|
-| Page shell/background | legacy navy `:root` body, plain div | `BRAND.md §2` ladder / `sakura.css --bg` | `.aw-page` (`.sakura` scope, `min-height:100dvh` so the navy body never bleeds) |
+| Page shell/background | legacy navy `:root` body, plain div | `BRAND.md §2` ladder / `sakura.css --bg` | `.aw-page` (`.sakura` scope, full-viewport `min-height:100dvh` and background) with `.aw-content` constrained to the 880px column |
 | Surfaces/cards/panels | none (bare elements) | `BRAND.md §4/§9` / `Card` | `Card` on success output: radius 0, 1px hairline, `--pad-card`, no shadow |
 | Text and type roles | `<h1>`/`<h2>` UA defaults, Big Shoulders from legacy `:root` | `BRAND.md §7` / `SectionHead` / `CardTitle` / `MonoLabel` | `SectionHead as="h1"` (`--fs-section` display), `CardTitle as="h2"` (`--fs-title`), `MonoLabel` for the `HTML` meta |
-| Spacing and layout | none | `BRAND.md §5` / `--s-*` | `.aw-page` 880px column cap + `--s-16 + --s-8` bar clearance; form gaps `--s-3`/`--s-6`; section gaps `--s-36` (96 phone); `--pad-card` via `Card` |
+| Spacing and layout | none | `BRAND.md §5` / `--s-*` | `.aw-content` 880px column cap; outer `.aw-page` keeps `--s-16 + --s-8` bar clearance; form gaps `--s-3`/`--s-6`; section gaps `--s-36` (96 phone); `--pad-card` via `Card` |
 | Controls and inputs | raw `<input>`/`<button>` | `BRAND.md §4/§8` / `Label` + `Input` + `Button` | `Input face="sans"` (3px, `--ctl-h`, Hanken), `Button` primary/ghost (3px, 40px, 44px coarse) |
 | Links and states | none | `BRAND.md §2/§6` / token | button hover/disabled states from `components.css` (`--dur-state` 140ms); input focus ring (`--focus-ring`) |
 | Icons and marks | none | n/a — no icon needed | no decorative mark added; none present |
@@ -26,7 +26,7 @@ gate `e2e/articlewriter.spec.js`. Base `origin/feat/component-library`.
 - **Trust boundary unchanged.** `dangerouslySetInnerHTML` on generator output is preserved exactly; this lane found no separate security requirement and did not change product behavior. Flag: security review of the generator output boundary is out of scope for a visual lane.
 - **Visible failure state added.** The old page swallowed fetch errors into `console.error`; the plan's done criteria require a visible, accessible failure state, so the lane added `role="alert"` + a `--danger-text` message. The request, loading, and success behavior are unchanged (plus `!response.ok` now surfaces non-2xx JSON bodies instead of rendering nothing).
 
-**Hard-coded visual values:** none outside tokens. `max-width:880px` and `max-width:70ch` are `BRAND.md §5`'s named column caps (the library's own `.on-code` uses the same 880px literal); `text-underline-offset:3px` mirrors `.on-btn`'s link treatment; `1px` hairlines are `BRAND.md §9`; `767px` is the shared phone breakpoint (`sakura.css`/`components.css`).
+**Hard-coded visual values:** none outside tokens. `max-width:880px` and `max-width:70ch` are `BRAND.md §5`'s named column caps (the library's own `.on-code` uses the same 880px literal); loading lines use the content measure at full width, then subtract `--s-12` and `--s-24`; `text-underline-offset:3px` mirrors `.on-btn`'s link treatment; `1px` hairlines are `BRAND.md §9`; `767px` is the shared phone breakpoint (`sakura.css`/`components.css`).
 
 ## Verification
 
