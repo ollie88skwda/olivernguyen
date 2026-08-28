@@ -225,7 +225,7 @@ to ~130 lines and no longer draws a single control.
 |---|---|---|
 | wordmark | `Wordmark as="a"` | D-25. Was a hand-set `.sc-logo` that could silently lose the §10 dot |
 | mode toggle | `ModeToggle` | D-25. §4's 999px exception, owned in one place |
-| theme control | `Button variant="ghost" size="icon"` + `Icon` | D-23 calls it "an ordinary 3px icon button" — that is this variant exactly. The sun/moon crossfade stays in `chrome.css`: it is a D-23 behaviour, not a Button one |
+| account / Appearance menu | `Button variant="ghost" size="sm"` + `DropdownMenu` + `Icon` | Account-shaped for future Clerk actions without auth state or a sign-in placeholder. Light/Dark radio items call `useTheme().setTheme`; the sun/moon marks remain ratified icons. Controls keep the ordinary 3px radius and coarse-pointer height |
 | nav links | `<a>` + `MonoLabel tone="muted"`, repainted `--text` | a nav link is a link, not a boxed button; §7's label role supplies the type. `min-height: var(--ctl-h)` gives §1's 44px tap target. **D-32: `chrome.css` overrides the muted tone to `--text` and makes hover an underline instead of `--accent-hi`. Both are load-bearing for `--chrome-veil` — `--accent-hi` on the veil measures 4.06:1 and fails §2.3. Do not put a muted or accent label in this bar** |
 | ⌘K | `Button variant="ghost" size="sm"` + `Glyph name="key"` | ⌘ is §8's glyph. The chord is one span or `.on-btn`'s 8px gap lands between ⌘ and K |
 | pages menu | `DropdownMenu` (+ `Label`, `Separator`, items `asChild`) | replaced ~70 lines of bespoke panel CSS carrying a drop shadow and a 12px radius, both §4/§9 violations |
@@ -256,8 +256,8 @@ Also: the hide-on-scroll slide now runs at §6's `--dur-state` (140ms ease-out) 
 350ms curve, and `index.html`'s static `theme-color` is the light ladder's `--bg` (`#faf1f5`), not
 the retired legacy cream — it is only the pre-hydration value, but it used to flash the wrong one.
 
-Gate: `e2e/chrome.spec.js` — §10's accent dot, §4's radius split (toggle 999px / theme control 3px
-and square), theme-color across all four combinations, the theme round-trip leaving mode alone, and
+Gate: `e2e/chrome.spec.js` — §10's accent dot, §4's radius split (toggle 999px / account trigger 3px
+and square), theme-color across all four combinations, the Appearance round-trip leaving mode alone, and
 the reduced-motion fallback. Use `page.emulateMedia({ reducedMotion })` there, **not**
 `test.use({ reducedMotion })`: under this config's Desktop Chrome device the latter leaves
 `matchMedia()` false, so the assertion passes for the wrong reason.

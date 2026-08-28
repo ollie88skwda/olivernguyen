@@ -138,7 +138,7 @@ One rule, three values. Nothing else exists.
 |---|---|
 | `0` | Anything representing a **surface**: terminal panes, code blocks, log frames, node cards, dossier panels, media frames. |
 | `3px` | **Controls**: buttons, inputs, chips, tokens, menu items, focus rings. |
-| `999px` | **Only** the mode toggle, status pills, and the radio button (D-12). The theme toggle is **not** on this list — it is an ordinary 3px icon button (D-23). |
+| `999px` | **Only** the mode toggle, status pills, and the radio button (D-12). The account trigger and Appearance menu items are ordinary 3px controls; theme choices are not a standalone toggle (D-36). |
 
 Mnemonic: *surfaces square, controls 3, only toggles round.* A rounded log pane is a contradiction.
 
@@ -244,7 +244,7 @@ a monospace grid, and an SVG has no column width — so text uses the character.
 icon below. `src/components/brand/glyph.jsx` names it `checkText` so a control cannot reach for it.
 
 Real icons only where a glyph genuinely cannot work: external link, download, GitHub / LinkedIn
-marks, **the checkbox / menu tick (D-13)**, **the theme toggle's sun / moon (D-23)**, and **the
+marks, **the checkbox / menu tick (D-13)**, **the Appearance choices' sun / moon (D-36)**, and **the
 pages-menu hamburger (D-29)**. `src/components/brand/icon.jsx` allow-lists `check`, `sun`, `moon`
 and `menu`. Adding a name is a decision — those four are the only ones taken.
 

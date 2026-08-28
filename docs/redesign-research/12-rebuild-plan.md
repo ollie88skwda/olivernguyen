@@ -126,7 +126,7 @@ Update rules: tick §8 checkboxes as tasks complete; rewrite this block each ses
 - **D-26** chrome rebuild replaces `src/chrome/chrome.css` outright with library-based chrome (greenfield, not extension).
 
 ## 1 · Context
-Library is complete: 25 primitives in `src/components/ui/**`, 16 brand pieces in `src/components/brand/**`, values centralised in `src/styles/components.css` (radius 0/3/999, 4px spacing, 140ms motion, type vars), gallery at `/_components`. Four themes gated (`data-theme` × `data-mode`, independent). ThemeProvider + sun/moon theme control already shipped. This plan ports the three live surfaces onto the library + brand tokens, removing bespoke chrome/home/terminal/graph CSS.
+Library is complete: 25 primitives in `src/components/ui/**`, 16 brand pieces in `src/components/brand/**`, values centralised in `src/styles/components.css` (radius 0/3/999, 4px spacing, 140ms motion, type vars), gallery at `/_components`. Four themes gated (`data-theme` × `data-mode`, independent). ThemeProvider + the account-shaped Appearance menu already shipped. This plan ports the three live surfaces onto the library + brand tokens, removing bespoke chrome/home/terminal/graph CSS.
 
 ## 2 · File ownership (disjoint — never edit another executor's files)
 - **exec-chrome** (LEAD): `src/chrome/**` (SiteChrome.jsx, chrome.css → replaced), `src/components/brand/wordmark.jsx` + `mode-toggle.jsx` (new), forwardRef additions in `src/components/ui/**`, shared files (`package.json`, `vite.config.js`, `index.html`), and the `Integration` section.
@@ -161,9 +161,10 @@ Replace bespoke surface CSS with existing library components + `components.css` 
 - [x] **R-C2** `Wordmark` + `ModeToggle` brand components (D-25, incl. §10 accent dot); logged in COMPONENTS.md
       — exported from `@/components/brand`, specimens in the gallery under `#marks`, verified in all
       four themes. `--fs-wordmark: 20px` names §10's stated nav size in `src/styles/sakura.css`.
-- [x] **R-C3** SiteChrome rebuilt on library; chrome.css replaced (D-26); theme control + TERM|GRAPH toggle + nav all from library pieces
+- [x] **R-C3** SiteChrome rebuilt on library; chrome.css replaced (D-26); account-shaped Appearance menu + TERM|GRAPH toggle + nav all from library pieces
       — chrome.css 309 → ~130 lines and it no longer draws a control: layout, the hide-on-scroll
-      slide, the D-23 icon crossfade and the two home-surface offsets, all on tokens. Per-piece
+      slide and the two home-surface offsets, all on tokens. The Account → Appearance menu owns
+      theme choices through the shared DropdownMenu. Per-piece
       table and the three brand-grounds removals are in COMPONENTS.md §Chrome.
 - [x] **R-C4** chrome gate: screenshots + theme-color + round-trip → **GATE CHROME ✅**
       — 8 renders (4 themes × 1440/375, coarse-pointer emulated at 375), zero console errors, shots

@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { escAction, isTypingTarget, isModifierChord, isPaletteCombo, cycleId } from './keys.js';
+import {
+  escAction,
+  isTypingTarget,
+  isChromeMenuTarget,
+  isModifierChord,
+  isPaletteCombo,
+  cycleId,
+} from './keys.js';
 import { allEntities } from '../../content/site.js';
 
 describe('keyboard — Esc cascade (USAGE table order)', () => {
@@ -21,6 +28,14 @@ describe('keyboard — never-trap guards (05 §5.4.2)', () => {
     expect(isTypingTarget({ tagName: 'DIV', isContentEditable: true })).toBe(true);
     expect(isTypingTarget({ tagName: 'DIV' })).toBe(false);
     expect(isTypingTarget(null)).toBe(false);
+  });
+
+  it('chrome menu targets are ignored by the graph keymap', () => {
+    const menu = { closest: () => menu };
+    const outside = { closest: () => null };
+    expect(isChromeMenuTarget(menu)).toBe(true);
+    expect(isChromeMenuTarget(outside)).toBe(false);
+    expect(isChromeMenuTarget(null)).toBe(false);
   });
 
   it('modifier chords are never hijacked (shift excepted — Shift+Tab cycles)', () => {

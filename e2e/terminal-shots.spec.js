@@ -271,7 +271,8 @@ test("theme and mode round-trip over a mounted terminal (D-19)", async ({ page }
   const modeToggle = bar.getByRole("group", { name: "Site mode" });
 
   // theme flips, mode does not — two independent attributes
-  await bar.getByRole("button", { name: /^switch to .* theme$/i }).click();
+  await bar.getByRole("button", { name: "Open account menu" }).click();
+  await page.getByRole("menuitemradio", { name: "Light" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await expect(page.locator("html")).toHaveAttribute("data-mode", "terminal");
   await expect(page.getByTestId("terminal-home")).toBeVisible();

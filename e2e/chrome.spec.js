@@ -42,12 +42,13 @@ test.describe("site chrome — R-C4", () => {
     const toggle = page.locator('[data-slot="mode-toggle"]');
     await expect(toggle).toHaveCSS("border-radius", "999px");
 
-    // D-23: the theme control is an ORDINARY 3px icon button, square on
-    // purpose so it does not read as half of the pill beside it.
-    const themeBtn = page.getByRole("button", { name: /Switch to .* theme/ });
-    await expect(themeBtn).toHaveCSS("border-radius", "3px");
-    const box = await themeBtn.boundingBox();
-    expect(box.width).toBe(box.height);
+    // Appearance is account-ready and uses the ordinary control radius.
+    const accountBtn = page.getByRole("button", { name: "Open account menu" });
+    await expect(accountBtn).toHaveCSS("border-radius", "3px");
+    await accountBtn.click();
+    await expect(page.getByRole("menuitemradio", { name: "Light" })).toBeVisible();
+    await expect(page.getByRole("menuitemradio", { name: "Dark" })).toBeVisible();
+    await page.keyboard.press("Escape");
 
     // D-29: the pages-menu trigger is ☰ drawn as an ICON, not `…` as a Glyph.
     // U+2630 is absent from JetBrains Mono — measured, it renders from a system
@@ -78,16 +79,183 @@ test.describe("site chrome — R-C4", () => {
 
   test("the theme control round-trips and leaves the mode alone", async ({ page }) => {
     await page.goto("/?mode=terminal&theme=dark");
-    await page.getByRole("button", { name: "Switch to light theme" }).click();
+    await page.getByRole("button", { name: "Open account menu" }).click();
+    await page.getByRole("menuitemradio", { name: "Light" }).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
     await expect(page.locator("html")).toHaveAttribute("data-mode", "terminal");
     expect(
       await page.locator('meta[name="theme-color"]').getAttribute("content"),
     ).toBe(THEME_COLOR.light);
 
-    await page.getByRole("button", { name: "Switch to dark theme" }).click();
+    await page.getByRole("button", { name: "Open account menu" }).click();
+    await page.getByRole("menuitemradio", { name: "Dark" }).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
     await expect(page.locator("html")).toHaveAttribute("data-mode", "terminal");
+  });
+
+  test("theme choice persists in a fresh browser context", async ({ page, browser }) => {
+    await page.goto("/?mode=graph&theme=light");
+    await page.getByRole("button", { name: "Open account menu" }).click();
+    await page.getByRole("menuitemradio", { name: "Dark" }).click();
+
+    const freshContext = await browser.newContext({
+      baseURL: new URL(page.url()).origin,
+      colorScheme: "light",
+      storageState: await page.context().storageState(),
+    });
+    try {
+      const freshPage = await freshContext.newPage();
+      await freshPage.goto("/");
+      await expect(freshPage.locator("html")).toHaveAttribute("data-theme", "dark");
+      await freshPage.getByRole("button", { name: "Open account menu" }).click();
+      await expect(freshPage.getByRole("menuitemradio", { name: "Dark" })).toHaveAttribute(
+        "aria-checked",
+        "true",
+      );
+    } finally {
+      await freshContext.close();
+    }
+  });
+
+  test("graph menus retain keyboard ownership", async ({ page }) => {
+    await page.goto("/?mode=graph&theme=light&still");
+    await page.getByRole("button", { name: "Open account menu" }).click();
+    await page.keyboard.press("ArrowDown");
+    await expect(page.getByRole("menuitemradio", { name: "Light" })).toBeFocused();
+    expect(await page.locator(".node.active").count()).toBe(0);
+    await page.keyboard.press("Escape");
+  });
+
+  test("current OS theme becomes persistent after selection", async ({ browser }, testInfo) => {
+    const baseURL = testInfo.project.use.baseURL;
+    const osContext = await browser.newContext({
+      baseURL,
+      colorScheme: "dark",
+    });
+    try {
+      const osPage = await osContext.newPage();
+      await osPage.goto("/?mode=graph");
+      await expect(osPage.locator("html")).toHaveAttribute("data-theme", "dark");
+      await osPage.getByRole("button", { name: "Open account menu" }).click();
+      await osPage.getByRole("menuitemradio", { name: "Dark" }).click();
+      expect(await osPage.evaluate(() => localStorage.getItem("on.theme"))).toBe("dark");
+
+      const freshContext = await browser.newContext({
+        baseURL,
+        colorScheme: "light",
+        storageState: await osContext.storageState(),
+      });
+      try {
+        const freshPage = await freshContext.newPage();
+        await freshPage.goto("/");
+        await expect(freshPage.locator("html")).toHaveAttribute("data-theme", "dark");
+      } finally {
+        await freshContext.close();
+      }
+    } finally {
+      await osContext.close();
+    }
+  });
+
+  test("coarse pointer menu items meet the touch target", async ({ browser }, testInfo) => {
+    const context = await browser.newContext({
+      baseURL: testInfo.project.use.baseURL,
+      colorScheme: "light",
+      viewport: { width: 390, height: 844 },
+      isMobile: true,
+      hasTouch: true,
+    });
+    try {
+      const page = await context.newPage();
+      await page.goto("/?mode=graph&theme=light");
+      await page.getByRole("button", { name: "Open account menu" }).click();
+      const lightBox = await page.getByRole("menuitemradio", { name: "Light" }).boundingBox();
+      expect(lightBox.height).toBeGreaterThanOrEqual(44);
+      await page.keyboard.press("Escape");
+      await page.getByRole("button", { name: "Open pages menu" }).click();
+      const homeBox = await page.getByRole("menuitem", { name: "Home" }).boundingBox();
+      expect(homeBox.height).toBeGreaterThanOrEqual(44);
+    } finally {
+      await context.close();
+    }
+  });
+
+  test("menus retain keyboard focus in terminal mode", async ({ page }) => {
+    await page.goto("/?mode=terminal&theme=light&still");
+    await expect(page.locator("h1.name")).toBeVisible();
+    await page.keyboard.press("Control+g");
+
+    await page.getByRole("button", { name: "Open account menu" }).click();
+    const light = page.getByRole("menuitemradio", { name: "Light" });
+    const dark = page.getByRole("menuitemradio", { name: "Dark" });
+    await page.keyboard.press("ArrowDown");
+    await expect(light).toBeFocused();
+    await page.keyboard.press("ArrowDown");
+    await expect(dark).toBeFocused();
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("sb-prefix")).toHaveCount(0);
+    const prompt = page.locator("#term-prompt-input");
+    await prompt.fill("j");
+    await prompt.press("Enter");
+    await expect(page.locator(".ln.echo .cmdtext").last()).toHaveText("j");
+
+    await page.getByRole("button", { name: "Open pages menu" }).click();
+    const home = page.getByRole("menuitem", { name: "Home" });
+    const pull = page.getByRole("menuitem", { name: "PULL" });
+    await page.keyboard.press("ArrowDown");
+    await expect(home).toBeFocused();
+    await page.keyboard.press("ArrowDown");
+    await expect(pull).toBeFocused();
+  });
+
+  test("escape and overlays clear terminal chord state", async ({ page }) => {
+    await page.goto("/?mode=terminal&theme=light&still");
+    await expect(page.locator("h1.name")).toBeVisible();
+    const prompt = page.locator("#term-prompt-input");
+    const mode = page.getByTestId("sb-mode");
+
+    await prompt.focus();
+    await page.keyboard.type("g");
+    await expect(mode).toHaveText("g‥");
+    await page.keyboard.press("Escape");
+    await expect(mode).toHaveText("-- NORMAL --");
+    await page.keyboard.type("g");
+    await expect(mode).toHaveText("g‥");
+    await page.keyboard.press("Escape");
+
+    await page.keyboard.press("Control+g");
+    await page.keyboard.press("Control+k");
+    await expect(page.getByTestId("term-palette")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("sb-prefix")).toHaveCount(0);
+
+    await prompt.focus();
+    await page.keyboard.type("g");
+    await expect(mode).toHaveText("g‥");
+    await page.getByRole("button", { name: "Open account menu" }).click();
+    await expect(mode).toHaveText("-- NORMAL --");
+    await page.keyboard.press("Escape");
+  });
+
+  test("terminal prompt regains focus after pane controls", async ({ page }) => {
+    await page.goto("/?mode=terminal&theme=light&still");
+    await expect(page.locator("h1.name")).toBeVisible();
+    const prompt = page.locator("#term-prompt-input");
+    await page.getByRole("button", { name: "split pane right (main)" }).click();
+    await expect(prompt).toBeFocused();
+  });
+
+  test("terminal cd requests a linked public asset", async ({ page }) => {
+    await page.goto("/?mode=terminal&theme=light&still");
+    await expect(page.locator("h1.name")).toBeVisible();
+    const pdfResponse = page.waitForResponse(
+      (response) => new URL(response.url()).pathname === "/resume.pdf",
+    );
+    const prompt = page.locator("#term-prompt-input");
+    await prompt.fill("cd resume.pdf");
+    await prompt.press("Enter");
+    await expect(page.locator(".ln.echo .cmdtext").last()).toHaveText("cd resume.pdf");
+    expect((await pdfResponse).status()).toBe(200);
   });
 
   // D-30 rides along here because this test already crosses the exact boundary

@@ -77,8 +77,11 @@ export const ThemeProvider = ({ children }) => {
   }, [theme, explicit]);
 
   const setTheme = useCallback((next) => {
-    if (!THEMES.includes(next) || next === themeRef.current) return;
-    setState({ theme: next, explicit: true });
+    if (!THEMES.includes(next)) return;
+    setState((prev) => {
+      if (prev.theme === next && prev.explicit) return prev;
+      return { theme: next, explicit: true };
+    });
     // URL sync — replaceState only; router v5 ignores query-only changes.
     const url = new URL(window.location.href);
     url.searchParams.set("theme", next);

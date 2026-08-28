@@ -22,8 +22,9 @@ One portfolio, two renderings of the same content:
 
 The two modes are not skins; they are two *interfaces* over one content model (§2). The pitch
 is the medium: an agent builder whose site you can either **watch run** (terminal) or
-**operate yourself** (graph). Mode toggle is persistent chrome. Mode and theme are independent
-persistent controls; the four combinations and their defaults live in `docs/THEMES.md`.
+**operate yourself** (graph). The mode toggle and Account → Appearance menu are persistent chrome.
+Mode and theme are independent persistent controls; the four combinations and their defaults live in
+`docs/THEMES.md`.
 
 Discoverability is a first-class requirement (owner feedback): every capability reachable by
 search (⌘K / `:`) is also reachable by visible, clickable UI, and vice versa. No content is
@@ -338,8 +339,8 @@ automatically surfaces it in ⌘K rows, `:` completions, and suggestion chips.
 ### 5.1 Browse path (no knowledge required)
 
 - Top bar (§6.4): logo, plain links (Work · About · Contact — scroll/fly to the
-  matching section/cluster in the active mode), mode toggle, ⌘K button (labeled
-  “Search ⌘K”, not icon-only).
+  matching section/cluster in the active mode), mode toggle, Account → Appearance menu (Light /
+  Dark), and the ⌘K button (labeled “Search ⌘K”, not icon-only).
 - Terminal: index rail (§3.7) + in-page CTAs. Graph: legend card + guided tour +
   every node clickable. Everything reachable by mouse alone — acceptance test in §9.
 
@@ -366,7 +367,7 @@ automatically surfaces it in ⌘K rows, `:` completions, and suggestion chips.
 | replay day N | “Replay day 4” | `:day 4` | scrub to day (terminal) / ring pulse (graph) |
 | week replay | “Replay the week” | `:week` | goto operator section/cluster |
 | mode switch | “Switch to graph/terminal mode” | `:mode graph` `:mode term` | §6 toggle |
-| theme note | — | — | (theme is an independent chrome control; see `docs/THEMES.md`) |
+| theme note | — | — | (theme is an independent Account → Appearance control; see `docs/THEMES.md`) |
 | guided tour | “Start the guided tour” | `:tour` | graph tour; in terminal, switches to graph then tours |
 | copy email | “Copy my email” | `:email` | clipboard + Sonner toast |
 | resume / github / linkedin | “Open resume” | `:resume` | external |
@@ -463,9 +464,10 @@ other. Sakura tokens live under `.sakura`; components reference token variables 
 Replaces `top_bar.js` on all chromed routes:
 
 - **Top bar**: logo `oN.c` · links Work/About/Contact (on `/`, mode-aware jumps; on
-  remaining legacy routes, plain links to `/#work` etc.) · mode toggle · `Search ⌘K` button ·
-  hamburger for the pages menu (Pull, College, Driving, SAT — current sidebar content
-  minus dead `/debt`). Hide-on-scroll-down behavior kept, rebuilt with Motion.
+  remaining legacy routes, plain links to `/#work` etc.) · mode toggle · Account → Appearance
+  menu (Light / Dark) · `Search ⌘K` button · hamburger for the pages menu (Pull, College, Driving,
+  SAT — current sidebar content minus dead `/debt`). Hide-on-scroll-down behavior kept, rebuilt with
+  Motion.
 - **Remaining legacy routes** render inside the chrome with sakura tokens applied to chrome only;
   page bodies keep their existing stylesheets. Explicit restyle lanes are the exception; their
   current list and status live in `docs/redesign-research/16-legacy-restyle.md`. Grain overlay

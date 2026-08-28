@@ -6,8 +6,8 @@
  *   1. where the bar sits and how tall it is,
  *   2. how it hides on scroll,
  *   3. how far the two home surfaces must sit below it.
- * Plus one exception, the theme control's two-icon crossfade stack, which is a
- * D-23 behaviour rather than a Button behaviour.
+ * Theme choices live in the account menu and use the shared DropdownMenu radio
+ * items; this file does not own theme state or theme-control icons.
  *
  * Values are tokens only (BRAND.md §11.1). Fallbacks are carried on the tokens
  * that matter because this file loads on legacy routes too, where components.css
@@ -127,9 +127,8 @@
   white-space: nowrap;
 }
 
-/* D-23: the two theme icons are stacked and crossfaded over §6's 140ms state
-   change. Nothing rotates or morphs — the control is telling you which ladder
-   you are on, not performing. */
+/* Retained selectors for old review artefacts; the current Account → Appearance
+   menu renders its sun/moon icons through the shared DropdownMenu items. */
 .sc-theme-icons {
   position: relative;
   display: block;

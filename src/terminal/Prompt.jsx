@@ -32,7 +32,7 @@ const finePointer = () =>
   window.matchMedia('(pointer: fine)').matches;
 
 const Prompt = forwardRef(function Prompt(
-  { onSubmit, completer, history, onModeChange, onBareKey, onEscape, canRefocus },
+  { onSubmit, completer, onAmbiguous, history, onModeChange, onBareKey, onEscape, canRefocus },
   ref,
 ) {
   const inputRef = useRef(null);
@@ -71,7 +71,15 @@ const Prompt = forwardRef(function Prompt(
   /* document-click refocus, fine-pointer only; overlays veto via canRefocus */
   useEffect(() => {
     if (!finePointer()) return undefined;
-    const onDocClick = () => {
+    const onDocClick = (event) => {
+      const target = event.target;
+      if (
+        target instanceof Element &&
+        target.closest(
+          '[data-slot="dropdown-menu-trigger"], [data-slot="dropdown-menu-content"]',
+        )
+      )
+        return;
       if (canRefocus && !canRefocus()) return;
       if (window.getSelection && String(window.getSelection())) return;
       inputRef.current?.focus({ preventScroll: true });
@@ -100,9 +108,14 @@ const Prompt = forwardRef(function Prompt(
       return;
     }
     if (e.key === 'Tab') {
-      e.preventDefault();
+      if (!el.value) return;
       const c = completer?.(el.value);
-      if (c != null) setInput(c);
+      if (c != null) {
+        e.preventDefault();
+        setInput(c);
+      } else if (onAmbiguous?.(el.value)) {
+        e.preventDefault();
+      }
       return;
     }
     if (e.key === 'ArrowUp') {
