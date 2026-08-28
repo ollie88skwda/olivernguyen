@@ -71,6 +71,39 @@ for (const { theme, width, height, id } of COMBOS) {
   });
 }
 
+test("major: dark board cells meet text contrast", async ({ page }) => {
+  await mount(page, { theme: "dark", width: 1440, height: 1000 });
+  const minimumContrast = await page.locator("#board .mj-cell").evaluateAll((cells) => {
+    const parseRgb = (value) => {
+      const canvas = document.createElement("canvas");
+      canvas.width = 1;
+      canvas.height = 1;
+      const context = canvas.getContext("2d");
+      context.fillStyle = value;
+      context.fillRect(0, 0, 1, 1);
+      return [...context.getImageData(0, 0, 1, 1).data.slice(0, 3)];
+    };
+    const luminance = (value) => {
+      const channels = parseRgb(value).map((channel) => channel / 255);
+      const linear = channels.map((channel) =>
+        channel <= 0.04045 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4
+      );
+      return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+    };
+    const contrast = (foreground, background) => {
+      const values = [luminance(foreground), luminance(background)].sort((a, b) => b - a);
+      return (values[0] + 0.05) / (values[1] + 0.05);
+    };
+    return Math.min(
+      ...cells.map((cell) => {
+        const styles = getComputedStyle(cell);
+        return contrast(styles.color, styles.backgroundColor);
+      })
+    );
+  });
+  expect(minimumContrast).toBeGreaterThanOrEqual(4.5);
+});
+
 test("major: primary interactions work", async ({ page }) => {
   await mount(page, { theme: "light", width: 1440, height: 1000 });
 

@@ -5,24 +5,28 @@ import { useTheme } from '../../../theme/ThemeProvider';
 import Tip from '../../../components/Tooltip';
 
 const EMPTY_SCORE = { lo: 0, mid: 0, hi: 0 };
-// The cell fill is the accent token at a value-proportional alpha — no new colour, the
-// rating only moves the accent's share of the mix. The fill range (15%..100%) is the
-// encoding; the cell's own number sits at the flip point where contrast holds (the
-// light ladder's accent darkens slowly, the dark ladder's brightens fast), and the
-// exact value is always one hover/focus away in the popup and in the aria-label.
+// The cell fill is an accent-token mix with a theme-specific range. The cell's own
+// number is always available in the popup and aria-label.
 const INK_FLOOR = 0.15;
 const INK_RANGE = 0.85;
+const DARK_INK_FLOOR = 0.6;
 const INK_LOUD_LIGHT = 0.85;
-const INK_LOUD_DARK = 0.15;
 const RAMP = [0.2, 0.4, 0.6, 0.8, 1];
 
 const dec2 = (value) => value.toFixed(2).replace(/^0/, '');
 const dec3 = (value) => value.toFixed(3).replace(/^0/, '');
-const ink = (value) => INK_FLOOR + INK_RANGE * value;
+const ink = (value, theme) =>
+  theme === 'dark' ? DARK_INK_FLOOR + (1 - DARK_INK_FLOOR) * value : INK_FLOOR + INK_RANGE * value;
 
-const cellStyle = (value) => ({
-  background: `color-mix(in srgb, var(--accent) ${Math.round(ink(value) * 100)}%, transparent)`,
-});
+const cellStyle = (value, theme = 'light') => {
+  const fill = Math.round(ink(value, theme) * 100);
+  return {
+    background:
+      theme === 'dark'
+        ? `color-mix(in srgb, var(--accent) ${fill}%, var(--bg))`
+        : `color-mix(in srgb, var(--accent) ${fill}%, transparent)`,
+  };
+};
 
 export const Board = ({ doc, derived, editing, updateDoc }) => {
   const { theme } = useTheme();
@@ -45,10 +49,7 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
 
   const allTied = criteria.every((c) => alternatives.every((a) => ratingOf(a.id, c.id) === 0.5));
 
-  // One loud/quiet flip per ladder; the mixed fill cannot carry a third token colour in
-  // the seam, so the seam cells keep the loud token and the popup carries the exact value.
-  const inkTier = (value) =>
-    value >= (theme === 'dark' ? INK_LOUD_DARK : INK_LOUD_LIGHT) ? 'accent' : 'quiet';
+  const inkTier = (value) => theme === 'dark' || value >= INK_LOUD_LIGHT ? 'accent' : 'quiet';
 
   const setScore = (altId, critId, key, raw) => {
     const parsed = Number(raw);
@@ -144,7 +145,7 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
                     className="mj-cell"
                     data-ink={inkTier(rating)}
                     key={criterion.id}
-                    style={{ ...columnStyle(criterion.id), ...cellStyle(rating) }}
+                    style={{ ...columnStyle(criterion.id), ...cellStyle(rating, theme) }}
                     aria-label={`${alternative.label}, ${criterion.label}: rated ${dec2(rating)} of 1. Range ${score.lo} to ${score.hi}, best guess ${score.mid}. ${alternative.notes || ''}`.trim()}
                   >
                     <span className="mj-cell-v">{dec2(rating)}</span>
@@ -176,7 +177,7 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
           Darkness is how well a major does on that column
           <span className="mj-ramp" aria-hidden="true">
             {RAMP.map((step) => (
-              <i key={step} style={cellStyle(step)} />
+              <i key={step} style={cellStyle(step, theme)} />
             ))}
           </span>
         </span>
