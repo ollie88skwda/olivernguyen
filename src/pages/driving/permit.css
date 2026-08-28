@@ -115,6 +115,17 @@
   border-radius: var(--r-control);
 }
 
+@media (pointer: coarse) {
+  .pm-guide .on-prose a {
+    display: inline-block;
+    min-width: var(--ctl-h);
+    min-height: var(--ctl-h);
+    padding-inline: var(--s-2);
+    line-height: var(--ctl-h);
+    vertical-align: middle;
+  }
+}
+
 /* --- the DMV screenshot ---------------------------------------------------- */
 /* Square media frame: §4 surface radius + §9 hairline, on --surface. FLAGGED:
    the brand has no explicit media-frame rule for image crop, sizing or border
