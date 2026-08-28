@@ -84,6 +84,13 @@ test("license dark ladder + 375px coarse pointer", async ({ page, browser }) => 
     expect(coarsePointer.pointer).toBe(true);
     expect(coarsePointer.touchPoints).toBeGreaterThan(0);
 
+    const phoneLinkSize = await phonePage.getByRole("link", { name: "here" }).evaluate((el) => {
+      const { width, height } = el.getBoundingClientRect();
+      return { width, height };
+    });
+    expect(phoneLinkSize.width).toBeGreaterThanOrEqual(44);
+    expect(phoneLinkSize.height).toBeGreaterThanOrEqual(44);
+
     await phonePage.screenshot({ path: "/tmp/license-phone-dark.png", fullPage: true });
 
     // no horizontal overflow on phone

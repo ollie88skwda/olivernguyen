@@ -78,3 +78,14 @@
     padding: calc(var(--s-16) + var(--s-8)) var(--s-4) var(--s-24);
   }
 }
+
+@media (pointer: coarse) {
+  .dl-link {
+    display: inline-block;
+    min-width: var(--ctl-h);
+    min-height: var(--ctl-h);
+    padding-inline: var(--s-2);
+    line-height: var(--ctl-h);
+    vertical-align: middle;
+  }
+}
