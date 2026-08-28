@@ -32,13 +32,16 @@ function isDarkColor(hex) {
   if (h.length === 3) {
     h = h.split("").map((c) => c + c).join("");
   }
-  if (h.length !== 6) return false;
-  const r = parseInt(h.slice(0, 2), 16);
-  const g = parseInt(h.slice(2, 4), 16);
-  const b = parseInt(h.slice(4, 6), 16);
-  // Relative luminance (sRGB)
-  const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  return lum < 0.6;
+  if (h.length !== 6 || !/^[0-9a-fA-F]+$/.test(h)) return false;
+  const channels = [0, 2, 4].map((start) => parseInt(h.slice(start, start + 2), 16) / 255);
+  const luminance = channels.reduce(
+    (sum, channel, index) =>
+      sum + (channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4) * [0.2126, 0.7152, 0.0722][index],
+    0,
+  );
+  const whiteContrast = 1.05 / (luminance + 0.05);
+  const blackContrast = (luminance + 0.05) / 0.05;
+  return whiteContrast > blackContrast;
 }
 
 function getFirstGrapheme(str) {
@@ -410,22 +413,24 @@ export const EmojiPage = () => {
           <Separator className="emoji-controls-sep" />
 
           <div className="emoji-action-row">
-            <div className="emoji-swatches" role="radiogroup" aria-label="background color">
-              {BG_PRESETS.map((preset) => (
-                <button
-                  key={preset.color}
-                  className={`emoji-swatch ${bgColor.toLowerCase() === preset.color.toLowerCase() ? "active" : ""}`}
-                  style={{ background: preset.color }}
-                  onClick={() => setBgColor(preset.color)}
-                  aria-label={`${preset.label} background`}
-                  role="radio"
-                  aria-checked={bgColor.toLowerCase() === preset.color.toLowerCase()}
-                />
-              ))}
+            <div className="emoji-swatches">
+              <div className="emoji-preset-swatches" role="radiogroup" aria-label="background color">
+                {BG_PRESETS.map((preset) => (
+                  <button
+                    key={preset.color}
+                    type="button"
+                    className={`emoji-swatch ${bgColor.toLowerCase() === preset.color.toLowerCase() ? "active" : ""}`}
+                    style={{ background: preset.color }}
+                    onClick={() => setBgColor(preset.color)}
+                    aria-label={`${preset.label} background`}
+                    role="radio"
+                    aria-checked={bgColor.toLowerCase() === preset.color.toLowerCase()}
+                  />
+                ))}
+              </div>
               <label
                 className="emoji-swatch emoji-swatch-custom"
                 style={{ background: bgColor }}
-                aria-label="custom background color"
                 title="Pick a custom color"
               >
                 <span className="emoji-swatch-rainbow" aria-hidden="true" />
@@ -434,6 +439,7 @@ export const EmojiPage = () => {
                   className="emoji-swatch-color-input"
                   value={/^#[0-9a-fA-F]{6}$/.test(bgColor) ? bgColor : "#ffffff"}
                   onChange={(e) => setBgColor(e.target.value)}
+                  aria-label="custom background color"
                 />
               </label>
             </div>

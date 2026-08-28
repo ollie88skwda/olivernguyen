@@ -30,6 +30,15 @@ const collectErrors = (page) => {
   return errors;
 };
 
+const setColor = async (page, color) => {
+  await page.locator('.emoji-swatch-color-input[type="color"]').evaluate((input, value) => {
+    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value").set;
+    setter.call(input, value);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true }));
+  }, color);
+};
+
 test.describe("/emoji — sakura restyle", () => {
   for (const theme of ["light", "dark"]) {
     test(`renders clean in ${theme} ladder`, async ({ page }) => {
@@ -97,10 +106,36 @@ test.describe("/emoji — sakura restyle", () => {
     expect(Math.abs(after.x - before.x) + Math.abs(after.y - before.y)).toBeGreaterThan(20);
   });
 
+  test("custom color keeps emoji legible in both theme ladders", async ({ page }) => {
+    for (const theme of ["light", "dark"]) {
+      await page.goto(`/emoji?theme=${theme}`);
+      await setColor(page, "#808080");
+      const canvas = page.locator(".emoji-canvas");
+      await expect(canvas).toHaveCSS("background-color", "rgb(128, 128, 128)");
+      await page.getByLabel("custom count").fill("1");
+      await page.getByLabel("emoji or text").fill("🐠");
+      await page.getByLabel("emoji or text").press("Enter");
+      const item = page.locator(".emoji-item");
+      await expect(item).toHaveCSS("color", "rgb(19, 19, 19)");
+      const contrast = await page.evaluate(() => {
+        const rgb = (value) => value.match(/\d+/g).map(Number).map((channel) => channel / 255);
+        const luminance = (value) => rgb(value).reduce(
+          (sum, channel, index) => sum + (channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4) * [0.2126, 0.7152, 0.0722][index],
+          0,
+        );
+        const background = luminance(getComputedStyle(document.querySelector(".emoji-canvas")).backgroundColor);
+        const foreground = luminance(getComputedStyle(document.querySelector(".emoji-item")).color);
+        return (Math.max(background, foreground) + 0.05) / (Math.min(background, foreground) + 0.05);
+      });
+      expect(contrast).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
   test("swatches switch the canvas background; custom picker remains reachable", async ({ page }) => {
     await page.goto("/emoji?theme=light");
     const canvas = page.locator(".emoji-canvas");
     await expect(canvas).toHaveCSS("background-color", "rgb(255, 255, 255)");
+    await expect(page.getByRole("radiogroup", { name: "background color" }).getByRole("radio")).toHaveCount(3);
     await page.getByLabel("black background").click();
     await expect(canvas).toHaveCSS("background-color", "rgb(19, 19, 19)");
     await page.getByLabel("chrome purple background").click();
@@ -124,12 +159,35 @@ test.describe("/emoji — sakura restyle", () => {
     await expect(clear).toBeDisabled();
   });
 
-  test("download export produces a PNG through the test hook", async ({ page }) => {
+  test("download button produces a PNG", async ({ page }) => {
     await page.goto("/emoji?theme=light");
     await page.getByLabel("emoji or text").fill("🐟");
     await page.getByLabel("emoji or text").press("Enter");
-    const dataUrl = await page.evaluate(() => window.__emojiExport());
-    expect(dataUrl.startsWith("data:image/png")).toBe(true);
+    const downloadPromise = page.waitForEvent("download");
+    await page.getByRole("button", { name: "Download" }).click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toBe("fishbowl.png");
+  });
+
+  test("fishbowl loading path remains reachable", async ({ page }) => {
+    let release;
+    const blocked = new Promise((resolve) => {
+      release = resolve;
+    });
+    await page.route("**/fishbowl.jpg", (route) => blocked.then(() => route.continue()));
+    await page.goto("/emoji?theme=light", { waitUntil: "domcontentloaded" });
+    const image = page.locator(".emoji-fishbowl");
+    await expect.poll(() => image.evaluate((element) => element.complete)).toBe(false);
+    release();
+    await expect.poll(() => image.evaluate((element) => element.naturalWidth)).toBeGreaterThan(0);
+  });
+
+  test("fishbowl error path leaves the canvas without the asset", async ({ page }) => {
+    await page.route("**/fishbowl.jpg", (route) => route.abort());
+    await page.goto("/emoji?theme=light", { waitUntil: "domcontentloaded" });
+    const image = page.locator(".emoji-fishbowl");
+    await expect.poll(() => image.evaluate((element) => element.complete)).toBe(true);
+    await expect.poll(() => image.evaluate((element) => element.naturalWidth)).toBe(0);
   });
 });
 

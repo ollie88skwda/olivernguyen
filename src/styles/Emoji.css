@@ -194,6 +194,12 @@
   margin-right: auto;
 }
 
+.emoji-preset-swatches {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+
 .emoji-swatch {
   /* Round because these are radio buttons (§4's third named exception,
      D-12 — the one round control). Sized --s-8 (32px) desktop, --ctl-h
