@@ -39,8 +39,8 @@
 //   3. <ScrollProgress> — STAYS OUT. Measured: on "/" scrollHeight ===
 //      innerHeight in all four combinations at 1440 and 375, and mounted it
 //      renders at opacity 0 reading "00%". Its four probe ids exist on NO route
-//      on the site, so the section designator can never appear. Nine of the ten
-//      legacy routes scroll <=216px; only /permit really scrolls. Restoring it
+//      on the site, so the section designator can never appear. Eight of the nine
+//      remaining legacy routes scroll <=216px; only /permit really scrolls. Restoring it
 //      as-is also drags in .scroll-station from the frozen theme.css, which is
 //      backdrop-filter: blur(6px) over hardcoded cream — the same §9 violation
 //      rejected in (1). The component stays in the tree for
@@ -79,7 +79,7 @@ import "./chrome.css";
 // F-C.3: the Work/About/Contact links are wired to the graph's inbound intent
 // surface, not to dead /#work anchors. On "/" in graph mode the click
 // dispatches 'on:graph-intent' (canvas pulses + focuses the node); anywhere the
-// dispatch goes unhandled (legacy routes, mobile list) the href navigates to
+// dispatch goes unhandled (non-graph routes, mobile list) the href navigates to
 // /?focus=<id> and the mounted graph surface consumes it. Terminal mode hides
 // them — the terminal carries its own nav, and a link that yanks you out of the
 // mode is a trap.

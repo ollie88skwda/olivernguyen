@@ -13,22 +13,22 @@ Rules:
 
 ---
 
-## 1 · Restyle the legacy pages — the big one
+## 1 · Restyle the remaining legacy pages — the big one
 
-**State:** open. Ten routes under `src/pages/` are still the frozen navy/gold stack
-(`src/styles/theme.css`). `BRAND.md` §11.2 and `05-v1-spec.md` §2.3 freeze them until a restyle is
-explicitly scheduled. Nobody has scheduled it.
+**State:** open. Nine routes under `src/pages/` remain on the frozen navy/gold stack
+(`src/styles/theme.css`). `/college` is complete in the explicit sakura-restyle lane. `BRAND.md`
+§11.2 freezes the remaining pages until each restyle is explicitly scheduled.
 
 **Decided when:** Oliver says go, and a plan doc exists with an owner.
 
-**It is the sole blocker on four other things.** All four close for free the day it lands:
-- The bar blur is **opted out on every legacy route** (D-30) because the sakura bar over a navy
-  legacy headline turns to mud. Same palette on both sides removes the reason.
+**It still blocks four follow-ups:**
+- The bar blur remains **opted out on every remaining legacy route** (D-30) because the sakura bar
+  over a navy legacy headline turns to mud.
 - `ScrollProgress` cannot be rebuilt (D-29). It needs real section ids, and those live in frozen
-  pages. Nine of ten legacy routes also barely scroll — fix the pages and re-measure before
+  pages. Eight of nine remaining legacy routes barely scroll — fix the pages and re-measure before
   building anything.
-- `index.html:29` still downloads **Big Shoulders** purely because frozen `theme.css` points
-  `--font-display` at it. Drop it from the font URL. It is a retired face (D-07).
+- `index.html:29` still downloads **Big Shoulders** because the remaining frozen pages use
+  `theme.css`'s `--font-display`. Drop it from the font URL after those pages are restyled.
 - `e2e/legacy-visual.spec.js → /permit` is the suite's one permitted red test. It is pre-existing
   baseline drift on the legacy body (`COMPONENTS.md` follow-up 3), not a bug on this branch.
 

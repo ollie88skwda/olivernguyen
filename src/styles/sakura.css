@@ -3,8 +3,8 @@
  *
  * Scoping (plan P2): legacy src/styles/theme.css owns :root (--bg/--text/
  * --accent…). Sakura tokens therefore live under a `.sakura` scope class and
- * NEVER on :root — new chrome + GraphHome mount inside `.sakura`; legacy page
- * bodies are untouched.
+ * NEVER on :root — new chrome, GraphHome and explicitly restyled pages mount
+ * inside `.sakura`; remaining legacy page bodies are untouched.
  *
  * SCOPING SCHEME — theme and mode are INDEPENDENT switches (BRAND.md §3).
  *
