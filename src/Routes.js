@@ -5,6 +5,7 @@ import { ModeProvider } from "./mode/ModeProvider";
 import { ThemeProvider } from "./theme/ThemeProvider";
 import { ClerkProvider } from "@clerk/react";
 import { NotFoundPage } from "./pages/not_found_page.js";
+import { SATResourcesError, SATResourcesLoading } from "./pages/sat/sat_route_states.jsx";
 // X-1 (P4): src/pages/home.js is unmounted but left in the tree, flagged.
 import Home from "./home/Home.jsx";
 import RequirePassphrase from "./auth/RequirePassphrase";
@@ -23,7 +24,9 @@ const ArticleWriter = lazy(() =>
 const DriversLicense = lazy(() =>
   import("./pages/driving/drivers_license.js").then((m) => ({ default: m.DriversLicense })),
 );
-const SATResources = lazy(() => import("./pages/sat/sat_resources.js"));
+const SATResources = lazy(() =>
+  import("./pages/sat/sat_resources.js").catch(() => ({ default: SATResourcesError })),
+);
 const SATSignup = lazy(() => import("./pages/sat/sat_signup.js"));
 const Pull = lazy(() =>
   import("./pages/pull.js").then((m) => ({ default: m.Pull })),
@@ -85,6 +88,11 @@ const SiteChrome = () => {
 
 const Blank = () => <div style={{ minHeight: "100dvh" }} />;
 
+const RouteFallback = () => {
+  const { pathname } = useLocation();
+  return pathname === "/sat-resources" ? <SATResourcesLoading /> : <Blank />;
+};
+
 export const Routes = () => {
   return (
     <Router>
@@ -95,7 +103,7 @@ export const Routes = () => {
       <ModeProvider>
       <SiteChrome />
       <ClerkBridge>
-      <Suspense fallback={<Blank />}>
+      <Suspense fallback={<RouteFallback />}>
       <Switch>
         <Route path="/" exact>
           <Home />

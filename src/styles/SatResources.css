@@ -25,3 +25,11 @@
      it sits below the section head's hairline rule. */
   margin-top: var(--s-6);
 }
+
+.sat-resources__message {
+  max-width: 70ch;
+  margin: var(--s-6) 0 0;
+  color: var(--text-muted);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+}
