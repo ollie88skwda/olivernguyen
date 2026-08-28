@@ -1,0 +1,1648 @@
+/* ── /apply — sakura restyle ────────────────────────────────────────────────
+   Page-local composition only. Every value is a BRAND.md token
+   (src/styles/sakura.css) or a component-library class (docs/COMPONENTS.md).
+   The page mounts inside .sakura (src/pages/apply/index.js), so nothing here
+   reads the frozen legacy :root ladder (docs/BRAND.md §11.2/§11.3).
+
+   Data graphics the brand has no chart primitive for are drawn from tokens
+   and documented in the lane coverage record: the S0 dial ring, the S1 ink
+   cells + unresearched hatch, the S2 duel rungs, the S3 rho/budget range
+   sliders, the S3 compare bars + ghost hatch + marginal curve, the S5 gantt,
+   and the S7 cost/value bars.
+   ========================================================================== */
+
+.ap-page {
+  min-height: 100dvh;
+  padding-bottom: var(--s-36); /* §5 — clears the fixed EDIT dock */
+}
+
+/* ── Hero ────────────────────────────────────────────────────────────────── */
+
+.ap-hero {
+  max-width: 880px; /* §5: the content column cap */
+  margin: 0 auto;
+  padding: var(--s-24) var(--s-6) var(--s-16);
+}
+.ap-hero-eyebrow {
+  display: block;
+  margin-bottom: var(--s-3); /* §5: label → content */
+}
+.ap-hero-title {
+  margin: 0 0 var(--s-6);
+  color: var(--accent-hi);
+}
+.ap-hero-rule {
+  width: var(--s-16); /* §5 */
+  border-color: var(--accent-hi);
+  margin-bottom: var(--s-4);
+}
+.ap-hero-sub {
+  margin-bottom: var(--s-3);
+}
+.ap-hero-note {
+  color: var(--text-faint);
+}
+
+/* ── Section shell ───────────────────────────────────────────────────────── */
+
+.ap-sec {
+  max-width: 880px; /* §5: the content column cap */
+  margin: 0 auto;
+  padding: var(--s-12) var(--s-6) var(--s-24); /* §5: section gap 144 = 48 + 96 */
+  border-top: 1px solid var(--border);
+}
+.ap-hint {
+  margin: 0 0 var(--s-4);
+}
+.ap-hint-sub {
+  color: var(--text-faint);
+}
+
+/* State callout — the page's one repeated info pattern: a tone rule on the
+   left (4px = --s-1), a quiet fill, prose inside. Tones are §2 state tokens. */
+.ap-flag {
+  margin: 0 0 var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border-left: var(--s-1) solid var(--accent);
+  background: var(--surface-2);
+  color: var(--text-muted);
+  max-width: 70ch; /* §5 body measure */
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+}
+.ap-flag b {
+  color: var(--text);
+  font-weight: 600;
+}
+.ap-flag-warn {
+  border-left-color: var(--warning);
+}
+.ap-warn {
+  color: var(--warning); /* inline warning tone (§2) */
+}
+.ap-caveat {
+  border-left: var(--s-1) solid var(--warning);
+  padding-left: var(--s-3);
+  color: var(--text-faint);
+  font-size: var(--fs-body);
+}
+
+/* ── S0 Status ───────────────────────────────────────────────────────────── */
+
+.ap-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-6); /* §5: row gap inside a group */
+  align-items: center;
+  margin-bottom: var(--s-4);
+}
+.ap-status-read {
+  flex: 1 1 300px;
+  min-width: 0;
+}
+.ap-verdict {
+  margin: 0 0 var(--s-2);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-title);
+  letter-spacing: var(--track-display);
+  color: var(--accent-hi);
+}
+.ap-status-line {
+  margin: 0 0 var(--s-2);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  max-width: 62ch;
+}
+.ap-status-line b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* The dial ring — a flagged data graphic: no brand chart primitive exists,
+   so it is drawn from tokens (SVG stroke/text only) and kept at its own
+   96-unit coordinate space. */
+.ap-dial {
+  width: var(--s-24);
+  height: var(--s-24);
+  flex: none;
+}
+.ap-dial-track {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 8;
+}
+.ap-dial-arc {
+  fill: none;
+  stroke: var(--accent-hi);
+  stroke-width: 8;
+  stroke-linecap: butt;
+}
+/* Provisional dashes the arc and mutes the figure: it describes the schools,
+   not the applicant, so it must not read like a promise (§2 tones). */
+.ap-dial-prov .ap-dial-arc {
+  stroke: var(--text-faint);
+}
+.ap-dial-prov .ap-dial-v {
+  fill: var(--text-muted);
+}
+.ap-dial-v {
+  text-anchor: middle;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-title);
+  letter-spacing: var(--track-display);
+  fill: var(--accent-hi);
+}
+.ap-dial-k {
+  text-anchor: middle;
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  fill: var(--text-faint);
+}
+
+.ap-clock {
+  display: flex;
+  border: 1px solid var(--border); /* §9 hairline */
+  background: var(--surface);
+  flex: none;
+}
+.ap-clock div {
+  padding: var(--s-3) var(--s-4);
+  border-right: 1px solid var(--border);
+}
+.ap-clock div:last-child {
+  border-right: 0;
+}
+.ap-clock-k {
+  display: block;
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: var(--s-1);
+}
+/* dates are numbers: JetBrains body (§7 mono bodies) */
+.ap-clock-v {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-title);
+  line-height: 1;
+  color: var(--accent-hi);
+}
+
+/* ── S1 Board ────────────────────────────────────────────────────────────── */
+
+.ap-board-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-bottom: var(--s-2);
+  flex-wrap: wrap;
+}
+.ap-board {
+  overflow-x: auto;
+}
+.ap-board .on-table {
+  min-width: 720px; /* the matrix scrolls horizontally on phone */
+}
+.ap-board .on-table th,
+.ap-board .on-table td {
+  text-align: center;
+  vertical-align: middle;
+}
+.ap-board .on-table th:first-child,
+.ap-board .on-table td:first-child {
+  text-align: left;
+}
+.ap-board .on-table td:last-child {
+  text-align: right;
+}
+.ap-total {
+  color: var(--accent-hi);
+}
+.ap-board-name {
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+.ap-added {
+  margin-left: var(--s-2);
+}
+.ap-sort {
+  width: auto;
+}
+.ap-head-label {
+  display: block;
+}
+/* weight rail under a column heading: Progress (accent fill) + mono figure */
+.ap-rail {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  margin-top: var(--s-1);
+}
+.ap-rail-progress {
+  width: var(--s-12);
+}
+.ap-rail-val {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-label);
+  color: var(--text-muted);
+}
+/* the ink cell — a flagged data encoding: rating darkness via §2 tokens.
+   The colour ramp is data, the shape is a control (3px, §4). */
+.ap-cellbtn {
+  box-sizing: border-box;
+  width: 100%;
+  height: var(--ctl-h-sm); /* 32 fine · 44 coarse (§1) */
+  border: 0;
+  border-radius: var(--r-control);
+  padding: 0;
+  cursor: default;
+  font: inherit;
+  display: grid;
+  place-items: center;
+  transition:
+    filter var(--dur-state) var(--ease-state),
+    outline-color var(--dur-state) var(--ease-state);
+}
+.ap-cellbtn:hover {
+  filter: brightness(1.08);
+}
+.ap-cellbtn:focus-visible {
+  outline: var(--focus-ring-w) solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.ap-cell-v {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-label);
+  color: inherit;
+}
+/* unresearched cells: hatched, not shaded — a mid grey would read "average"
+   and the honest answer is unknown. Hatch is a flagged legacy encoding,
+   recoloured onto §2 tokens. */
+.ap-cellbtn[data-unknown="true"] {
+  background: repeating-linear-gradient(
+    45deg,
+    color-mix(in srgb, var(--text-faint) 22%, transparent),
+    color-mix(in srgb, var(--text-faint) 22%, transparent) 5px,
+    transparent 5px,
+    transparent 10px
+  );
+  color: var(--text-faint);
+}
+.ap-cellbtn[data-unknown="true"]:hover {
+  filter: none;
+}
+/* tooltip on an ink cell carries the score range + basis (§8 aria-label stays
+   on the button; the tooltip is supplementary, never the only carrier) */
+.ap-cell-tip {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text);
+  text-transform: none;
+  letter-spacing: 0;
+  max-width: 44ch;
+}
+.ap-cell-tip b {
+  display: block;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: var(--s-1);
+}
+.ap-cell-tip span {
+  display: block;
+  color: var(--text-muted);
+}
+.ap-cell-tip-note {
+  margin-top: var(--s-1);
+  color: var(--text-faint);
+  font-style: italic;
+}
+/* EDIT dock: three mono inputs per criterion */
+.ap-cell-edit {
+  background: var(--surface-2);
+  min-width: 116px;
+}
+.ap-cell-edit-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+.ap-in-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+.ap-in-row i {
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  font-style: normal;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  width: 2ch;
+  flex: none;
+}
+.ap-in {
+  min-width: 0;
+}
+
+.ap-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-6);
+  margin-top: var(--s-2);
+}
+.ap-key {
+  font-size: var(--fs-body);
+  color: var(--text-faint);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.ap-ramp {
+  display: inline-flex;
+  gap: var(--s-1);
+}
+.ap-ramp i {
+  width: var(--s-4);
+  height: var(--s-2);
+  display: block;
+}
+
+/* ── S2 Duel ─────────────────────────────────────────────────────────────── */
+
+.ap-duel-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin-bottom: var(--s-4);
+}
+.ap-duel {
+  border: 1px solid var(--border); /* §9 hairline, square surface */
+  background: var(--surface);
+  padding: var(--pad-card); /* §5: 28 desktop / 20 phone */
+}
+.ap-duel-heads {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-bottom: var(--s-4);
+}
+.ap-duel-a,
+.ap-duel-b {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-title);
+  letter-spacing: var(--track-display);
+  color: var(--accent-hi);
+  line-height: 1.1;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.ap-duel-b {
+  text-align: right;
+}
+.ap-duel-vs {
+  flex: none;
+}
+/* The rung ladder — a flagged custom control: a 17-stop radio scale whose
+   intensity (distance from the centre) is part of the encoding, so it stays
+   page composition. Semantics are already radio (role/aria-checked); the
+   tint ramp is token-mapped (§2) instead of navy rgba. */
+.ap-ladder {
+  display: flex;
+  gap: var(--s-1);
+  margin-bottom: var(--s-3);
+}
+.ap-rung {
+  flex: 1 1 0;
+  min-width: 0;
+  height: var(--ctl-h); /* §4 control height, 44 on coarse */
+  border: 1px solid var(--border);
+  border-radius: var(--r-control);
+  background: color-mix(in srgb, var(--accent-hi) calc(var(--rung) * 22%), var(--surface));
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-label);
+  color: var(--text-muted);
+  transition:
+    background-color var(--dur-state) var(--ease-state),
+    border-color var(--dur-state) var(--ease-state),
+    color var(--dur-state) var(--ease-state);
+}
+.ap-rung:hover {
+  border-color: var(--accent);
+}
+.ap-rung-mid {
+  background: var(--surface-2);
+}
+.ap-rung-on {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.ap-rung-on i {
+  color: var(--on-accent);
+  font-weight: 700;
+}
+.ap-rung-on:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+@media (pointer: coarse) {
+  .ap-ladder {
+    overflow-x: auto;
+  }
+  .ap-rung {
+    flex: 0 0 var(--ctl-h);
+  }
+}
+.ap-verdict-line {
+  margin: 0 0 var(--s-4);
+  font-size: var(--fs-body);
+  color: var(--text);
+  min-height: 1.5em;
+  line-height: var(--lh-body);
+}
+.ap-duel-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+}
+.ap-duel-at {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-label);
+  color: var(--text-faint);
+}
+.ap-weights {
+  margin-top: var(--s-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+.ap-weight {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+.ap-weight-k {
+  flex: 0 0 var(--s-36);
+  font-size: var(--fs-body);
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ap-weight-progress {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.ap-weight-v {
+  flex: 0 0 var(--s-12);
+  text-align: right;
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-label);
+  color: var(--accent-hi);
+}
+.ap-cr {
+  margin: var(--s-4) 0 0;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-faint);
+  max-width: 68ch;
+}
+.ap-cr-bad {
+  color: var(--warning);
+}
+
+/* ── S3 Portfolio ────────────────────────────────────────────────────────── */
+
+.ap-sub {
+  margin: var(--s-8) 0 var(--s-2);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-title);
+  letter-spacing: var(--track-display);
+  color: var(--text);
+}
+
+.ap-tiers {
+  display: flex;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  margin-bottom: var(--s-6);
+  flex-wrap: wrap;
+}
+.ap-tier {
+  flex: 1 1 var(--s-36);
+  min-width: 0;
+  padding: var(--s-4);
+  border-right: 1px solid var(--border);
+}
+.ap-tier:last-child {
+  border-right: 0;
+}
+.ap-tier-unknown .on-stat-value {
+  color: var(--text-faint);
+}
+.ap-tier-note {
+  display: block;
+  margin-top: var(--s-1);
+  color: var(--text-faint);
+}
+
+.ap-rho {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: var(--s-4) var(--s-6);
+  margin-bottom: var(--s-4);
+}
+.ap-rho-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-bottom: var(--s-2);
+}
+.ap-rho-head label {
+  font-size: var(--fs-body);
+  color: var(--text);
+}
+.ap-rho-head output {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-title);
+  color: var(--accent-hi);
+}
+/* range sliders — flagged custom controls: no library slider exists, so the
+   native control is token-styled via accent-color (§2). */
+.ap-range {
+  width: 100%;
+  accent-color: var(--accent);
+  height: var(--ctl-h-sm);
+}
+.ap-rho-note {
+  margin: var(--s-2) 0 0;
+  font-size: var(--fs-body);
+  color: var(--text-faint);
+  max-width: 68ch;
+}
+
+.ap-compare {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  margin-bottom: var(--s-3);
+}
+.ap-compare-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+.ap-compare-k {
+  flex: 0 0 calc(var(--s-36) + var(--s-16));
+  font-size: var(--fs-body);
+  color: var(--text-muted);
+}
+.ap-compare-track {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: var(--s-3);
+  background: var(--surface-2);
+  display: block;
+}
+.ap-compare-track i {
+  display: block;
+  height: 100%;
+  background: var(--accent-hi);
+  transition: width var(--dur-state) var(--ease-state);
+}
+.ap-compare-v {
+  flex: 0 0 var(--s-16);
+  text-align: right;
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-label);
+  color: var(--accent-hi);
+}
+/* the "wrong answer" bar, shown for comparison — hatched (flagged encoding),
+   token-mapped like the board cells. */
+.ap-compare-ghost .ap-compare-track i {
+  background: repeating-linear-gradient(
+    45deg,
+    color-mix(in srgb, var(--text-muted) 30%, transparent),
+    color-mix(in srgb, var(--text-muted) 30%, transparent) 4px,
+    transparent 4px,
+    transparent 8px
+  );
+}
+/* the "everything agrees exactly" floor — a genuine caution state (§2) */
+.ap-compare-floor .ap-compare-track i {
+  background: var(--warning);
+}
+
+.ap-gap {
+  margin: 0 0 var(--s-2);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  max-width: 70ch;
+}
+.ap-gap b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* marginal-value curve — flagged data graphic, token-coloured */
+.ap-curve {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--s-1);
+  height: var(--s-24);
+  border-bottom: 1px solid var(--border);
+  margin: var(--s-3) 0 var(--s-2);
+  overflow-x: auto;
+}
+.ap-curve-bar {
+  flex: 1 1 0;
+  min-width: var(--s-3);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: stretch;
+  gap: var(--s-1);
+}
+.ap-curve-bar i {
+  display: block;
+  background: var(--accent-hi);
+  min-height: 2px;
+}
+.ap-curve-bar span {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-label);
+  color: var(--text-faint);
+  text-align: center;
+}
+.ap-curve-flat i {
+  background: var(--text-faint);
+}
+
+.ap-ed {
+  border-left: var(--s-1) solid var(--accent);
+  background: var(--surface-2);
+  padding: var(--s-4) var(--s-6);
+  margin: var(--s-4) 0 0;
+}
+.ap-ed-k {
+  margin: 0 0 var(--s-1);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--accent-hi);
+}
+.ap-ed-v {
+  margin: 0 0 var(--s-2);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-title);
+  letter-spacing: var(--track-display);
+  color: var(--accent-hi);
+}
+.ap-ed-note {
+  margin: 0;
+  font-size: var(--fs-body);
+  color: var(--text-muted);
+  max-width: 68ch;
+}
+
+/* ── Local profile ───────────────────────────────────────────────────────── */
+
+.ap-profile {
+  border: 1px solid var(--accent);
+  background: var(--surface-2);
+  padding: var(--s-4) var(--s-6);
+  margin-bottom: var(--s-4);
+}
+.ap-profile-empty {
+  border-style: dashed; /* an unfilled state, not a solid claim */
+}
+.ap-profile-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--s-2);
+}
+.ap-profile-k {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-title);
+  letter-spacing: var(--track-display);
+  color: var(--accent-hi);
+}
+.ap-profile-local {
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  background: var(--success);
+  color: var(--on-accent);
+  padding: var(--s-1) var(--s-2);
+  border-radius: var(--r-control);
+  white-space: nowrap;
+}
+.ap-profile-why {
+  margin: 0 0 var(--s-3);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  max-width: 72ch;
+}
+.ap-profile-grid {
+  display: grid;
+  gap: var(--s-3);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(var(--s-24) * 2)), 1fr));
+}
+.ap-pfield {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3); /* §5: label → content */
+}
+/* the hint sits inside the Martian label; it resets to the sans body voice */
+.ap-pfield-hint {
+  display: block;
+  margin-top: var(--s-1);
+  text-transform: none;
+  font-family: var(--font-sans);
+  font-weight: 400;
+  letter-spacing: 0;
+  font-size: var(--fs-body);
+  color: var(--text-faint);
+}
+.ap-profile-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  margin-top: var(--s-3);
+}
+.ap-profile-note {
+  font-size: var(--fs-body);
+  color: var(--text-faint);
+  max-width: 68ch;
+}
+
+/* ── S4 Programs ─────────────────────────────────────────────────────────── */
+
+.ap-urgent {
+  border: 1px solid var(--warning);
+  background: color-mix(in srgb, var(--warning) 6%, var(--surface));
+  padding: var(--s-4) var(--s-6);
+  margin-bottom: var(--s-4);
+}
+.ap-urgent-k {
+  margin: 0 0 var(--s-2);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--warning);
+}
+.ap-urgent-list {
+  margin: 0;
+  padding-left: var(--s-6);
+  font-size: var(--fs-body);
+  color: var(--text);
+}
+.ap-urgent-list li {
+  margin-bottom: var(--s-1);
+}
+.ap-urgent-list b {
+  font-family: var(--font-mono-body);
+  font-weight: 500;
+  color: var(--warning);
+  margin-right: var(--s-1);
+}
+.ap-urgent-list span {
+  color: var(--text-faint);
+}
+.ap-urgent-note {
+  margin: var(--s-2) 0 0;
+  font-size: var(--fs-body);
+  color: var(--text-muted);
+  max-width: 70ch;
+}
+
+.ap-toggle {
+  display: block;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: var(--s-3) var(--s-4);
+  margin-bottom: var(--s-6);
+}
+.ap-toggle-why {
+  display: block;
+  margin: var(--s-1) 0 0 var(--s-8); /* 24px control + 8 gap = 32 */
+  font-size: var(--fs-body);
+  color: var(--text-faint);
+}
+
+.ap-bucket {
+  margin-top: var(--s-8);
+}
+.ap-bucket-h {
+  margin: 0 0 var(--s-2);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-title);
+  letter-spacing: var(--track-display);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.ap-bucket-h.ap-bucket-later {
+  color: var(--text-muted);
+}
+.ap-bucket-blurb {
+  margin: 0 0 var(--s-3);
+  font-size: var(--fs-body);
+  color: var(--text-faint);
+  max-width: 72ch;
+}
+
+.ap-programs {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+.ap-program-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--s-2);
+}
+.ap-program-name {
+  font-weight: 600;
+  font-size: var(--fs-body);
+  color: var(--text);
+}
+.ap-program-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-1);
+  margin-bottom: var(--s-2);
+}
+/* low-confidence is a caveat, not a solid fact: dashed hairline + warning */
+.ap-tag-conf-low {
+  border-style: dashed;
+}
+.ap-program-why {
+  margin: 0 0 var(--s-2);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  max-width: 70ch;
+}
+.ap-program-fit {
+  color: var(--text-faint);
+  font-style: italic;
+}
+.ap-program-quote {
+  margin: var(--s-2) 0;
+  padding: var(--s-2) 0 var(--s-2) var(--s-4);
+  border-left: 1px solid var(--border); /* §9 hairline */
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-faint);
+  max-width: 70ch;
+}
+/* source link: the label role as a link; hover is an underline (§6 140ms) */
+.ap-program-src {
+  text-decoration: underline solid transparent;
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--dur-state) var(--ease-state);
+}
+.ap-program-src:hover {
+  text-decoration-color: currentColor;
+}
+
+/* ── S5 Calendar ─────────────────────────────────────────────────────────── */
+
+.ap-gantt {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: var(--s-4) var(--s-6) var(--s-3);
+  margin-bottom: var(--s-4);
+}
+.ap-gantt-months {
+  position: relative;
+  height: var(--s-3);
+  margin-bottom: var(--s-1);
+}
+.ap-gantt-months span {
+  position: absolute;
+  transform: translateX(-50%);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.ap-gantt-track {
+  position: relative;
+  height: var(--s-12);
+  background: var(--surface-2);
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+.ap-gantt-grid {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--border);
+}
+.ap-gantt-today {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px; /* data-graphic marker */
+  background: var(--success); /* §2: jade = "it worked", a live marker */
+  z-index: 3;
+}
+.ap-gantt-pin {
+  position: absolute;
+  width: var(--s-1);
+  border-radius: var(--r-surface);
+  transform: translateX(-50%);
+}
+.ap-gantt-school {
+  top: var(--s-8);
+  height: var(--s-3);
+  background: color-mix(in srgb, var(--text) 42%, transparent);
+}
+.ap-gantt-ed {
+  top: var(--s-4);
+  height: var(--s-3);
+  background: var(--accent-hi);
+}
+.ap-gantt-program {
+  top: var(--s-1);
+  height: var(--s-3);
+  background: var(--warning);
+}
+.ap-gantt-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-4);
+  margin-top: var(--s-2);
+}
+.ap-gk {
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+.ap-gk::before {
+  content: "";
+  width: var(--s-2);
+  height: var(--s-2);
+  display: inline-block;
+}
+.ap-gk-program::before { background: var(--warning); }
+.ap-gk-ed::before { background: var(--accent-hi); }
+.ap-gk-school::before { background: color-mix(in srgb, var(--text) 42%, transparent); }
+.ap-gk-today::before { background: var(--success); }
+
+.ap-collide {
+  border-left: var(--s-1) solid var(--warning);
+  background: var(--surface-2);
+  padding: var(--s-3) var(--s-6);
+  margin-bottom: var(--s-4);
+}
+.ap-collide-k {
+  margin: 0 0 var(--s-2);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--warning);
+}
+.ap-collide ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+.ap-collide li b {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-label);
+  font-weight: 500;
+  color: var(--text);
+  margin-right: var(--s-2);
+}
+.ap-collide li span {
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  background: var(--warning);
+  color: var(--on-accent);
+  padding: var(--s-1) var(--s-2);
+  border-radius: var(--r-control);
+  margin-right: var(--s-1);
+}
+/* ED is one choice with many candidates, not many obligations */
+.ap-collide-ed {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.ap-collide li em {
+  display: block;
+  font-style: normal;
+  font-size: var(--fs-body);
+  color: var(--text-faint);
+  margin-top: var(--s-1);
+}
+.ap-collide-note {
+  margin: var(--s-2) 0 0;
+  font-size: var(--fs-body);
+  color: var(--text-muted);
+  max-width: 70ch;
+}
+
+.ap-timeline {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
+}
+.ap-tl-week {
+  display: grid;
+  grid-template-columns: var(--s-24) 1fr;
+  gap: var(--s-4);
+  padding: var(--s-3) 0;
+  border-bottom: 1px solid var(--border);
+}
+.ap-tl-date {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-label);
+  color: var(--text-faint);
+  padding-top: var(--s-1);
+}
+.ap-tl-week ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+.ap-tl-week li {
+  font-size: var(--fs-body);
+  color: var(--text-muted);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-3);
+}
+.ap-tl-week li em {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-label);
+  font-style: normal;
+  color: var(--text-faint);
+  flex: none;
+}
+.ap-tl-program {
+  color: var(--warning);
+  font-weight: 600;
+}
+.ap-tl-ed {
+  color: var(--accent-hi);
+  font-weight: 600;
+}
+
+/* ── S6 Filters ──────────────────────────────────────────────────────────── */
+
+.ap-filters {
+  display: grid;
+  gap: var(--s-3);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, calc(var(--s-24) * 3)), 1fr));
+  margin-bottom: var(--s-4);
+}
+.ap-filter {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: var(--s-4) var(--s-6);
+}
+.ap-filter-hard {
+  border-color: var(--warning); /* a hard filter is a genuine state (§2) */
+  background: color-mix(in srgb, var(--warning) 5%, var(--surface));
+}
+.ap-filter-off {
+  opacity: 0.55; /* an "off" mode dims the card; everything stays readable */
+}
+.ap-filter-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin-bottom: var(--s-2);
+  flex-wrap: wrap;
+}
+.ap-filter-label {
+  font-weight: 600;
+  font-size: var(--fs-body);
+  color: var(--text);
+}
+/* off/soft/hard — flagged custom control: a three-way radio (buttons carry
+   role=radio + aria-checked) the brand has no segmented primitive for. */
+.ap-modes {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: var(--r-control);
+  overflow: hidden;
+}
+.ap-mode {
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  padding: 0 var(--s-3);
+  border: 0;
+  background: transparent;
+  color: var(--text-faint);
+  cursor: pointer;
+  height: var(--ctl-h-sm); /* 32 fine · 44 coarse (§1) */
+  transition:
+    background-color var(--dur-state) var(--ease-state),
+    color var(--dur-state) var(--ease-state);
+}
+.ap-mode + .ap-mode {
+  border-left: 1px solid var(--border);
+}
+.ap-mode:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+.ap-mode-on,
+.ap-mode-on:hover {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.ap-filter-blurb {
+  margin: 0 0 var(--s-2);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  max-width: 60ch;
+}
+.ap-filter-count {
+  margin: 0;
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.ap-filter-count b {
+  color: var(--warning);
+}
+
+.ap-cutlist {
+  border-left: var(--s-1) solid var(--warning);
+  background: var(--surface-2);
+  padding: var(--s-3) var(--s-6);
+  margin-bottom: var(--s-4);
+}
+.ap-cutlist-k {
+  margin: 0 0 var(--s-2);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--warning);
+}
+.ap-cutlist ul {
+  margin: 0;
+  padding-left: var(--s-6);
+  font-size: var(--fs-body);
+  color: var(--text);
+}
+.ap-cutlist ul span {
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-left: var(--s-1);
+}
+.ap-cutlist-note {
+  margin: var(--s-2) 0 0;
+  font-size: var(--fs-body);
+  color: var(--text-faint);
+  max-width: 70ch;
+}
+
+.ap-add {
+  display: flex;
+  gap: var(--s-2);
+  max-width: 70ch; /* §5 body measure */
+}
+.ap-added-list {
+  list-style: none;
+  margin: var(--s-3) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+.ap-added-list li {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-size: var(--fs-body);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: var(--s-2) var(--s-3);
+}
+.ap-added-list em {
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  font-style: normal;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.ap-added-list button {
+  margin-left: auto;
+}
+
+/* ── S7 Effort + S8 Evidence stats ───────────────────────────────────────── */
+
+.ap-ev-stats {
+  display: flex;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  margin-bottom: var(--s-4);
+  flex-wrap: wrap;
+}
+.ap-ev-stats > div {
+  flex: 1 1 var(--s-36);
+  padding: var(--s-3) var(--s-4);
+  border-right: 1px solid var(--border);
+}
+.ap-ev-stats > div:last-child {
+  border-right: 0;
+}
+.ap-ev-stats .on-stat-value {
+  font-size: var(--fs-title-lg);
+}
+.ap-ev-bad .on-stat-value {
+  color: var(--warning);
+}
+
+.ap-effort {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-1);
+}
+.ap-eff-row {
+  display: grid;
+  grid-template-columns: minmax(0, var(--s-36)) 1fr 1fr;
+  gap: var(--s-3);
+  align-items: center;
+}
+.ap-eff-name {
+  font-size: var(--fs-body);
+  color: var(--text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* dual bars — flagged data encoding: cost (warning) vs value (accent) */
+.ap-eff-cost,
+.ap-eff-val {
+  position: relative;
+  height: var(--s-3);
+  background: var(--surface-2);
+  display: block;
+  min-width: 0;
+}
+.ap-eff-cost i {
+  display: block;
+  height: 100%;
+  background: var(--warning);
+  transition: width var(--dur-state) var(--ease-state);
+}
+.ap-eff-val i {
+  display: block;
+  height: 100%;
+  background: var(--accent-hi);
+  transition: width var(--dur-state) var(--ease-state);
+}
+.ap-eff-cost em {
+  position: absolute;
+  right: var(--s-1);
+  top: -1px;
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-label);
+  font-style: normal;
+  color: var(--text-faint);
+}
+
+/* ── S8 Evidence ─────────────────────────────────────────────────────────── */
+
+.ap-ev-clean {
+  margin: 0 0 var(--s-4);
+  padding: var(--s-3) var(--s-4);
+  border-left: var(--s-1) solid var(--success); /* §2: jade = "it worked" */
+  background: var(--surface-2);
+  font-size: var(--fs-body);
+  color: var(--text-muted);
+  max-width: 72ch;
+}
+.ap-ev-table .on-table {
+  min-width: 640px;
+}
+.ap-ev-cell a {
+  color: var(--accent-hi);
+  text-underline-offset: 3px;
+}
+.ap-ev-cell a:hover {
+  text-decoration-thickness: 1px;
+}
+.ap-ev-missing {
+  color: var(--text-faint);
+  font-style: normal;
+}
+.ap-ev-nosrc {
+  color: var(--warning);
+  font-style: normal;
+}
+.ap-ev-gaps {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-label);
+}
+.ap-ev-gaps.ap-ev-bad {
+  color: var(--warning);
+}
+
+.ap-ev-log {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+.ap-assume {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: var(--s-3) var(--s-4);
+}
+.ap-assume-status {
+  margin-bottom: var(--s-2);
+}
+.ap-assume-claim {
+  display: block;
+  font-size: var(--fs-body);
+  color: var(--text);
+  margin-bottom: var(--s-1);
+}
+.ap-assume-note {
+  display: block;
+  font-size: var(--fs-body);
+  color: var(--text-faint);
+  max-width: 74ch;
+}
+
+/* ── S9 Glossary ─────────────────────────────────────────────────────────── */
+
+.ap-glossary {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
+}
+.ap-gloss {
+  border-bottom: 1px solid var(--border);
+  padding: var(--s-3) 0;
+  display: grid;
+  grid-template-columns: minmax(0, calc(var(--s-36) + var(--s-16))) minmax(0, 1fr);
+  gap: var(--s-6);
+}
+.ap-gloss dt {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-body);
+  letter-spacing: var(--track-display);
+  color: var(--accent-hi);
+  line-height: 1.2;
+}
+.ap-gloss dd {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  max-width: 70ch;
+}
+
+/* ── EDIT dock ───────────────────────────────────────────────────────────── */
+
+.ap-tools {
+  position: fixed;
+  right: var(--s-4);
+  bottom: var(--s-16);
+  z-index: 1400;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+
+/* ── Loading ─────────────────────────────────────────────────────────────── */
+
+.ap-loading {
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  padding: var(--s-6);
+}
+
+/* ── Shared legacy surfaces, restyled inside .sakura ───────────────────────
+   <Tip> (src/components/Tooltip.js) and details.plain/.pbody are shared
+   components with styles in the frozen theme.css; the page re-scopes their
+   presentation here so nothing reads the legacy ladder. The interaction and
+   the aria-describedby copy are unchanged. */
+
+.sakura .tt {
+  border-bottom: 1px dotted var(--text-faint);
+}
+.sakura .tt::after {
+  color: var(--accent-hi);
+}
+.sakura .tt .bub {
+  display: none;
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + var(--s-2));
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: min(320px, 78vw);
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: var(--r-control);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  padding: var(--s-2) var(--s-3);
+  z-index: 40;
+  pointer-events: none;
+  box-shadow: none; /* §9: nothing else lifts */
+}
+.sakura .tt .bub::before {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: var(--s-2) solid transparent;
+  border-top-color: var(--surface-2);
+}
+.sakura .tt:hover .bub,
+.sakura .tt:focus .bub,
+.sakura .tt:focus-visible .bub {
+  display: block;
+  animation: ap-tip-in var(--dur-state) var(--ease-state);
+}
+/* §6: tooltip entrance is opacity only — no translate, no spring */
+@keyframes ap-tip-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.sakura details.plain {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  margin: var(--s-6) 0 0;
+}
+.sakura details.plain > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: var(--s-3) var(--s-4);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--accent-hi);
+}
+.sakura details.plain > summary::-webkit-details-marker {
+  display: none;
+}
+.sakura details.plain > summary::before {
+  content: "+ ";
+  font-weight: 700;
+}
+.sakura details.plain[open] > summary::before {
+  content: "- ";
+}
+.sakura details.plain .pbody {
+  padding: 0 var(--s-4) var(--s-4);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  max-width: 70ch;
+}
+.sakura details.plain .pbody p {
+  margin: 0 0 var(--s-3);
+}
+.sakura details.plain .pbody p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Phone ───────────────────────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .ap-hero {
+    padding: var(--s-16) var(--pad-card) var(--s-8);
+  }
+  .ap-sec {
+    padding: var(--s-8) var(--pad-card) var(--s-16); /* §5: section gap 96 = 32 + 64 */
+  }
+  .ap-clock {
+    width: 100%;
+  }
+  .ap-clock div {
+    flex: 1 1 0;
+  }
+  .ap-compare-k {
+    flex-basis: var(--s-24);
+  }
+  .ap-tier {
+    flex-basis: 45%;
+  }
+  .ap-weight-k {
+    flex-basis: var(--s-24);
+  }
+  .ap-eff-row {
+    grid-template-columns: minmax(0, var(--s-24)) 1fr 1fr;
+    gap: var(--s-2);
+  }
+  .ap-tl-week {
+    grid-template-columns: 1fr;
+    gap: var(--s-1);
+  }
+  .ap-gloss {
+    grid-template-columns: 1fr;
+    gap: var(--s-1);
+  }
+  .ap-duel-a,
+  .ap-duel-b {
+    font-size: var(--fs-body);
+  }
+}
+
+/* ── Reduced motion ────────────────────────────────────────────────────────
+   components.css already kills every .on-* transition/animation; these are
+   the page-local ones. The DOM is unchanged. */
+
+@media (prefers-reduced-motion: reduce) {
+  .ap-cellbtn,
+  .ap-rung,
+  .ap-compare-track i,
+  .ap-eff-cost i,
+  .ap-eff-val i,
+  .ap-program-src,
+  .ap-mode {
+    transition: none;
+  }
+  .sakura .tt .bub {
+    animation: none;
+  }
+}

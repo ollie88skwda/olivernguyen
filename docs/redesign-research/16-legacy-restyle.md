@@ -17,7 +17,7 @@
 | `/emoji` | `src/pages/emoji.js` | `src/styles/Emoji.css` | Restyled Sakura interactive emoji fishbowl generator with drag behavior, count input, background swatches, clear/download actions, and flagged content-rendering exceptions; covered by `docs/plans/emoji-restyle.md`. |
 | `/college` | `src/pages/college/index.js` | `src/styles/College.css` | Restyled Sakura private-tools hub with eyebrow, placeholder headline and lede, a rule, and three linked cards for `/major`, `/apply`, and `/studio`; covered by `docs/college-restyle-coverage.md`. |
 | `/major` | `src/pages/major/index.js` and section files | `src/pages/major/major.css` | Restyled Sakura private decision engine with status dial, scoring board, duel, sensitivity sections, evidence, glossary, edit controls, persistence, and loading/offline states. |
-| `/apply` | `src/pages/apply/index.js` and section files | `src/styles/Apply.css`, `ApplyB.css` | Large private application planner with status, school board, portfolio, programs, calendar, filters, effort, evidence, glossary, edit controls, persistence, and loading/offline states. It has page-local tokens, charts, forms, and legacy spacing/type/motion values. |
+| `/apply` | `src/pages/apply/index.js` and section files | `src/pages/apply/apply.css` | Restyled Sakura private application planner with status, school board, portfolio, programs, calendar, filters, effort, evidence, glossary, edit controls, persistence, and loading/offline states; covered by `docs/apply-brand-coverage.md` and `e2e/apply-restyle.spec.js`. |
 
 `src/Routes.js` confirms these ten route entries. `/` mounts `src/home/Home.jsx`; graph and terminal are mounted by their own redesigned surfaces and are not legacy work. `/sign-in`, `/studio`, and `/transfer` are private/gated flows explicitly excluded by `docs/redesign-research/05-v1-spec.md` §2.3. The full-bleed `/be-my-girlfriend` routes are also excluded. `src/pages/home.js` and `src/pages/top_bar.js` are unmounted leftovers, not routes to restyle.
 
@@ -132,11 +132,10 @@ Copy this template into each lane's working notes or PR description and fill eve
 
 ### `/apply`
 
-- Preserve the application model, filters, portfolio calculations, school evidence links, deadlines, profile persistence, edit mode, glossary, loading/offline/saved states, and every section.
-- Map hierarchy and controls as in `/major`; use `Table`, `Card`, `Progress`, `Badge`, `StatusPill`, `Input`, `Select`, `Checkbox`, `RadioGroup`, `Switch`, `Button`, `Tooltip`, and `Log` where each matches its semantics. Use mono for dates/numbers and sanctioned state tones only.
-- Replace `Apply.css`/`ApplyB.css` page-local tokens and legacy spacing, radius, gradient, shadow, and motion values. Audit all section components and any charts/portfolio visuals.
-- Flag tier/odds/calendar/effort visual encodings or custom controls that do not map to a library component or explicit BRAND rule.
-- Done: calculations, filters, profile save, edit controls, links, and all state variants work; deadlines and numeric data remain readable; coarse-pointer controls meet 44px; both themes and phone/desktop layouts pass; reduced motion works; coverage record has no unresolved unmapped aspect.
+- **Shipped:** Sakura restyle preserves the application model, filters, portfolio calculations, school evidence links, deadlines, profile persistence, edit mode, glossary, loading/offline/saved states, and every section.
+- Composition uses `Table`, `Card`, `Progress`, `Badge`, `Input`, `Select`, `Checkbox`, `Button`, `Tooltip`, and brand pieces where their semantics match; dates and numbers use mono roles and sanctioned state tones.
+- Route-local data graphics and controls are mapped in `docs/apply-brand-coverage.md`; no unresolved visual aspect remains.
+- Evidence: `e2e/apply-restyle.spec.js` and `e2e/apply-brand.spec.js`, including 44px coarse-pointer controls, both themes, phone/desktop layouts, reduced motion, and state/interaction coverage.
 
 ## Review gate for every lane
 

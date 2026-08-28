@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import SectionHeading from '../../../components/SectionHeading';
-import Reveal from '../../../components/Reveal';
+import { SectionHead, MonoLabel } from '../../../components/brand';
+import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
 import Tip from '../../../components/Tooltip';
 
 // NOTE: these five pure helpers are also inlined in major/sections/Duel.js. Duplicated on
@@ -82,8 +83,8 @@ export const Duel = ({ doc, derived, updateDoc }) => {
   if (pairs.length === 0) {
     return (
       <section id="weights" className="ap-sec">
-        <SectionHeading eyebrow="S2 / Weights" title="You Never Type A Weight" />
-        <p className="ap-hint">Add at least two criteria and the matchups appear here.</p>
+        <SectionHead kicker="S2 / Weights" title="You Never Type A Weight" />
+        <p className="on-prose ap-hint">Add at least two criteria and the matchups appear here.</p>
       </section>
     );
   }
@@ -110,35 +111,33 @@ export const Duel = ({ doc, derived, updateDoc }) => {
 
   return (
     <section id="weights" className="ap-sec">
-      <SectionHeading eyebrow="S2 / Weights" title="You Never Type A Weight" />
+      <SectionHead kicker="S2 / Weights" title="You Never Type A Weight" />
 
-      <Reveal as="p" className="ap-hint">
+      <p className="on-prose ap-hint">
         Asked how important special programs are out of 100, you would make something up. Nobody
         can answer that honestly. But you can answer this one against that one, all day. So the
         page asks {pairs.length} small matchups and works the <Tip term="weight">weights</Tip> out
         from the answers. The method is called <Tip term="ahp">AHP</Tip>.
-      </Reveal>
+      </p>
 
-      <Reveal as="p" className="ap-hint ap-hint-sub">
+      <p className="on-prose ap-hint ap-hint-sub">
         These start pre-answered, which is unusual and deliberate. They encode two decisions you
         already made: that kinesiology is a nice-to-have rather than a co-equal criterion, and that
         a program that makes you stand out beats a department that ranks higher. Change any of them
         and every weight moves.
-      </Reveal>
+      </p>
 
       <div className="ap-duel-progress">
-        <span className="ap-duel-count">
+        <MonoLabel tone="faint" className="ap-duel-count">
           {answered} of {pairs.length} answered
-        </span>
-        <span className="ap-duel-track" aria-hidden="true">
-          <span className="ap-duel-fill" style={{ width: `${(answered / pairs.length) * 100}%` }} />
-        </span>
+        </MonoLabel>
+        <Progress value={(answered / pairs.length) * 100} aria-hidden="true" />
       </div>
 
       <div className="ap-duel">
         <div className="ap-duel-heads">
           <span className="ap-duel-a">{pair.a.label}</span>
-          <span className="ap-duel-vs">vs</span>
+          <MonoLabel tone="faint" className="ap-duel-vs">vs</MonoLabel>
           <span className="ap-duel-b">{pair.b.label}</span>
         </div>
 
@@ -168,15 +167,15 @@ export const Duel = ({ doc, derived, updateDoc }) => {
         </p>
 
         <div className="ap-duel-nav">
-          <button type="button" className="ap-navbtn" onClick={() => step(-1)}>
+          <Button type="button" variant="ghost" onClick={() => step(-1)}>
             prev
-          </button>
-          <span className="ap-duel-at">
+          </Button>
+          <MonoLabel tone="faint" className="ap-duel-at">
             {index + 1} / {pairs.length}
-          </span>
-          <button type="button" className="ap-navbtn" onClick={() => step(1)}>
+          </MonoLabel>
+          <Button type="button" variant="ghost" onClick={() => step(1)}>
             next
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -184,9 +183,11 @@ export const Duel = ({ doc, derived, updateDoc }) => {
         {criteria.map((criterion) => (
           <div className="ap-weight" key={criterion.id}>
             <span className="ap-weight-k">{criterion.label}</span>
-            <span className="ap-weight-track" aria-hidden="true">
-              <i style={{ width: `${(ahp.weights[criterion.id] || 0) * 100}%` }} />
-            </span>
+            <Progress
+              className="ap-weight-progress"
+              value={(ahp.weights[criterion.id] || 0) * 100}
+              aria-hidden="true"
+            />
             <span className="ap-weight-v">
               {Math.round((ahp.weights[criterion.id] || 0) * 100)}%
             </span>

@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
-import SectionHeading from '../../../components/SectionHeading';
-import Reveal from '../../../components/Reveal';
+import { SectionHead } from '../../../components/brand';
 import Tip from '../../../components/Tooltip';
 
 // The season, as the page understands it. Starts at the day the applications open and ends
@@ -76,13 +75,13 @@ export const Calendar = ({ doc, derived }) => {
 
   return (
     <section id="calendar" className="ap-sec">
-      <SectionHeading eyebrow="S5 / Calendar" title="The Season, To Scale" />
+      <SectionHead kicker="S5 / Calendar" title="The Season, To Scale" />
 
-      <Reveal as="p" className="ap-hint">
+      <p className="on-prose ap-hint">
         Everything with a date, laid on one line from the day applications open to the last
         deadline worth planning around. Only the {programCount} programmes whose door actually
         shuts appear here; the ones you can join later are not emergencies.
-      </Reveal>
+      </p>
 
       <div className="ap-gantt">
         <div className="ap-gantt-months">

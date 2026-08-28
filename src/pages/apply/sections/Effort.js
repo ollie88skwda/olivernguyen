@@ -1,6 +1,5 @@
 import React from 'react';
-import SectionHeading from '../../../components/SectionHeading';
-import Reveal from '../../../components/Reveal';
+import { SectionHead, StatBlock } from '../../../components/brand';
 import Tip from '../../../components/Tooltip';
 
 export const Effort = ({ doc, derived, updateDoc }) => {
@@ -35,27 +34,24 @@ export const Effort = ({ doc, derived, updateDoc }) => {
 
   return (
     <section id="effort" className="ap-sec">
-      <SectionHeading eyebrow="S7 / Effort" title="What The List Costs You" />
+      <SectionHead kicker="S7 / Effort" title="What The List Costs You" />
 
-      <Reveal as="p" className="ap-hint">
+      <p className="on-prose ap-hint">
         The real constraint on a list is not ambition, it is how many supplemental essays you are
         willing to write well. Writing fifteen badly is worse than writing eight properly, which is
         why the <Tip term="effort-budget">effort budget</Tip> feeds directly into which schools S3
         recommends.
-      </Reveal>
+      </p>
 
       <div className="ap-ev-stats">
         <div>
-          <span className="ap-ev-n">{totalEssays}</span>
-          <span className="ap-ev-k">supplemental essays</span>
+          <StatBlock value={totalEssays} label="supplemental essays" />
         </div>
         <div>
-          <span className="ap-ev-n">{totalWords > 0 ? totalWords.toLocaleString() : '—'}</span>
-          <span className="ap-ev-k">words, if known</span>
+          <StatBlock value={totalWords > 0 ? totalWords.toLocaleString() : '—'} label="words, if known" />
         </div>
-        <div>
-          <span className={unknownCount ? 'ap-ev-n ap-ev-bad' : 'ap-ev-n'}>{unknownCount}</span>
-          <span className="ap-ev-k">schools with no essay count yet</span>
+        <div className={unknownCount ? 'ap-ev-bad' : undefined}>
+          <StatBlock value={unknownCount} label="schools with no essay count yet" />
         </div>
       </div>
 
@@ -66,7 +62,7 @@ export const Effort = ({ doc, derived, updateDoc }) => {
         </div>
         <input
           id="ap-budget"
-          className="ap-rho-in"
+          className="ap-range"
           type="range"
           min="0"
           max={Math.max(totalEssays, 10)}
@@ -85,11 +81,11 @@ export const Effort = ({ doc, derived, updateDoc }) => {
       </div>
 
       <h3 className="ap-sub">Cost against value</h3>
-      <Reveal as="p" className="ap-hint ap-hint-sub">
+      <p className="on-prose ap-hint ap-hint-sub">
         Each row is a school: how many essays it costs on the left, how much it raised the expected
         best offer on the right. A long bar on the left and a short one on the right is a school
         buying you very little for a lot of writing.
-      </Reveal>
+      </p>
 
       <div className="ap-effort">
         {withEffort.slice(0, 20).map((entry) => {
