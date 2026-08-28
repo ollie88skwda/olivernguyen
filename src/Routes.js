@@ -81,6 +81,21 @@ const ClerkBridge = ({ children }) => {
 // /be-my-girlfriend and the restored /mom + /mum page opt out of chrome.
 const NO_CHROME = ["/be-my-girlfriend", "/bemygirlfriend", "/girlfriend", "/mom", "/mum"];
 
+const NavigationBridge = () => {
+  const history = useHistory();
+  React.useEffect(() => {
+    const onNavigate = (event) => {
+      const href = event.detail;
+      if (typeof href !== "string" || !href.startsWith("/")) return;
+      event.preventDefault();
+      history.push(href);
+    };
+    window.addEventListener("on:navigate", onNavigate);
+    return () => window.removeEventListener("on:navigate", onNavigate);
+  }, [history]);
+  return null;
+};
+
 const SiteChrome = () => {
   const { pathname } = useLocation();
   if (NO_CHROME.some((route) => pathname.startsWith(route))) return null;
@@ -110,6 +125,7 @@ export const Routes = () => {
           interface). Neither reads the other. */}
       <ThemeProvider>
       <ModeProvider>
+      <NavigationBridge />
       <SiteChrome />
       <ClerkBridge>
       <Suspense fallback={<RouteFallback />}>

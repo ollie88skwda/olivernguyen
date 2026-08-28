@@ -20,13 +20,22 @@
  * L7-sanctioned vim joke (it is real vim grammar).
  */
 import { createQueue } from './cadence.js';
-import { BOOT_DAY, DAY_COUNT, FILE_NAMES, entityIds, windowByN } from './terminalModel.js';
+import {
+  BOOT_DAY,
+  DAY_COUNT,
+  FILE_NAMES,
+  ROUTE_DESTINATIONS,
+  entityIds,
+  routeDestination,
+  windowByN,
+} from './terminalModel.js';
 
 /** Completion vocabulary (C-1.1 Tab). Trailing-space entries take an arg. */
 export const COMMAND_WORDS = [
   'help',
   'ls',
   'cat ',
+  'cd ',
   'clear',
   'day ',
   'open ',
@@ -41,13 +50,27 @@ export const COMMAND_WORDS = [
 
 /** Pure Tab-completion: first match wins; preserves a `:` prefix; returns
  * null when nothing (or nothing new) matches. */
+export function completionMatches(value, ids = entityIds) {
+  const colon = value.startsWith(':') ? ':' : '';
+  const bare = colon ? value.slice(1) : value;
+  const cd = bare.match(/^cd\s+(\S*)$/);
+  if (cd) {
+    const prefix = cd[1].replace(/^\//, '');
+    return ROUTE_DESTINATIONS.filter((d) => d.name.startsWith(prefix)).map((d) => `cd ${d.name}`);
+  }
+  return [];
+}
+
 export function complete(value, ids = entityIds) {
   if (!value) return null;
   const colon = value.startsWith(':') ? ':' : '';
   const bare = colon ? value.slice(1) : value;
   let m;
   let out = null;
-  if ((m = bare.match(/^cat\s+(\S*)$/))) {
+  if ((m = bare.match(/^cd\s+(\S*)$/))) {
+    const matches = completionMatches(value, ids);
+    if (matches.length === 1) out = matches[0];
+  } else if ((m = bare.match(/^cat\s+(\S*)$/))) {
     const hit = FILE_NAMES.find((f) => f.startsWith(m[1]));
     if (hit) out = `cat ${hit}`;
   } else if ((m = bare.match(/^open\s+(\S*)$/))) {
@@ -71,6 +94,19 @@ export async function execute(raw, ctx) {
   let m;
 
   if (cmd === 'clear' || cmd === 'cls') return ctx.clear();
+
+  if ((m = cmd.match(/^cd(?:\s+(\S+))?$/))) {
+    const destination = m[1] || '.';
+    if (destination === '..' || destination === '/') return ctx.navigate('/');
+    const match = routeDestination(destination);
+    if (match) return ctx.navigate(match.href);
+    const available = ROUTE_DESTINATIONS.map((d) => d.name).join(', ');
+    const prefix = destination.replace(/^\//, '');
+    const suggestions = ROUTE_DESTINATIONS
+      .filter((d) => d.name.startsWith(prefix) || d.name.includes(prefix))
+      .map((d) => d.name);
+    return ctx.printErr(`cd: ${destination}: no such destination${suggestions.length ? ` (try ${suggestions.join(', ')})` : ` (available: ${available})`}`);
+  }
 
   if ((m = cmd.match(/^cat\s+(\S+)$/))) {
     if (!FILE_NAMES.includes(m[1]))

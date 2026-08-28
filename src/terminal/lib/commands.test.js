@@ -1,6 +1,12 @@
 // C-1.3 — command table + completion + runner, against a mock ctx.
 import { describe, it, expect, vi } from 'vitest';
-import { COMMAND_WORDS, complete, createRunner, execute } from './commands.js';
+import {
+  COMMAND_WORDS,
+  complete,
+  completionMatches,
+  createRunner,
+  execute,
+} from './commands.js';
 import { BOOT_DAY, DAY_COUNT } from './terminalModel.js';
 
 const mockCtx = () => ({
@@ -19,6 +25,7 @@ const mockCtx = () => ({
   openArtifact: vi.fn(),
   copyEmail: vi.fn(),
   dispatchMode: vi.fn(),
+  navigate: vi.fn(),
   quitLine: vi.fn(),
 });
 
@@ -148,6 +155,25 @@ describe('complete()', () => {
     for (const w of COMMAND_WORDS) {
       expect(complete(w[0])).not.toBeNull();
     }
+  });
+});
+
+describe('cd navigation', () => {
+  it('navigates linked destinations and parent/root paths', async () => {
+    const ctx = mockCtx();
+    await execute('cd articlewriter', ctx);
+    await execute('cd ..', ctx);
+    await execute('cd /', ctx);
+    expect(ctx.navigate.mock.calls).toEqual([['/articlewriter'], ['/'], ['/']]);
+  });
+
+  it('reports invalid paths and exposes deterministic ambiguous matches', async () => {
+    const ctx = mockCtx();
+    await execute('cd nope', ctx);
+    expect(ctx.printErr).toHaveBeenCalledWith(expect.stringContaining('available:'));
+    expect(complete('cd p')).toBeNull();
+    expect(completionMatches('cd p')).toEqual(['cd pull', 'cd permit']);
+    expect(complete('cd art')).toBe('cd articlewriter');
   });
 });
 

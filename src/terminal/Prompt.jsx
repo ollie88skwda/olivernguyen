@@ -32,7 +32,7 @@ const finePointer = () =>
   window.matchMedia('(pointer: fine)').matches;
 
 const Prompt = forwardRef(function Prompt(
-  { onSubmit, completer, history, onModeChange, onBareKey, onEscape, canRefocus },
+  { onSubmit, completer, onAmbiguous, history, onModeChange, onBareKey, onEscape, canRefocus },
   ref,
 ) {
   const inputRef = useRef(null);
@@ -103,6 +103,7 @@ const Prompt = forwardRef(function Prompt(
       e.preventDefault();
       const c = completer?.(el.value);
       if (c != null) setInput(c);
+      else onAmbiguous?.(el.value);
       return;
     }
     if (e.key === 'ArrowUp') {

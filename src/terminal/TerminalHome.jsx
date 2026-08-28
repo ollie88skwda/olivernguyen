@@ -52,7 +52,7 @@ import {
   PREFIX_EXPIRY_MS,
 } from './panes/prefix.js';
 import { setStill } from './lib/cadence.js';
-import { complete, createRunner } from './lib/commands.js';
+import { complete, completionMatches, createRunner } from './lib/commands.js';
 import { EMAIL, FILES, WINDOWS, artifact, windowByN } from './lib/terminalModel.js';
 import {
   artifactLines,
@@ -272,6 +272,12 @@ export default function TerminalHome({ devHook, autoboot = true }) {
   }, [ps.prefix]);
 
   /* ---- command runner: ctx wires the pure table to buffer + sections ---- */
+  const navigate = useCallback((href) => {
+    const ev = new CustomEvent('on:navigate', { detail: href, cancelable: true });
+    window.dispatchEvent(ev);
+    return ev.defaultPrevented;
+  }, []);
+
   const runner = useMemo(() => {
     const ctx = {
       echo: api.echo,
@@ -323,10 +329,13 @@ export default function TerminalHome({ devHook, autoboot = true }) {
         if (!ev.defaultPrevented)
           await api.printErr(`mode ${m}: no handler mounted — open /?mode=${m}`);
       },
+      navigate: async (href) => {
+        if (!navigate(href)) await api.printErr(`cd: no route handler for ${href}`);
+      },
       quitLine: () => api.print(ln('mut', quitText)),
     };
     return createRunner(ctx);
-  }, [api, panesOpen]);
+  }, [api, navigate, panesOpen]);
 
   /* ---- boot = the site runs its own first command (§3.1.4) ---- */
   useEffect(() => {
@@ -560,6 +569,10 @@ export default function TerminalHome({ devHook, autoboot = true }) {
         ref={promptRef}
         onSubmit={(v) => runner.run(v)}
         completer={complete}
+        onAmbiguous={(v) => {
+          const matches = completionMatches(v);
+          if (matches.length > 1) api.printLine('mut', `matches: ${matches.join('  ')}`);
+        }}
         history={runner.history}
         onModeChange={setSbMode}
         onBareKey={onBareKey}

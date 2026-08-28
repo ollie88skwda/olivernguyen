@@ -56,15 +56,11 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { Glyph, Icon, ModeToggle, MonoLabel, Wordmark } from "@/components/brand";
 
 import { useMode } from "../mode/ModeProvider";
@@ -136,11 +132,8 @@ export const SiteChrome = () => {
     return () => window.removeEventListener("scroll", handler);
   }, [onScroll]);
 
-  const nextTheme = theme === "dark" ? "light" : "dark";
-
   return (
-    <TooltipProvider>
-      <div className="site-chrome">
+    <div className="site-chrome">
         <header className={`site-chrome-bar sakura${visible ? "" : " sc-hidden"}`}>
           <Wordmark as="a" href="/" />
 
@@ -164,33 +157,20 @@ export const SiteChrome = () => {
           <div className="sc-right">
             <ModeToggle mode={mode} onModeChange={setMode} />
 
-            {/* D-23: the theme control is an ordinary 3px icon button, sized
-                40px (44 on a coarse pointer) — deliberately NOT a pill, so it
-                does not read as a second half of the round mode toggle beside
-                it. It shows the icon of the CURRENT theme and names the ACTION
-                in its accessible name. Placed before ⌘K because that button
-                only exists in graph mode on "/", and this control must not move
-                when the mode does.
-
-                The tooltip repeats the aria-label, it does not replace it —
-                §1 forbids anything depending on hover alone. This is the one
-                icon-only control in the bar, which is why it gets one. */}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  aria-label={`Switch to ${nextTheme} theme`}
-                  onClick={() => setTheme(nextTheme)}
-                >
-                  <span className="sc-theme-icons" aria-hidden="true">
-                    <Icon name="sun" className="sc-theme-icon" data-on={theme === "light"} />
-                    <Icon name="moon" className="sc-theme-icon" data-on={theme === "dark"} />
-                  </span>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" aria-label="Open account menu">
+                  Account
                 </Button>
-              </TooltipTrigger>
-              <TooltipContent>{`Switch to ${nextTheme} theme`}</TooltipContent>
-            </Tooltip>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="sc-menu sc-account-menu">
+                <DropdownMenuLabel>Appearance</DropdownMenuLabel>
+                <DropdownMenuRadioGroup value={theme} onValueChange={setTheme}>
+                  <DropdownMenuRadioItem value="light"><Icon name="sun" /> Light</DropdownMenuRadioItem>
+                  <DropdownMenuRadioItem value="dark"><Icon name="moon" /> Dark</DropdownMenuRadioItem>
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
 
             {/* X-2: the palette lives in GraphCanvas and opens on the one
                 sanctioned chord (⌘K/Ctrl-K, lib/keys.js isPaletteCombo) — this
@@ -251,7 +231,6 @@ export const SiteChrome = () => {
           </div>
         </header>
       </div>
-    </TooltipProvider>
   );
 };
 

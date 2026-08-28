@@ -36,6 +36,20 @@ export const FILES = {
 
 export const FILE_NAMES = Object.keys(FILES);
 
+/** Internal route destinations are derived from the same linked graph nodes
+ * that render clickable links in the dossier. */
+export const ROUTE_DESTINATIONS = [
+  { name: 'home', href: '/', entity: 'oliver' },
+  ...allEntities
+    .filter((e) => e.link?.href?.startsWith('/'))
+    .map((e) => ({ name: e.link.href.slice(1), href: e.link.href, entity: e.id })),
+];
+
+export const routeDestination = (name) => {
+  const normalized = name.replace(/^\/+/, '').replace(/\/$/, '') || 'home';
+  return ROUTE_DESTINATIONS.find((d) => d.name === normalized) || null;
+};
+
 /** tmux window list (§3.1.6). Names come from the group entities. */
 export const WINDOWS = [
   { n: 1, name: 'boot', cmd: `operator --replay --day ${BOOT_DAY}` },
