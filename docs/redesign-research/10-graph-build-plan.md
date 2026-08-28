@@ -123,7 +123,7 @@ verbatim, and with two owner-mandated changes (fonts, edges — §3).
 | L5 | Launch holds until BOTH modes gate (this build ships to preview only) |
 | L6 | Log privacy: verbatim decision-log excerpts + redaction (owner-approved beats) |
 | L7 | Terminal = herdr-style panes — **deferred, not this build** |
-| L8 | V1 scope = home + shared chrome; legacy routes unchanged under new chrome |
+| L8 | V1 scope = home + shared chrome; legacy routes stay unchanged except documented route-specific restyles |
 | L9 | Typography: **old site's fonts** — Big Shoulders (display) / Hanken Grotesk (sans) / Martian Mono (mono). Prototype's Inter/JetBrains replaced |
 | L10 | Edge rework: Oliver dislikes the spline "roads" — see §3.2. Otherwise prototype look approved |
 
@@ -183,7 +183,7 @@ three behind the query param for Oliver's later review; ship `weighted`.
 | `docs/redesign-research/06-graph-research.md` §4 | Interaction priorities + camera physics rationale |
 | `prototype/graph/{index.html,style.css,app.js,USAGE.md}` | Approved prototype — the feel reference. READ ONLY |
 | `public/index.html` | Fonts link (line 18) — becomes root `index.html` in Phase 0 |
-| `src/Routes.js` | Router v5 Switch, 14 public+gated paths + 404 — only `/` mount + chrome change |
+| `src/Routes.js` | Router v5 `Switch`; route wiring lives here, with coverage in `e2e/routes.spec.js` |
 | `src/styles/theme.css` | Legacy `:root` tokens — DO NOT TOUCH values (P2 collision) |
 | `src/pages/home.js` | Old home — unmounted in integration, left in tree (P4) |
 | `api/`, `src/auth/`, `src/pages/essay_studio/` | Untouched by both executors |
@@ -244,8 +244,8 @@ access — use `define`/env-compat), Jest→Vitest (all 8 existing `*.test.js`),
 → `vite build`/`dist`, `@tailwindcss/vite`, `shadcn init`, install Playwright + §5 d3 deps.
 ✅ **Gate 0:** Playwright drives a real browser through **every route in `src/Routes.js`**:
 `/`, `/sign-in`, `/permit`, `/license`, `/articlewriter`, `/sat-resources`, `/sat-signup`,
-`/pull`, `/emoji`, `/be-my-girlfriend`, `/college`, `/major`, `/apply`, `/studio`,
-`/transfer`, plus a 404 URL. Each renders without console errors/pageerrors. Gated routes:
+`/mom`, `/mum`, `/pull`, `/emoji`, `/be-my-girlfriend`, `/college`, `/major`, `/apply`,
+`/studio`, `/transfer`, plus a 404 URL. Each renders without console errors/pageerrors. Gated routes:
 verified to their gate screen; full authed flows (Clerk sign-in, essay-studio editor+vim)
 exercised only if creds exist in `.env.local`, else logged in status for Oliver. All 8
 Vitest suites green. `/api` verified on a Vercel preview deploy.
@@ -308,7 +308,7 @@ suite re-runs against the real app (not the harness).
 ✅ **FINAL GATE:** all previous gates re-pass on `/` in the integrated app; first visit
 lands in graph; TERM shows holding screen and toggling back restores graph state; route
 JS ≤ 180KB gz pre-graph-chunk; Lighthouse on `/` ≥ 90 perf / ≥ 95 a11y; Playwright full
-suite green (14 routes + graph specs); **ship-check** run; Vercel **preview** deployed
+suite green (route checks + graph specs); **ship-check** run; Vercel **preview** deployed
 (NOT production — L5) and URL logged in the status header.
 
 ## 7 · Resume protocol (fresh agent, cold start)

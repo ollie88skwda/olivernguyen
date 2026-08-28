@@ -13,8 +13,8 @@ import RequireClerk, { clerkKey } from "./auth/RequireClerk";
 
 // X-3 perf budget (plan §6 FINAL GATE): "/" route JS ≤ 180KB gz pre-graph-
 // chunk. Legacy routes are lazy so their page code never rides in the entry
-// chunk; each renders under Suspense with a full-height blank (page CSS +
-// theme bg paint on chunk arrival — legacy bodies themselves are unchanged).
+// chunk; each renders under Suspense with a full-height fallback. Frozen legacy
+// bodies stay unchanged unless a route-specific restyle owns their stylesheet.
 const Permit = lazy(() =>
   import("./pages/driving/permit.js").then((m) => ({ default: m.Permit })),
 );
@@ -78,7 +78,7 @@ const ClerkBridge = ({ children }) => {
 // every route carries it. I-1.5: src/chrome/SiteChrome replaces the old
 // pages/top_bar (grain retired, /debt dropped, TERM|GRAPH toggle added);
 // top_bar.js stays in the tree unmounted (P4 policy).
-// /be-my-girlfriend is full-bleed with its own art direction and opts out.
+// /be-my-girlfriend and the restored /mom + /mum page opt out of chrome.
 const NO_CHROME = ["/be-my-girlfriend", "/bemygirlfriend", "/girlfriend", "/mom", "/mum"];
 
 const SiteChrome = () => {

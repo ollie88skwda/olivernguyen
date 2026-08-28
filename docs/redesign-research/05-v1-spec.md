@@ -47,8 +47,10 @@ all other routes → existing pages wrapped in new shared chrome (§6.4); explic
   move individual pages onto sakura without changing route behavior
 ```
 
-No new routes in v1. React Router v5 stays untouched. `Routes.js` keeps its `Switch`; the shared
-`SiteChrome` and `Home` change, while explicit restyle lanes may update individual page surfaces.
+No new user-facing routes are required by the home redesign. React Router v5 stays untouched.
+`Routes.js` keeps its `Switch`; the shared `SiteChrome` and `Home` change, while explicit restyle
+lanes may update individual page surfaces. The restored `/mom` and `/mum` aliases remain legacy
+chrome opt-outs; dev-only `/_components` is registered separately.
 
 ### 2.2 Single source of truth: `src/content/site.js`
 
@@ -133,9 +135,9 @@ Adding a project = adding one entity object; both modes pick it up.
 
 How the currently-text-only public pages will be represented **later** in each mode. V1 ships
 them under the new chrome; route-specific restyles are recorded in their coverage documents.
-`/sat-resources` now uses its intentional Sakura empty state, while the table remains the
-committed direction for later page content (concretely: every page below already gets an
-`entities[]` stub with `kind: "page"` in v1 so both modes can link to them).
+`/sat-resources` now uses its intentional Sakura empty state. The table remains the committed
+direction for later page content; pages represented in v1 get an `entities[]` stub with
+`kind: "page"` so both modes can link to them.
 
 | Route | Content today | Terminal treatment (later) | Graph treatment (later) | Phase |
 |---|---|---|---|---|
@@ -149,6 +151,7 @@ committed direction for later page content (concretely: every page below already
 | `/college` (+ gated children) | hub for private tools | sakura hub with placeholder copy, gate badges, and links; auth flows unchanged | same page in both modes; theme and mode remain independent | shipped in the `/college` restyle lane |
 | `/sign-in`, `/studio`, `/transfer`, `/major`, `/apply` | private/gated | not represented (never in public index) | not represented | never |
 | `/be-my-girlfriend` | full-bleed, own art | opts out of chrome (today's `NO_CHROME` behavior preserved) | not represented | never |
+| `/mom`, `/mum` | personal mobile page; `/mom` is canonical | opts out of chrome; aliases share the restored page | not represented | never |
 
 Note: the current sidebar links to `/debt`, which has no route in `Routes.js` (404s). Drop it
 from the new chrome nav; flag to owner rather than silently re-adding.
@@ -466,7 +469,7 @@ Replaces `top_bar.js` on all chromed routes:
 - **Remaining legacy routes** render inside the chrome with sakura tokens applied to chrome only;
   page bodies keep their existing stylesheets. Explicit restyle lanes are the exception — `/college`
   now mounts its own `.sakura` surface. Grain overlay retired; `ScrollProgress` remains unmounted.
-- `NO_CHROME` list behavior preserved exactly.
+- `NO_CHROME` list behavior is preserved, including the restored `/mom` and `/mum` aliases.
 
 ---
 
@@ -562,8 +565,8 @@ Run `ship-check` at every UI-facing gate.
 Per 02-libraries Path C: Vite + `@vitejs/plugin-react` (.js-as-JSX config), root
 `index.html`, env vars (incl. the dynamic `process.env.REACT_APP_` access), Jest→Vitest
 (3 test files), `vercel.json` build/output, `@tailwindcss/vite`, `shadcn init`.
-✅ **Gate:** all 14 routes E2E-clicked in a real browser (Playwright) — sign-in flow,
-passphrase gates, essay studio editor + vim, `/api` functions on a Vercel preview.
+✅ **Gate:** every route in `src/Routes.js` is E2E-clicked in a real browser (Playwright) —
+sign-in flow, passphrase gates, essay studio editor + vim, `/api` functions on a Vercel preview.
 Existing tests green under Vitest. No visual regressions on legacy pages.
 
 **Phase 1 — Foundations: tokens, content model, chrome (~2 days)**

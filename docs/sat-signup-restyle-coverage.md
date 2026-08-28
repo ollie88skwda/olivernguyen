@@ -14,8 +14,8 @@ Every visual aspect of the restyled placeholder maps to a brand source.
 | Images/data graphics | None | None | No graphics rendered |
 | Motion | None | None | Static placeholder |
 | Responsive behavior | Side padding 24px, then 18px at 720px | Sakura ladder side padding; phone breakpoint at 767px | `@media (max-width: 767px)` |
-| Loading/error/empty states | Lazy-route fallback; placeholder copy | Lazy route and fallback unchanged; placeholder states its next step | `Routes.js`; page copy |
+| Loading/error/empty states | Lazy-route fallback; placeholder copy | Sakura-scoped lazy fallback with `var(--bg)` and `aria-busy`; placeholder states its next step | `Routes.js`; page copy |
 
 **Unmapped aspects:** none.
 
-**Hard-coded visual values:** none. Authorized functional layout literal: `min-height: 100dvh` on `.sat-signup` for full-viewport coverage; it is not a Sakura visual token. Named brand rules also permit `70ch` for the body measure and `767px` for the phone breakpoint.
+**Hard-coded visual values:** none. Authorized functional layout literals: `min-height: 100dvh` on `.sat-signup` and the `SATSignupLoading` fallback for full-viewport coverage; neither is a Sakura visual token. Named brand rules also permit `70ch` for the body measure and `767px` for the phone breakpoint.
