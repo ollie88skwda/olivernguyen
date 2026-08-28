@@ -133,7 +133,7 @@ export const EvidenceLog = ({ doc, editing, updateDoc }) => {
 
   return (
     <section id="evidence" className="mj-sec">
-      <SectionHead eyebrow="S8 / Evidence log" title="Why The Answer Moved" />
+      <SectionHead kicker="S8 / Evidence log" title="Why The Answer Moved" />
 
       <p className="mj-hint">
         Every time something you find out changes a number, it gets a dated row here. Newest first.

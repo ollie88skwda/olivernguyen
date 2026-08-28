@@ -179,7 +179,7 @@ const AddSchool = ({ updateDoc }) => {
 
 export const SwitchYard = ({ doc, editing, updateDoc }) => (
   <section id="switchyard" className="mj-sec">
-    <SectionHead eyebrow="S5 / Switchyard" title="Which Doors Stay Open" />
+    <SectionHead kicker="S5 / Switchyard" title="Which Doors Stay Open" />
 
     <p className="mj-hint">
       Picking a major is mostly a question about how easily you can change your mind later, and a

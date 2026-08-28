@@ -93,7 +93,7 @@ export const Duel = ({ doc, derived, updateDoc }) => {
   if (pairs.length === 0) {
     return (
       <section id="weights" className="mj-sec">
-        <SectionHead eyebrow="S2 / Weights" title="You Never Type A Weight" />
+        <SectionHead kicker="S2 / Weights" title="You Never Type A Weight" />
         <p className="mj-hint">Add at least two criteria and the matchups appear here.</p>
       </section>
     );
@@ -149,7 +149,7 @@ export const Duel = ({ doc, derived, updateDoc }) => {
 
   return (
     <section id="weights" className="mj-sec">
-      <SectionHead eyebrow="S2 / Weights" title="You Never Type A Weight" />
+      <SectionHead kicker="S2 / Weights" title="You Never Type A Weight" />
 
       <p className="mj-hint">
         If I asked you how important salary is out of 100, you would make something up. Nobody can

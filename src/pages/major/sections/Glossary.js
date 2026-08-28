@@ -6,7 +6,7 @@ import { GLOSSARY } from '../glossary';
 // them. Same source as the <Tip> bubbles, so the two can never disagree.
 export const Glossary = () => (
   <section id="glossary" className="mj-sec">
-    <SectionHead eyebrow="S9 / Glossary" title="Every Term On This Page" />
+    <SectionHead kicker="S9 / Glossary" title="Every Term On This Page" />
 
     <p className="mj-hint">
       Nothing here is harder than multiplication and counting. The names sound worse than the ideas.

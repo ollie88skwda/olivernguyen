@@ -37,7 +37,7 @@ export const Assumptions = ({ doc, editing, updateDoc }) => {
 
   return (
     <section id="assumptions" className="mj-sec">
-      <SectionHead eyebrow="S7 / Assumptions" title="Your Beliefs, Written Down As Work" />
+      <SectionHead kicker="S7 / Assumptions" title="Your Beliefs, Written Down As Work" />
 
       <p className="mj-hint">
         None of these are facts yet. They are things you said, sitting in the model and moving the

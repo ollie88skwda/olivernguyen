@@ -113,7 +113,7 @@ export const Status = ({ doc, derived }) => {
 
   return (
     <section id="status" className="mj-sec">
-      <SectionHead eyebrow="S0 / Status" title="Where It Stands" />
+      <SectionHead kicker="S0 / Status" title="Where It Stands" />
 
       <div className="mj-status">
         <Dial score={confidence.score} label={confidence.label} />
@@ -166,7 +166,9 @@ export const Status = ({ doc, derived }) => {
               <CardContent>
                 <div className="mj-chips">
                   <Badge tone={flip >= 0.2 ? 'warning' : 'neutral'} className="mj-chip">
-                    changes the winner {pct(flip)}% of the time
+                    <Tip term="flip-fraction">
+                      changes the winner {pct(flip)}% of the time
+                    </Tip>
                   </Badge>
                   {unknown.effort && <Badge className="mj-chip">{unknown.effort}</Badge>}
                   {(unknown.criteria || []).map((id) => (

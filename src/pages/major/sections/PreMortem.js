@@ -130,7 +130,7 @@ export const PreMortem = ({ doc, editing, updateDoc }) => {
 
   return (
     <section id="premortem" className="mj-sec">
-      <SectionHead eyebrow="S6 / Pre-mortem" title="It Is 2032 And This Was Wrong" />
+      <SectionHead kicker="S6 / Pre-mortem" title="It Is 2032 And This Was Wrong" />
 
       <p className="mj-hint">
         A <Tip term="premortem">pre-mortem</Tip> is the one part of this page the arithmetic cannot

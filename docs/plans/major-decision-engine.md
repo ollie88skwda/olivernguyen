@@ -179,6 +179,7 @@ An `EDIT` toggle flips cells, weights, and notes into inputs; debounced save, mo
 | Surfaces/cards/panels | Rounded legacy cards and panels | `BRAND.md §4/§9` / `Card` | `.mj-card`, `.mjc-form`, `.mjc-notes`, `.plain` |
 | Text and type roles | Big Shoulders, legacy mono, mixed local sizes | `BRAND.md §7` / `Display` / `MonoLabel` | `major.css` `--font-*`, `--fs-*`; brand components |
 | Spacing and layout | Page-local gaps and section rhythm | `BRAND.md §5` / `--s-*` | `.mj-shell`, `.mj-sec`, page layout selectors |
+| Evidence table geometry | Fixed date/source columns (`108px` / `26%`) | `BRAND.md §5` / tabular data geometry | `.mjc-col-date`, `.mjc-col-src`; explicitly flagged as data geometry |
 | Controls and inputs | Bespoke buttons, fields, and selectors | `BRAND.md §4/§8` / UI primitives | `Button`, `Input`, `Select`, `Textarea`, `Checkbox`, `Progress` |
 | Links and states | Legacy warning/good colours and hover states | `BRAND.md §2/§6` / state tokens | `--warning`, `--success`, `--error`, focus rings, 140ms transitions |
 | Icons and marks | Inline legacy marks | `BRAND.md §8` / `Glyph` | `Status` uses `Glyph name="sep"`; no decorative SVG icons |
@@ -189,4 +190,4 @@ An `EDIT` toggle flips cells, weights, and notes into inputs; debounced save, mo
 
 **Unmapped aspects:** none. The dial, board, ridges, tornado, and switchyard geometry are flagged as data encodings; all visible colour, type, stroke, fill, spacing, radius, and motion values map to the sources above.
 
-**Hard-coded visual values:** none outside flagged data-graphic geometry and scale encodings; all UI values use Sakura tokens or library component rules.
+**Hard-coded visual values:** none outside flagged data-graphic and tabular data geometry; all UI values use Sakura tokens or library component rules.
