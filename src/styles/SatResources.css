@@ -1,0 +1,27 @@
+/* /sat-resources — empty-state page composition (legacy restyle lane).
+ *
+ * Mounted on `.sakura` (the tokens in sakura.css supply the background,
+ * text and sans face). Everything below is composition only, and every value
+ * is a BRAND.md token — see BRAND.md §5 (spacing ladder) and §5 body measure.
+ */
+
+.sat-resources {
+  min-height: 100dvh;
+  box-sizing: border-box;
+  /* Clear the fixed 64px chrome bar, then editorial space. The bar offset is
+     chrome's own recipe (chrome.css: --s-16 + --s-8); both are §5 rungs. */
+  padding: calc(var(--s-16, 64px) + var(--s-8, 32px)) var(--s-6, 24px) var(--s-16, 64px);
+}
+
+.sat-resources__column {
+  /* §5: body measure caps at ~70ch. The section head and status pill share
+     the same editorial column. */
+  max-width: 70ch;
+  margin: 0 auto;
+}
+
+.sat-resources__status {
+  /* §5: row gap inside a group. The pill is a chip, not a stretched band —
+     it sits below the section head's hairline rule. */
+  margin-top: var(--s-6);
+}
