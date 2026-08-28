@@ -198,6 +198,35 @@ test.describe("site chrome — R-C4", () => {
     await expect(pull).toBeFocused();
   });
 
+  test("escape and overlays clear terminal chord state", async ({ page }) => {
+    await page.goto("/?mode=terminal&theme=light&still");
+    await expect(page.locator("h1.name")).toBeVisible();
+    const prompt = page.locator("#term-prompt-input");
+    const mode = page.getByTestId("sb-mode");
+
+    await prompt.focus();
+    await page.keyboard.type("g");
+    await expect(mode).toHaveText("g‥");
+    await page.keyboard.press("Escape");
+    await expect(mode).toHaveText("-- NORMAL --");
+    await page.keyboard.type("g");
+    await expect(mode).toHaveText("g‥");
+    await page.keyboard.press("Escape");
+
+    await page.keyboard.press("Control+g");
+    await page.keyboard.press("Control+k");
+    await expect(page.getByTestId("term-palette")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByTestId("sb-prefix")).toHaveCount(0);
+
+    await prompt.focus();
+    await page.keyboard.type("g");
+    await expect(mode).toHaveText("g‥");
+    await page.getByRole("button", { name: "Open account menu" }).click();
+    await expect(mode).toHaveText("-- NORMAL --");
+    await page.keyboard.press("Escape");
+  });
+
   test("terminal prompt regains focus after pane controls", async ({ page }) => {
     await page.goto("/?mode=terminal&theme=light&still");
     await expect(page.locator("h1.name")).toBeVisible();

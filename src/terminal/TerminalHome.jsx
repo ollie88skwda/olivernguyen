@@ -167,6 +167,38 @@ export default function TerminalHome({ devHook, autoboot = true }) {
     return () => mq.removeEventListener('change', onChange);
   }, []);
 
+  const clearPendingG = useCallback(() => {
+    pendingG.current = 0;
+    setSbOverride('');
+  }, []);
+
+  const clearPendingPrefixes = useCallback(() => {
+    if (psRef.current.prefix.mode !== 'idle') {
+      setPs((s) => ({ ...s, prefix: createPrefixState() }));
+    }
+    if (pendingG.current) clearPendingG();
+  }, [clearPendingG]);
+
+  /* ---- overlays (C-2.2): focus returns to the prompt on close ---- */
+  const closeOverlays = useCallback(() => {
+    clearPendingPrefixes();
+    setPaletteOpen(false);
+    setHelpOpen(false);
+    promptRef.current?.focus();
+  }, [clearPendingPrefixes]);
+
+  const openPalette = useCallback(() => {
+    clearPendingPrefixes();
+    setHelpOpen(false);
+    setPaletteOpen(true);
+  }, [clearPendingPrefixes]);
+
+  const openHelp = useCallback(() => {
+    clearPendingPrefixes();
+    setPaletteOpen(false);
+    setHelpOpen(true);
+  }, [clearPendingPrefixes]);
+
   /* usable cell dims of the pane area — feeds the 40ch×12row split floor */
   const measureRef = useRef(null);
   const measureDims = useCallback(() => {
@@ -198,18 +230,6 @@ export default function TerminalHome({ devHook, autoboot = true }) {
       body.style.overflow = prev[1];
       setStill(false);
     };
-  }, []);
-
-  /* ---- overlays (C-2.2): focus returns to the prompt on close ---- */
-  const closeOverlays = useCallback(() => {
-    setPaletteOpen(false);
-    setHelpOpen(false);
-    promptRef.current?.focus();
-  }, []);
-
-  const openHelp = useCallback(() => {
-    setPaletteOpen(false);
-    setHelpOpen(true);
   }, []);
 
   /* ---- §5 commands→panes surface: panes.open (core's copy of the
@@ -401,11 +421,6 @@ export default function TerminalHome({ devHook, autoboot = true }) {
     [api, focusedBufferEl],
   );
 
-  const clearPendingG = useCallback(() => {
-    pendingG.current = 0;
-    setSbOverride('');
-  }, []);
-
   const onBareKey = useCallback(
     (key) => {
       if (key !== 'g' && pendingG.current) clearPendingG();
@@ -453,12 +468,11 @@ export default function TerminalHome({ devHook, autoboot = true }) {
   useEffect(() => {
     const onKey = (e) => {
       if (isChromeMenuTarget(e.target)) {
-        if (psRef.current.prefix.mode !== 'idle') {
-          setPs((s) => ({ ...s, prefix: createPrefixState() }));
-        }
+        clearPendingPrefixes();
         return;
       }
       if (isPaletteCombo(e)) {
+        clearPendingPrefixes();
         e.preventDefault();
         e.stopPropagation();
         setHelpOpen(false);
@@ -471,6 +485,7 @@ export default function TerminalHome({ devHook, autoboot = true }) {
       if (!overlayRef.current) {
         const r = prefixStep(psRef.current.prefix, e);
         if (r.handled) {
+          clearPendingG();
           e.preventDefault();
           e.stopPropagation(); // an armed prefix owns the key — not the input
         }
@@ -508,10 +523,7 @@ export default function TerminalHome({ devHook, autoboot = true }) {
       }
     };
     const onChromePointerDown = (e) => {
-      if (!isChromeMenuTarget(e.target)) return;
-      if (psRef.current.prefix.mode !== 'idle') {
-        setPs((s) => ({ ...s, prefix: createPrefixState() }));
-      }
+      if (isChromeMenuTarget(e.target)) clearPendingPrefixes();
     };
     window.addEventListener('keydown', onKey, true);
     window.addEventListener('pointerdown', onChromePointerDown, true);
@@ -519,7 +531,7 @@ export default function TerminalHome({ devHook, autoboot = true }) {
       window.removeEventListener('keydown', onKey, true);
       window.removeEventListener('pointerdown', onChromePointerDown, true);
     };
-  }, [closeOverlays, openHelp, measureDims]);
+  }, [clearPendingG, clearPendingPrefixes, closeOverlays, openHelp, measureDims]);
 
   /* ---- pane mouse parity (Pane.jsx contract) ---- */
   const onPaneClick = useCallback(
@@ -550,10 +562,15 @@ export default function TerminalHome({ devHook, autoboot = true }) {
         runner.run(cmdEl.dataset.cmd, { autotype: true });
         return;
       }
-      if (e.target.closest('[data-act="palette"]')) setPaletteOpen(true);
+      if (e.target.closest('[data-act="palette"]')) openPalette();
     },
-    [runner],
+    [openPalette, runner],
   );
+
+  const onPromptEscape = useCallback(() => {
+    clearPendingPrefixes();
+    promptRef.current?.clear();
+  }, [clearPendingPrefixes]);
 
   const canRefocus = useCallback(() => !overlayRef.current, []);
 
@@ -608,6 +625,7 @@ export default function TerminalHome({ devHook, autoboot = true }) {
         history={runner.history}
         onModeChange={setSbMode}
         onBareKey={onBareKey}
+        onEscape={onPromptEscape}
         canRefocus={canRefocus}
       />
       <StatusBar
@@ -615,7 +633,7 @@ export default function TerminalHome({ devHook, autoboot = true }) {
         windows={WINDOWS}
         active={activeWindow}
         onWindow={(n) => runner.run(windowByN(n).cmd, { autotype: true })}
-        onPalette={() => setPaletteOpen(true)}
+        onPalette={openPalette}
         mode={sbOverride || sbMode}
         paneCount={sb.paneCount}
         zoomed={sb.zoomed}
