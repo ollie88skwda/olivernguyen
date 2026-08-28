@@ -1,5 +1,5 @@
 // ⚠️ UNMOUNTED (graph-v1 X-1, plan P4): "/" now mounts src/home/Home.jsx
-// (graph mode / terminal holding screen). This file is intentionally left in
+// (GraphHome / TerminalHome). This file is intentionally left in
 // the tree, not deleted — restore by re-pointing the import in src/Routes.js.
 import React, { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";

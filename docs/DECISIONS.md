@@ -446,7 +446,8 @@ text line.
 - The **light-terminal and dark-graph themes** remain to derive, and are now the next job
   (follow-on 1 below). `--border-strong` and `--error-hi` gain light-mode values with them.
   *→ Done 2026-08-26, D-19 … D-22. Scheme: `docs/THEMES.md`.*
-- `src/graph/graph.css` still sizes its display type for the condensed face Big Shoulders.
+- ~~`src/graph/graph.css` still sized its display type for the condensed face Big Shoulders.~~
+  **Closed by the graph type pass** (G-2.6); it now uses the Familjen display role.
 
 ---
 

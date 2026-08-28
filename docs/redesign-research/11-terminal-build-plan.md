@@ -87,13 +87,15 @@ of every work session; log anything a human must decide under "Notes for Oliver"
 ## 1 · Context summary (read the sources when detail is needed)
 
 Doc 10's build is DONE (preview only, L5): the graph lives at `/`, and the TERM toggle
-shows a one-line dark holding screen. **This build replaces that holding screen with the
-real terminal mode.** Infra that already exists and must be reused, not rebuilt:
+now mounts the shipped terminal mode. This plan records the completed replacement of the
+old holding screen. Infra that already exists and must be reused, not rebuilt:
 
 - Vite (8) + Tailwind v4, Vitest (216 tests) + Playwright (`e2e/`), `yarn contrast`.
-- `src/styles/sakura.css` — BOTH token sets under `.sakura` (dark keys off
-  `html[data-mode="terminal"]`), incl. `--term-*` tokens + font vars. Contrast-gated.
-- Fonts loaded: Big Shoulders / Hanken Grotesk / **Martian Mono** (mono — wide; §3.3).
+- `src/styles/sakura.css` — BOTH token sets under `.sakura` (ladder keys off
+  `html[data-theme="light|dark"]`, interface off `data-mode`), incl. `--term-*` tokens + font vars.
+  Contrast-gated.
+- Fonts loaded: Familjen Grotesk / Hanken Grotesk / **JetBrains Mono** bodies + **Martian Mono**
+  labels (§3.3).
 - `src/mode/ModeProvider.jsx` — `useMode()`, persistence, URL sync, and the
   **cancelable `'on:set-mode'` CustomEvent contract** (detail `'terminal'|'graph'`,
   listener preventDefaults = handled).
@@ -114,8 +116,8 @@ one live prompt, tmux statusbar) **plus** Herdr-style panes per `09-herdr-panels
 | L2 | Graph stays the flagship + default; terminal lives behind the TERM toggle (doc 10 L2/P3) |
 | L3 | Immersion model per 07: page NEVER scrolls; sections PRINT into a scrollback buffer; one always-live prompt; boot = the site runs its own first command. Feel reference = `prototype/terminal/` v2 |
 | L4 | Herdr panes per 09 §C: binary split tree, prefix-key grammar, named panes, max 4 |
-| L5 | Launch (doc 10 L5) holds until BOTH modes gate — this build's FINAL GATE is what lifts it; production flip stays Oliver's call |
-| L6 | Fonts L9 (doc 10): Martian Mono for all terminal text; Big Shoulders for the printed name only |
+| L5 | Both modes are gated; the production flip stays Oliver's call |
+| L6 | Fonts follow `BRAND.md` §7: JetBrains Mono for read-heavy terminal text, Martian Mono for labels, Familjen Grotesk for display |
 | L7 | Content honesty: no fake commands, no sudo/rm jokes (one `E492`-class joke allowed — the command line is real); `quit` easter-egg line from the prototype stays |
 
 ## 2 · Plan-level decisions (made here; executors follow, don't reopen — doc 10's P1–P6 remain in force)
@@ -129,7 +131,7 @@ one live prompt, tmux statusbar) **plus** Herdr-style panes per `09-herdr-panels
 | P5 | **05 §3 (scrolling column, scroll-scrub, Magic UI components) is superseded by 07** — 07 explicitly amends it. Week replay = `day N` printing that day's beats + the `replay` pane program. No pinned scrub, no FlickeringGrid/Terminal components. | 07 §4 "spec fallout" paragraph. |
 | P6 | **TerminalHome is lazy-imported by Home** — terminal is never the first paint (P2), so the chunk loads only when mode flips. Network-asserted like graph's mobile rule. `/` entry budget ≤ 180KB gz unchanged. | Perf gate parity. Terminal has no heavy deps; the lazy split is cheap insurance. |
 | P7 | **Pane grammar = 09 §C verbatim:** prefix `Ctrl+G` (Cmd+G also accepted), the 8 bindings, one-shot prefix + sticky resize mode, 1.2s pending expiry shown in statusbar; limits ≤4 panes / split depth 2 per axis / min ~40ch×12 rows (violations → statusbar E-error); boot opens 1 pane; artifact commands auto-split RIGHT (main stays LEFT) with a toast advertising `^G x`; nested-flex render; zoom = CSS visibility, tree untouched; no layout persistence. | Researched + decided in 09; Herdr is Oliver's own muscle memory. |
-| P8 | **CRT texture: cut entirely.** No scanlines, no vignette. | 07 calls skipping defensible; slop-list bait; one less RM/contrast knob. |
+| P8 | **CRT texture: one scanline layer at 3%; no vignette.** | D-16 reinstated the scanline as terminal's single texture; 3% stays below the §9 ceiling and is disabled under reduced motion. |
 | P9 | **Mobile = single pane + touch-first (07/09):** coarse pointer → input NOT auto-focused (software keyboard never pops uninvited), document-click refocus disabled (tap the prompt line to type), statusbar tabs + printed `[ … ]` buttons (≥44px) carry all navigation, palette opens from a tappable statusbar chip, buffer scrolls by touch natively, splits disabled — auto-splits print in-buffer instead. Below ~880px OR coarse pointer. | 07: "no forced keyboard; printed blocks + tappable tabs already carry navigation." 09: Herdr itself stacks below a width threshold. |
 
 ## 3 · Design model folded in
@@ -157,10 +159,10 @@ one live prompt, tmux statusbar) **plus** Herdr-style panes per `09-herdr-panels
 the ranger preview pane), `help`. No graph minimap (09 parked it).
 
 ### 3.3 Type pass (mirror of doc 10 G-2.6)
-The prototype used the system mono stack; production uses **Martian Mono, which is much
-wider**. `--cell`/`--row` rhythm, statusbar density, side-frame widths (`SP_COLS`-style
-constants) and font sizes must be retuned against prototype screenshots — a dedicated
-task (C-3.4), not ad-hoc tweaks. Big Shoulders only on the printed name + contact line.
+The prototype used the system mono stack; production uses **JetBrains Mono for body text**
+plus **Martian Mono for labels**, per `BRAND.md` §7. `--cell`/`--row` rhythm, statusbar density,
+side-frame widths (`SP_COLS`-style constants) and font sizes were retuned against prototype
+screenshots in task C-3.4, not with ad-hoc tweaks. Familjen Grotesk supplies display text.
 
 ### 3.4 What changes vs the prototype
 Content comes from `site.js` via terminalModel (zero hardcoded copy — the prototype's
@@ -176,7 +178,7 @@ the old `#sidepane` is dropped — panes replace it); intents come from the shar
 | `docs/redesign-research/09-herdr-panels.md` | Pane grammar §A/§C, tree sketch, a11y |
 | `prototype/terminal/{index.html,app.js,styles.css,USAGE.md}` | Approved feel reference. READ ONLY |
 | `src/content/site.js` · `src/intents/registry.js` · `src/graph/**` | READ ONLY (P4) |
-| `src/home/Home.jsx` | exec-term-core — Integration only: TerminalHolding → lazy TerminalHome |
+| `src/home/Home.jsx` | exec-term-core — Integration only: lazy TerminalHome |
 | `src/mode/ModeProvider.jsx` · `src/chrome/**` | Untouched (contract consumers only) |
 | **NEW** `src/terminal/TerminalHome.jsx` | core — mount root, screen grid, THE window key listener, composes PaneGrid |
 | **NEW** `src/terminal/terminal.css` | core — screen/buffer/prompt/statusbar/cell-grid styles |

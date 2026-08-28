@@ -21,16 +21,13 @@
 //   menu icon  → <Icon name="menu">             (D-29; see below)
 //
 // R-C3 removed three things on brand grounds WITHOUT rendering any of them.
-// All three were rendered both ways on 2026-08-26 and settled as D-29
-// (docs/redesign-research/14-chrome-restorations.md). Outcome: 1 restored,
-// 2 confirmed removed.
+// The A/B was then settled by D-29 and D-30
+// (docs/redesign-research/14-chrome-restorations.md).
 //
-//   1. The bar's backdrop-filter blur — STAYS OUT, §9 upheld. Terminal mode is
-//      pixel-identical (100dvh, nothing scrolls under the bar); on a legacy
-//      route the navy headline smears up through the pink bar; and turning it
-//      on promotes the fixed bar to its own composited layer, which makes
-//      Chromium re-rasterise the whole graph canvas soft — node subtitles 200px
-//      BELOW the bar go visibly fuzzy. Same failure family as D-27's note.
+//   1. The bar's backdrop-filter blur — restored only for the desktop graph home
+//      under §9. It stays out of terminal, phone and legacy routes: terminal is
+//      100dvh, while legacy pages mix navy bodies with the pink bar. The graph
+//      rasterisation concern was a tour-timing artefact, not a blur regression.
 //   2. The ☰ hamburger — RESTORED, as an ICON (D-29). `…` means "more of this
 //      list"; this control opens site navigation. And ☰ is not in JetBrains
 //      Mono (11.44px advance against the mono's 7.81px — a system fallback is
@@ -39,9 +36,8 @@
 //   3. <ScrollProgress> — STAYS OUT. Measured: on "/" scrollHeight ===
 //      innerHeight in all four combinations at 1440 and 375, and mounted it
 //      renders at opacity 0 reading "00%". Its four probe ids exist on NO route
-//      on the site, so the section designator can never appear. Most remaining legacy
-//      routes scroll <=216px; only /permit really scrolls. See docs/OPEN-DECISIONS.md
-//      for the current count. Restoring it
+//      on the site, so the section designator can never appear. Seven of the eight
+//      remaining legacy routes scroll <=216px; only /permit really scrolls. Restoring it
 //      as-is also drags in .scroll-station from the frozen theme.css, which is
 //      backdrop-filter: blur(6px) over hardcoded cream — the same §9 violation
 //      rejected in (1). The component stays in the tree for

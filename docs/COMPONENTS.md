@@ -296,8 +296,8 @@ is **137.9 kB gz in graph mode and 150.8 kB gz in terminal mode**, against the 1
    `.kind-root .card .t` → `--fs-title-lg` in world units. Reviewed against 1440 and 375 renders in
    all four themes (`e2e/graph-home-shots.spec.js`).
 2. `index.html` still loads **Big Shoulders**, because the frozen legacy `:root` stack in
-   `src/styles/theme.css` points `--font-display` at it. Drop it from the font URL when the legacy
-   pages under `src/pages/` are restyled.
+   `src/styles/theme.css` points `--font-display` at it. Drop it from the font URL when the remaining
+   legacy pages under `src/pages/` are restyled.
 3. `e2e/legacy-visual.spec.js` → `/permit` fails on `redesign/terminal-v1` **before** this branch
    (verified by stashing). The `/pull` and `/college` cases pass. Unrelated pre-existing baseline drift.
 4. The chrome consumes the library on every route as of R-C3, so `components.css` and the Radix
