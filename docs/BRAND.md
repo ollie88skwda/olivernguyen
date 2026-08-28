@@ -1,11 +1,13 @@
 # BRAND.md — olivernguyen.com master design system
 
-**Status: LOCKED (2026-08-24, amended 2026-08-25 and 2026-08-26).** This file is the single source of
-truth for how the site looks and moves. Every component, page, and restyle must come from here.
+**Status: LOCKED (2026-08-24, amended 2026-08-25, 2026-08-26, and 2026-08-27).** This file is the
+single source of truth for how the site looks and moves. Every component, page, and restyle must come
+from here.
 
 The 2026-08-25 amendments (D-12 … D-18) add values; they reverse nothing. The 2026-08-26 amendment
 (D-29, §8) adds one name to the icon allow-list and one test for telling a glyph from an icon; §9's
-blur ban was re-tested against a render in the same pass and is **upheld unchanged**.
+blur ban was re-tested against a render in the same pass and is **upheld unchanged**. The 2026-08-27
+amendment (D-33, §10) confirms the shipped wordmark dot without changing it.
 
 Use these tokens. Do not invent new values. If something you need is not defined here, stop and
 ask — adding a token is a decision, not an implementation detail.
@@ -295,8 +297,8 @@ apparent thickness scales with icon size: draw an icon at the full 18px grid rat
 
 ## 10. Wordmark
 
-`oN.c` — set in Familjen Grotesk 700, with the dot in `--accent`. Reads as a domain and as
-initials at once; the dot is the same colour as the routing pulse.
+`oN.c` — set in Familjen Grotesk 700, with the dot in `--accent`; it reads as a domain and as
+initials at once.
 
 - Nav: ~20px. Minimum legible size: 12px.
 - Favicon / avatar: **`oN`** on `--bg`, square, 3px radius.

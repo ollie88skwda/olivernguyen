@@ -9,6 +9,16 @@ and deleting it there.
 
 ---
 
+## 2026-08-27 · The wordmark dot stays subtle
+
+### D-33 · The wordmark dot stays `--accent`
+Oliver chose **leave it subtle**. `BRAND.md` §10 now has one authority: the wordmark dot uses
+`--accent`. The shipped component remains unchanged; the jade routing pulse is unrelated.
+
+*Rejected:* jade on dark or a third colour, because either would change the shipped mark.
+
+---
+
 ## 2026-08-26 · The bar's labels get louder so the glass can get stronger
 
 ### D-32 · Bar labels are `--text`, nav hover is an UNDERLINE, and the veil opens to 50%
