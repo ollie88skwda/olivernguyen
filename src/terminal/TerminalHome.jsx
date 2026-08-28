@@ -571,7 +571,11 @@ export default function TerminalHome({ devHook, autoboot = true }) {
         completer={complete}
         onAmbiguous={(v) => {
           const matches = completionMatches(v);
-          if (matches.length > 1) api.printLine('mut', `matches: ${matches.join('  ')}`);
+          if (matches.length > 1) {
+            api.print(ln('mut', `matches: ${matches.join('  ')}`));
+            return true;
+          }
+          return false;
         }}
         history={runner.history}
         onModeChange={setSbMode}

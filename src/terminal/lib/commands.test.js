@@ -151,10 +151,10 @@ describe('complete()', () => {
     expect(complete('')).toBeNull();
   });
 
-  it('every COMMAND_WORDS entry is reachable from its first char', () => {
-    for (const w of COMMAND_WORDS) {
-      expect(complete(w[0])).not.toBeNull();
-    }
+  it('keeps ambiguous command prefixes visible and completes unique ones', () => {
+    expect(complete('c')).toBeNull();
+    expect(completionMatches('c')).toEqual(['cat ', 'cd ', 'clear', 'contact']);
+    expect(complete('ca')).toBe('cat ');
   });
 });
 

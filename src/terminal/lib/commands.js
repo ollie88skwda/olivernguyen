@@ -48,8 +48,11 @@ export const COMMAND_WORDS = [
   'quit',
 ];
 
-/** Pure Tab-completion: first match wins; preserves a `:` prefix; returns
- * null when nothing (or nothing new) matches. */
+/** Pure Tab-completion: recognizes an optional `:` prefix; returns null when
+ * nothing (or nothing new) matches. */
+const commandMatches = (value) =>
+  COMMAND_WORDS.filter((command) => command.startsWith(value));
+
 export function completionMatches(value, ids = entityIds) {
   const colon = value.startsWith(':') ? ':' : '';
   const bare = colon ? value.slice(1) : value;
@@ -58,6 +61,7 @@ export function completionMatches(value, ids = entityIds) {
     const prefix = cd[1].replace(/^\//, '');
     return ROUTE_DESTINATIONS.filter((d) => d.name.startsWith(prefix)).map((d) => `cd ${d.name}`);
   }
+  if (/^\S*$/.test(bare)) return commandMatches(bare);
   return [];
 }
 
@@ -77,7 +81,8 @@ export function complete(value, ids = entityIds) {
     const hit = ids().find((id) => id.startsWith(m[1]));
     if (hit) out = `open ${hit}`;
   } else {
-    out = COMMAND_WORDS.find((c) => c.startsWith(bare)) || null;
+    const matches = commandMatches(bare);
+    if (matches.length === 1) out = matches[0];
   }
   if (out == null) return null;
   const full = colon + out;

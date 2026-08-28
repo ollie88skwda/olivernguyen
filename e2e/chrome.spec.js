@@ -93,6 +93,64 @@ test.describe("site chrome — R-C4", () => {
     await expect(page.locator("html")).toHaveAttribute("data-mode", "terminal");
   });
 
+  test("theme choice persists in a fresh browser context", async ({ page, browser }) => {
+    await page.goto("/?mode=graph&theme=light");
+    await page.getByRole("button", { name: "Open account menu" }).click();
+    await page.getByRole("menuitemradio", { name: "Dark" }).click();
+
+    const freshContext = await browser.newContext({
+      baseURL: "http://localhost:3100",
+      colorScheme: "light",
+      storageState: await page.context().storageState(),
+    });
+    try {
+      const freshPage = await freshContext.newPage();
+      await freshPage.goto("/");
+      await expect(freshPage.locator("html")).toHaveAttribute("data-theme", "dark");
+      await freshPage.getByRole("button", { name: "Open account menu" }).click();
+      await expect(freshPage.getByRole("menuitemradio", { name: "Dark" })).toHaveAttribute(
+        "aria-checked",
+        "true",
+      );
+    } finally {
+      await freshContext.close();
+    }
+  });
+
+  test("menus retain keyboard focus in terminal mode", async ({ page }) => {
+    await page.goto("/?mode=terminal&theme=light");
+
+    await page.getByRole("button", { name: "Open account menu" }).click();
+    const light = page.getByRole("menuitemradio", { name: "Light" });
+    const dark = page.getByRole("menuitemradio", { name: "Dark" });
+    await page.keyboard.press("ArrowDown");
+    await expect(light).toBeFocused();
+    await page.keyboard.press("ArrowDown");
+    await expect(dark).toBeFocused();
+    await page.keyboard.press("Escape");
+
+    await page.getByRole("button", { name: "Open pages menu" }).click();
+    const home = page.getByRole("menuitem", { name: "Home" });
+    const pull = page.getByRole("menuitem", { name: "PULL" });
+    await page.keyboard.press("ArrowDown");
+    await expect(home).toBeFocused();
+    await page.keyboard.press("ArrowDown");
+    await expect(pull).toBeFocused();
+  });
+
+  test("terminal cd requests a linked public asset", async ({ page }) => {
+    await page.goto("/?mode=terminal&theme=light&still");
+    await expect(page.locator("h1.name")).toBeVisible();
+    const pdfResponse = page.waitForResponse(
+      (response) => new URL(response.url()).pathname === "/resume.pdf",
+    );
+    const prompt = page.locator("#term-prompt-input");
+    await prompt.fill("cd resume.pdf");
+    await prompt.press("Enter");
+    await expect(page.locator(".ln.echo .cmdtext").last()).toHaveText("cd resume.pdf");
+    expect((await pdfResponse).status()).toBe(200);
+  });
+
   // D-30 rides along here because this test already crosses the exact boundary
   // the blur is scoped to: graph home -> terminal, on the same page instance.
   // Folded in rather than added so the file's count stays 9 (as D-29 did).

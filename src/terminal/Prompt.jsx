@@ -71,7 +71,15 @@ const Prompt = forwardRef(function Prompt(
   /* document-click refocus, fine-pointer only; overlays veto via canRefocus */
   useEffect(() => {
     if (!finePointer()) return undefined;
-    const onDocClick = () => {
+    const onDocClick = (event) => {
+      const target = event.target;
+      if (
+        target instanceof Element &&
+        target.closest(
+          '[data-slot="dropdown-menu-content"], button, a, input, textarea, select, [role="menuitem"], [role="menuitemradio"], [tabindex]:not([tabindex="-1"])',
+        )
+      )
+        return;
       if (canRefocus && !canRefocus()) return;
       if (window.getSelection && String(window.getSelection())) return;
       inputRef.current?.focus({ preventScroll: true });
@@ -100,10 +108,14 @@ const Prompt = forwardRef(function Prompt(
       return;
     }
     if (e.key === 'Tab') {
-      e.preventDefault();
+      if (!el.value) return;
       const c = completer?.(el.value);
-      if (c != null) setInput(c);
-      else onAmbiguous?.(el.value);
+      if (c != null) {
+        e.preventDefault();
+        setInput(c);
+      } else if (onAmbiguous?.(el.value)) {
+        e.preventDefault();
+      }
       return;
     }
     if (e.key === 'ArrowUp') {

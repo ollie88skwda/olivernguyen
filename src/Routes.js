@@ -81,6 +81,14 @@ const ClerkBridge = ({ children }) => {
 // /be-my-girlfriend and the restored /mom + /mum page opt out of chrome.
 const NO_CHROME = ["/be-my-girlfriend", "/bemygirlfriend", "/girlfriend", "/mom", "/mum"];
 
+const isPublicAsset = (href) => {
+  try {
+    return /\.[^/]+$/.test(new URL(href, window.location.origin).pathname);
+  } catch {
+    return false;
+  }
+};
+
 const NavigationBridge = () => {
   const history = useHistory();
   React.useEffect(() => {
@@ -88,6 +96,10 @@ const NavigationBridge = () => {
       const href = event.detail;
       if (typeof href !== "string" || !href.startsWith("/")) return;
       event.preventDefault();
+      if (isPublicAsset(href)) {
+        window.location.assign(href);
+        return;
+      }
       history.push(href);
     };
     window.addEventListener("on:navigate", onNavigate);

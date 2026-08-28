@@ -429,6 +429,30 @@ test.describe("terminal core — Gate C1 (prompt, commands, sections, boot)", ()
     assertClean(errors);
   });
 
+  test("Tab only traps focus when a completion or match list is available", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await page.goto(STILL);
+    await page.waitForFunction(() => !!window.__term);
+    await bootDone(page);
+    const prompt = page.locator("#term-prompt-input");
+
+    await prompt.focus();
+    await page.keyboard.type("c");
+    await page.keyboard.press("Tab");
+    await expect(prompt).toBeFocused();
+    await expect(page.locator(".ln.mut").last()).toHaveText(
+      "matches: cat   cd   clear  contact",
+    );
+
+    await prompt.press("Escape");
+    await prompt.fill("zzz");
+    await prompt.press("Tab");
+    await expect(prompt).not.toBeFocused();
+    assertClean(errors);
+  });
+
   test("printed [data-cmd] buttons run commands (CTA → tools section)", async ({
     page,
   }) => {
