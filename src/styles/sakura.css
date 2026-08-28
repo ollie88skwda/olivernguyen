@@ -264,12 +264,7 @@ html[data-theme="light"][data-mode="terminal"] .sakura {
    * already ships for the real dossier. */
   --shadow-dossier: -18px 0 56px color-mix(in srgb, var(--text) 8%, transparent);
   --dossier-border: var(--border);
-  /* focus: 2px --accent-hi at 1px offset, the treatment terminal.css already
-   * ships. BRAND.md §4 fixes the focus-ring RADIUS (3px) but not its colour or
-   * width, so these two values were PICKED, not decided — they are the only
-   * visual tokens in the system with no brand authority behind them.
-   * Tracked as item 4 in docs/OPEN-DECISIONS.md. (This comment used to say
-   * "flagged in docs/COMPONENTS.md"; it never was — that flag did not exist.) */
+  /* Focus ring values ratified in BRAND.md §4 / DECISIONS.md D-33. */
   --focus-ring: var(--accent-hi);
   --focus-ring-w: 2px;
 }

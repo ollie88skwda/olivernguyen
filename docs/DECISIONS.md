@@ -9,6 +9,18 @@ and deleting it there.
 
 ---
 
+## 2026-08-27 · Focus rings get brand authority
+
+### D-33 · Focus rings use `--accent-hi` at `2px`
+The focus ring colour is `--accent-hi` and its width is `2px`. The existing 3px control radius
+remains unchanged. This ratifies the values already shipped; no visual change is intended.
+
+*Rejected:* 3px width, after comparing the 2px and 3px renders; 2px preserves the chosen treatment.
+
+Detail: `docs/BRAND.md` §4 and `src/styles/sakura.css`.
+
+---
+
 ## 2026-08-26 · The bar's labels get louder so the glass can get stronger
 
 ### D-32 · Bar labels are `--text`, nav hover is an UNDERLINE, and the veil opens to 50%

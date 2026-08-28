@@ -71,27 +71,6 @@ rewritten so only one sentence is normative.
 
 ---
 
-## 4 · The focus ring's colour and width
-
-**State:** open, and **the weakest-tracked item here** — it was never actually written down.
-`src/styles/sakura.css:268` carries a comment saying it is "flagged in docs/COMPONENTS.md". It is
-not. COMPONENTS.md only lists `--focus-ring` / `--focus-ring-w` in its derived-token table. That
-comment was pointing at a flag nobody ever added; this entry is the flag.
-
-`BRAND.md` §4 fixes the focus ring's **radius** (3px) and nothing else. The shipped values were
-picked, not decided:
-
-```css
---focus-ring: var(--accent-hi);
---focus-ring-w: 2px;
-```
-
-**Decided when:** the two values are ratified into `BRAND.md` §4 (or changed), logged in
-`DECISIONS.md`, and the stale sakura.css comment is corrected.
-
-**Do not skip on size.** Every keyboard user sees it on every control in the library, and it is the
-one visual token in the system with no brand authority behind it.
-
 ---
 
 ## 5 · Merge `feat/component-library`

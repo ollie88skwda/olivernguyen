@@ -147,6 +147,15 @@ misclicked. Nothing else joins this exception without a decision.
 On a coarse pointer **both** become `44px` per §1. Checkbox and switch are `24px` tall so an §8
 icon fits inside (D-17). All are 4px-ladder rungs.
 
+### Focus ring
+
+| Value | Applies to |
+|---|---|
+| `--accent-hi` | Focus ring colour |
+| `2px` | Focus ring width |
+
+The focus ring keeps the 3px control radius above. These values are fixed by D-33.
+
 ---
 
 ## 5. Spacing
