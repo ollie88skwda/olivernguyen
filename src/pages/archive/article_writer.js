@@ -24,13 +24,19 @@ export const ArticleWriter = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    const previousTitle = document.title;
     document.title = "Generate Article";
+
+    return () => {
+      document.title = previousTitle;
+    };
   }, []);
 
   const handleGenerateArticle = async (event) => {
     event.preventDefault();
     setLoading(true);
     setError(null);
+    setArticleHTML("");
     try {
       const response = await fetch("http://127.0.0.1:8000/generate-article", {
         method: "POST",
