@@ -1,7 +1,5 @@
 import React, { useMemo } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
-import SectionHeading from '../../../components/SectionHeading';
-import Reveal from '../../../components/Reveal';
+import { MonoLabel, SectionHead } from '@/components/brand';
 import Tip from '../../../components/Tooltip';
 
 const W = 800;
@@ -159,7 +157,6 @@ function closestPair(alternatives, beats) {
 }
 
 export const Ridges = ({ doc, derived }) => {
-  const reduce = useReducedMotion();
   const { monteCarlo } = derived;
   const { alternatives } = doc;
   const winRate = monteCarlo.winRate || {};
@@ -180,14 +177,14 @@ export const Ridges = ({ doc, derived }) => {
 
   return (
     <section id="uncertainty" className="mj-sec">
-      <SectionHeading eyebrow="S3 / Uncertainty" title="How Much The Three Overlap" />
+      <SectionHead eyebrow="S3 / Uncertainty" title="How Much The Three Overlap" />
 
-      <Reveal as="p" className="mj-hint">
+      <p className="mj-hint">
         You do not enter one number per box, you enter a <Tip term="range">range</Tip>. Then the page
         plays the decision out <Tip term="monte-carlo">10,000 times</Tip> and draws every result. Each
         hump is one major&apos;s <Tip term="distribution">distribution</Tip>. The overlap is the
         honest part.
-      </Reveal>
+      </p>
 
       {!chart && (
         <p className="mjb-empty">
@@ -197,38 +194,44 @@ export const Ridges = ({ doc, derived }) => {
       )}
 
       {chart && (
-        <Reveal className="mjb-ridges-wrap">
+        <div className="mjb-ridges-wrap">
+          {/* All strokes are token colours: the grid and baseline are the §9 hairline, the
+              ridges are the accent token at rank-scaled opacity — the opacity ladder is the
+              chart's encoding, the hue is the palette's. The draw-in animation is gone
+              (§6: scroll is opacity only). */}
           <svg
             className="mjb-ridges"
             viewBox={`0 0 ${W} ${H}`}
             role="img"
             aria-label={`Score distributions across 10,000 runs. Finishing first: ${summary}.`}
           >
-            <g stroke="rgba(18,34,49,.1)">
+            <g stroke="var(--border)">
               {Array.from({ length: GRID }, (_, i) => {
                 const x = r1(PAD + ((i + 1) / (GRID + 1)) * (W - PAD * 2));
                 return <line key={x} x1={x} y1={TOP - 4} x2={x} y2={BASE} />;
               })}
             </g>
-            <line x1="0" y1={BASE} x2={W} y2={BASE} stroke="rgba(18,34,49,.25)" strokeWidth="1" />
+            <line
+              x1="0"
+              y1={BASE}
+              x2={W}
+              y2={BASE}
+              stroke="var(--border-strong, var(--text-faint))"
+              strokeWidth="1"
+            />
 
             {chart.ridges.map((ridge) => (
               <g key={ridge.id}>
                 <path d={ridge.area} fill="var(--accent)" opacity={ridge.fill} />
-                <motion.path
+                <path
                   d={ridge.line}
                   fill="none"
                   stroke="var(--accent)"
                   strokeWidth={ridge.width}
                   opacity={ridge.stroke}
-                  initial={reduce ? false : { pathLength: 0 }}
-                  whileInView={{ pathLength: 1 }}
-                  viewport={{ once: true, amount: 0.3 }}
-                  transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
                 />
               </g>
             ))}
-
           </svg>
 
           {/* HTML, not <text>: the chart scales with the container and in-SVG labels would
@@ -241,12 +244,12 @@ export const Ridges = ({ doc, derived }) => {
             ))}
           </div>
 
-          <p className="mjb-axis">
+          <div className="mjb-axis">
             <span>{dec3(chart.min)}</span>
             <span>score, low to high</span>
             <span>{dec3(chart.max)}</span>
-          </p>
-        </Reveal>
+          </div>
+        </div>
       )}
 
       <div className="mjb-pwin">

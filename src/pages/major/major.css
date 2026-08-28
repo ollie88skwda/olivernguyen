@@ -1,0 +1,1253 @@
+/* ── /major — sakura restyle ─────────────────────────────────────────────────
+   One page stylesheet for the whole route (previously Major.css / MajorB.css /
+   MajorC.css, split so two agents could write the page in parallel — the audit
+   is a single sheet now).
+
+   Every value is a BRAND.md rule or a sakura.css / component-library token; the
+   page mounts `.sakura` and never reads the legacy `:root` ladder. The only
+   page-local numbers are the data-graphic ENCODINGS (dial geometry, heatmap
+   fill range, ridge opacity ladder, tornado bar lengths, yard diagram layout)
+   — each is flagged in the lane coverage record, and none of them invents a
+   colour: every fill, stroke and text colour below is a token or a token at an
+   encoding opacity. */
+
+/* ================================================================ PAGE SHELL
+   §2 background ladder · §5 log-column cap (880px) as the page measure · the
+   chrome bar is fixed 64px, so the shell clears it with a ladder rung. */
+
+.sakura.mj-page {
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100dvh;
+}
+
+.mj-shell {
+  max-width: 880px; /* §5: log content column caps at ~880px — the widest sanctioned measure */
+  margin: 0 auto;
+  padding: var(--s-24) var(--s-4) var(--s-24);
+}
+
+/* Section rhythm: §5 section gap 144, 96 on phone. */
+.mj-sec {
+  padding-top: var(--s-36);
+}
+
+/* Loading gate */
+.mj-loading {
+  display: grid;
+  place-items: center;
+}
+.mj-loading .mj-shell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-3);
+  width: 100%;
+}
+.mj-loading-label {
+  margin-bottom: var(--s-2);
+}
+.mj-loading-skel {
+  height: var(--s-4);
+  width: 55%;
+}
+.mj-loading-title {
+  height: var(--s-8);
+  width: 38%;
+}
+.mj-loading-wide {
+  width: 100%;
+}
+
+/* ==================================================================== HERO
+   §7 Display for the title, MonoLabel for the kicker, §9 hairline rule,
+   §5 spacing. */
+
+.mj-hero {
+  padding: 0 0 var(--s-6);
+}
+.mj-hero-eyebrow {
+  margin: 0 0 var(--s-4);
+}
+.mj-hero-title {
+  font-size: var(--fs-display);
+}
+.mj-hero-rule {
+  width: var(--s-24);
+  margin: var(--s-6) 0 0;
+}
+.mj-hero-sub {
+  margin: var(--s-6) 0 0;
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: var(--fs-title);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  max-width: 46ch; /* under the §5 70ch cap; a lede reads better shorter */
+}
+.mj-hero-note {
+  margin: var(--s-3) 0 0;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-faint);
+  max-width: 70ch;
+}
+
+/* ========================================================= SHARED CONTENT
+   Prose hint, state rails, the plain-English disclosure, and the <Tip>
+   definition bubbles (a shared component from components/Tooltip.js — its
+   visuals are re-scoped here; the markup and aria contract are untouched). */
+
+.mj-hint {
+  margin: 0 0 var(--s-6);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  max-width: 70ch;
+}
+
+/* Warning state rail — colour is the sanctioned --warning token; the 3px rail
+   width is carried over from the legacy page's state emphasis and is flagged
+   in the coverage record (the brand's own separation is the 1px hairline). */
+.mj-tie,
+.mjb-empty {
+  margin: 0 0 var(--s-6);
+  padding: var(--s-1) 0 var(--s-1) var(--s-3);
+  border-left: 3px solid var(--warning);
+  color: var(--warning);
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  line-height: var(--lh-mono);
+  max-width: 62ch;
+}
+
+.mjb-after {
+  margin: var(--s-4) 0 0;
+}
+.mjc-after {
+  margin-top: var(--s-6);
+}
+.mjc-sub {
+  display: block;
+  margin: var(--s-12) 0 var(--s-3);
+}
+
+/* plain-English disclosure — native <details>, label-role summary with the
+   ratified ▸/▾ glyphs (§8, D-13) */
+.sakura details.plain {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  margin: var(--s-6) 0 0;
+}
+.sakura details.plain > summary {
+  cursor: pointer;
+  list-style: none;
+  padding: var(--s-3) var(--s-4);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  transition: color var(--dur-state) var(--ease-state);
+}
+.sakura details.plain > summary:hover {
+  color: var(--text);
+}
+.sakura details.plain > summary::before {
+  content: "▸ ";
+}
+.sakura details.plain[open] > summary::before {
+  content: "▾ ";
+}
+.sakura details.plain .pbody {
+  padding: 0 var(--s-4) var(--s-4);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  max-width: 70ch;
+}
+.sakura details.plain .pbody p {
+  margin: 0 0 var(--s-2);
+}
+.sakura details.plain .pbody p:last-child {
+  margin-bottom: 0;
+}
+
+/* <Tip> — the dotted underline is the affordance; the bubble is a popover-like
+   surface (hairline + radius 0, no shadow, §9). The trailing "?" mark is the
+   page's pre-existing convention, token-coloured — flagged in coverage. */
+.sakura .tt {
+  border-bottom: 1px dotted var(--text-muted);
+}
+.sakura .tt::after {
+  font-family: var(--font-mono-label);
+  color: var(--accent-hi);
+}
+.sakura .tt .bub {
+  background: var(--surface);
+  border: 1px solid var(--border-strong, var(--border));
+  border-radius: var(--r-surface);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  padding: var(--s-3) var(--s-4);
+  box-shadow: none;
+}
+.sakura .tt .bub::before {
+  display: none;
+}
+.sakura .tt:hover .bub,
+.sakura .tt:focus .bub,
+.sakura .tt:focus-visible .bub {
+  animation: on-fade-in var(--dur-state) var(--ease-state) both;
+}
+
+/* ================================================================ S0 STATUS
+   The dial is a flagged encoding; its strokes are all tokens (track = §9
+   hairline, arc = the ladder's state colour, dashed ring = --text-faint). */
+
+.mj-status {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--s-8);
+  align-items: center;
+}
+.mj-dial {
+  position: relative;
+  width: 168px; /* dial geometry — flagged encoding */
+  height: 168px;
+}
+.mj-dial svg {
+  display: block;
+}
+.mj-lvl-coin {
+  color: var(--warning);
+}
+.mj-lvl-lean {
+  color: var(--accent-hi);
+}
+.mj-lvl-clear {
+  color: var(--success);
+}
+.mj-dial-mid {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-1);
+}
+.mj-dial-num {
+  font-size: var(--fs-title-lg);
+}
+.mj-dial-lbl {
+  display: block;
+}
+
+.mj-verdict {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+}
+.mj-verdict-h {
+  font-size: var(--fs-section);
+}
+.mj-verdict-p {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  max-width: 70ch;
+}
+
+/* countdown — the brand Statusline (dense by licence of §5) */
+.mj-countdown {
+  width: max-content;
+  max-width: 100%;
+}
+.mj-countdown .mj-todo {
+  color: var(--warning);
+}
+
+/* S0.1 agenda cards */
+.mj-agenda-eyebrow {
+  display: block;
+  margin: var(--s-12) 0 var(--s-4);
+}
+.mj-agenda {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--s-4);
+}
+.mj-card {
+  position: relative;
+}
+.mj-rank {
+  position: absolute;
+  top: var(--s-3);
+  right: var(--s-4);
+  font-size: var(--fs-title-lg);
+  line-height: 1;
+  color: var(--text-faint);
+}
+.mj-card-q {
+  padding-right: var(--s-6);
+}
+.mj-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2); /* §5: inline chip / token gap */
+}
+
+/* ================================================================== S1 BOARD
+   The heatmap is a flagged encoding: fill = the accent token at a
+   value-proportional alpha (no new colour), text tier flips per ladder at the
+   point the token clears contrast (light ~0.85, dark ~0.15 — the ladders'
+   accents darken/brighten at very different rates). The exact value is always
+   one hover/focus away in the popup and in the aria-label. */
+
+.mj-board-edit {
+  overflow-x: auto;
+  padding-bottom: var(--s-2);
+}
+
+/* Left/right margins mirror the name and total columns so a header label sits
+   exactly over its column. */
+.mj-head {
+  display: flex;
+  gap: 1px;
+  margin: 0 75px var(--s-1) 156px;
+}
+.mj-head span {
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: 0.06em; /* under §7's label range; headers are tight */
+  text-transform: uppercase;
+  color: var(--text-faint);
+  line-height: 1.3;
+  padding: 0 var(--s-1);
+  border-left: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.mj-row {
+  display: flex;
+  align-items: stretch;
+  gap: 1px;
+  margin-bottom: var(--s-1);
+}
+.mj-name {
+  width: 144px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-right: var(--s-3);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-title);
+  letter-spacing: var(--track-display);
+  line-height: 1.1;
+  color: var(--text);
+}
+.mj-name-code {
+  margin-top: var(--s-1);
+}
+.mj-cells {
+  display: flex;
+  flex: 1;
+  gap: 1px;
+  height: 58px; /* mosaic row height — flagged encoding */
+}
+.mj-cell {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  min-width: 14px;
+  padding: 0 0 var(--s-1);
+  border: 0;
+  border-radius: var(--r-surface);
+  font: inherit;
+  cursor: default;
+  overflow: visible;
+}
+.mj-cell[data-ink="quiet"] {
+  color: var(--text);
+}
+.mj-cell[data-ink="accent"] {
+  color: var(--on-accent);
+}
+.mj-cell:focus-visible {
+  outline: var(--focus-ring-w) solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.mj-cell-v {
+  max-width: 100%;
+  overflow: hidden;
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-label);
+  color: inherit;
+}
+
+/* cell popup — page-local popover (flagged): surface + strong hairline,
+   radius 0, no shadow (§4/§9), shown on hover AND focus so the value is never
+   hover-only (§1), duplicated in the aria-label. */
+.mj-pop {
+  display: none;
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + var(--s-2));
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: min(280px, 74vw);
+  flex-direction: column;
+  gap: var(--s-1);
+  background: var(--surface);
+  border: 1px solid var(--border-strong, var(--border));
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  text-align: left;
+  padding: var(--s-3) var(--s-4);
+  z-index: 40;
+  pointer-events: none;
+}
+.mj-pop b {
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--text-faint);
+}
+.mj-pop-note {
+  border-top: 1px solid var(--border);
+  padding-top: var(--s-1);
+}
+.mj-pop-l {
+  left: 0;
+  transform: none;
+}
+.mj-pop-r {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+.mj-cell:hover .mj-pop,
+.mj-cell:focus .mj-pop,
+.mj-cell:focus-visible .mj-pop {
+  display: flex;
+}
+
+.mj-total {
+  width: 74px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* edit mode — the board becomes a fixed-width scrollable grid of §4 inputs */
+.mj-cell-edit {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: var(--s-1);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: var(--s-1);
+  cursor: auto;
+}
+.mj-board-edit .mj-head,
+.mj-board-edit .mj-row {
+  width: max-content;
+}
+.mj-board-edit .mj-head {
+  margin-right: 0;
+}
+.mj-board-edit .mj-cells {
+  flex: none;
+  height: auto;
+}
+.mj-in-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+.mj-in-row i {
+  font-family: var(--font-mono-label);
+  font-style: normal;
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  width: 22px;
+  flex: none;
+}
+.sakura .mj-in-row .mj-in {
+  height: var(--ctl-h-sm);
+  padding: 0 var(--s-2);
+}
+
+.mj-legend {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-4);
+  flex-wrap: wrap;
+  margin-top: var(--s-3);
+}
+.mj-key {
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  line-height: 1.8;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.mj-ramp {
+  display: inline-flex;
+  vertical-align: -2px;
+  margin-left: var(--s-2);
+}
+.mj-ramp i {
+  display: block;
+  width: 15px;
+  height: 11px;
+}
+
+/* ================================================================== S2 DUEL */
+
+.mjb-progress {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin: 0 0 var(--s-3);
+  flex-wrap: wrap;
+}
+.sakura .mjb-progress .on-progress {
+  flex: 1 1 120px;
+}
+.mjb-count {
+  white-space: nowrap;
+}
+
+/* The pair card is a surface (Card); the keyed remount replays the sanctioned
+   opacity-only entrance (§6). */
+.mjb-duel {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: var(--s-4);
+  align-items: center;
+  animation: on-fade-in var(--dur-state) var(--ease-state);
+}
+
+.mjb-plate {
+  text-align: center;
+  padding: var(--s-2) var(--s-1);
+  border: 1px solid transparent;
+}
+.mjb-plate b {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-title);
+  letter-spacing: var(--track-display);
+  line-height: 1.05;
+  display: block;
+}
+.mjb-plate .on-label {
+  display: block;
+  margin-top: var(--s-1);
+}
+.mjb-plate-won {
+  border-color: var(--border);
+  background: var(--surface-2);
+}
+
+/* The Saaty scale — a bespoke 17-stop radiogroup (flagged encoding). The stop
+   is a control-sized tap target (--ctl-h, 44px on coarse — §1); the pips are
+   square cells of the scale, token-coloured. */
+.mjb-scale-wrap {
+  min-width: 0;
+}
+.mjb-scale {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-1);
+}
+.mjb-stop {
+  flex: 0 0 auto;
+  width: 16px;
+  height: var(--ctl-h);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+.mjb-stop input {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  cursor: pointer;
+}
+.mjb-pip {
+  width: 11px;
+  height: 11px;
+  border: 1px solid var(--border-strong, var(--border));
+  display: block;
+  transition:
+    background-color var(--dur-state) var(--ease-state),
+    border-color var(--dur-state) var(--ease-state),
+    transform var(--dur-state) var(--ease-state);
+}
+.mjb-pip-mid {
+  height: 17px; /* the "equal" centre marker — scale encoding */
+}
+.mjb-pip-on {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.mjb-stop:hover .mjb-pip {
+  border-color: var(--accent);
+  transform: scaleY(1.18);
+}
+.mjb-stop input:focus-visible + .mjb-pip {
+  outline: var(--focus-ring-w) solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.mjb-verdict {
+  display: block;
+  text-align: center;
+  margin: var(--s-2) 0 0;
+  line-height: 1.6;
+  min-height: 2.2em; /* holds the pair-switch layout steady */
+}
+
+.mjb-nav {
+  display: flex;
+  gap: var(--s-2);
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: var(--s-3);
+}
+
+/* consistency readout — a one-line Log; success/error are the sanctioned
+   state tones (§2: jade = "it worked", red = genuine error) */
+.mjb-cr {
+  margin: var(--s-4) 0 0;
+}
+
+.mjb-triad {
+  border-left: 3px solid var(--warning); /* state rail — see .mj-tie */
+  background: var(--surface);
+  padding: var(--s-3) var(--s-4);
+  margin-top: var(--s-3);
+}
+.mjb-triad p {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  max-width: 66ch;
+}
+.mjb-triad-jumps {
+  display: flex;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  margin-top: var(--s-3);
+}
+
+/* ================================================================== S3 RIDGES
+   All strokes are tokens (grid/baseline = hairline, ridges = accent at
+   rank-scaled opacity — the opacity ladder is the encoding). */
+
+.mjb-ridges-wrap {
+  margin-top: var(--s-1);
+}
+.mjb-ridges {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+.mjb-ridge-key {
+  position: relative;
+  height: 15px; /* label row — chart encoding */
+  margin-top: var(--s-1);
+}
+.mjb-ridge-key span {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  color: var(--text-faint);
+}
+.mjb-axis {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--s-3);
+  margin: var(--s-1) 0 0;
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.mjb-pwin {
+  display: flex;
+  gap: var(--s-6);
+  flex-wrap: wrap;
+  align-items: baseline;
+  margin-top: var(--s-4);
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  color: var(--text-muted);
+}
+.mjb-pwin b {
+  font-weight: 700;
+  color: var(--text);
+}
+.mjb-close {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+}
+.mjb-close-hot {
+  color: var(--warning);
+}
+
+/* ================================================================= S4 TORNADO
+   Bars are static (§6 has no entrance for them). Length = fragility encoding;
+   fragile rows take the warning token, robust rows the hairline, the rest the
+   accent. */
+
+.mjb-torn {
+  margin-top: var(--s-1);
+}
+.mjb-torn-row {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr) 92px;
+  gap: var(--s-2);
+  align-items: center;
+  margin-bottom: var(--s-1);
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: 0;
+  padding: var(--s-1) 0;
+  font: inherit;
+  color: inherit;
+}
+.mjb-torn-hit {
+  cursor: pointer;
+}
+.mjb-torn-hit:hover .mjb-torn-l,
+.mjb-torn-hit:focus-visible .mjb-torn-l {
+  color: var(--accent-hi);
+}
+.mjb-torn-hit:hover .mjb-torn-bar {
+  opacity: 0.82;
+}
+.mjb-torn-hit:focus-visible {
+  outline: var(--focus-ring-w) solid var(--focus-ring);
+  outline-offset: 1px;
+}
+.mjb-torn-l {
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-muted);
+  line-height: 1.4;
+  transition: color var(--dur-state) var(--ease-state);
+}
+.mjb-torn-track {
+  height: 16px; /* bar height — chart encoding */
+  background: var(--surface-2);
+  display: block;
+}
+.mjb-torn-bar {
+  height: 16px;
+  background: var(--accent);
+  display: block;
+  transform-origin: left center;
+}
+.mjb-torn-frag {
+  background: var(--warning);
+}
+.mjb-torn-robust {
+  background: var(--border);
+}
+.mjb-torn-v {
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  text-align: right;
+  color: var(--text-muted);
+}
+
+/* ============================================================== S5 SWITCHYARD
+   The rail diagram is a flagged encoding; every stroke/fill is a token (solid
+   switches = accent, costly/closing = warning, faint track = the faint role,
+   grid = hairline, names = display face, nodes = --accent-hi). */
+
+.mjc-yardwrap {
+  overflow-x: auto;
+  margin: var(--s-1) 0 var(--s-1);
+}
+.mjc-yard {
+  width: 100%;
+  min-width: 620px;
+  display: block;
+}
+.mjc-yard-tick text,
+.mjc-yard-cap text {
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  fill: var(--text-faint);
+}
+.mjc-yard-cap text.mjc-yard-warn {
+  fill: var(--warning);
+}
+.mjc-yard-grid line {
+  stroke: var(--border);
+  stroke-dasharray: 3 5;
+}
+.mjc-yard-track {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+.mjc-yard-sw {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  opacity: 0.75;
+}
+.mjc-yard-costly {
+  stroke: var(--warning);
+  stroke-dasharray: 6 4;
+  opacity: 1;
+}
+.mjc-yard-closing {
+  stroke-width: 1.5;
+  stroke-dasharray: 2 6;
+  opacity: 0.55;
+}
+.mjc-yard-faint {
+  opacity: 0.45;
+}
+.mjc-yard-name text {
+  font-family: var(--font-display);
+  font-size: var(--fs-title);
+  font-weight: 700;
+  letter-spacing: var(--track-display);
+  fill: var(--text);
+}
+.mjc-yard-name text.mjc-yard-faint {
+  opacity: 0.6;
+}
+.mjc-yard-node rect {
+  fill: var(--accent-hi);
+}
+.mjc-yard-note {
+  margin-top: var(--s-3);
+}
+
+/* school cards */
+.mjc-schools {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: var(--s-4);
+}
+.mjc-offers {
+  display: flex;
+  gap: var(--s-1);
+  margin-top: var(--s-2);
+  flex-wrap: wrap;
+}
+.mjc-meta {
+  margin: var(--s-3) 0 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--s-1) var(--s-2);
+  align-items: baseline;
+}
+.mjc-meta dt {
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.mjc-meta dd {
+  margin: 0;
+  font-size: var(--fs-body);
+  color: var(--text-muted);
+}
+.mjc-todo {
+  color: var(--warning);
+}
+.mjc-school-note {
+  font-size: var(--fs-body);
+  color: var(--text-faint);
+  margin: var(--s-3) 0 0;
+  padding-top: var(--s-2);
+  border-top: 1px solid var(--border);
+}
+
+/* edit-mode forms (S5, S6, S8) — library Label + Input/Select/Textarea/Checkbox
+   in a surface form frame */
+.mjc-form {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: var(--pad-card);
+  margin-top: var(--s-6);
+  max-width: 70ch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-4);
+}
+.mjc-form-t {
+  margin: 0;
+}
+.mjc-form-row {
+  display: flex;
+  gap: var(--s-3);
+  flex-wrap: wrap;
+}
+.mjc-form-row .mjc-field {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+.mjc-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3); /* §5: label → content 12 */
+}
+.mjc-field-sm {
+  flex: 0 1 170px;
+}
+.mjc-lbl {
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: var(--s-2);
+}
+.mjc-checks {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--s-6);
+  flex-wrap: wrap;
+}
+.mjc-check {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+}
+.mjc-form-hint {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-faint);
+}
+
+/* =============================================================== S6 PRE-MORTEM
+   The blueprint grid behind the notes is gone — §9 allows exactly one texture
+   per mode and this page is neither canvas; the notes are plain cards with the
+   warning state rail. */
+
+.mjc-notes {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: var(--s-4);
+  display: grid;
+  gap: var(--s-3);
+}
+.sakura .mjc-note {
+  background: var(--surface-2);
+  border-left: 3px solid var(--warning); /* state rail — see .mj-tie */
+}
+.mjc-note-head {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--s-2);
+}
+.mjc-note-alt {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-title);
+  letter-spacing: var(--track-display);
+  line-height: 1.05;
+}
+.mjc-note-fail {
+  margin: 0;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text);
+  max-width: 62ch;
+}
+.mjc-note-mit {
+  margin: var(--s-2) 0 0;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  max-width: 62ch;
+}
+.mjc-note-mit span {
+  display: block;
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin-bottom: var(--s-1);
+}
+
+.mjc-empty {
+  max-width: 62ch;
+}
+.mjc-empty p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+}
+.mjc-empty-h {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-title);
+  letter-spacing: var(--track-display);
+  line-height: 1.05;
+  color: var(--text);
+  margin-bottom: var(--s-2);
+}
+.mjc-empty-cue {
+  display: block;
+  margin-top: var(--s-3);
+}
+
+/* ==================================================== S7 + S8 TABLES (library
+   Table: label header row, hairline rows, square surface) */
+
+.mjc-count {
+  display: block;
+  margin: 0 0 var(--s-4);
+}
+.mjc-col-date {
+  width: 108px;
+}
+.mjc-col-src {
+  width: 26%;
+}
+.mjc-date {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  white-space: nowrap;
+}
+.mjc-pill-refuted {
+  text-decoration: line-through;
+}
+.mjc-tags {
+  display: flex;
+  gap: var(--s-1);
+  flex-wrap: wrap;
+  margin-top: var(--s-2);
+}
+.mjc-link {
+  color: var(--accent-hi);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color var(--dur-state) var(--ease-state);
+}
+.mjc-link:hover {
+  color: var(--text);
+}
+
+/* ================================================================= S9 GLOSSARY */
+
+.mjc-gloss {
+  margin: 0;
+}
+.mjc-gloss > div {
+  border-bottom: 1px solid var(--border);
+  padding: var(--s-4) 0;
+}
+.mjc-gloss > div:last-child {
+  border-bottom: 0;
+}
+.mjc-gloss dt {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-title);
+  letter-spacing: var(--track-display);
+  line-height: 1.05;
+  margin-bottom: var(--s-1);
+}
+.mjc-gloss dd {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  max-width: 70ch;
+}
+
+/* ===================================================== PREVIEW + EDIT DOCK
+   The preview banner is a real state surface: accent fill with on-accent label
+   (§2's loudest-element allowance — it is the loudest thing on screen). The
+   EDIT dock is a control cluster: §4 3px radius, solid surface, no blur. */
+
+.mj-preview {
+  position: sticky;
+  top: var(--s-16); /* below the fixed 64px chrome bar */
+  z-index: 50;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-3);
+  margin: var(--s-24) 0 0;
+  padding: var(--s-2) var(--s-3);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  line-height: 1.7;
+}
+.sakura .mj-preview .mj-preview-clear {
+  height: var(--ctl-h-sm);
+  border-color: color-mix(in srgb, var(--on-accent) 55%, transparent);
+  color: var(--on-accent);
+}
+.sakura .mj-preview .mj-preview-clear:hover {
+  background: color-mix(in srgb, var(--on-accent) 16%, transparent);
+  border-color: var(--on-accent);
+  color: var(--on-accent);
+}
+
+.mj-tools {
+  position: fixed;
+  left: var(--s-4);
+  bottom: var(--s-4);
+  z-index: 1500;
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-control);
+  padding: var(--s-1);
+}
+
+/* ================================================================ RESPONSIVE */
+
+@media (max-width: 820px) {
+  .mj-agenda {
+    grid-template-columns: 1fr;
+  }
+  .mjb-duel {
+    grid-template-columns: 1fr;
+    gap: var(--s-6);
+  }
+}
+
+@media (max-width: 760px) {
+  .mj-status {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .mj-shell {
+    padding: calc(var(--s-16) + var(--s-2)) var(--s-3) var(--s-16);
+  }
+  .mj-sec {
+    padding-top: var(--s-24);
+  }
+  .mj-head {
+    margin-left: 102px;
+    margin-right: 55px;
+  }
+  /* Seven labels across ~230px can only clip mid-word. The tap popup names the
+     column instead. Edit mode keeps its headers: it scrolls. */
+  .mj-board:not(.mj-board-edit) .mj-head {
+    display: none;
+  }
+  .mj-name {
+    width: 94px;
+    font-size: var(--fs-body);
+    padding-right: var(--s-2);
+  }
+  .mj-total {
+    width: 54px;
+    font-size: var(--fs-mono);
+  }
+  /* Too narrow to read the number, and the mosaic is the point anyway. */
+  .mj-cell-v {
+    display: none;
+  }
+  .mjb-torn-row {
+    grid-template-columns: 112px minmax(0, 1fr) 74px;
+  }
+  .mjc-schools {
+    grid-template-columns: 1fr;
+  }
+  .mjc-notes {
+    padding: var(--s-2);
+  }
+}
+
+/* §1: coarse pointers get full-size tap targets. The Saaty scale cannot fit
+   17 × 44px stops on a 375px screen, so the stops take the 44px control height
+   and the scale scrolls inside its wrap. */
+@media (pointer: coarse) {
+  .mjb-stop {
+    width: 44px;
+  }
+  .mjb-scale-wrap {
+    overflow-x: auto;
+  }
+  .mjc-form-row {
+    flex-direction: column;
+  }
+}
+
+/* ================================================================= MOTION
+   §6: everything else is 140ms ease-out on state change, opacity/transform
+   only, killed under prefers-reduced-motion. (The library's .on-* rules are
+   already handled by components.css; this block covers the page-local bits.) */
+
+@media (prefers-reduced-motion: reduce) {
+  .mj-page .mjb-pip,
+  .mj-page .mjb-torn-bar,
+  .mj-page .mjb-torn-l,
+  .mj-page .mjb-duel,
+  .mj-page .tt .bub {
+    transition: none !important;
+    animation: none !important;
+  }
+  .mj-page .mjb-stop:hover .mjb-pip {
+    transform: none;
+  }
+  .mj-page .mjb-torn-hit:hover .mjb-torn-bar {
+    opacity: 1;
+  }
+}

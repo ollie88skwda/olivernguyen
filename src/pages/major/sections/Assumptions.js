@@ -1,8 +1,27 @@
 import React from 'react';
-import SectionHeading from '../../../components/SectionHeading';
-import Reveal from '../../../components/Reveal';
+import { MonoLabel, SectionHead } from '@/components/brand';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 
 const STATUSES = ['untested', 'supported', 'refuted'];
+
+const toneOf = (status) =>
+  status === 'untested' ? 'warning' : status === 'supported' ? 'success' : 'neutral';
 
 export const Assumptions = ({ doc, editing, updateDoc }) => {
   const rows = doc.assumptions || [];
@@ -18,69 +37,74 @@ export const Assumptions = ({ doc, editing, updateDoc }) => {
 
   return (
     <section id="assumptions" className="mj-sec">
-      <SectionHeading eyebrow="S7 / Assumptions" title="Your Beliefs, Written Down As Work" />
+      <SectionHead eyebrow="S7 / Assumptions" title="Your Beliefs, Written Down As Work" />
 
-      <Reveal as="p" className="mj-hint">
+      <p className="mj-hint">
         None of these are facts yet. They are things you said, sitting in the model and moving the
         scores as if they were checked. Written out with the word untested next to them, they turn
         into a short list of jobs.
-      </Reveal>
+      </p>
 
       {untested > 0 && (
-        <p className="mjc-count">
+        <MonoLabel tone="warning" className="mjc-count">
           {untested} of {rows.length} still untested
-        </p>
+        </MonoLabel>
       )}
 
-      <div className="mjc-tablewrap">
-        <table className="mjc-table">
-          <thead>
-            <tr>
-              <th>What you believe</th>
-              <th>Status</th>
-              <th>How to check it</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.id}>
-                <td>{row.claim}</td>
-                <td>
-                  {editing ? (
-                    <select
-                      className="mjc-select mjc-select-sm"
-                      value={row.status}
-                      aria-label={`Status of: ${row.claim}`}
-                      onChange={(event) => patch(row.id, 'status', event.target.value)}
-                    >
+      <Table className="mjc-table">
+        <TableHeader>
+          <TableRow>
+            <TableHead>What you believe</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>How to check it</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.map((row) => (
+            <TableRow key={row.id}>
+              <TableCell>{row.claim}</TableCell>
+              <TableCell>
+                {editing ? (
+                  <Select
+                    value={row.status}
+                    onValueChange={(value) => patch(row.id, 'status', value)}
+                  >
+                    <SelectTrigger aria-label={`Status of: ${row.claim}`}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
                       {STATUSES.map((status) => (
-                        <option value={status} key={status}>
+                        <SelectItem value={status} key={status}>
                           {status}
-                        </option>
+                        </SelectItem>
                       ))}
-                    </select>
-                  ) : (
-                    <span className={`mjc-pill mjc-pill-${row.status}`}>{row.status}</span>
-                  )}
-                </td>
-                <td>
-                  {editing ? (
-                    <input
-                      className="mjc-input mjc-input-sm"
-                      type="text"
-                      value={row.test}
-                      aria-label={`How to check: ${row.claim}`}
-                      onChange={(event) => patch(row.id, 'test', event.target.value)}
-                    />
-                  ) : (
-                    row.test
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <Badge
+                    tone={toneOf(row.status)}
+                    className={row.status === 'refuted' ? 'mjc-pill-refuted' : undefined}
+                  >
+                    {row.status}
+                  </Badge>
+                )}
+              </TableCell>
+              <TableCell>
+                {editing ? (
+                  <Input
+                    type="text"
+                    value={row.test}
+                    aria-label={`How to check: ${row.claim}`}
+                    onChange={(event) => patch(row.id, 'test', event.target.value)}
+                  />
+                ) : (
+                  row.test
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
 
       <details className="plain">
         <summary>Plain English: why write down things you already believe</summary>

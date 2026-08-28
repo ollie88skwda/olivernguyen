@@ -170,3 +170,23 @@ An `EDIT` toggle flips cells, weights, and notes into inputs; debounced save, mo
 - **Phase 3** (parallel subagents, 3-way split): `glossary.js` + `Tooltip.js` shared first, then section components: (A) Status + Board, (B) Duel + Ridges + Tornado, (C) SwitchYard + PreMortem + Assumptions + EvidenceLog + Glossary.
 - **Phase 4** (subagent): page shell `index.js`, `Major.css`, route wiring, passphrase gate, EDIT toggle wiring.
 - **Phase 5** (direct, this session): verification — tests, Playwright E2E, pixel pass, fix anything that looks off.
+
+## Brand coverage — /major
+
+| Aspect | Existing behavior | New source | Evidence |
+|---|---|---|---|
+| Page shell/background | Full-page legacy paper surface | `BRAND.md §2` / `sakura.css --bg` | `.sakura.mj-page` |
+| Surfaces/cards/panels | Rounded legacy cards and panels | `BRAND.md §4/§9` / `Card` | `.mj-card`, `.mjc-form`, `.mjc-notes`, `.plain` |
+| Text and type roles | Big Shoulders, legacy mono, mixed local sizes | `BRAND.md §7` / `Display` / `MonoLabel` | `major.css` `--font-*`, `--fs-*`; brand components |
+| Spacing and layout | Page-local gaps and section rhythm | `BRAND.md §5` / `--s-*` | `.mj-shell`, `.mj-sec`, page layout selectors |
+| Controls and inputs | Bespoke buttons, fields, and selectors | `BRAND.md §4/§8` / UI primitives | `Button`, `Input`, `Select`, `Textarea`, `Checkbox`, `Progress` |
+| Links and states | Legacy warning/good colours and hover states | `BRAND.md §2/§6` / state tokens | `--warning`, `--success`, `--error`, focus rings, 140ms transitions |
+| Icons and marks | Inline legacy marks | `BRAND.md §8` / `Glyph` | `Status` uses `Glyph name="sep"`; no decorative SVG icons |
+| Images/data graphics | Dial, board heatmap, ridges, tornado, and switchyard SVG | `BRAND.md §2/§8/§9` / token palette | `Status`, `Board`, `Ridges`, `Tornado`, `SwitchYard`; geometry remains a flagged data encoding, strokes/fills use Sakura tokens |
+| Motion | Reveal and bespoke transitions | `BRAND.md §6` / `--dur-state` | `major.css`; reduced-motion block disables page-local motion |
+| Responsive behavior | Desktop-first legacy layout | `BRAND.md §1/§5` | `@media` rules at 820/760/640px and coarse-pointer controls; Playwright 1440/375 |
+| Loading/error/empty states | Plain loading text and local empty states | `Skeleton`, `Badge`, state tokens | `.mj-loading`, `.mjb-empty`, offline/saved badge in `index.js`; Playwright gate |
+
+**Unmapped aspects:** none. The dial, board, ridges, tornado, and switchyard geometry are flagged as data encodings; all visible colour, type, stroke, fill, spacing, radius, and motion values map to the sources above.
+
+**Hard-coded visual values:** none outside flagged data-graphic geometry and scale encodings; all UI values use Sakura tokens or library component rules.

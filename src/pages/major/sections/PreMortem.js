@@ -1,6 +1,17 @@
 import React, { useState } from 'react';
-import SectionHeading from '../../../components/SectionHeading';
-import Reveal from '../../../components/Reveal';
+import { MonoLabel, SectionHead } from '@/components/brand';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import Tip from '../../../components/Tooltip';
 
 const LIKELIHOODS = [
@@ -44,63 +55,67 @@ const AddEntry = ({ alternatives, updateDoc }) => {
 
   return (
     <form className="mjc-form" onSubmit={submit}>
-      <p className="mjc-form-t">Write a way this goes wrong</p>
+      <MonoLabel tone="muted" className="mjc-form-t">
+        Write a way this goes wrong
+      </MonoLabel>
 
       <div className="mjc-form-row">
-        <label className="mjc-field">
-          <span className="mjc-lbl">You picked</span>
-          <select
-            className="mjc-select"
-            value={alternative}
-            onChange={(event) => setAlternative(event.target.value)}
-          >
-            {alternatives.map((alt) => (
-              <option value={alt.id} key={alt.id}>
-                {alt.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="mjc-field">
+          <Label htmlFor="pm-alternative">You picked</Label>
+          <Select value={alternative} onValueChange={setAlternative}>
+            <SelectTrigger id="pm-alternative">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {alternatives.map((alt) => (
+                <SelectItem value={alt.id} key={alt.id}>
+                  {alt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-        <label className="mjc-field">
-          <span className="mjc-lbl">How likely</span>
-          <select
-            className="mjc-select"
-            value={likelihood}
-            onChange={(event) => setLikelihood(event.target.value)}
-          >
-            {LIKELIHOODS.map((option) => (
-              <option value={option.id} key={option.id}>
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="mjc-field">
+          <Label htmlFor="pm-likelihood">How likely</Label>
+          <Select value={likelihood} onValueChange={setLikelihood}>
+            <SelectTrigger id="pm-likelihood">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {LIKELIHOODS.map((option) => (
+                <SelectItem value={option.id} key={option.id}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
-      <label className="mjc-field">
-        <span className="mjc-lbl">What went wrong</span>
-        <textarea
-          className="mjc-area"
+      <div className="mjc-field">
+        <Label htmlFor="pm-failure">What went wrong</Label>
+        <Textarea
+          id="pm-failure"
           value={failureMode}
           placeholder="I picked it for the money and hated every day of it"
           onChange={(event) => setFailureMode(event.target.value)}
         />
-      </label>
+      </div>
 
-      <label className="mjc-field">
-        <span className="mjc-lbl">What would have stopped it</span>
-        <textarea
-          className="mjc-area"
+      <div className="mjc-field">
+        <Label htmlFor="pm-mitigation">What would have stopped it</Label>
+        <Textarea
+          id="pm-mitigation"
           value={mitigation}
           placeholder="Sit in on one class before the deadline"
           onChange={(event) => setMitigation(event.target.value)}
         />
-      </label>
+      </div>
 
-      <button className="mjc-btn" type="submit" disabled={!failureMode.trim()}>
+      <Button type="submit" disabled={!failureMode.trim()}>
         Add to the pre-mortem
-      </button>
+      </Button>
     </form>
   );
 };
@@ -115,33 +130,40 @@ export const PreMortem = ({ doc, editing, updateDoc }) => {
 
   return (
     <section id="premortem" className="mj-sec">
-      <SectionHeading eyebrow="S6 / Pre-mortem" title="It Is 2032 And This Was Wrong" />
+      <SectionHead eyebrow="S6 / Pre-mortem" title="It Is 2032 And This Was Wrong" />
 
-      <Reveal as="p" className="mj-hint">
+      <p className="mj-hint">
         A <Tip term="premortem">pre-mortem</Tip> is the one part of this page the arithmetic cannot
         do for you. Assume the choice already went badly, then write down why. It catches the risks
         no column ever captures, because you get to say you would resent it instead of scoring it
         out of ten.
-      </Reveal>
+      </p>
 
       {entries.length === 0 ? (
-        <Reveal className="mjc-empty">
+        <Card className="mjc-empty">
           <p className="mjc-empty-h">Nothing written down yet.</p>
           <p>
             Start with the one that would actually sting. You are four years in, you tell someone
             you regret it, and the sentence after that is the entry.
           </p>
-          {!editing && <p className="mjc-empty-cue">Turn on EDIT to add the first one.</p>}
-        </Reveal>
+          {!editing && (
+            <MonoLabel tone="accent" className="mjc-empty-cue">
+              Turn on EDIT to add the first one.
+            </MonoLabel>
+          )}
+        </Card>
       ) : (
         <div className="mjc-notes">
           {entries.map((entry, index) => (
-            <Reveal className="mjc-note" key={entry.id} delay={index * 0.05}>
+            <Card key={entry.id} className="mjc-note">
               <div className="mjc-note-head">
                 <span className="mjc-note-alt">{labelOf(entry.alternative)}</span>
-                <span className={`mjc-lik mjc-lik-${entry.likelihood}`}>
+                <Badge
+                  tone={entry.likelihood === 'high' ? 'warning' : 'neutral'}
+                  className={`mjc-lik mjc-lik-${entry.likelihood}`}
+                >
                   {likelihoodLabel(entry.likelihood)}
-                </span>
+                </Badge>
               </div>
               <p className="mjc-note-fail">{entry.failureMode}</p>
               {entry.mitigation && (
@@ -150,7 +172,7 @@ export const PreMortem = ({ doc, editing, updateDoc }) => {
                   {entry.mitigation}
                 </p>
               )}
-            </Reveal>
+            </Card>
           ))}
         </div>
       )}

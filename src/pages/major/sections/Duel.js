@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
-import SectionHeading from '../../../components/SectionHeading';
-import Reveal from '../../../components/Reveal';
+import { Log, LogLine, MonoLabel, SectionHead, StatusPill } from '@/components/brand';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
 import Tip from '../../../components/Tooltip';
 
 // Saaty 1 to 9 read in both directions. Index 8 is "they matter the same"; left of it the
@@ -52,7 +53,6 @@ const verdictFor = (index, a, b) => {
 };
 
 export const Duel = ({ doc, derived, updateDoc }) => {
-  const reduce = useReducedMotion();
   const { criteria } = doc;
   const { ahp } = derived;
 
@@ -93,7 +93,7 @@ export const Duel = ({ doc, derived, updateDoc }) => {
   if (pairs.length === 0) {
     return (
       <section id="weights" className="mj-sec">
-        <SectionHeading eyebrow="S2 / Weights" title="You Never Type A Weight" />
+        <SectionHead eyebrow="S2 / Weights" title="You Never Type A Weight" />
         <p className="mj-hint">Add at least two criteria and the matchups appear here.</p>
       </section>
     );
@@ -145,45 +145,39 @@ export const Duel = ({ doc, derived, updateDoc }) => {
   const consistent = cr <= CR_LIMIT;
   const triad = checkable && !consistent ? ahp.worstTriad : null;
 
-  const crClass = !checkable ? 'mjb-cr mjb-cr-idle' : consistent ? 'mjb-cr' : 'mjb-cr mjb-cr-bad';
+  const crState = !checkable ? 'dim' : consistent ? 'success' : 'error';
 
   return (
     <section id="weights" className="mj-sec">
-      <SectionHeading eyebrow="S2 / Weights" title="You Never Type A Weight" />
+      <SectionHead eyebrow="S2 / Weights" title="You Never Type A Weight" />
 
-      <Reveal as="p" className="mj-hint">
+      <p className="mj-hint">
         If I asked you how important salary is out of 100, you would make something up. Nobody can
         answer that honestly. But you can answer salary or flexibility, which one and by how much,
         all day. So the page asks {pairs.length} of those little matchups and works out your{' '}
         <Tip term="weight">weights</Tip> from the answers. The method has a name,{' '}
         <Tip term="ahp">AHP</Tip>.
-      </Reveal>
+      </p>
 
       <div className="mjb-progress">
-        <span className="mjb-count">
+        <MonoLabel tone="faint" className="mjb-count">
           {answered} of {pairs.length} answered
-        </span>
-        <span className="mjb-track" aria-hidden="true">
-          <span
-            className="mjb-fill"
-            style={{ width: `${(answered / pairs.length) * 100}%` }}
-          />
-        </span>
-        <span className="mjb-count">
+        </MonoLabel>
+        <Progress
+          value={(answered / pairs.length) * 100}
+          className="mjb-track"
+          aria-label={`${answered} of ${pairs.length} matchups answered`}
+        />
+        <MonoLabel tone="faint" className="mjb-count">
           matchup {index + 1} of {pairs.length}
-        </span>
+        </MonoLabel>
       </div>
 
-      <motion.div
-        className="mjb-duel"
-        key={pair.key}
-        initial={reduce ? false : { opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-      >
+      {/* keyed remount replays the sanctioned opacity-only entrance (§6) */}
+      <Card className="mjb-duel" key={pair.key}>
         <div className={selected != null && selected < CENTER ? 'mjb-plate mjb-plate-won' : 'mjb-plate'}>
           <b>{pair.a.label}</b>
-          <small>C{pair.na}</small>
+          <MonoLabel tone="faint">C{pair.na}</MonoLabel>
         </div>
 
         <div className="mjb-scale-wrap">
@@ -209,44 +203,52 @@ export const Duel = ({ doc, derived, updateDoc }) => {
                     onChange={() => answer(stop)}
                   />
                   <span className={classes.join(' ')} aria-hidden="true" />
-                  <span className="mjb-sr">{verdictFor(stop, pair.a, pair.b)}</span>
+                  <span className="sr-only">{verdictFor(stop, pair.a, pair.b)}</span>
                 </label>
               );
             })}
           </div>
-          <p className="mjb-verdict">
-            {selected == null ? 'Pick a square. Middle means they matter the same.' : verdictFor(selected, pair.a, pair.b)}
-          </p>
+          <MonoLabel tone="muted" className="mjb-verdict">
+            {selected == null
+              ? 'Pick a square. Middle means they matter the same.'
+              : verdictFor(selected, pair.a, pair.b)}
+          </MonoLabel>
         </div>
 
         <div className={selected != null && selected > CENTER ? 'mjb-plate mjb-plate-won' : 'mjb-plate'}>
           <b>{pair.b.label}</b>
-          <small>C{pair.nb}</small>
+          <MonoLabel tone="faint">C{pair.nb}</MonoLabel>
         </div>
-      </motion.div>
+      </Card>
 
       <div className="mjb-nav">
-        <button type="button" className="mjb-btn" onClick={() => step(-1)}>
+        <Button type="button" variant="ghost" onClick={() => step(-1)}>
           Previous
-        </button>
-        <button type="button" className="mjb-btn" onClick={() => step(1)}>
+        </Button>
+        <Button type="button" variant="ghost" onClick={() => step(1)}>
           Next
-        </button>
+        </Button>
         {answered < pairs.length && (
-          <button type="button" className="mjb-btn mjb-btn-go" onClick={jumpToUnanswered}>
+          <Button type="button" variant="primary" onClick={jumpToUnanswered}>
             Jump to next unanswered
-          </button>
+          </Button>
         )}
-        {answered === pairs.length && <span className="mjb-done">All {pairs.length} answered</span>}
+        {answered === pairs.length && (
+          <StatusPill status="live">All {pairs.length} answered</StatusPill>
+        )}
       </div>
 
-      <p className={crClass}>
-        {!checkable && '◆ CONSISTENCY, NOTHING TO CHECK YET. ANSWER A FEW MATCHUPS FIRST'}
-        {checkable && consistent &&
-          `◆ CONSISTENCY ${cr.toFixed(2)}, YOUR ANSWERS AGREE WITH EACH OTHER (UNDER 0.10 IS FINE)`}
-        {checkable && !consistent &&
-          `◆ CONSISTENCY ${cr.toFixed(2)}, SOME OF YOUR ANSWERS CANNOT ALL BE TRUE (0.10 IS THE LINE)`}
-      </p>
+      <Log className="mjb-cr" aria-label="Consistency check">
+        <LogLine time="S2" glyph="decision" state={crState}>
+          {!checkable && 'CONSISTENCY, NOTHING TO CHECK YET. ANSWER A FEW MATCHUPS FIRST'}
+          {checkable &&
+            consistent &&
+            `CONSISTENCY ${cr.toFixed(2)}, YOUR ANSWERS AGREE WITH EACH OTHER (UNDER 0.10 IS FINE)`}
+          {checkable &&
+            !consistent &&
+            `CONSISTENCY ${cr.toFixed(2)}, SOME OF YOUR ANSWERS CANNOT ALL BE TRUE (0.10 IS THE LINE)`}
+        </LogLine>
+      </Log>
 
       {triad && (
         <div className="mjb-triad">
@@ -262,14 +264,15 @@ export const Duel = ({ doc, derived, updateDoc }) => {
               [triad[1], triad[2]],
               [triad[0], triad[2]],
             ].map(([idA, idB]) => (
-              <button
+              <Button
                 type="button"
-                className="mjb-btn mjb-btn-small"
+                variant="ghost"
+                size="sm"
                 key={`${idA}|${idB}`}
                 onClick={() => jumpToPair(idA, idB)}
               >
                 {labelOf(idA)} vs {labelOf(idB)}
-              </button>
+              </Button>
             ))}
           </div>
         </div>

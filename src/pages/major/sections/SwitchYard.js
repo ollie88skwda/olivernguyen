@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
-import SectionHeading from '../../../components/SectionHeading';
-import Reveal from '../../../components/Reveal';
+import { MonoLabel, SectionHead } from '@/components/brand';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardTitle } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import Tip from '../../../components/Tooltip';
 
 const MAJORS = [
@@ -28,6 +33,12 @@ const chipLabel = (school, majorId) => {
 // Static by design. This is a reasoning diagram about how engineering curricula stack, not
 // a render of doc data: Industrial and Systems swap cheaply for most of the degree,
 // Mechanical closes early because thermo, statics and machine design run in a fixed order.
+//
+// Every stroke and fill is a token: solid switches are the accent, costly/closing ones the
+// warning token, the faint track and the grid the hairline and faint roles, and the mono
+// text is the label face. The RAIL DIAGRAM ENCODING (solid/dashed/absent = cheap/costly/
+// shut) is flagged in the lane coverage record — it is a bespoke data graphic, not a
+// library component.
 const YardDiagram = () => (
   <svg
     className="mjc-yard"
@@ -75,10 +86,10 @@ const YardDiagram = () => (
     </g>
 
     <g className="mjc-yard-name">
-      <text x="60" y="58">INDUSTRIAL</text>
-      <text x="60" y="128">SYSTEMS</text>
+      <text x="60" y="58">Industrial</text>
+      <text x="60" y="128">Systems</text>
       <text className="mjc-yard-faint" x="60" y="188">
-        MECHANICAL
+        Mechanical
       </text>
     </g>
 
@@ -127,33 +138,37 @@ const AddSchool = ({ updateDoc }) => {
 
   return (
     <form className="mjc-form" onSubmit={submit}>
-      <p className="mjc-form-t">Add a school</p>
-      <label className="mjc-field">
-        <span className="mjc-lbl">School</span>
-        <input
-          className="mjc-input"
+      <MonoLabel tone="muted" className="mjc-form-t">
+        Add a school
+      </MonoLabel>
+      <div className="mjc-field">
+        <Label htmlFor="school-name">School</Label>
+        <Input
+          id="school-name"
           type="text"
           value={name}
           placeholder="Name of the school"
           onChange={(event) => setName(event.target.value)}
         />
-      </label>
+      </div>
       <fieldset className="mjc-checks">
         <legend className="mjc-lbl">Offers</legend>
         {MAJORS.map((major) => (
-          <label className="mjc-check" key={major.id}>
-            <input
-              type="checkbox"
+          <div className="mjc-check" key={major.id}>
+            <Checkbox
+              id={`offer-${major.id}`}
               checked={offers.includes(major.id)}
-              onChange={() => toggle(major.id)}
+              onCheckedChange={() => toggle(major.id)}
             />
-            <span>{major.short}</span>
-          </label>
+            <Label htmlFor={`offer-${major.id}`} role="inline">
+              {major.short}
+            </Label>
+          </div>
         ))}
       </fieldset>
-      <button className="mjc-btn" type="submit" disabled={!name.trim()}>
+      <Button type="submit" disabled={!name.trim()}>
         Add school
-      </button>
+      </Button>
       <p className="mjc-form-hint">
         Switch policy and deadline start as placeholders. Fill them in from the doc when you have
         them.
@@ -164,44 +179,46 @@ const AddSchool = ({ updateDoc }) => {
 
 export const SwitchYard = ({ doc, editing, updateDoc }) => (
   <section id="switchyard" className="mj-sec">
-    <SectionHeading eyebrow="S5 / Switchyard" title="Which Doors Stay Open" />
+    <SectionHead eyebrow="S5 / Switchyard" title="Which Doors Stay Open" />
 
-    <Reveal as="p" className="mj-hint">
+    <p className="mj-hint">
       Picking a major is mostly a question about how easily you can change your mind later, and a
       normal matrix cannot show that. Solid lines are cheap switches. Dashed lines cost you a
       semester. A missing line is a door that already shut.
-    </Reveal>
+    </p>
 
     {/* Scrolls rather than shrinks: at phone width the whole 800 unit diagram would
         render its mono labels at about 4px. */}
-    <Reveal className="mjc-yardwrap">
+    <div className="mjc-yardwrap">
       <YardDiagram />
-    </Reveal>
+    </div>
 
-    <Reveal as="p" className="mj-hint mjc-yard-note" delay={0.06}>
+    <p className="mj-hint mjc-yard-note">
       The thing that matters here is the asymmetry. Industrial and Systems swap cheaply in both
       directions for most of the degree. Getting into Mechanical closes early, because thermo,
       statics and machine design stack on top of each other in a fixed order and you cannot catch
       up. That is a real argument for one of the first two, and it is{' '}
       <Tip term="option-value">option value</Tip>, not a score on the board.
-    </Reveal>
+    </p>
 
-    <Reveal as="p" className="section-eyebrow mjc-sub">
+    <MonoLabel tone="muted" className="mjc-sub">
       S5.1 / School availability
-    </Reveal>
+    </MonoLabel>
 
     <div className="mjc-schools">
       {doc.schools.map((school, index) => (
-        <Reveal className="mjc-school" key={`${school.name}-${index}`} delay={index * 0.05}>
-          <b className={isTodo(school.name) ? 'mjc-todo' : undefined}>{school.name}</b>
+        <Card key={`${school.name}-${index}`} className="mjc-school">
+          <CardTitle as="h3" className={isTodo(school.name) ? 'mjc-todo' : undefined}>
+            {school.name}
+          </CardTitle>
 
           <div className="mjc-offers" aria-label="Majors offered">
             {MAJORS.map((major) => {
               const on = (school.offers || []).includes(major.id);
               return (
-                <i className={on ? 'mjc-on' : undefined} key={major.id}>
+                <Badge key={major.id} solid={on} className="mjc-offer">
                   {chipLabel(school, major.id)}
-                </i>
+                </Badge>
               );
             })}
           </div>
@@ -223,7 +240,7 @@ export const SwitchYard = ({ doc, editing, updateDoc }) => (
           </dl>
 
           {school.note && <p className="mjc-school-note">{school.note}</p>}
-        </Reveal>
+        </Card>
       ))}
     </div>
 
