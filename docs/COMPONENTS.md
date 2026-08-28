@@ -100,7 +100,7 @@ rather than a generic UI part.
 |---|---|---|
 | `Glyph` | `name` (see `GLYPHS`), `tone`, `label` | §8 / D-09 — a mono character in a `<span>`, never an SVG path. Unlabelled marks get `aria-hidden`. `checkText` is text-only (D-14) |
 | `MonoLabel` | `tone` `faint\|muted\|text\|accent`, `as` | §7 the uppercase Martian label role |
-| `Display` | `as` | §7 Familjen Grotesk 700 at `-0.02em` |
+| `Display` | `as` | §7 Familjen Grotesk 700 at `-0.02em`. **Sets the role, not the size** — the consumer names the rung (`.gl-name` → `--fs-display`, `.on-section-title` → `--fs-section`). Rendered bare it falls back to the element's UA size (e.g. an `h1` at 2em), which is never the intent on a sakura surface. |
 | `SectionHead` | `kicker` `title` `as` `rule` | §7 section head · §5 12px label→content · §9 optional hairline rule |
 | `Log` / `LogLine` | `time` `glyph` `state` `dim\|default\|active\|success\|error` | §5 the one place density is allowed, 880px column cap · §7 JetBrains body + Martian timestamp · §8 glyph, incl. the text-only tick (D-14) · §1 readable at 375px |
 | `CodeBlock` | `title` `meta` | §4 radius 0 · §7 mono body · §9 hairline header strip |

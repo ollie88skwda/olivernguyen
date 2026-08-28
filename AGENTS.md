@@ -2,7 +2,7 @@
 
 Project rules for any coding agent working in this repo. Read this before touching anything.
 General engineering rules also live in the global `~/AGENTS.md`.
-`CLAUDE.md` in this repo is a symlink to this file — one set of project rules, not two.
+`CLAUDE.md` in this repo is a pointer file that imports this file (fm-ensure-agents-md format) — one set of project rules, not two.
 
 ---
 
@@ -63,7 +63,10 @@ different, that is a brand decision, not a component decision.
 - shadcn/ui is configured (`components.json`, JS not TS, `@/components/ui`). Components are ours
   once added; restyle them to the brand tokens rather than shipping registry defaults.
 - Motion (`motion/react`) for animation. `lucide-react` is the only icon family.
-- Tests: Vitest + Playwright. Dev server: `npm run dev` on :3000.
+- Tests: Vitest + Playwright. Dev server: `npm run dev` on :3000. Playwright's own server is
+  :3100 with `reuseExistingServer` — during parallel lane worktree runs, another lane's server can
+  squat on :3100 and your e2e silently tests THEIR code. Verify with `lsof -i :3100` (or just serve
+  your own port) before trusting e2e results; a stale result looks exactly like a real failure.
 
 ## 4. Verification before you call it done
 
