@@ -219,10 +219,7 @@ export function guideLines() {
         <MonoLabel tone="accent">start here · a plain-language tour</MonoLabel>
         <Display as="h1" id="reader-intro-title" className="reader-name name">{data.name}</Display>
         <p className="reader-lede tagline">{data.tagline}</p>
-        <p className="reader-summary">
-          Oliver makes computer programs that can plan and do work on their own, then coaches students through robotics and leadership.
-          This is the readable version: what he builds, how it works, and the results you can verify.
-        </p>
+        <p className="reader-summary">{data.intro}</p>
         <StatRow className="reader-intro-stats">
           {data.stats.map((stat) => <StatBlock key={stat.label} value={stat.value} label={stat.label} />)}
         </StatRow>
@@ -256,7 +253,7 @@ export function guideLines() {
         id="reader-leadership"
         kicker="03 / LEADERSHIP"
         title="Work beyond the terminal"
-        summary={data.leadership.bio}
+        summary={data.leadership.summary}
         items={data.leadership.items}
       />
       <ReaderSection

@@ -23,6 +23,8 @@ export const NAME = meta.name;
 export const TAGLINE = meta.tagline;
 export const DAY_COUNT = week.length;
 export const BOOT_DAY = 3; // §6 C1: boot auto-types `operator --replay --day 3`
+export const GUIDE_INTRO =
+  'Oliver makes computer programs that can plan and do work on their own, then coaches students through robotics and leadership. This is the readable version: what he builds, how it works, and the results you can verify.';
 
 const groupTitle = (id) => entityById.get(id).title.toLowerCase();
 
@@ -109,12 +111,13 @@ export function roboticsSection() {
 /** window 4 — whoami.txt: root bio + leadership roles/credentials. */
 export function whoamiSection() {
   const root = entityById.get('oliver');
+  const group = entityById.get('leadership');
   return {
     file: 'whoami.txt',
     heading: `whoami.txt · ${root.title}`,
-    summary: meta.tagline,
+    summary: group.blurb,
     bio: root.blurb,
-    items: children('leadership').map(pick),
+    items: children(group.id).map(pick),
     strip: statLine(root.stats),
   };
 }
@@ -139,6 +142,7 @@ export function guideData() {
   return {
     name: root.title,
     tagline: meta.tagline,
+    intro: GUIDE_INTRO,
     stats: root.stats,
     agents: toolsSection(),
     robotics: roboticsSection(),

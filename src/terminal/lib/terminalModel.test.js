@@ -136,6 +136,7 @@ describe('guided reader data', () => {
     expect(data.tagline).toBe(meta.tagline);
     expect(data.agents.summary).toBe(entityById.get('agents').blurb);
     expect(data.robotics.summary).toBe(entityById.get('robotics').blurb);
+    expect(data.leadership.summary).toBe(entityById.get('leadership').blurb);
     expect(data.contact.summary).toBe(entityById.get('contact').blurb);
     expect(data.agents.items.map((item) => item.id)).toEqual(
       allEntities.filter((e) => e.graph.parent === 'agents').map((e) => e.id),

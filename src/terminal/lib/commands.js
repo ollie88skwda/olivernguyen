@@ -33,7 +33,6 @@ import {
 /** Completion vocabulary (C-1.1 Tab). Trailing-space entries take an arg. */
 export const COMMAND_WORDS = [
   'help',
-  'guide',
   'ls',
   'cat ',
   'cd ',

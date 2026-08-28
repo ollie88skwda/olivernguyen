@@ -260,6 +260,9 @@ test.describe("terminal core — Gate C1 (prompt, commands, sections, boot)", ()
     await expect(page.locator(".reader-card").first()).toContainText(
       "decision entries",
     );
+    await expect(page.locator("#reader-leadership .reader-section-summary")).toHaveText(
+      "Roles and credentials from outside the terminal.",
+    );
     await expect(
       page.locator('button.obtn[data-cmd="cat tools.txt"]'),
     ).toBeVisible();
@@ -270,6 +273,85 @@ test.describe("terminal core — Gate C1 (prompt, commands, sections, boot)", ()
       /active/,
     );
     await expect(page.getByTestId("sb-mode")).toHaveText("-- NORMAL --");
+    assertClean(errors);
+  });
+
+  test("guided opener exposes progressive hints and a complete reading hierarchy", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await openHarness(page, "");
+    await bootDone(page);
+    const reader = page.locator(".reader-document");
+    const levels = await reader.locator("h1, h2, h3").evaluateAll((headings) =>
+      headings.map((heading) => Number(heading.tagName.slice(1))),
+    );
+
+    expect(levels[0]).toBe(1);
+    expect(levels).toContain(2);
+    expect(levels).toContain(3);
+    await expect(reader.locator("h1")).toHaveCount(1);
+    await expect(reader.locator("h2")).toHaveCount(4);
+    await expect(reader.locator("h3").first()).toBeVisible();
+    await expect(reader.locator(".reader-hints")).toContainText(
+      "optional controls",
+    );
+    await expect(reader.locator(".reader-hints")).toContainText("1–5");
+    await expect(reader.locator(".reader-hints")).toContainText("⌘K");
+    await expect(reader.locator(".reader-hints")).toContainText("?");
+    await expect(page.getByTestId("term-help")).toHaveCount(0);
+    assertClean(errors);
+  });
+
+  test("guided opener has named landmarks and keyboard controls", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await openHarness(page, "");
+    await bootDone(page);
+    const reader = page.locator(".reader-document");
+
+    await expect(
+      reader.locator('section[aria-labelledby="reader-intro-title"]'),
+    ).toHaveCount(1);
+    await expect(
+      reader.getByRole("heading", { name: "Oliver Nguyen", level: 1 }),
+    ).toBeVisible();
+    await expect(
+      reader.getByRole("region", { name: "Systems that do useful work" }),
+    ).toBeVisible();
+    await expect(page.locator("#term-prompt-input")).toHaveAccessibleName(
+      "Terminal prompt",
+    );
+
+    const readWork = reader.getByRole("button", { name: "read the work" });
+    await expect(readWork).toBeVisible();
+    await readWork.focus();
+    await expect(readWork).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(page.locator(".ln.echo .cmdtext").last()).toHaveText(
+      "cat tools.txt",
+    );
+    await expect(page.locator(".reader-section").last()).toBeVisible();
+    assertClean(errors);
+  });
+
+  test("guide remains executable while g stays out of Tab completion", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await openHarness(page, "?still");
+    await bootDone(page);
+    const prompt = page.locator("#term-prompt-input");
+
+    await prompt.fill("guide");
+    await prompt.press("Enter");
+    await expect(page.locator(".ln.echo .cmdtext").last()).toHaveText("guide");
+    await expect(page.locator(".reader-document").last()).toBeVisible();
+
+    await prompt.fill("g");
+    await prompt.press("Tab");
+    await expect(prompt).toHaveValue("g");
     assertClean(errors);
   });
 

@@ -158,6 +158,14 @@ describe('complete()', () => {
     expect(completionMatches('c')).toEqual(['cat ', 'cd ', 'clear', 'contact']);
     expect(complete('ca')).toBe('cat ');
   });
+
+  it('keeps guide executable without adding it to Tab completion', async () => {
+    const ctx = mockCtx();
+    await execute('guide', ctx);
+    expect(ctx.printGuide).toHaveBeenCalledTimes(1);
+    expect(complete('g')).toBeNull();
+    expect(completionMatches('g')).toEqual([]);
+  });
 });
 
 describe('cd navigation', () => {
