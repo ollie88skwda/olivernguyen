@@ -109,14 +109,14 @@ test.describe("/emoji — sakura restyle", () => {
   test("custom color keeps emoji legible in both theme ladders", async ({ page }) => {
     for (const theme of ["light", "dark"]) {
       await page.goto(`/emoji?theme=${theme}`);
-      await setColor(page, "#808080");
+      await setColor(page, "#777777");
       const canvas = page.locator(".emoji-canvas");
-      await expect(canvas).toHaveCSS("background-color", "rgb(128, 128, 128)");
+      await expect(canvas).toHaveCSS("background-color", "rgb(119, 119, 119)");
       await page.getByLabel("custom count").fill("1");
       await page.getByLabel("emoji or text").fill("🐠");
       await page.getByLabel("emoji or text").press("Enter");
       const item = page.locator(".emoji-item");
-      await expect(item).toHaveCSS("color", "rgb(19, 19, 19)");
+      await expect(item).toHaveCSS("color", "rgb(0, 0, 0)");
       const contrast = await page.evaluate(() => {
         const rgb = (value) => value.match(/\d+/g).map(Number).map((channel) => channel / 255);
         const luminance = (value) => rgb(value).reduce(

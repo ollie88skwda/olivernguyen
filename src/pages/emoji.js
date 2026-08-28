@@ -25,23 +25,40 @@ const BG_PRESETS = [
 
 const COUNT_PRESETS = [67, 41, 25];
 const MAX_COUNT = 200;
+const LIGHT_ITEM_COLOR = "#ffffff";
+const DARK_ITEM_COLOR = "#000000";
 
-function isDarkColor(hex) {
-  if (!hex || typeof hex !== "string") return false;
+function getRelativeLuminance(hex) {
+  if (!hex || typeof hex !== "string") return null;
   let h = hex.trim().replace("#", "");
   if (h.length === 3) {
     h = h.split("").map((c) => c + c).join("");
   }
-  if (h.length !== 6 || !/^[0-9a-fA-F]+$/.test(h)) return false;
+  if (h.length !== 6 || !/^[0-9a-fA-F]+$/.test(h)) return null;
   const channels = [0, 2, 4].map((start) => parseInt(h.slice(start, start + 2), 16) / 255);
-  const luminance = channels.reduce(
+  return channels.reduce(
     (sum, channel, index) =>
       sum + (channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4) * [0.2126, 0.7152, 0.0722][index],
     0,
   );
-  const whiteContrast = 1.05 / (luminance + 0.05);
-  const blackContrast = (luminance + 0.05) / 0.05;
-  return whiteContrast > blackContrast;
+}
+
+function getContrastRatio(first, second) {
+  return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05);
+}
+
+function getItemColor(background) {
+  const backgroundLuminance = getRelativeLuminance(background);
+  if (backgroundLuminance === null) return DARK_ITEM_COLOR;
+  const whiteContrast = getContrastRatio(
+    backgroundLuminance,
+    getRelativeLuminance(LIGHT_ITEM_COLOR),
+  );
+  const darkContrast = getContrastRatio(
+    backgroundLuminance,
+    getRelativeLuminance(DARK_ITEM_COLOR),
+  );
+  return whiteContrast > darkContrast ? LIGHT_ITEM_COLOR : DARK_ITEM_COLOR;
 }
 
 function getFirstGrapheme(str) {
@@ -162,7 +179,7 @@ export const EmojiPage = () => {
   const fishbowlCanvasRef = useRef(null);
   const [draggingId, setDraggingId] = useState(null);
 
-  const isDarkBg = useMemo(() => isDarkColor(bgColor), [bgColor]);
+  const itemColor = useMemo(() => getItemColor(bgColor), [bgColor]);
 
   // Load + strip fishbowl on mount
   useEffect(() => {
@@ -296,13 +313,13 @@ export const EmojiPage = () => {
     ctx.font = `900 ${itemSize}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", system-ui, sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillStyle = isDarkBg ? "#ffffff" : "#131313";
+    ctx.fillStyle = itemColor;
     for (const it of items) {
       ctx.fillText(it.content, it.x * size, it.y * size);
     }
 
     return canvas.toDataURL("image/png");
-  }, [bgColor, isDarkBg, items]);
+  }, [bgColor, itemColor, items]);
 
   const handleDownload = () => {
     const dataUrl = exportPNG();
@@ -322,8 +339,6 @@ export const EmojiPage = () => {
       if (window.__emojiExport === exportPNG) delete window.__emojiExport;
     };
   }, [exportPNG]);
-
-  const itemColor = isDarkBg ? "#ffffff" : "#131313";
 
   return (
     <div className="emoji-page sakura">
