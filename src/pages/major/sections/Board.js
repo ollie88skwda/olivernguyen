@@ -1,27 +1,35 @@
 import React from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
-import SectionHeading from '../../../components/SectionHeading';
-import Reveal from '../../../components/Reveal';
+import { MonoLabel, SectionHead } from '@/components/brand';
+import { Input } from '@/components/ui/input';
+import { useTheme } from '../../../theme/ThemeProvider';
 import Tip from '../../../components/Tooltip';
 
 const EMPTY_SCORE = { lo: 0, mid: 0, hi: 0 };
+// The cell fill is an accent-token mix with a theme-specific range. The cell's own
+// number is always available in the popup and aria-label.
 const INK_FLOOR = 0.15;
 const INK_RANGE = 0.85;
-// Below this the navy is too pale to carry cream text.
-const INK_INVERT = 0.5;
+const DARK_INK_FLOOR = 0.6;
+const INK_LOUD_LIGHT = 0.85;
 const RAMP = [0.2, 0.4, 0.6, 0.8, 1];
 
 const dec2 = (value) => value.toFixed(2).replace(/^0/, '');
 const dec3 = (value) => value.toFixed(3).replace(/^0/, '');
-const ink = (value) => INK_FLOOR + INK_RANGE * value;
+const ink = (value, theme) =>
+  theme === 'dark' ? DARK_INK_FLOOR + (1 - DARK_INK_FLOOR) * value : INK_FLOOR + INK_RANGE * value;
 
-const cellStyle = (value) => ({
-  background: `rgba(9, 36, 65, ${ink(value)})`,
-  color: ink(value) > INK_INVERT ? 'var(--on-accent)' : 'var(--text-muted)',
-});
+const cellStyle = (value, theme = 'light') => {
+  const fill = Math.round(ink(value, theme) * 100);
+  return {
+    background:
+      theme === 'dark'
+        ? `color-mix(in srgb, var(--accent) ${fill}%, var(--bg))`
+        : `color-mix(in srgb, var(--accent) ${fill}%, transparent)`,
+  };
+};
 
 export const Board = ({ doc, derived, editing, updateDoc }) => {
-  const reduce = useReducedMotion();
+  const { theme } = useTheme();
   const { ahp, normalized, wsm } = derived;
   const { criteria, alternatives } = doc;
 
@@ -40,6 +48,8 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
   const rows = [...alternatives].sort((a, b) => totalOf(b.id) - totalOf(a.id));
 
   const allTied = criteria.every((c) => alternatives.every((a) => ratingOf(a.id, c.id) === 0.5));
+
+  const inkTier = (value) => theme === 'dark' || value >= INK_LOUD_LIGHT ? 'accent' : 'quiet';
 
   const setScore = (altId, critId, key, raw) => {
     const parsed = Number(raw);
@@ -62,15 +72,15 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
 
   return (
     <section id="board" className="mj-sec">
-      <SectionHeading eyebrow="S1 / The Board" title="The Matrix, As A Picture" />
+      <SectionHead kicker="S1 / The Board" title="The Matrix, As A Picture" />
 
-      <Reveal as="p" className="mj-hint">
+      <p className="mj-hint">
         This is a <Tip term="weighted-matrix">weighted matrix</Tip>, drawn instead of tabulated.
         Column width is how much that thing counts to you. How dark a box is shows how well that
         major does on it. The best option is the widest, darkest row, so you do not have to read any
         numbers to see it. Hover or tap any box for what it measures and the{' '}
         <Tip term="range">range</Tip> behind its number.
-      </Reveal>
+      </p>
 
       {allTied && (
         <p className="mj-tie">
@@ -89,15 +99,12 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
         </div>
 
         {rows.map((alternative) => (
-          <motion.div
-            className="mj-row"
-            key={alternative.id}
-            layout={!reduce}
-            transition={{ layout: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } }}
-          >
+          <div className="mj-row" key={alternative.id}>
             <div className="mj-name">
               {alternative.label.replace(/\s*engineering$/i, '')}
-              <small>{alternative.id.toUpperCase()}</small>
+              <MonoLabel tone="faint" className="mj-name-code">
+                {alternative.id.toUpperCase()}
+              </MonoLabel>
             </div>
 
             <div className="mj-cells">
@@ -107,19 +114,24 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
 
                 if (editing) {
                   return (
-                    <div className="mj-cell mj-cell-edit" key={criterion.id} style={columnStyle(criterion.id)}>
+                    <div
+                      className="mj-cell mj-cell-edit"
+                      key={criterion.id}
+                      style={columnStyle(criterion.id)}
+                    >
                       {['lo', 'mid', 'hi'].map((key) => (
-                        <span className="mj-in-row" key={key}>
+                        <div className="mj-in-row" key={key}>
                           <i>{key}</i>
-                          <input
+                          <Input
                             className="mj-in"
+                            face="mono"
                             type="number"
                             step="0.5"
                             value={score[key]}
                             aria-label={`${alternative.label}, ${criterion.label}, ${key}`}
                             onChange={(e) => setScore(alternative.id, criterion.id, key, e.target.value)}
                           />
-                        </span>
+                        </div>
                       ))}
                     </div>
                   );
@@ -131,8 +143,9 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
                   <button
                     type="button"
                     className="mj-cell"
+                    data-ink={inkTier(rating)}
                     key={criterion.id}
-                    style={{ ...columnStyle(criterion.id), ...cellStyle(rating) }}
+                    style={{ ...columnStyle(criterion.id), ...cellStyle(rating, theme) }}
                     aria-label={`${alternative.label}, ${criterion.label}: rated ${dec2(rating)} of 1. Range ${score.lo} to ${score.hi}, best guess ${score.mid}. ${alternative.notes || ''}`.trim()}
                   >
                     <span className="mj-cell-v">{dec2(rating)}</span>
@@ -155,7 +168,7 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
             </div>
 
             <div className="mj-total">{dec3(totalOf(alternative.id))}</div>
-          </motion.div>
+          </div>
         ))}
       </div>
 
@@ -164,7 +177,7 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
           Darkness is how well a major does on that column
           <span className="mj-ramp" aria-hidden="true">
             {RAMP.map((step) => (
-              <i key={step} style={{ background: `rgba(9, 36, 65, ${step})` }} />
+              <i key={step} style={cellStyle(step, theme)} />
             ))}
           </span>
         </span>

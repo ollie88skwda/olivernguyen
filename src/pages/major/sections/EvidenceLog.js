@@ -1,6 +1,18 @@
 import React, { useState } from 'react';
-import SectionHeading from '../../../components/SectionHeading';
-import Reveal from '../../../components/Reveal';
+import { MonoLabel, SectionHead } from '@/components/brand';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { Textarea } from '@/components/ui/textarea';
 
 // A bare YYYY-MM-DD parses as UTC midnight, which sorts and prints a day early west of
 // Greenwich. Pin date-only strings to local midnight. Anything unparseable sinks last.
@@ -52,55 +64,57 @@ const AddEntry = ({ updateDoc }) => {
 
   return (
     <form className="mjc-form" onSubmit={submit}>
-      <p className="mjc-form-t">Log what you just learned</p>
+      <MonoLabel tone="muted" className="mjc-form-t">
+        Log what you just learned
+      </MonoLabel>
 
       <div className="mjc-form-row">
-        <label className="mjc-field mjc-field-sm">
-          <span className="mjc-lbl">Date</span>
-          <input
-            className="mjc-input"
+        <div className="mjc-field mjc-field-sm">
+          <Label htmlFor="ev-date">Date</Label>
+          <Input
+            id="ev-date"
             type="date"
             value={date}
             onChange={(event) => setDate(event.target.value)}
           />
-        </label>
+        </div>
 
-        <label className="mjc-field">
-          <span className="mjc-lbl">Source</span>
-          <input
-            className="mjc-input"
+        <div className="mjc-field">
+          <Label htmlFor="ev-source">Source</Label>
+          <Input
+            id="ev-source"
             type="text"
             value={source}
             placeholder="NY Fed, labour market by major"
             onChange={(event) => setSource(event.target.value)}
           />
-        </label>
+        </div>
       </div>
 
-      <label className="mjc-field">
-        <span className="mjc-lbl">Link, if there is one</span>
-        <input
-          className="mjc-input"
+      <div className="mjc-field">
+        <Label htmlFor="ev-url">Link, if there is one</Label>
+        <Input
+          id="ev-url"
           type="url"
           value={url}
           placeholder="https://"
           onChange={(event) => setUrl(event.target.value)}
         />
-      </label>
+      </div>
 
-      <label className="mjc-field">
-        <span className="mjc-lbl">What it changed</span>
-        <textarea
-          className="mjc-area"
+      <div className="mjc-field">
+        <Label htmlFor="ev-note">What it changed</Label>
+        <Textarea
+          id="ev-note"
           value={note}
           placeholder="ME unemployment came in lower than IE, so the saturated claim is looking weak"
           onChange={(event) => setNote(event.target.value)}
         />
-      </label>
+      </div>
 
-      <button className="mjc-btn" type="submit" disabled={!note.trim()}>
+      <Button type="submit" disabled={!note.trim()}>
         Add to the log
-      </button>
+      </Button>
     </form>
   );
 };
@@ -119,53 +133,53 @@ export const EvidenceLog = ({ doc, editing, updateDoc }) => {
 
   return (
     <section id="evidence" className="mj-sec">
-      <SectionHeading eyebrow="S8 / Evidence log" title="Why The Answer Moved" />
+      <SectionHead kicker="S8 / Evidence log" title="Why The Answer Moved" />
 
-      <Reveal as="p" className="mj-hint">
+      <p className="mj-hint">
         Every time something you find out changes a number, it gets a dated row here. Newest first.
         In three months, when the page says something different to what it says today, this is the
         record of what did it.
-      </Reveal>
+      </p>
 
-      <div className="mjc-tablewrap">
-        <table className="mjc-table">
-          <thead>
-            <tr>
-              <th className="mjc-col-date">Date</th>
-              <th className="mjc-col-src">Source</th>
-              <th>What it moved</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row, index) => (
-              <tr key={`${row.date}-${row.source}-${index}`}>
-                <td className="mjc-date">{row.date}</td>
-                <td>
-                  {row.url ? (
-                    <a href={row.url} target="_blank" rel="noreferrer">
-                      {row.source}
-                    </a>
-                  ) : (
-                    row.source
-                  )}
-                </td>
-                <td>
-                  {row.note}
-                  {(row.criterion || row.alternative || row.delta !== null) && (
-                    <span className="mjc-tags">
-                      {row.alternative && <i>{alternativeLabel(row.alternative)}</i>}
-                      {row.criterion && <i>{criterionLabel(row.criterion)}</i>}
-                      {row.delta !== null && row.delta !== undefined && (
-                        <i className="mjc-tag-delta">{deltaText(row.delta)}</i>
-                      )}
-                    </span>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table className="mjc-table">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="mjc-col-date">Date</TableHead>
+            <TableHead className="mjc-col-src">Source</TableHead>
+            <TableHead>What it moved</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {rows.map((row, index) => (
+            <TableRow key={`${row.date}-${row.source}-${index}`}>
+              <TableCell className="mjc-date">{row.date}</TableCell>
+              <TableCell>
+                {row.url ? (
+                  <a className="mjc-link" href={row.url} target="_blank" rel="noreferrer">
+                    {row.source}
+                  </a>
+                ) : (
+                  row.source
+                )}
+              </TableCell>
+              <TableCell>
+                {row.note}
+                {(row.criterion || row.alternative || row.delta !== null) && (
+                  <span className="mjc-tags">
+                    {row.alternative && <Badge className="mjc-tag">{alternativeLabel(row.alternative)}</Badge>}
+                    {row.criterion && <Badge className="mjc-tag">{criterionLabel(row.criterion)}</Badge>}
+                    {row.delta !== null && row.delta !== undefined && (
+                      <Badge tone="accent" className="mjc-tag">
+                        {deltaText(row.delta)}
+                      </Badge>
+                    )}
+                  </span>
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
 
       {editing && <AddEntry updateDoc={updateDoc} />}
 

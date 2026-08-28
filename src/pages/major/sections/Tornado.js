@@ -1,7 +1,5 @@
 import React from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
-import SectionHeading from '../../../components/SectionHeading';
-import Reveal from '../../../components/Reveal';
+import { MonoLabel, SectionHead } from '@/components/brand';
 import Tip from '../../../components/Tooltip';
 
 // Under this much of a weight shift, one ordinary change of heart flips the answer.
@@ -20,7 +18,6 @@ const points = (delta) => {
 const signed = (row) => `${row.direction === 'decrease' ? '-' : '+'}${points(row.delta)} pts`;
 
 export const Tornado = ({ doc, derived, onPreviewFlip }) => {
-  const reduce = useReducedMotion();
   const { flip, ahp, wsm } = derived;
   const { criteria, alternatives } = doc;
 
@@ -57,13 +54,13 @@ export const Tornado = ({ doc, derived, onPreviewFlip }) => {
 
   return (
     <section id="fragility" className="mj-sec">
-      <SectionHeading eyebrow="S4 / Fragility" title="How Little It Takes To Flip" />
+      <SectionHead kicker="S4 / Fragility" title="How Little It Takes To Flip" />
 
-      <Reveal as="p" className="mj-hint">
+      <p className="mj-hint">
         How much would you have to change your mind about each thing before a different major wins?
         That is <Tip term="fragility">fragility</Tip>, and a short bar means one small shift in how
         you feel flips the whole answer.
-      </Reveal>
+      </p>
 
       {tied && (
         <p className="mjb-empty">
@@ -72,6 +69,10 @@ export const Tornado = ({ doc, derived, onPreviewFlip }) => {
         </p>
       )}
 
+      {/* Bars are static (§6 has no entrance animation for them): fragile rows carry the
+          warning token, robust rows the hairline, everything else the accent. The bar
+          LENGTH is the fragility encoding — it is not a Progress component because a flip
+          distance is a measurement, not a completion. */}
       <div className="mjb-torn">
         {rows.map((row, i) => {
           const robust = !Number.isFinite(row.delta);
@@ -86,14 +87,7 @@ export const Tornado = ({ doc, derived, onPreviewFlip }) => {
             <>
               <span className="mjb-torn-l">{row.criterion.label}</span>
               <span className="mjb-torn-track">
-                <motion.span
-                  className={classes.join(' ')}
-                  initial={reduce ? false : { scaleX: 0 }}
-                  whileInView={{ scaleX: 1 }}
-                  viewport={{ once: true, amount: 0.6 }}
-                  transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: i * 0.04 }}
-                  style={{ width: `${width}%` }}
-                />
+                <span className={classes.join(' ')} style={{ width: `${width}%` }} />
               </span>
               <span className="mjb-torn-v">{readout}</span>
             </>

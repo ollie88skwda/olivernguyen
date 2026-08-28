@@ -46,8 +46,9 @@ different, that is a brand decision, not a component decision.
 - Sakura tokens live under the `.sakura` scope class, keyed off `<html data-theme="light|dark">` and
   `<html data-mode="terminal|graph">`. **Never put them on `:root`.**
 - `src/styles/theme.css` owns the legacy `:root` tokens (navy/gold). Leave it alone.
-- Remaining legacy pages under `src/pages/` are frozen and keep their own stylesheets. `/college`
-  is the explicit sakura-restyle exception. Do not let new styles bleed into the rest.
+- Remaining legacy pages under `src/pages/` are frozen and keep their own stylesheets until a
+  restyle is explicitly scheduled. `/college` is the explicit sakura-restyle exception. Do not let
+  new styles bleed into the rest.
 - New surfaces mount inside `.sakura`.
 
 ## 3. Stack facts

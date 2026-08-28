@@ -1,7 +1,5 @@
 import React, { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { useReducedMotion } from 'framer-motion';
-import Reveal from '../../components/Reveal';
-import WordReveal from '../../components/WordReveal';
 import { GlossaryProvider } from '../../components/Tooltip';
 import { GLOSSARY } from './glossary';
 import useMajorStore from './store';
@@ -14,6 +12,11 @@ import {
   normalizeScores,
   runMonteCarlo,
 } from './model';
+import { Display, MonoLabel } from '@/components/brand';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 import Status from './sections/Status';
 import Board from './sections/Board';
 import Duel from './sections/Duel';
@@ -24,9 +27,7 @@ import PreMortem from './sections/PreMortem';
 import Assumptions from './sections/Assumptions';
 import EvidenceLog from './sections/EvidenceLog';
 import Glossary from './sections/Glossary';
-import '../../styles/Major.css';
-import '../../styles/MajorB.css';
-import '../../styles/MajorC.css';
+import './major.css';
 
 // Land just past the tipping point rather than exactly on it, so the previewed board
 // actually re-sorts instead of showing a dead heat.
@@ -130,8 +131,15 @@ export const Major = () => {
 
   if (loading || !doc || !derived) {
     return (
-      <main className="mj-page mj-loading">
-        <p>LOADING THE DOC</p>
+      <main className="sakura mj-page mj-loading">
+        <div className="mj-shell">
+          <MonoLabel tone="muted" className="mj-loading-label">
+            Loading the doc
+          </MonoLabel>
+          <Skeleton shape="text" className="mj-loading-skel mj-loading-title" />
+          <Skeleton shape="text" className="mj-loading-skel" />
+          <Skeleton shape="control" className="mj-loading-skel mj-loading-wide" />
+        </div>
       </main>
     );
   }
@@ -152,24 +160,24 @@ export const Major = () => {
 
   return (
     <GlossaryProvider value={GLOSSARY}>
-    <main className="mj-page">
-
+    <main className="sakura mj-page">
+      <div className="mj-shell">
       <header className="mj-hero">
-        <Reveal as="p" className="mj-hero-eyebrow">
+        <MonoLabel tone="muted" className="mj-hero-eyebrow">
           Route /major · private · unlinked
-        </Reveal>
-        <h1 className="mj-hero-title">
-          <WordReveal text="Major Decision Engine" />
-        </h1>
-        <div className="mj-hero-rule" aria-hidden="true" />
-        <Reveal as="p" className="mj-hero-sub" delay={0.4}>
+        </MonoLabel>
+        <Display as="h1" className="mj-hero-title">
+          Major Decision Engine
+        </Display>
+        <Separator className="mj-hero-rule" />
+        <p className="mj-hero-sub">
           Industrial, Systems or Mechanical. This page runs the decision, and it is willing to
           tell you when it does not know the answer.
-        </Reveal>
-        <Reveal as="p" className="mj-hero-note" delay={0.5}>
+        </p>
+        <p className="mj-hero-note">
           Every technical term is a dotted underline you can hover or tap, every section opens a
           plain English box, and S9 is a full glossary. Nothing here is harder than multiplication.
-        </Reveal>
+        </p>
       </header>
 
       <Status {...sectionProps} />
@@ -181,9 +189,15 @@ export const Major = () => {
             {previewed.entry.direction === 'decrease' ? '-' : '+'}
             {points(previewed.entry.delta)} pts. Nothing is saved.
           </span>
-          <button type="button" className="mj-preview-clear" onClick={() => setPreview(null)}>
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            className="mj-preview-clear"
+            onClick={() => setPreview(null)}
+          >
             clear
-          </button>
+          </Button>
         </div>
       )}
       <Board {...sectionProps} derived={previewed ? previewed.derived : derived} />
@@ -199,18 +213,20 @@ export const Major = () => {
 
       <div className="mj-tools">
         {editing && (
-          <span className={offline ? 'mj-stamp mj-stamp-off' : 'mj-stamp'}>
+          <Badge tone={offline ? 'warning' : 'neutral'} className="mj-stamp">
             {offline ? 'OFFLINE, NOT SAVING' : stamp}
-          </span>
+          </Badge>
         )}
-        <button
+        <Button
           type="button"
-          className={editing ? 'mj-tool mj-tool-on' : 'mj-tool'}
+          variant={editing ? 'primary' : 'ghost'}
           aria-pressed={editing}
+          className="mj-tool"
           onClick={() => setEditing((on) => !on)}
         >
           {editing ? 'DONE' : 'EDIT'}
-        </button>
+        </Button>
+      </div>
       </div>
     </main>
     </GlossaryProvider>
