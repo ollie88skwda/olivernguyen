@@ -51,6 +51,16 @@ const routes = [
   ["/articlewriter", async (page) => rendersRoot(page)],
   ["/sat-resources", async (page) => rendersRoot(page)],
   ["/sat-signup", async (page) => rendersRoot(page)],
+  ["/mom", async (page) => {
+    await rendersRoot(page);
+    await expect(page.locator(".mom-root")).toBeVisible();
+    await expect(page.locator(".site-chrome")).toHaveCount(0);
+  }],
+  ["/mum", async (page) => {
+    await rendersRoot(page);
+    await expect(page.locator(".mom-root")).toBeVisible();
+    await expect(page.locator(".site-chrome")).toHaveCount(0);
+  }],
   ["/pull", async (page) => rendersRoot(page)],
   ["/emoji", async (page) => rendersRoot(page)],
   ["/be-my-girlfriend", async (page) => rendersRoot(page)],

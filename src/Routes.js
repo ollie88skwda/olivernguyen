@@ -42,6 +42,7 @@ const Apply = lazy(() => import("./pages/apply/index.js"));
 const EssayStudio = lazy(() => import("./pages/essay_studio/index.js"));
 const WritingRoom = lazy(() => import("./pages/essay_studio/room/index.js"));
 const Transfer = lazy(() => import("./pages/transfer/index.js"));
+const MomFifty = lazy(() => import("./pages/mom/index.js"));
 
 // Dev-only component gallery (/_components). Behind import.meta.env.DEV so the
 // route, its chunk and the whole component-gallery tree are absent from a
@@ -78,7 +79,7 @@ const ClerkBridge = ({ children }) => {
 // pages/top_bar (grain retired, /debt dropped, TERM|GRAPH toggle added);
 // top_bar.js stays in the tree unmounted (P4 policy).
 // /be-my-girlfriend is full-bleed with its own art direction and opts out.
-const NO_CHROME = ["/be-my-girlfriend", "/bemygirlfriend", "/girlfriend"];
+const NO_CHROME = ["/be-my-girlfriend", "/bemygirlfriend", "/girlfriend", "/mom", "/mum"];
 
 const SiteChrome = () => {
   const { pathname } = useLocation();
@@ -140,6 +141,12 @@ export const Routes = () => {
         <Route path={["/be-my-girlfriend", "/bemygirlfriend", "/girlfriend"]}>
           <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#092441" }} />}>
             <BeMyGirlfriend />
+          </Suspense>
+        </Route>
+        {/* /mom is canonical; /mum stays alive because the link was shared as /mum */}
+        <Route path={["/mom", "/mum"]}>
+          <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#2c0d45" }} />}>
+            <MomFifty />
           </Suspense>
         </Route>
         <Route path="/college">
