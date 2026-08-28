@@ -33,5 +33,5 @@ gate `e2e/articlewriter.spec.js`. Base: component-library migration.
 - `CI=true yarn test` — 450 passed.
 - `CI=true yarn build` — passes; `/articlewriter` stays a separate lazy chunk (`article_writer-*.js`).
 - `npx playwright test e2e/articlewriter.spec.js` — 4 passed: empty, loading+success+copy (stubbed generator, clipboard permission granted), failure (`route.abort`), 375px coarse-pointer (iPhone profile, dark ladder: bar clearance, 44px targets, no overflow).
-- Full e2e suite: 148 passed; `/permit` legacy-visual is the documented permitted red (`OPEN-DECISIONS.md` item 1); `/studio` + `/transfer` fail identically on the untouched base tree (Clerk instance unreachable in this environment); `/definitely-not-a-page` passed on re-run (timing flake under full parallel load, page untouched by this lane).
+- Full e2e suite: 148 passed; `/studio` + `/transfer` fail identically on the untouched base tree (Clerk instance unreachable in this environment); `/definitely-not-a-page` passed on re-run (timing flake under full parallel load, page untouched by this lane).
 - Live computed-style audit in both themes: page `--bg`, Familjen on all headings, 3px controls at 40px, square `Card` with hairline + 28px padding, JetBrains inline code, danger error text — all mapped.

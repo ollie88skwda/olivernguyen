@@ -242,7 +242,7 @@ plus legacy routes. **One restored, two confirmed removed.** Full A/B and the me
 |---|---|---|
 | bar `backdrop-filter: blur(8px)` | **BACK, scoped** — §9 narrowed (D-30, superseding this row) | Oliver reversed D-29 by name. Ships only under `html[data-mode="graph"] body:has(.graph-root)` at ≥768px / fine pointer, `blur(8px)` over `--chrome-veil` (50%, a §2.3 contrast floor). Still out in terminal (2/255 delta — nothing scrolls under a 100dvh screen), on remaining legacy routes (10/255 and muddy: navy legacy text through the pink bar) and on phone. D-29's "it re-rasterises the whole graph canvas soft" **did not exist** — it was the 6s guided-tour autostart moving the camera between the two frames |
 | `…` → `☰` on the pages menu | **restored, as an `Icon`** | `…` promises "more of this list", not "site menu", and at control size next to the moon button it reads as truncation. And ☰ is **not in JetBrains Mono** — measured advance 11.44px against the mono's 7.81px (`M`, `…` and the .notdef box all 7.81px), i.e. a system fallback draws it — so it cannot be a `Glyph`. That is §8's own "a glyph genuinely cannot work" test, on the D-23 sun/moon precedent |
-| `<ScrollProgress>` | **stays out** | on `/`, `scrollHeight === innerHeight` in all four combinations at both widths, and mounted it renders `opacity: 0` reading `00%`; its four probe ids exist on **no route on the site**, so the section designator can never appear; most remaining legacy routes scroll ≤216px (only `/permit` really scrolls; see `docs/OPEN-DECISIONS.md` for the current count); and restoring it as-is drags in `.scroll-station` from the **frozen** `theme.css` — `backdrop-filter: blur(6px)` over hardcoded cream, the same §9 violation rejected in row 1 |
+| `<ScrollProgress>` | **stays out** | on `/`, `scrollHeight === innerHeight` in all four combinations at both widths, and mounted it renders `opacity: 0` reading `00%`; its four probe ids exist on **no route on the site**, so the section designator can never appear; the remaining frozen routes (`/pull` and `/apply`) scroll ≤216px; `/permit` now has its own long-page restyle lane; and restoring it as-is drags in `.scroll-station` from the **frozen** `theme.css` — `backdrop-filter: blur(6px)` over hardcoded cream, the same §9 violation rejected in row 1 |
 
 **Row 1 was reopened and reversed on 2026-08-26 — see `docs/DECISIONS.md` D-30 and
 `docs/redesign-research/15-blur-restore.md`.** Rows 2 and 3 stand as written.
@@ -298,8 +298,9 @@ is **137.9 kB gz in graph mode and 150.8 kB gz in terminal mode**, against the 1
 2. `index.html` still loads **Big Shoulders**, because the frozen legacy `:root` stack in
    `src/styles/theme.css` points `--font-display` at it. Drop it from the font URL when the remaining
    legacy pages under `src/pages/` are restyled.
-3. `e2e/legacy-visual.spec.js` → `/permit` fails on `redesign/terminal-v1` **before** this branch
-   (verified by stashing). The `/pull` and `/college` cases pass. Unrelated pre-existing baseline drift.
+3. ~~`e2e/legacy-visual.spec.js` → `/permit` fails on `redesign/terminal-v1` **before** this branch.~~
+   **CLOSED by the `/permit` restyle lane.** The changed baseline and route-specific coverage are
+   recorded in `docs/permit-restyle-coverage.md` and `e2e/permit-lane.spec.js`.
 4. The chrome consumes the library on every route as of R-C3, so `components.css` and the Radix
    parts it pulls are now in the entry chunk. Entry went 58.4 → 90.6 kB gz; first-party JS on `/`
    before the graph chunk is **137 kB gz against the 180 kB budget** (05 §8). `DropdownMenu` is

@@ -15,23 +15,22 @@ Rules:
 
 ## 1 · Restyle the remaining legacy pages — the big one
 
-**State:** open. Eight routes under `src/pages/` remain on the frozen navy/gold stack
-(`src/styles/theme.css`). `/college`, `/emoji`, `/license`, and `/articlewriter` are complete in
-the explicit sakura-restyle lanes. `BRAND.md` §11.2 and `05-v1-spec.md` §2.3 freeze the remaining
-pages until each restyle is explicitly scheduled.
+**State:** open. Two routes under `src/pages/` remain on the frozen navy/gold stack
+(`src/styles/theme.css`): `/pull` and `/apply`. `/college`, `/emoji`, `/license`, `/permit`,
+`/articlewriter`, `/sat-resources`, `/sat-signup`, and `/major` are complete in the explicit
+sakura-restyle lanes. `BRAND.md` §11.2 and `05-v1-spec.md` §2.3 freeze the remaining pages until
+each restyle is explicitly scheduled.
 
 **Decided when:** Oliver says go, and a plan doc exists with an owner.
 
-**It still blocks four follow-ups:**
+**It still blocks three follow-ups:**
 - The bar blur remains **opted out on every remaining legacy route** (D-30) because the sakura bar
   over a navy legacy headline turns to mud.
 - `ScrollProgress` cannot be rebuilt (D-29). It needs real section ids, and those live in frozen
-  pages. Seven of eight remaining legacy routes barely scroll — fix the pages and re-measure before
-  building anything.
+  pages. Both remaining legacy routes barely scroll — fix the pages and re-measure before building
+  anything.
 - `index.html:29` still downloads **Big Shoulders** because the remaining frozen pages use
   `theme.css`'s `--font-display`. Drop it from the font URL after those pages are restyled.
-- `e2e/legacy-visual.spec.js → /permit` is the suite's one permitted red test. It is pre-existing
-  baseline drift on the legacy body (`COMPONENTS.md` follow-up 3), not a bug on this branch.
 
 **Detail:** `docs/COMPONENTS.md` follow-up 2 · `docs/redesign-research/14-chrome-restorations.md`
 X-3 · `docs/redesign-research/15-blur-restore.md` note 6.
@@ -110,7 +109,7 @@ npm run test:run                  # 450
 npx playwright test               # 147 passed / 1 failed / 4 skipped
 ```
 
-The one permitted failure is item 1's `/permit`. Anything else red is a real regression.
+There is no documented failure exception for the completed restyle lanes. Any red result is a regression unless its owner documents otherwise.
 
 ---
 

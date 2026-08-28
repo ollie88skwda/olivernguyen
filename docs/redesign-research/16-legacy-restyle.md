@@ -2,21 +2,21 @@
 
 **Owner:** legacy-page restyle lanes
 **Base:** `origin/feat/component-library`
-**Scope:** ten frozen navy/gold routes only. Do not change the already-redesigned home, graph, or terminal surfaces.
+**Scope:** the legacy routes listed below, with completed Sakura lanes marked in the table. Do not change the already-redesigned home, graph, or terminal surfaces.
 
-## Frozen route set
+## Legacy route set
 
 | Route | Page entry | Current stylesheet(s) | Current state |
 |---|---|---|---|
-| `/permit` | `src/pages/driving/permit.js` | `src/styles/App.css` | Long driving-permit guide with headings, paragraphs, links, ordered steps, and the DMV image. Uses a large display heading, mono section headings, navy/gold legacy tokens, and a Framer Motion entrance. |
+| `/permit` | `src/pages/driving/permit.js` | `src/pages/driving/permit.css` | Restyled Sakura driving-permit guide with headings, paragraphs, links, ordered steps, and the DMV image; covered by `docs/permit-restyle-coverage.md` and `e2e/permit-lane.spec.js`. |
 | `/license` | `src/pages/driving/drivers_license.js` | `src/pages/driving/drivers_license.css` | Restyled Sakura content page with one semantic section and a brand-treated link back to `/permit`; covered by `docs/license-restyle-coverage.md` and `e2e/license-lane.spec.js`. |
-| `/articlewriter` | `src/pages/archive/article_writer.js` | `src/styles/App.css` | Minimal article-generation form: product input, generate action, loading copy, generated HTML, and clipboard action. It calls the local generation service and injects returned HTML. |
-| `/sat-resources` | `src/pages/sat/sat_resources.js` | `src/styles/App.css` | Placeholder resource page with a single “Coming soon” state. |
-| `/sat-signup` | `src/pages/sat/sat_signup.js` | `src/styles/App.css` | Placeholder information page with a heading and explanatory copy; no working form yet. |
+| `/articlewriter` | `src/pages/archive/article_writer.js` | `src/styles/ArticleWriter.css` | Restyled article-generation form with product input, generate action, loading copy, generated HTML, and clipboard action; covered by `docs/redesign-research/17-articlewriter-restyle.md`. |
+| `/sat-resources` | `src/pages/sat/sat_resources.js` | `src/styles/SatResources.css` | Restyled Sakura placeholder resource page with a single “Coming soon” state. |
+| `/sat-signup` | `src/pages/sat/sat_signup.js` | `src/styles/sat_signup.css` | Restyled Sakura placeholder information page with a heading and explanatory copy; no working form yet; covered by `docs/sat-signup-restyle-coverage.md`. |
 | `/pull` | `src/pages/pull.js` | `src/styles/Pull.css` | Stateful AU tournament scheduler. It has a name screen, commitment choices, weekend cards, progress bars, chips, rankings, loading, and Supabase-backed persistence. It currently has its own navy/gold visual system, 10px rounded controls, and bespoke transitions. |
-| `/emoji` | `src/pages/emoji.js` | `src/styles/Emoji.css` | Interactive emoji fishbowl generator with drag behavior, count input, background swatches, clear/download actions, and a white/black Geist-style visual system. It paints a full viewport background and uses pill controls. |
-| `/college` | `src/pages/college/index.js` | `src/styles/College.css` | Private-tools hub with eyebrow, placeholder headline and lede, a rule, and three linked cards for `/major`, `/apply`, and `/studio`; lock labels and routes are visible. |
-| `/major` | `src/pages/major/index.js` and section files | `src/styles/Major.css`, `MajorB.css`, `MajorC.css` | Large private decision engine with status dial, scoring board, duel, sensitivity sections, evidence, glossary, edit controls, persistence, and loading/offline states. It has page-local warning/good colors, bespoke SVG/data visualizations, and legacy spacing/type/motion values. |
+| `/emoji` | `src/pages/emoji.js` | `src/styles/Emoji.css` | Restyled Sakura interactive emoji fishbowl generator with drag behavior, count input, background swatches, clear/download actions, and flagged content-rendering exceptions; covered by `docs/plans/emoji-restyle.md`. |
+| `/college` | `src/pages/college/index.js` | `src/styles/College.css` | Restyled Sakura private-tools hub with eyebrow, placeholder headline and lede, a rule, and three linked cards for `/major`, `/apply`, and `/studio`; covered by `docs/college-restyle-coverage.md`. |
+| `/major` | `src/pages/major/index.js` and section files | `src/pages/major/major.css` | Restyled Sakura private decision engine with status dial, scoring board, duel, sensitivity sections, evidence, glossary, edit controls, persistence, and loading/offline states. |
 | `/apply` | `src/pages/apply/index.js` and section files | `src/styles/Apply.css`, `ApplyB.css` | Large private application planner with status, school board, portfolio, programs, calendar, filters, effort, evidence, glossary, edit controls, persistence, and loading/offline states. It has page-local tokens, charts, forms, and legacy spacing/type/motion values. |
 
 `src/Routes.js` confirms these ten route entries. `/` mounts `src/home/Home.jsx`; graph and terminal are mounted by their own redesigned surfaces and are not legacy work. `/sign-in`, `/studio`, and `/transfer` are private/gated flows explicitly excluded by `docs/redesign-research/05-v1-spec.md` §2.3. The full-bleed `/be-my-girlfriend` routes are also excluded. `src/pages/home.js` and `src/pages/top_bar.js` are unmounted leftovers, not routes to restyle.
@@ -74,7 +74,7 @@ Copy this template into each lane's working notes or PR description and fill eve
 - Map numbered instructions to `Log`/`LogLine` only if they remain log-like; otherwise use semantic ordered lists with the brand body and label roles. Keep the DMV image, its alt text, and external links.
 - Replace the long entrance translate animation with the permitted opacity-only scroll/state behavior, or remove it. Preserve the long native scroll because the content needs it.
 - Flag the image presentation if no existing brand media-frame rule covers its crop, sizing, or border.
-- Done: content and external links work; image remains accessible; phone and desktop renders have no overlap; all visual rows have coverage evidence; reduced motion is static; `/permit` passes the legacy visual check or its changed baseline is explicitly reviewed.
+- Done: content and external links work; image remains accessible; phone and desktop renders have no overlap; all visual rows have coverage evidence; reduced motion is static; the changed legacy baseline is reviewed.
 
 ### `/license`
 

@@ -142,7 +142,7 @@ direction for later page content; pages represented in v1 get an `entities[]` st
 | Route | Content today | Terminal treatment (later) | Graph treatment (later) | Phase |
 |---|---|---|---|---|
 | `/pull` | text utility page | `man pull` — man-page layout: NAME/SYNOPSIS/DESCRIPTION headers in mono, sakura-dark | node in a `utilities` cluster; dossier opens the page inline | v1: link stub only · restyle v1.2 |
-| `/permit` | driving-permit notes | `man permit` man page; checklist items as numbered log lines | node under `guides` cluster, edge to `/license` | v1: stub · v1.2 |
+| `/permit` | driving-permit notes | `man permit` man page; checklist items as numbered log lines | node under `guides` cluster, edge to `/license` | v1: stub · v1.2; Sakura surface shipped in its explicit restyle lane |
 | `/license` | driver's-license notes | `man license`, cross-linked in SEE ALSO ↔ permit | node under `guides`, edge to `/permit` | v1: stub · v1.2 |
 | `/sat-resources` | intentional empty state (`Coming soon`) | `ls sat/` directory listing; each resource a file row with description | `guides` cluster node; resources as leaf sub-nodes | v1: stub · v1.2 |
 | `/sat-signup` | informational placeholder; signup form planned | future form kept as-is inside terminal chrome (forms never fake-terminalized) | leaf node linking out | v1: placeholder · form later, low priority |
@@ -467,9 +467,9 @@ Replaces `top_bar.js` on all chromed routes:
   hamburger for the pages menu (Pull, College, Driving, SAT — current sidebar content
   minus dead `/debt`). Hide-on-scroll-down behavior kept, rebuilt with Motion.
 - **Remaining legacy routes** render inside the chrome with sakura tokens applied to chrome only;
-  page bodies keep their existing stylesheets. Explicit restyle lanes are the exception — `/college`
-  `/emoji`, and `/articlewriter` now mount their own `.sakura` surfaces. Grain overlay retired;
-  `ScrollProgress` remains unmounted.
+  page bodies keep their existing stylesheets. Explicit restyle lanes are the exception — `/college`,
+  `/emoji`, `/license`, `/permit`, `/articlewriter`, `/sat-resources`, `/sat-signup`, and `/major`
+  now mount their own `.sakura` surfaces. Grain overlay retired; `ScrollProgress` remains unmounted.
 - `NO_CHROME` list behavior is preserved, including the restored `/mom` and `/mum` aliases.
 
 ---
