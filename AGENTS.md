@@ -70,6 +70,19 @@ different, that is a brand decision, not a component decision.
 - Be picky while you are in there: fix anything that looks off, even if unrelated. Same for lint
   errors, test failures and flaky tests.
 
+### Restyling a legacy page (sakura lane recipe, 2026-08-27)
+
+- Mount the page's own `.sakura` root (like `GraphHome` does); never read legacy `:root` tokens.
+- Compose from `@/components/ui/*` + `@/components/brand/*`; keep page-specific CSS in the page
+  stylesheet, scoped under `.sakura`, tokens only.
+- `e2e/legacy-visual.spec.js` screenshot-freezes legacy bodies — an intentional restyle must
+  refresh its baseline deliberately: `npx playwright test e2e/legacy-visual.spec.js -g <route> --update-snapshots`.
+- Add a lane gate spec (see `e2e/college-lane.spec.js`, `e2e/college-style-audit.spec.js`,
+  `e2e/college-layout-audit.spec.js`) and a coverage record (`docs/college-restyle-coverage.md`).
+- Playwright's `webServer` pins port 3100 (`reuseExistingServer: true`). When parallel lanes run
+  vite servers, that port belongs to another lane — verify lane e2e on a private port with a
+  throwaway `playwright.lane.config.js` (never kill the other lane's server).
+
 ## 5. Working rules
 
 - **Quality over dev cost.** Do not weight development cost heavily. Prefer quality, simplicity,
@@ -77,3 +90,10 @@ different, that is a brand decision, not a component decision.
 - **Output voice is `~/AGENT-VOICE.md`, in every harness. Nothing in this repo overrides it.**
   Retired 2026-08-27: the old project `CLAUDE.md` said "`/caveman` for all outputs"; Oliver ruled the
   voice file wins. Do not re-add it.
+
+## Maintaining this file
+
+Keep this file for knowledge useful to almost every future agent session in this project.
+Do not repeat what the codebase already shows; point to the authoritative file or command instead.
+Prefer rewriting or pruning existing entries over appending new ones.
+When updating this file, preserve this bar for all agents and keep entries concise.

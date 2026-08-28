@@ -1,4 +1,9 @@
 import React from 'react';
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { MonoLabel, Display } from '@/components/brand';
+import '../../styles/sakura.css';
 import '../../styles/College.css';
 
 // Copy is deliberately unwritten. Oliver supplies the headline, the lede and the
@@ -26,22 +31,28 @@ const TOOLS = [
 ];
 
 export const College = () => (
-  <main className="cl-page">
+  <main className="sakura cl-page">
     <div className="cl-inner">
-      <p className="cl-eyebrow">olivernguyen.com · college</p>
-      <h1 className="cl-title">[ headline ]</h1>
-      <div className="cl-rule" aria-hidden="true" />
-      <p className="cl-lede">[ two or three sentences introducing the college work ]</p>
+      <MonoLabel className="cl-eyebrow">olivernguyen.com · college</MonoLabel>
+      <Display as="h1" className="cl-title">
+        [ headline ]
+      </Display>
+      <Separator className="cl-rule" />
+      <p className="cl-lede on-prose">[ two or three sentences introducing the college work ]</p>
 
       <div className="cl-cards">
         {TOOLS.map((tool) => (
-          <a className="cl-card" href={tool.route} key={tool.route}>
-            <div className="cl-card-top">
-              <h2 className="cl-card-name">{tool.name}</h2>
-              <span className="cl-lock">{tool.gate}</span>
-            </div>
-            <p className="cl-card-desc">{tool.desc}</p>
-            <p className="cl-card-route">{tool.route}</p>
+          <a className="cl-tool" href={tool.route} key={tool.route}>
+            <Card interactive className="cl-tool-card">
+              <CardHeader>
+                <CardTitle as="h2">{tool.name}</CardTitle>
+                <Badge>{tool.gate}</Badge>
+              </CardHeader>
+              <CardDescription>{tool.desc}</CardDescription>
+              <CardFooter>
+                <MonoLabel tone="faint">{tool.route}</MonoLabel>
+              </CardFooter>
+            </Card>
           </a>
         ))}
       </div>
