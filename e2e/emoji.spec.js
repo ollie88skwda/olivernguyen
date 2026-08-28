@@ -52,59 +52,78 @@ test.describe("/emoji — sakura restyle", () => {
     });
   }
 
-  test("keyboard path: type + return adds items; Enter on empty adds none", async ({ page }) => {
-    await page.goto("/emoji?theme=light");
-    const input = page.getByLabel("emoji or text");
-    await input.fill("🐠");
-    await input.press("Enter");
-    await expect(page.locator(".emoji-item")).toHaveCount(67); // default count
-    // Enter with an empty field is a no-op
-    await input.press("Enter");
-    await expect(page.locator(".emoji-item")).toHaveCount(67);
-    // focus returns to the input after add
-    await expect(input).toBeFocused();
+  test("home link and theme choice persist on the emoji route", async ({ page }) => {
+    await page.goto("/emoji?theme=dark");
+    await expect(page.getByRole("link", { name: "home" })).toHaveAttribute("href", "/");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    await page.goto("/emoji");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   });
 
-  test("count presets select; custom count controls the next add", async ({ page }) => {
+  test("emoji page chunk loads when the route is opened", async ({ page }) => {
+    const requests = [];
+    page.on("request", (request) => requests.push(request.url()));
+    await page.goto("/");
     await page.goto("/emoji?theme=light");
-    const preset41 = page.getByLabel("41 emojis");
-    await preset41.click();
-    await expect(preset41).toHaveAttribute("aria-pressed", "true");
-    await page.getByLabel("emoji or text").fill("x");
-    await page.getByLabel("emoji or text").press("Enter");
-    await expect(page.locator(".emoji-item")).toHaveCount(41);
-
-    // custom count clamps to 1..MAX_COUNT and blur normalises empty
-    const count = page.getByLabel("custom count");
-    await count.fill("3");
-    await page.getByLabel("emoji or text").fill("y");
-    await page.getByLabel("emoji or text").press("Enter");
-    await expect(page.locator(".emoji-item")).toHaveCount(44); // 41 + 3
-    await count.fill("500");
-    await count.blur();
-    await expect(count).toHaveValue("200");
+    await expect(page.locator(".emoji-page.sakura")).toBeVisible();
+    expect(requests.some((url) => /\/src\/pages\/emoji\.js(?:\?|$)/.test(url))).toBe(true);
   });
 
-  test("drag moves an item via pointer events", async ({ page }) => {
-    await page.goto("/emoji?theme=light");
-    // a single item — scatter positions can overlap, so a one-item canvas
-    // guarantees the grab target is the item under test
-    await page.getByLabel("custom count").fill("1");
-    await page.getByLabel("emoji or text").fill("⭐");
-    await page.getByLabel("emoji or text").press("Enter");
-    const item = page.locator(".emoji-item").first();
-    await expect(item).toHaveCount(1);
-    const before = await item.boundingBox();
-    expect(before).not.toBeNull();
-    const cx = before.x + before.width / 2;
-    const cy = before.y + before.height / 2;
-    await page.mouse.move(cx, cy);
-    await page.mouse.down();
-    await page.mouse.move(cx + 60, cy + 60, { steps: 5 });
-    await page.mouse.up();
-    const after = await item.boundingBox();
-    expect(Math.abs(after.x - before.x) + Math.abs(after.y - before.y)).toBeGreaterThan(20);
-  });
+  for (const theme of ["light", "dark"]) {
+    test(`keyboard path works in ${theme}; empty Enter adds none`, async ({ page }) => {
+      await page.goto(`/emoji?theme=${theme}`);
+      const input = page.getByLabel("emoji or text");
+      await input.fill("🐠");
+      await input.press("Enter");
+      await expect(page.locator(".emoji-item")).toHaveCount(67); // default count
+      // Enter with an empty field is a no-op
+      await input.press("Enter");
+      await expect(page.locator(".emoji-item")).toHaveCount(67);
+      // focus returns to the input after add
+      await expect(input).toBeFocused();
+    });
+
+    test(`count presets and custom count work in ${theme}`, async ({ page }) => {
+      await page.goto(`/emoji?theme=${theme}`);
+      const preset41 = page.getByLabel("41 emojis");
+      await preset41.click();
+      await expect(preset41).toHaveAttribute("aria-pressed", "true");
+      await page.getByLabel("emoji or text").fill("x");
+      await page.getByLabel("emoji or text").press("Enter");
+      await expect(page.locator(".emoji-item")).toHaveCount(41);
+
+      // custom count clamps to 1..MAX_COUNT and blur normalises empty
+      const count = page.getByLabel("custom count");
+      await count.fill("3");
+      await page.getByLabel("emoji or text").fill("y");
+      await page.getByLabel("emoji or text").press("Enter");
+      await expect(page.locator(".emoji-item")).toHaveCount(44); // 41 + 3
+      await count.fill("500");
+      await count.blur();
+      await expect(count).toHaveValue("200");
+    });
+
+    test(`drag moves an item in ${theme}`, async ({ page }) => {
+      await page.goto(`/emoji?theme=${theme}`);
+      // a single item — scatter positions can overlap, so a one-item canvas
+      // guarantees the grab target is the item under test
+      await page.getByLabel("custom count").fill("1");
+      await page.getByLabel("emoji or text").fill("⭐");
+      await page.getByLabel("emoji or text").press("Enter");
+      const item = page.locator(".emoji-item").first();
+      await expect(item).toHaveCount(1);
+      const before = await item.boundingBox();
+      expect(before).not.toBeNull();
+      const cx = before.x + before.width / 2;
+      const cy = before.y + before.height / 2;
+      await page.mouse.move(cx, cy);
+      await page.mouse.down();
+      await page.mouse.move(cx + 60, cy + 60, { steps: 5 });
+      await page.mouse.up();
+      const after = await item.boundingBox();
+      expect(Math.abs(after.x - before.x) + Math.abs(after.y - before.y)).toBeGreaterThan(20);
+    });
+  }
 
   test("custom color keeps emoji legible in both theme ladders", async ({ page }) => {
     for (const theme of ["light", "dark"]) {
@@ -131,43 +150,45 @@ test.describe("/emoji — sakura restyle", () => {
     }
   });
 
-  test("swatches switch the canvas background; custom picker remains reachable", async ({ page }) => {
-    await page.goto("/emoji?theme=light");
-    const canvas = page.locator(".emoji-canvas");
-    await expect(canvas).toHaveCSS("background-color", "rgb(255, 255, 255)");
-    await expect(page.getByRole("radiogroup", { name: "background color" }).getByRole("radio")).toHaveCount(3);
-    await page.getByLabel("black background").click();
-    await expect(canvas).toHaveCSS("background-color", "rgb(19, 19, 19)");
-    await page.getByLabel("chrome purple background").click();
-    await expect(canvas).toHaveCSS("background-color", "rgb(9, 36, 65)");
-    await page.getByLabel("white background").click();
-    await expect(canvas).toHaveCSS("background-color", "rgb(255, 255, 255)");
-    // the custom picker is a native color input inside the round swatch
-    await expect(page.locator('.emoji-swatch-color-input[type="color"]')).toBeVisible();
-  });
+  for (const theme of ["light", "dark"]) {
+    test(`swatches switch the canvas background in ${theme}; custom picker remains reachable`, async ({ page }) => {
+      await page.goto(`/emoji?theme=${theme}`);
+      const canvas = page.locator(".emoji-canvas");
+      await expect(canvas).toHaveCSS("background-color", "rgb(255, 255, 255)");
+      await expect(page.getByRole("radiogroup", { name: "background color" }).getByRole("radio")).toHaveCount(3);
+      await page.getByLabel("black background").click();
+      await expect(canvas).toHaveCSS("background-color", "rgb(19, 19, 19)");
+      await page.getByLabel("chrome purple background").click();
+      await expect(canvas).toHaveCSS("background-color", "rgb(9, 36, 65)");
+      await page.getByLabel("white background").click();
+      await expect(canvas).toHaveCSS("background-color", "rgb(255, 255, 255)");
+      // the custom picker is a native color input inside the round swatch
+      await expect(page.locator('.emoji-swatch-color-input[type="color"]')).toBeVisible();
+    });
 
-  test("clear starts disabled, works after items exist, and re-disables", async ({ page }) => {
-    await page.goto("/emoji?theme=light");
-    const clear = page.getByRole("button", { name: "Clear" });
-    await expect(clear).toBeDisabled();
-    await page.getByLabel("emoji or text").fill("🍀");
-    await page.getByLabel("emoji or text").press("Enter");
-    await expect(page.locator(".emoji-item")).toHaveCount(67);
-    await expect(clear).toBeEnabled();
-    await clear.click();
-    await expect(page.locator(".emoji-item")).toHaveCount(0);
-    await expect(clear).toBeDisabled();
-  });
+    test(`clear starts disabled, works, and re-disables in ${theme}`, async ({ page }) => {
+      await page.goto(`/emoji?theme=${theme}`);
+      const clear = page.getByRole("button", { name: "Clear" });
+      await expect(clear).toBeDisabled();
+      await page.getByLabel("emoji or text").fill("🍀");
+      await page.getByLabel("emoji or text").press("Enter");
+      await expect(page.locator(".emoji-item")).toHaveCount(67);
+      await expect(clear).toBeEnabled();
+      await clear.click();
+      await expect(page.locator(".emoji-item")).toHaveCount(0);
+      await expect(clear).toBeDisabled();
+    });
 
-  test("download button produces a PNG", async ({ page }) => {
-    await page.goto("/emoji?theme=light");
-    await page.getByLabel("emoji or text").fill("🐟");
-    await page.getByLabel("emoji or text").press("Enter");
-    const downloadPromise = page.waitForEvent("download");
-    await page.getByRole("button", { name: "Download" }).click();
-    const download = await downloadPromise;
-    expect(download.suggestedFilename()).toBe("fishbowl.png");
-  });
+    test(`download button produces a PNG in ${theme}`, async ({ page }) => {
+      await page.goto(`/emoji?theme=${theme}`);
+      await page.getByLabel("emoji or text").fill("🐟");
+      await page.getByLabel("emoji or text").press("Enter");
+      const downloadPromise = page.waitForEvent("download");
+      await page.getByRole("button", { name: "Download" }).click();
+      const download = await downloadPromise;
+      expect(download.suggestedFilename()).toBe("fishbowl.png");
+    });
+  }
 
   test("fishbowl loading path remains reachable", async ({ page }) => {
     let release;

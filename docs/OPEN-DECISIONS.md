@@ -15,9 +15,10 @@ Rules:
 
 ## 1 · Restyle the remaining legacy pages — the big one
 
-**State:** open. Nine routes under `src/pages/` remain on the frozen navy/gold stack
-(`src/styles/theme.css`). `/college` is complete in the explicit sakura-restyle lane. `BRAND.md`
-§11.2 freezes the remaining pages until each restyle is explicitly scheduled.
+**State:** open. The remaining legacy routes still use the frozen navy/gold stack
+(`src/styles/theme.css`). `/college` and `/emoji` are complete in the explicit sakura-restyle
+lanes. `BRAND.md` §11.2 and `05-v1-spec.md` §2.3 freeze the remaining pages until each restyle is
+explicitly scheduled.
 
 **Decided when:** Oliver says go, and a plan doc exists with an owner.
 

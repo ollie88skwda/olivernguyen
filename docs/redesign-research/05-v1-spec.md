@@ -43,7 +43,7 @@ does something real. Motion always gated behind `prefers-reduced-motion`.
 /                → Home (mode-aware: renders TerminalHome or GraphHome)
 /?mode=terminal  → forces terminal mode (and persists it)
 /?mode=graph     → forces graph mode (and persists it)
-all other routes → existing pages wrapped in new shared chrome (§6.4); explicit restyle lanes may
+all other routes → existing pages wrapped in new shared chrome (§6.4); approved restyle lanes may
   move individual pages onto sakura without changing route behavior
 ```
 
@@ -147,7 +147,7 @@ direction for later page content; pages represented in v1 get an `entities[]` st
 | `/sat-resources` | intentional empty state (`Coming soon`) | `ls sat/` directory listing; each resource a file row with description | `guides` cluster node; resources as leaf sub-nodes | v1: stub · v1.2 |
 | `/sat-signup` | informational placeholder; signup form planned | future form kept as-is inside terminal chrome (forms never fake-terminalized) | leaf node linking out | v1: placeholder · form later, low priority |
 | `/articlewriter` | project archive page | `man articlewriter` + real pipeline output image | already a project node in v1 graph; dossier links here | v1: linked from entity |
-| `/emoji` | toy page | easter egg: listed only in `ls -a` (hidden index) | hidden node, revealed by `:emoji` | later, joke preserved |
+| `/emoji` | toy page | standalone fishbowl toy on the Sakura ladder | not represented | restyled in the emoji lane |
 | `/college` (+ gated children) | hub for private tools | sakura hub with placeholder copy, gate badges, and links; auth flows unchanged | same page in both modes; theme and mode remain independent | shipped in the `/college` restyle lane |
 | `/sign-in`, `/studio`, `/transfer`, `/major`, `/apply` | private/gated | not represented (never in public index) | not represented | never |
 | `/be-my-girlfriend` | full-bleed, own art | opts out of chrome (today's `NO_CHROME` behavior preserved) | not represented | never |
@@ -468,7 +468,8 @@ Replaces `top_bar.js` on all chromed routes:
   minus dead `/debt`). Hide-on-scroll-down behavior kept, rebuilt with Motion.
 - **Remaining legacy routes** render inside the chrome with sakura tokens applied to chrome only;
   page bodies keep their existing stylesheets. Explicit restyle lanes are the exception — `/college`
-  now mounts its own `.sakura` surface. Grain overlay retired; `ScrollProgress` remains unmounted.
+  and `/emoji` now mount their own `.sakura` surfaces. Grain overlay retired; `ScrollProgress` remains
+  unmounted.
 - `NO_CHROME` list behavior is preserved, including the restored `/mom` and `/mum` aliases.
 
 ---
@@ -565,9 +566,9 @@ Run `ship-check` at every UI-facing gate.
 Per 02-libraries Path C: Vite + `@vitejs/plugin-react` (.js-as-JSX config), root
 `index.html`, env vars (incl. the dynamic `process.env.REACT_APP_` access), Jest→Vitest
 (3 test files), `vercel.json` build/output, `@tailwindcss/vite`, `shadcn init`.
-✅ **Gate:** every route in `src/Routes.js` is E2E-clicked in a real browser (Playwright) —
+✅ **Gate:** all routes in `src/Routes.js` are E2E-clicked in a real browser (Playwright) —
 sign-in flow, passphrase gates, essay studio editor + vim, `/api` functions on a Vercel preview.
-Existing tests green under Vitest. No visual regressions on legacy pages.
+Existing tests green under Vitest. No visual regressions on remaining legacy pages.
 
 **Phase 1 — Foundations: tokens, content model, chrome (~2 days)**
 Sakura tokens from 04 as CSS variables under `.sakura`, keyed by `data-theme` and `data-mode`;

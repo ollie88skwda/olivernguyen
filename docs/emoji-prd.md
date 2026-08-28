@@ -64,15 +64,15 @@ Key observations from examples:
 
 ### Out of scope for MVP
 - Authentication, accounts, saved designs
-- Mobile-first polish (desktop-first; touch drag must work but layout optimized for desktop)
-- Animations / transitions
 - Text styling UI (color, weight, italic)
 
+The current route provides responsive phone layout and brand state transitions; decorative animation remains out of scope.
+
 ## Design notes
-- **Page shell is WHITE**. The whole app sits on `#ffffff`.
-- **Canvas is WHITE** with a 1px `#e5e5e5` border and a soft shadow so it still reads as a distinct surface against the shell. 16px rounded corners.
-- **Control bar is BLACK `#131313`**, a single pill floating below the canvas, white text/icons inside.
-- **Accent (chrome purple `#092441`)** is the only non-black/white color on the page. Used ONLY on: input focus outline, count-badge tint, active swatch ring.
+- **Page shell follows the active Sakura ladder** (`.sakura`), while the canvas still defaults to white.
+- **Canvas defaults to WHITE** with a 1px `--border` hairline; it is square and has no shadow.
+- **Control panel uses the Sakura `--surface`** with square corners and a hairline; it is not a floating pill.
+- **Accent treatment uses the active Sakura tokens**. User-selected canvas colours remain export content, not page chrome.
 - Canvas square, dominant on the page (≈80vmin on desktop, fills viewport minus gutters on mobile).
 - **Fishbowl takes ~70% of canvas width**, centered. (Revised from original 45%.)
 - **Scatter items are small** — ~8–10% of canvas width each. Intentionally smaller than the center emoji so the fishbowl is clearly the hero.
@@ -81,11 +81,10 @@ Key observations from examples:
 
 ### Controls — creative reworks
 - **No separate "Add" button.** The text input *is* the add affordance. Pressing Return submits.
-- Input has a leading "+" circle icon and a trailing "↵" return-hint glyph inside the field.
-- **Count is an inline badge inside the input** — `× 3` with a faint chrome-purple tint. Tapping it cycles through presets `1 → 3 → 5 → 10 → 20 → 30 → 1`.
-- Swatches: 24×24 circles. Active swatch has a 2px chrome-purple ring with a 2px offset.
-- Clear: ghost text button, white, small.
-- Download: white-fill pill with black text + download-arrow icon, label "Download". Stands out against the black control bar.
+- Count uses three preset buttons plus a custom count input; the selected preset is exposed with `aria-pressed`.
+- Background swatches remain round radio controls, and the custom picker remains available.
+- Clear and Download remain separate actions.
+- The shipped Sakura treatment for these controls is recorded in `docs/plans/emoji-restyle.md`; keep that lane record authoritative for visual details.
 
 ### Known limitation (MVP)
 The source fishbowl image (from Ollie's reference) is a JPG with a baked-white background. On the black or chrome-purple background swatch, a circular floodfill is applied at runtime to strip the outside white (preserving the eye-whites). This works for most cases but isn't perfect — post-MVP we should ship a proper transparent PNG.

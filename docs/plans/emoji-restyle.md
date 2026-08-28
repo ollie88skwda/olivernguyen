@@ -1,7 +1,6 @@
 # /emoji restyle lane — handoff
 
-Lane of the legacy restyle (owner plan `docs/redesign-research/16-legacy-restyle.md`, PR #12 pending
-merge — this file stands in for its per-lane record). Branch `fm/restyle-emoji`.
+Per-lane record for the legacy restyle. Branch `fm/restyle-emoji`.
 
 - Page: `src/pages/emoji.js` mounted in `.sakura`; controls from the library.
 - Route/lazy-loading in `src/Routes.js` untouched. Chrome bar unchanged.
@@ -20,7 +19,7 @@ merge — this file stands in for its per-lane record). Branch `fm/restyle-emoji
 | Canvas background | user export colour | **flagged content** — export value, not page chrome | `BG_PRESETS` + inline style |
 | Fishbowl image | JPG, runtime white-strip | **flagged content** — toy's fixed centre asset, `alt="fishbowl"` kept | `<img class="emoji-fishbowl">` |
 | Emoji items | 900 weight, `-0.04em`, system emoji stack, 0.13×canvas | **flagged content typography** — must match export; face has no §7 home; fallback maps to `--font-sans` | `.emoji-item` |
-| Item colour | `#fff`/`#131313` by luminance | **flagged functional contrast** — vs user canvas, mirrors export | `isDarkBg` → `itemColor` |
+| Item colour | `#fff`/`#000` selected by rendered sRGB contrast | **flagged functional contrast** — vs user canvas, mirrors export | `getRelativeLuminance` + `getItemColor` → `itemColor` |
 | Drag feedback | hover/drag scale + drop-shadow | `§6` state change, `--dur-state`/`--ease-state`; shadow removed per §9 (flagged) | `.emoji-item` transition |
 | Text input | pill, decorative `+` + `↵` | `Input` (`.on-field`: §4 3px, §1 44px coarse, §7 sans 16px); `+`/`↵` removed — not in §8 set (flagged); placeholder carries affordance | `Input` |
 | Count presets | navy pills 67/41/25 | `Button size="sm"` ghost→primary when active (§4 3px, §7 label) | `Button` + `aria-pressed` |

@@ -46,9 +46,9 @@ different, that is a brand decision, not a component decision.
 - Sakura tokens live under the `.sakura` scope class, keyed off `<html data-theme="light|dark">` and
   `<html data-mode="terminal|graph">`. **Never put them on `:root`.**
 - `src/styles/theme.css` owns the legacy `:root` tokens (navy/gold). Leave it alone.
-- Remaining legacy pages under `src/pages/` are frozen and keep their own stylesheets until a
-  restyle is explicitly scheduled. `/college` is the explicit sakura-restyle exception. Do not let
-  new styles bleed into the rest.
+- Remaining legacy pages under `src/pages/` are frozen and keep their own stylesheets. `/college`
+  and `/emoji` are the explicit sakura-restyle exceptions. Do not let new styles bleed into
+  other legacy pages.
 - New surfaces mount inside `.sakura`.
 - **Restyling a page onto the library: components.css is imported BY the components and loads after
   a page stylesheet, so `components.css`'s `.sakura .on-x` selectors (0-2-0) beat a page's `.emoji-*`
