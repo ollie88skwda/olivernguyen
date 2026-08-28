@@ -6,8 +6,8 @@ import { test, expect } from "@playwright/test";
 const COMBOS = [
   { theme: "light", mode: "graph", width: 1440, pointer: "fine", name: "light-desktop" },
   { theme: "dark", mode: "graph", width: 1440, pointer: "fine", name: "dark-desktop" },
-  { theme: "light", mode: "graph", width: 375, pointer: "coarse", name: "light-phone" },
-  { theme: "dark", mode: "graph", width: 375, pointer: "coarse", name: "dark-phone" },
+  { theme: "light", mode: "graph", width: 375, pointer: "coarse", name: "light-graph-phone-coarse" },
+  { theme: "dark", mode: "graph", width: 375, pointer: "coarse", name: "dark-graph-phone-coarse" },
   { theme: "light", mode: "terminal", width: 1440, pointer: "fine", name: "light-terminal-desktop" },
   { theme: "dark", mode: "terminal", width: 1440, pointer: "fine", name: "dark-terminal-desktop" },
   { theme: "light", mode: "terminal", width: 375, pointer: "coarse", name: "light-terminal-phone" },
@@ -15,9 +15,9 @@ const COMBOS = [
 ];
 
 for (const { theme, mode, width, pointer, name } of COMBOS) {
-  test(`/college ${name}`, async ({ browser }) => {
+  test(`/college ${name}`, async ({ browser }, testInfo) => {
     const context = await browser.newContext({
-      baseURL: "http://localhost:3100",
+      baseURL: testInfo.project.use.baseURL,
       viewport: { width, height: 900 },
       hasTouch: pointer === "coarse",
       isMobile: pointer === "coarse",
