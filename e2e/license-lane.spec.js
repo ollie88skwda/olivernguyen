@@ -2,7 +2,7 @@
 import { test, expect } from "@playwright/test";
 
 test("license renders sakura, headings ordered, link works, focus visible", async ({ page }) => {
-  await page.goto("/license", { waitUntil: "networkidle" });
+  await page.goto("/license?theme=light", { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
 
   // heading order: exactly one h1 then an h2
@@ -45,13 +45,14 @@ test("license renders sakura, headings ordered, link works, focus visible", asyn
 
   // desktop screenshot
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/license", { waitUntil: "networkidle" });
+  await page.goto("/license?theme=light", { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(300);
   await page.screenshot({ path: "/tmp/license-desktop-light.png", fullPage: true });
 });
 
-test("license dark ladder + 375px coarse pointer", async ({ page }) => {
+test("license dark ladder + 375px coarse pointer", async ({ page, browser }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/license?theme=dark", { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
 
@@ -63,16 +64,34 @@ test("license dark ladder + 375px coarse pointer", async ({ page }) => {
 
   await page.screenshot({ path: "/tmp/license-desktop-dark.png", fullPage: true });
 
-  // 375px phone viewport
-  await page.setViewportSize({ width: 375, height: 812 });
-  await page.goto("/license?theme=dark", { waitUntil: "networkidle" });
-  await page.evaluate(() => document.fonts.ready);
-  await page.waitForTimeout(300);
-  await page.screenshot({ path: "/tmp/license-phone-dark.png", fullPage: true });
+  const phoneContext = await browser.newContext({
+    baseURL: "http://localhost:3100",
+    viewport: { width: 375, height: 812 },
+    isMobile: true,
+    hasTouch: true,
+    colorScheme: "dark",
+  });
+  const phonePage = await phoneContext.newPage();
+  try {
+    await phonePage.goto("/license?theme=dark", { waitUntil: "networkidle" });
+    await phonePage.evaluate(() => document.fonts.ready);
+    await phonePage.waitForTimeout(300);
 
-  // no horizontal overflow on phone
-  const overflow = await page.evaluate(
-    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-  );
-  expect(overflow).toBeLessThanOrEqual(0);
+    const coarsePointer = await phonePage.evaluate(() => ({
+      pointer: window.matchMedia("(pointer: coarse)").matches,
+      touchPoints: navigator.maxTouchPoints,
+    }));
+    expect(coarsePointer.pointer).toBe(true);
+    expect(coarsePointer.touchPoints).toBeGreaterThan(0);
+
+    await phonePage.screenshot({ path: "/tmp/license-phone-dark.png", fullPage: true });
+
+    // no horizontal overflow on phone
+    const overflow = await phonePage.evaluate(
+      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+    );
+    expect(overflow).toBeLessThanOrEqual(0);
+  } finally {
+    await phoneContext.close();
+  }
 });
