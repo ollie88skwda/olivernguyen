@@ -117,8 +117,62 @@ test.describe("site chrome — R-C4", () => {
     }
   });
 
+  test("current OS theme becomes persistent after selection", async ({ browser }) => {
+    const osContext = await browser.newContext({
+      baseURL: "http://localhost:3100",
+      colorScheme: "dark",
+    });
+    try {
+      const osPage = await osContext.newPage();
+      await osPage.goto("/?mode=graph");
+      await expect(osPage.locator("html")).toHaveAttribute("data-theme", "dark");
+      await osPage.getByRole("button", { name: "Open account menu" }).click();
+      await osPage.getByRole("menuitemradio", { name: "Dark" }).click();
+      expect(await osPage.evaluate(() => localStorage.getItem("on.theme"))).toBe("dark");
+
+      const freshContext = await browser.newContext({
+        baseURL: "http://localhost:3100",
+        colorScheme: "light",
+        storageState: await osContext.storageState(),
+      });
+      try {
+        const freshPage = await freshContext.newPage();
+        await freshPage.goto("/");
+        await expect(freshPage.locator("html")).toHaveAttribute("data-theme", "dark");
+      } finally {
+        await freshContext.close();
+      }
+    } finally {
+      await osContext.close();
+    }
+  });
+
+  test("coarse pointer menu items meet the touch target", async ({ browser }) => {
+    const context = await browser.newContext({
+      baseURL: "http://localhost:3100",
+      colorScheme: "light",
+      viewport: { width: 390, height: 844 },
+      isMobile: true,
+      hasTouch: true,
+    });
+    try {
+      const page = await context.newPage();
+      await page.goto("/?mode=graph&theme=light");
+      await page.getByRole("button", { name: "Open account menu" }).click();
+      const lightBox = await page.getByRole("menuitemradio", { name: "Light" }).boundingBox();
+      expect(lightBox.height).toBeGreaterThanOrEqual(44);
+      await page.keyboard.press("Escape");
+      await page.getByRole("button", { name: "Open pages menu" }).click();
+      const homeBox = await page.getByRole("menuitem", { name: "Home" }).boundingBox();
+      expect(homeBox.height).toBeGreaterThanOrEqual(44);
+    } finally {
+      await context.close();
+    }
+  });
+
   test("menus retain keyboard focus in terminal mode", async ({ page }) => {
     await page.goto("/?mode=terminal&theme=light");
+    await page.keyboard.press("Control+g");
 
     await page.getByRole("button", { name: "Open account menu" }).click();
     const light = page.getByRole("menuitemradio", { name: "Light" });

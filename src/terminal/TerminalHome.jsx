@@ -69,6 +69,15 @@ import {
 const isPaletteCombo = (e) =>
   (e.metaKey || e.ctrlKey) && !e.altKey && e.key.toLowerCase() === 'k';
 
+const isChromeMenuTarget = (target) =>
+  typeof Element !== 'undefined' &&
+  target instanceof Element &&
+  Boolean(
+    target.closest(
+      '[data-slot="dropdown-menu-trigger"], [data-slot="dropdown-menu-content"]',
+    ),
+  );
+
 /** P9: single pane + touch-first below ~880px OR on coarse pointers. */
 const FLAT_MQ = '(max-width: 880px), (pointer: coarse)';
 const isFlat = () =>
@@ -441,6 +450,7 @@ export default function TerminalHome({ devHook, autoboot = true }) {
      reducer first (§5), then ⌘K, then the Esc cascade tail. ---- */
   useEffect(() => {
     const onKey = (e) => {
+      if (isChromeMenuTarget(e.target)) return;
       if (isPaletteCombo(e)) {
         e.preventDefault();
         e.stopPropagation();

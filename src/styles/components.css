@@ -940,6 +940,12 @@
     color var(--dur-state) var(--ease-state),
     background-color var(--dur-state) var(--ease-state);
 }
+@media (pointer: coarse) {
+  .sakura .on-menu-item {
+    min-height: var(--ctl-h);
+  }
+}
+
 .sakura .on-menu-item[data-highlighted],
 .sakura .on-menu-item[data-selected="true"],
 .sakura .on-menu-item[data-state="checked"] {
