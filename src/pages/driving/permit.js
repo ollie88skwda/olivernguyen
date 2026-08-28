@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import perm_reqs from "../../assets/permitrequirements.png";
-import { Display, MonoLabel, SectionHead } from "@/components/brand";
+import { Display, SectionHead } from "@/components/brand";
 import "../../styles/sakura.css";
 import "./permit.css";
 
@@ -34,7 +34,6 @@ export const Permit = () => {
     <main className={`sakura permit${isVisible ? " pm-in" : ""}`}>
       <article className="pm-guide">
         <header className="pm-head">
-          <MonoLabel>California DMV · Permit Guide</MonoLabel>
           <Display as="h1" className="pm-title">
             How to get your permit (for high schoolers)
           </Display>

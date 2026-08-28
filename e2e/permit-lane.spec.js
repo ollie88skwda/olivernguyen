@@ -31,6 +31,7 @@ const EXPECTED_KICKERS = ["01", "02", "03", "04"];
 
 async function assertPermit(page, { theme, mode, coarse }) {
   await expect(page.locator("main.sakura.permit")).toBeVisible();
+  await expect(page.getByText("California DMV · Permit Guide", { exact: true })).toHaveCount(0);
   await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
   await expect(page.locator("html")).toHaveAttribute("data-mode", mode);
 
@@ -104,6 +105,16 @@ async function assertPermit(page, { theme, mode, coarse }) {
   await expect
     .poll(() => firstLink.evaluate((element) => getComputedStyle(element).outlineStyle))
     .not.toBe("none");
+  await expect(firstLink).toHaveCSS("border-radius", "3px");
+
+  await page.keyboard.press("Tab");
+  await page.keyboard.press("Tab");
+  const shotLink = page.locator(".pm-shot-link");
+  await expect(shotLink).toBeFocused();
+  await expect
+    .poll(() => shotLink.evaluate((element) => getComputedStyle(element).outlineStyle))
+    .not.toBe("none");
+  await expect(shotLink).toHaveCSS("border-radius", "0px");
 }
 
 for (const testCase of CASES) {

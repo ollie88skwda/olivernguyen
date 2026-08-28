@@ -104,10 +104,16 @@
 .pm-guide a:hover {
   text-decoration-color: currentColor;
 }
-.pm-guide a:focus-visible {
+.pm-guide .on-prose a:focus-visible,
+.pm-shot-link:focus-visible {
   outline: var(--focus-ring-w) solid var(--focus-ring);
   outline-offset: 1px;
+}
+.pm-guide .on-prose a:focus-visible {
   border-radius: var(--r-control);
+}
+.pm-shot-link:focus-visible {
+  border-radius: var(--r-surface);
 }
 
 @media (pointer: coarse) {
