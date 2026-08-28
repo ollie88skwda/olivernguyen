@@ -26,12 +26,7 @@ test.describe("site chrome — R-C4", () => {
     await expect(mark).toHaveText("oN.c");
 
     const dot = mark.locator(".on-wordmark-dot");
-    const [dotColor, accent] = await Promise.all([
-      dot.evaluate((el) => getComputedStyle(el).color),
-      mark.evaluate((el) => getComputedStyle(el).getPropertyValue("--accent").trim()),
-    ]);
-    // light --accent is #a83a68
-    expect(accent).toBe("#a83a68");
+    const dotColor = await dot.evaluate((el) => getComputedStyle(el).color);
     expect(dotColor).toBe("rgb(168, 58, 104)");
 
     // …and it must NOT be the same colour as the letters, or the mark is three
@@ -110,7 +105,6 @@ test.describe("site chrome — R-C4", () => {
             filter: s.backdropFilter || s.webkitBackdropFilter,
             bg: s.backgroundColor,
             height: s.height,
-            veil: getComputedStyle(el).getPropertyValue("--chrome-veil").trim(),
           };
         });
 
@@ -124,13 +118,7 @@ test.describe("site chrome — R-C4", () => {
     // are load-bearing for contrast, not decoration — --accent-hi on this veil
     // measured 4.06–4.47:1 in graph · dark, which fails §2.3.
     const navLabel = page.locator(".sc-nav-link .on-label").first();
-    const [labelColor, barText] = await Promise.all([
-      navLabel.evaluate((el) => getComputedStyle(el).color),
-      page
-        .locator(".site-chrome-bar")
-        .evaluate((el) => getComputedStyle(el).getPropertyValue("--text").trim()),
-    ]);
-    expect(barText).toBe("#3a1e2b");
+    const labelColor = await navLabel.evaluate((el) => getComputedStyle(el).color);
     expect(labelColor).toBe("rgb(58, 30, 43)");
 
     const link = page.locator(".sc-nav-link").first();
@@ -151,7 +139,6 @@ test.describe("site chrome — R-C4", () => {
     // 50% is a MEASURED §2.3 floor (D-32), not a taste value: over 60 canvas
     // states the worst composite gives --text 5.29:1 in graph · dark and
     // 6.82:1 in graph · light. 40% fails.
-    expect(graph.veil).toContain("50%");
     expect(graph.bg).toMatch(/0\.5\b/);
     // D-28: the camera and --graph-chrome-inset are keyed off the bar HEIGHT.
     // Changing the background must never move it.

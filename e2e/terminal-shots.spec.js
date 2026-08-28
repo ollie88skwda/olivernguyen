@@ -275,15 +275,6 @@ test("theme and mode round-trip over a mounted terminal (D-19)", async ({ page }
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await expect(page.locator("html")).toHaveAttribute("data-mode", "terminal");
   await expect(page.getByTestId("terminal-home")).toBeVisible();
-  // the console ladder followed the theme, not the mode
-  expect(
-    await page.evaluate(() =>
-      getComputedStyle(document.querySelector(".term-screen"))
-        .getPropertyValue("--term-log")
-        .trim(),
-    ),
-  ).not.toBe("");
-
   // mode flips to graph and back; terminal remounts fresh (P3)
   await modeToggle.getByRole("button", { name: "GRAPH" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-mode", "graph");
@@ -294,5 +285,13 @@ test("theme and mode round-trip over a mounted terminal (D-19)", async ({ page }
     timeout: 20_000,
   });
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
+  const log = page.locator(".term-buffer .k-log").first();
+  await expect(log).toBeVisible();
+  const logStyle = await log.evaluate((el) => {
+    const style = getComputedStyle(el);
+    return { color: style.color, fontFamily: style.fontFamily };
+  });
+  expect(logStyle.color).toBe("rgb(111, 68, 89)");
+  expect(logStyle.fontFamily).toContain("JetBrains Mono");
   expect(errors).toEqual([]);
 });

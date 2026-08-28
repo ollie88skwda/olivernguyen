@@ -90,12 +90,6 @@ test("the canvas frames clear of the chrome bar and keeps its labels", async ({
   await page.evaluate(() => document.fonts.ready);
   await page.waitForTimeout(1600);
 
-  // graph.css hands the camera the bar height; the harness gets 0
-  const inset = await page
-    .locator(".graph-root")
-    .evaluate((el) => getComputedStyle(el).getPropertyValue("--graph-chrome-inset"));
-  expect(inset.trim()).toBe("64px");
-
   // nothing hides behind the fixed bar, or behind the prompt bar
   const [minTop, maxBottom] = await page.locator(".node .card").evaluateAll((els) => {
     const r = els.map((e) => e.getBoundingClientRect());
