@@ -76,7 +76,7 @@ const Prompt = forwardRef(function Prompt(
       if (
         target instanceof Element &&
         target.closest(
-          '[data-slot="dropdown-menu-content"], button, a, input, textarea, select, [role="menuitem"], [role="menuitemradio"], [tabindex]:not([tabindex="-1"])',
+          '[data-slot="dropdown-menu-trigger"], [data-slot="dropdown-menu-content"]',
         )
       )
         return;

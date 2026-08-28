@@ -171,7 +171,8 @@ test.describe("site chrome — R-C4", () => {
   });
 
   test("menus retain keyboard focus in terminal mode", async ({ page }) => {
-    await page.goto("/?mode=terminal&theme=light");
+    await page.goto("/?mode=terminal&theme=light&still");
+    await expect(page.locator("h1.name")).toBeVisible();
     await page.keyboard.press("Control+g");
 
     await page.getByRole("button", { name: "Open account menu" }).click();
@@ -182,6 +183,11 @@ test.describe("site chrome — R-C4", () => {
     await page.keyboard.press("ArrowDown");
     await expect(dark).toBeFocused();
     await page.keyboard.press("Escape");
+    await expect(page.getByTestId("sb-prefix")).toHaveCount(0);
+    const prompt = page.locator("#term-prompt-input");
+    await prompt.fill("j");
+    await prompt.press("Enter");
+    await expect(page.locator(".ln.echo .cmdtext").last()).toHaveText("j");
 
     await page.getByRole("button", { name: "Open pages menu" }).click();
     const home = page.getByRole("menuitem", { name: "Home" });
@@ -190,6 +196,14 @@ test.describe("site chrome — R-C4", () => {
     await expect(home).toBeFocused();
     await page.keyboard.press("ArrowDown");
     await expect(pull).toBeFocused();
+  });
+
+  test("terminal prompt regains focus after pane controls", async ({ page }) => {
+    await page.goto("/?mode=terminal&theme=light&still");
+    await expect(page.locator("h1.name")).toBeVisible();
+    const prompt = page.locator("#term-prompt-input");
+    await page.getByRole("button", { name: "split pane right (main)" }).click();
+    await expect(prompt).toBeFocused();
   });
 
   test("terminal cd requests a linked public asset", async ({ page }) => {

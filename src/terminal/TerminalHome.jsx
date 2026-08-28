@@ -82,6 +82,8 @@ const isChromeMenuTarget = (target) =>
 const FLAT_MQ = '(max-width: 880px), (pointer: coarse)';
 const isFlat = () =>
   typeof window.matchMedia === 'function' && window.matchMedia(FLAT_MQ).matches;
+const isFinePointer = () =>
+  typeof window.matchMedia === 'function' && window.matchMedia('(pointer: fine)').matches;
 
 const initialPanes = () => ({
   tree: createTree(),
@@ -450,7 +452,12 @@ export default function TerminalHome({ devHook, autoboot = true }) {
      reducer first (§5), then ⌘K, then the Esc cascade tail. ---- */
   useEffect(() => {
     const onKey = (e) => {
-      if (isChromeMenuTarget(e.target)) return;
+      if (isChromeMenuTarget(e.target)) {
+        if (psRef.current.prefix.mode !== 'idle') {
+          setPs((s) => ({ ...s, prefix: createPrefixState() }));
+        }
+        return;
+      }
       if (isPaletteCombo(e)) {
         e.preventDefault();
         e.stopPropagation();
@@ -500,8 +507,18 @@ export default function TerminalHome({ devHook, autoboot = true }) {
         }
       }
     };
+    const onChromePointerDown = (e) => {
+      if (!isChromeMenuTarget(e.target)) return;
+      if (psRef.current.prefix.mode !== 'idle') {
+        setPs((s) => ({ ...s, prefix: createPrefixState() }));
+      }
+    };
     window.addEventListener('keydown', onKey, true);
-    return () => window.removeEventListener('keydown', onKey, true);
+    window.addEventListener('pointerdown', onChromePointerDown, true);
+    return () => {
+      window.removeEventListener('keydown', onKey, true);
+      window.removeEventListener('pointerdown', onChromePointerDown, true);
+    };
   }, [closeOverlays, openHelp, measureDims]);
 
   /* ---- pane mouse parity (Pane.jsx contract) ---- */
@@ -520,6 +537,7 @@ export default function TerminalHome({ devHook, autoboot = true }) {
       if (flatRef.current && action.type === 'split') return; // P9
       const dims = measureDims();
       setPs((s) => applyAction({ ...s, focusedId: id }, action, id, dims));
+      if (isFinePointer()) promptRef.current?.focus();
     },
     [measureDims],
   );
