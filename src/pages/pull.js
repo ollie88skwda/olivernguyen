@@ -34,6 +34,20 @@ function formatPool(pool) {
   return pool >= 1000 ? `$${(pool / 1000).toFixed(0)}K` : `$${pool}`;
 }
 
+function applyPickAction(picks, action) {
+  const without = picks.filter((p) => !(p.player === action.player && p.weekend === action.weekend));
+  if (action.amount === null) return without;
+  return [...without, action.pick];
+}
+
+function applyPendingPicks(picks, pendingActions) {
+  let displayed = picks;
+  for (const action of pendingActions.values()) {
+    displayed = applyPickAction(displayed, action);
+  }
+  return displayed;
+}
+
 function formatDate(iso) {
   const d = new Date(iso + "T12:00:00");
   return {
@@ -261,7 +275,9 @@ function BestWeekendsBanner({ picks, weekends }) {
 export const Pull = () => {
   const [playerName, setPlayerName] = useState(null);
   const [picks, setPicks] = useState([]);
-  const picksRef = useRef([]);
+  const serverPicksRef = useRef([]);
+  const pendingPicksRef = useRef(new Map());
+  const pickQueuesRef = useRef(new Map());
   const pickActionRef = useRef(0);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
@@ -272,11 +288,15 @@ export const Pull = () => {
     if (saved) setPlayerName(saved);
   }, []);
 
-  const setPicksFromSource = useCallback((nextPicks) => {
-    const normalized = nextPicks || [];
-    picksRef.current = normalized;
-    setPicks(normalized);
+  const displayPicks = useCallback((sourcePicks) => {
+    const displayed = applyPendingPicks(sourcePicks, pendingPicksRef.current);
+    setPicks(displayed);
   }, []);
+
+  const setPicksFromSource = useCallback((nextPicks) => {
+    serverPicksRef.current = nextPicks || [];
+    displayPicks(serverPicksRef.current);
+  }, [displayPicks]);
 
   // Initial load shows the skeleton and can fail into the error panel; the
   // realtime refresh is silent so a transient blip never blanks a loaded list.
@@ -328,68 +348,56 @@ export const Pull = () => {
     async (weekend, amount) => {
       if (!playerName) return;
 
-      const previousPicks = picksRef.current;
-      const previousPickIndex = previousPicks.findIndex(
-        (p) => p.player === playerName && p.weekend === weekend,
-      );
-      const previousPick = previousPickIndex >= 0 ? previousPicks[previousPickIndex] : null;
-      const optimisticId = `optimistic-${weekend}-${++pickActionRef.current}`;
-      const without = previousPicks.filter(
-        (p) => !(p.player === playerName && p.weekend === weekend),
-      );
-      const optimisticPicks =
-        amount === null
-          ? without
-          : [
-              ...without,
-              {
-                id: optimisticId,
+      const actionId = ++pickActionRef.current;
+      const action = {
+        id: actionId,
+        player: playerName,
+        weekend,
+        amount,
+        pick:
+          amount === null
+            ? null
+            : {
+                id: `optimistic-${weekend}-${actionId}`,
                 player: playerName,
                 weekend,
                 amount,
                 created_at: new Date().toISOString(),
               },
-            ];
-      picksRef.current = optimisticPicks;
-      setPicks(optimisticPicks);
+      };
+      pendingPicksRef.current.set(actionId, action);
+      displayPicks(serverPicksRef.current);
 
-      // Writes go through our own route, which holds the service-role key and validates the
-      // weekend and amount. The browser has no write access to pull_picks at all. Reads and
-      // the realtime subscription above still go direct, on anon SELECT.
-      try {
-        const res = await fetch("/api/pull/pick", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ player: playerName, weekend, amount }),
-        });
-        if (!res.ok) throw new Error(`pick save failed: ${res.status}`);
-      } catch {
-        // Roll the optimistic row back to server truth; the realtime channel
-        // still reconciles if the write actually landed.
-        toast.error("couldn't save your pick — check the connection and try again");
-        const reconciled = await loadPicks({ silent: true });
-        if (!reconciled) {
-          const currentPicks = picksRef.current;
-          const currentPickIndex = currentPicks.findIndex(
-            (p) => p.player === playerName && p.weekend === weekend,
-          );
-          const currentPick = currentPickIndex >= 0 ? currentPicks[currentPickIndex] : null;
-          const stillOwnsOptimisticState =
-            amount === null ? currentPick === null : currentPick?.id === optimisticId;
-
-          if (stillOwnsOptimisticState) {
-            const restoredPicks = currentPicks.filter(
-              (p) => !(p.player === playerName && p.weekend === weekend),
-            );
-            if (previousPick) {
-              restoredPicks.splice(Math.min(previousPickIndex, restoredPicks.length), 0, previousPick);
-            }
-            setPicksFromSource(restoredPicks);
-          }
+      const queueKey = `${playerName}:${weekend}`;
+      const previousRequest = pickQueuesRef.current.get(queueKey) || Promise.resolve();
+      const request = previousRequest.catch(() => undefined).then(async () => {
+        // Writes go through our own route, which holds the service-role key and validates the
+        // weekend and amount. The browser has no write access to pull_picks at all. Reads and
+        // the realtime subscription above still go direct, on anon SELECT.
+        try {
+          const res = await fetch("/api/pull/pick", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ player: playerName, weekend, amount }),
+          });
+          if (!res.ok) throw new Error(`pick save failed: ${res.status}`);
+          pendingPicksRef.current.delete(actionId);
+          serverPicksRef.current = applyPickAction(serverPicksRef.current, action);
+          displayPicks(serverPicksRef.current);
+        } catch {
+          pendingPicksRef.current.delete(actionId);
+          toast.error("couldn't save your pick — check the connection and try again");
+          await loadPicks({ silent: true });
+          displayPicks(serverPicksRef.current);
         }
+      });
+      pickQueuesRef.current.set(queueKey, request);
+      await request;
+      if (pickQueuesRef.current.get(queueKey) === request) {
+        pickQueuesRef.current.delete(queueKey);
       }
     },
-    [playerName, loadPicks, setPicksFromSource],
+    [playerName, loadPicks, displayPicks],
   );
 
   if (playerName === null) {

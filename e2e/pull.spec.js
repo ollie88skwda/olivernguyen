@@ -283,6 +283,90 @@ test("concurrent failed picks only roll back their own optimistic rows", async (
   expect(errors, `console errors: ${errors.join(" | ")}`).toEqual([]);
 });
 
+test("rapid failed changes do not resurrect an earlier pick", async ({ page }) => {
+  const errors = [];
+  page.on("console", (m) => {
+    if (m.type() === "error" && !/ERR_FAILED|500/.test(m.text())) errors.push(m.text());
+  });
+  page.on("pageerror", (e) => errors.push(String(e)));
+  const saturdays = upcomingSaturdays(4);
+  const rows = pickRows(saturdays);
+  let reads = 0;
+  await page.route("**/rest/v1/pull_picks*", (route) => {
+    reads += 1;
+    if (reads === 1) {
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(rows),
+      });
+    }
+    return route.abort();
+  });
+  await page.route("**/api/pull/pick", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    return route.fulfill({ status: 500, contentType: "application/json", body: "{}" });
+  });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await gotoPull(page, "light");
+  await enterName(page);
+
+  const w3 = page.locator(".pull-grid-item").nth(2);
+  await w3.locator(".pull-card-toggle").click();
+  await w3.getByRole("button", { name: /high priority/i }).click();
+  await w3.locator(".pull-card-toggle").click();
+  await w3.getByRole("button", { name: /nothing stops me/i }).click();
+
+  await expect(page.getByText(/couldn't save your pick/i).first()).toBeVisible();
+  await expect(w3.getByText("$5K committed")).toHaveCount(0);
+  await expect(w3.getByText("$1M committed")).toHaveCount(0);
+  await expect(w3.getByText("No picks yet")).toBeVisible();
+  expect(errors, `console errors: ${errors.join(" | ")}`).toEqual([]);
+});
+
+test("successful reconciliation keeps another pending pick visible", async ({ page }) => {
+  const errors = [];
+  page.on("console", (m) => {
+    if (m.type() === "error" && !/500/.test(m.text())) errors.push(m.text());
+  });
+  page.on("pageerror", (e) => errors.push(String(e)));
+  const saturdays = upcomingSaturdays(4);
+  const rows = pickRows(saturdays);
+  let reads = 0;
+  await page.route("**/rest/v1/pull_picks*", (route) => {
+    reads += 1;
+    return route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(rows),
+    });
+  });
+  await page.route("**/api/pull/pick", async (route) => {
+    const body = route.request().postDataJSON();
+    if (body.weekend === saturdays[1]) {
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      return route.fulfill({ status: 500, contentType: "application/json", body: "{}" });
+    }
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    return route.fulfill({ status: 200, contentType: "application/json", body: "{}" });
+  });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await gotoPull(page, "light");
+  await enterName(page);
+
+  const w2 = page.locator(".pull-grid-item").nth(1);
+  const w3 = page.locator(".pull-grid-item").nth(2);
+  await w2.locator(".pull-card-toggle").click();
+  await w3.locator(".pull-card-toggle").click();
+  await w2.getByRole("button", { name: /high priority/i }).click();
+  await w3.getByRole("button", { name: /high priority/i }).click();
+
+  await expect(page.getByText(/couldn't save your pick/i)).toBeVisible();
+  await expect.poll(() => reads).toBeGreaterThanOrEqual(2);
+  await expect(w3.getByText("$5K committed")).toBeVisible();
+  expect(errors, `console errors: ${errors.join(" | ")}`).toEqual([]);
+});
+
 test.describe("375px coarse pointer", () => {
   test.use({
     viewport: { width: 375, height: 812 },
