@@ -1,25 +1,39 @@
 // One-off lane verification for /college (not a committed spec).
-// Loads both ladders at desktop + 375px, screenshots, and asserts the
-// interaction/accessibility contract: links, headings, badges, focus, targets.
+// Loads both ladders and modes at desktop + 375px, with coarse touch input on
+// phone cases, then asserts the interaction/accessibility contract.
 import { test, expect } from "@playwright/test";
 
 const COMBOS = [
-  { theme: "light", width: 1440, name: "light-desktop" },
-  { theme: "dark", width: 1440, name: "dark-desktop" },
-  { theme: "light", width: 375, name: "light-phone" },
-  { theme: "dark", width: 375, name: "dark-phone" },
+  { theme: "light", mode: "graph", width: 1440, pointer: "fine", name: "light-desktop" },
+  { theme: "dark", mode: "graph", width: 1440, pointer: "fine", name: "dark-desktop" },
+  { theme: "light", mode: "graph", width: 375, pointer: "coarse", name: "light-phone" },
+  { theme: "dark", mode: "graph", width: 375, pointer: "coarse", name: "dark-phone" },
+  { theme: "light", mode: "terminal", width: 1440, pointer: "fine", name: "light-terminal-desktop" },
+  { theme: "dark", mode: "terminal", width: 1440, pointer: "fine", name: "dark-terminal-desktop" },
+  { theme: "light", mode: "terminal", width: 375, pointer: "coarse", name: "light-terminal-phone" },
+  { theme: "dark", mode: "terminal", width: 375, pointer: "coarse", name: "dark-terminal-phone" },
 ];
 
-for (const { theme, width, name } of COMBOS) {
-  test(`/college ${name}`, async ({ page }) => {
+for (const { theme, mode, width, pointer, name } of COMBOS) {
+  test(`/college ${name}`, async ({ browser }) => {
+    const context = await browser.newContext({
+      baseURL: "http://localhost:3100",
+      viewport: { width, height: 900 },
+      hasTouch: pointer === "coarse",
+      isMobile: pointer === "coarse",
+    });
+    const page = await context.newPage();
     const errors = [];
     page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
     page.on("pageerror", (e) => errors.push(String(e)));
-    await page.setViewportSize({ width, height: 900 });
-    await page.goto(`/college?theme=${theme}`, { waitUntil: "networkidle" });
+    await page.goto(`/college?theme=${theme}&mode=${mode}`, { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
     await page.waitForTimeout(600);
     await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+    await expect(page.locator("html")).toHaveAttribute("data-mode", mode);
+    expect(await page.evaluate(() => matchMedia("(pointer: coarse)").matches)).toBe(
+      pointer === "coarse",
+    );
 
     // placeholder copy is present and obvious
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("[ headline ]");
@@ -60,5 +74,6 @@ for (const { theme, width, name } of COMBOS) {
       maxDiffPixelRatio: 0.01,
     });
     expect(errors).toEqual([]);
+    await context.close();
   });
 }
