@@ -19,7 +19,6 @@ Blockers        : none. Every checklist box in §8 is ticked; the only open item
                   Oliver's calls in the notes below (5, 6, 7, 9, 11).
 
 All three executors are closed out. Known-failing, both pre-existing and documented:
-  - e2e/legacy-visual.spec.js → /permit (baseline drift, COMPONENTS.md follow-up 3)
   - e2e/terminal-panes.spec.js + terminal-shots.spec.js time out under `--workers=3`
     and pass with `--workers=1`. Load contention, not a regression.
 NEXT HUMAN STEP: review `/`, then decide whether to merge `feat/component-library`.
@@ -33,8 +32,9 @@ Notes for Oliver:
   2. FIXED by exec-chrome in R-C3. The pages menu is a library DropdownMenu
      now, so it portals to <body>; the spec addresses it by data-slot instead
      of the retired #sc-pages-menu id.
-  3. e2e/legacy-visual.spec.js /permit still fails — pre-existing baseline
-     drift, already logged as COMPONENTS.md follow-up 3.
+  3. CLOSED by the `/permit` restyle lane. Its changed legacy visual baseline was regenerated;
+     route-specific coverage is recorded in `docs/permit-restyle-coverage.md` and
+     `e2e/permit-lane.spec.js`.
   3b. FOR EXEC-CHROME: e2e/chrome.spec.js "§10 wordmark: oN.c with the dot in
      --accent" fails on the current working tree. src/chrome/** — not seen
      from the terminal side, flagged only.
@@ -119,8 +119,8 @@ Notes for Oliver:
      R-I1, inside budget.
      Still open, carried into OPEN-DECISIONS.md: note 6 (wordmark dot on dark),
      note 7 (§10 favicon asset), note 9 (one worktree per executor).
-     The one red test, `/permit`, predates this branch entirely (note 3) and is
-     item 1 there. Merging is your call — nobody merged anything.
+     The `/permit` visual baseline and lane are now complete (note 3). Merging is your call —
+     nobody merged anything.
 ```
 
 Update rules: tick §8 checkboxes as tasks complete; rewrite this block each session; human questions → "Notes for Oliver".

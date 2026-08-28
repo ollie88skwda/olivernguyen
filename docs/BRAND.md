@@ -311,8 +311,8 @@ initials at once; the dot is the same colour as the routing pulse.
    Components read `var(--token)`.
 2. **Un-restyled legacy pages are frozen.** Files under `src/pages/` keep their own stylesheets
    until a restyle is explicitly scheduled (see `05-v1-spec.md` §2.3). `/college`, `/emoji`,
-   `/license`, and `/articlewriter` are the explicit sakura-restyle exceptions; do not bleed sakura
-   into the rest.
+   `/license`, `/permit`, `/articlewriter`, `/sat-resources`, `/sat-signup`, and `/major` are the
+   explicit sakura-restyle exceptions; do not bleed sakura into the rest.
 3. **New surfaces mount inside `.sakura`.** Never put these tokens on `:root`.
 4. **No new tokens without a decision.** If a component needs a value this doc does not define,
    raise it — then it gets added here and to `DECISIONS.md`.
