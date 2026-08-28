@@ -77,3 +77,10 @@ different, that is a brand decision, not a component decision.
 - **Output voice is `~/AGENT-VOICE.md`, in every harness. Nothing in this repo overrides it.**
   Retired 2026-08-27: the old project `CLAUDE.md` said "`/caveman` for all outputs"; Oliver ruled the
   voice file wins. Do not re-add it.
+
+## Maintaining this file
+
+Keep this file for knowledge useful to almost every future agent session in this project.
+Do not repeat what the codebase already shows; point to the authoritative file or command instead.
+Prefer rewriting or pruning existing entries over appending new ones.
+When updating this file, preserve this bar for all agents and keep entries concise.
