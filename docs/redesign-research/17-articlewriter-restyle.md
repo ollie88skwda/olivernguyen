@@ -1,8 +1,8 @@
 # /articlewriter restyle — lane record
 
-Lane of `docs/redesign-research/16-legacy-restyle.md` (PR #12). Page:
+Lane record for the `/articlewriter` restyle (PR #12). Page:
 `src/pages/archive/article_writer.js`, stylesheet `src/styles/ArticleWriter.css`,
-gate `e2e/articlewriter.spec.js`. Base `origin/feat/component-library`.
+gate `e2e/articlewriter.spec.js`. Base: component-library migration.
 
 ## Brand coverage — /articlewriter
 
@@ -24,7 +24,7 @@ gate `e2e/articlewriter.spec.js`. Base `origin/feat/component-library`.
 **Unmapped aspects** (each blocks done until the owner decides):
 - **Arbitrary article-HTML typography.** The library has no prose-headings component, and the generator returns unknown HTML. The page maps returned elements onto ratified roles in `ArticleWriter.css` (h1–h4 → display face at `--fs-title-lg`/`--fs-title`/`--fs-body`; p/li → sans body; a → `--accent-hi` underline; code → JetBrains mono; blockquote/hr → §9 hairline; img `max-width:100%`). Flag: owner decides whether to ratify a shared prose component (`BRAND.md §11.4`) or accept the page-local mapping. Elements the mapping does not cover (tables, forms, …) render with UA defaults — also flagged.
 - **Trust boundary unchanged.** `dangerouslySetInnerHTML` on generator output is preserved exactly; this lane found no separate security requirement and did not change product behavior. Flag: security review of the generator output boundary is out of scope for a visual lane.
-- **Visible failure state added.** The old page swallowed fetch errors into `console.error`; the plan's done criteria require a visible, accessible failure state, so the lane added `role="alert"` + a `--danger-text` message. The request, loading, and success behavior are unchanged (plus `!response.ok` now surfaces non-2xx JSON bodies instead of rendering nothing).
+- **Visible failure state added.** The old page swallowed fetch errors into `console.error`; the plan's done criteria require a visible, accessible failure state, so the lane added `role="alert"` + a `--danger-text` message. The request, loading, and success behavior are unchanged; non-2xx responses and missing, empty, or non-string `html_content` now use the failure state instead of rendering nothing.
 
 **Hard-coded visual values:** none outside tokens or shared brand roles. `max-width:880px` and `max-width:70ch` are `BRAND.md §5`'s named column caps (the library's own `.on-code` uses the same 880px literal); loading lines use the content measure at full width, then subtract `--s-12` and `--s-24`; generated heading line-height `1.05` mirrors the shared `Display`/`SectionHead` role in `components.css`; `text-underline-offset:3px` mirrors `.on-btn`'s link treatment; `1px` hairlines are `BRAND.md §9`; `767px` is the shared phone breakpoint (`sakura.css`/`components.css`).
 

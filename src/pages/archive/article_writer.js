@@ -1,5 +1,5 @@
 // /articlewriter — restyled onto the sakura brand ladder (legacy restyle,
-// lane /articlewriter; docs/redesign-research/16-legacy-restyle.md).
+// lane /articlewriter; see docs/redesign-research/17-articlewriter-restyle.md).
 //
 // Product behavior is preserved: same POST to the local generator, same
 // rendered HTML semantics (dangerouslySetInnerHTML — the existing trust
@@ -46,8 +46,8 @@ export const ArticleWriter = () => {
         body: JSON.stringify({ product }),
       });
       if (!response.ok) {
-        // A non-2xx with a JSON body used to set html_content to undefined
-        // and render nothing; surface it instead of swallowing it.
+        // A non-2xx response used to render nothing; surface it instead of
+        // swallowing the failure.
         throw new Error(`request failed with status ${response.status}`);
       }
       const data = await response.json();

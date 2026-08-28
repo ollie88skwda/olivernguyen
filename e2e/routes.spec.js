@@ -13,12 +13,11 @@ const isAllowedConsoleError = (msg) => {
   const text = msg.text();
   if (/\/api\//.test(url) && /Failed to load resource|404/.test(text)) return true;
   if (/\/api\//.test(text) && /404|Failed to load resource/.test(text)) return true;
-  // Pre-existing legacy-page hygiene, NOT migration regressions (identical
-  // under CRA dev). Left in place because Gate 1 screenshot-freezes legacy
-  // pages (plan L8) — logged in the status header for post-launch cleanup:
-  // - /permit + /articlewriter author <ol>/<h4>/<p> inside <p> (React dev-mode
+  // Pre-existing legacy-page hygiene, NOT migration regressions. Left in place
+  // because Gate 1 screenshot-freezes legacy pages (plan L8) — logged in the
+  // status header for post-launch cleanup:
+  // - /permit author <ol>/<h4>/<p> inside <p> (React dev-mode
   //   validateDOMNesting warning surfaces as console.error).
-  // - react-helmet's componentWillMount under StrictMode.
   if (/^Warning: validateDOMNesting/.test(text)) return true;
   if (/^Warning: Using UNSAFE_componentWillMount/.test(text)) return true;
   return false;

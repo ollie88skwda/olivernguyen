@@ -1,27 +1,27 @@
 # olivernguyen.com
 
-# olivernguyen.com
+Oliver Nguyen's portfolio: projects, tools, experiments, and two ways to explore them — graph and
+terminal.
 
-Personal site for Oliver Nguyen: projects, tools, and experiments.
-
-## Local development
+## Development
 
 ```bash
+npm install
 npm run dev
 ```
 
-Open `http://localhost:3000`.
+The Vite dev server runs at `http://localhost:3000`.
 
 Use `npm run dev:vercel` when testing Vercel serverless functions under `api/`.
 
-## Scripts
+## Commands
 
 | Command | Purpose |
 |---|---|
-| `npm run dev` | Start the Vite development server |
+| `npm run dev` | Start the development server |
 | `npm run dev:vercel` | Start Vercel's local server, including `/api` routes |
-| `npm run build` | Build the site into `dist/` |
+| `npm run build` | Create a production build |
 | `npm run preview` | Preview the production build |
-| `npm run test:run` | Run the Vitest unit tests once |
-| `npm run e2e` | Run the Playwright browser checks |
-| `npm run contrast` | Check the four Sakura theme palettes |
+| `npm run test:run` | Run unit tests once |
+| `npm run e2e` | Run Playwright browser checks |
+| `npm run contrast` | Check the brand colour pairs |

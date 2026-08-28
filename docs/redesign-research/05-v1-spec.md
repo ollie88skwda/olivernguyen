@@ -3,7 +3,7 @@
 **Status: implementation-ready.** Build from this doc alone.
 **Decided upstream (do not relitigate):** CRA → Vite + Tailwind v4 (02-libraries Path C).
 V1 scope = home page + shared chrome. Theme = Sakura, light + dark variants
-(tokens in `04-sakura-palette.md`, in progress — this doc references tokens by name only).
+(tokens in `04-sakura-palette.md`; implementation uses the four independent theme × mode combinations).
 Direction = hybrid of Overnight + Tool Router (03-concepts): **one site, two switchable modes**.
 
 ---
@@ -22,8 +22,8 @@ One portfolio, two renderings of the same content:
 
 The two modes are not skins; they are two *interfaces* over one content model (§2). The pitch
 is the medium: an agent builder whose site you can either **watch run** (terminal) or
-**operate yourself** (graph). Mode and theme are independent persistent controls; the four
-combinations and their defaults live in `docs/THEMES.md`.
+**operate yourself** (graph). Mode toggle is persistent chrome. Mode and theme are independent
+persistent controls; the four combinations and their defaults live in `docs/THEMES.md`.
 
 Discoverability is a first-class requirement (owner feedback): every capability reachable by
 search (⌘K / `:`) is also reachable by visible, clickable UI, and vice versa. No content is
@@ -146,7 +146,7 @@ direction for later page content; pages represented in v1 get an `entities[]` st
 | `/license` | driver's-license notes | `man license`, cross-linked in SEE ALSO ↔ permit | node under `guides`, edge to `/permit` | v1: stub · v1.2 |
 | `/sat-resources` | intentional empty state (`Coming soon`) | `ls sat/` directory listing; each resource a file row with description | `guides` cluster node; resources as leaf sub-nodes | v1: stub · v1.2 |
 | `/sat-signup` | informational placeholder; signup form planned | future form kept as-is inside terminal chrome (forms never fake-terminalized) | leaf node linking out | v1: placeholder · form later, low priority |
-| `/articlewriter` | project archive page | `man articlewriter` + real pipeline output image | already a project node in v1 graph; dossier links here | v1: linked from entity |
+| `/articlewriter` | project archive page | `man articlewriter` + real pipeline output image | already a project node in v1 graph; dossier links here | v1: linked from entity · sakura restyle shipped in its explicit lane |
 | `/emoji` | toy page | standalone fishbowl toy on the Sakura ladder | not represented | restyled in the emoji lane |
 | `/college` (+ gated children) | hub for private tools | sakura hub with placeholder copy, gate badges, and links; auth flows unchanged | same page in both modes; theme and mode remain independent | shipped in the `/college` restyle lane |
 | `/sign-in`, `/studio`, `/transfer`, `/major`, `/apply` | private/gated | not represented (never in public index) | not represented | never |
@@ -162,8 +162,8 @@ from the new chrome nav; flag to owner rather than silently re-adding.
 
 Layout: single scrolling column, max-width ~880px for log content, full-bleed dark
 (`sakura.dark.bg`). Persistent **status bar** pinned to viewport bottom (§5.5). All body/log
-text in mono (JetBrains Mono; Berkeley Mono if licensed later); display headlines in the
-sans chosen in 04. Accent = `sakura.dark.accent` (the pink/blossom accent from 04 replaces
+text in mono (JetBrains Mono; Berkeley Mono if licensed later); display headlines use Familjen
+Grotesk per `BRAND.md` §7. Accent = `sakura.dark.accent` (the pink/blossom accent from 04 replaces
 03's amber — sakura discipline: accent only on live/active states).
 
 Sections are numbered `[1]`..`[5]` in the UI; numbers are the vim jump targets (§5.4) and
@@ -468,8 +468,8 @@ Replaces `top_bar.js` on all chromed routes:
   minus dead `/debt`). Hide-on-scroll-down behavior kept, rebuilt with Motion.
 - **Remaining legacy routes** render inside the chrome with sakura tokens applied to chrome only;
   page bodies keep their existing stylesheets. Explicit restyle lanes are the exception — `/college`
-  and `/emoji` now mount their own `.sakura` surfaces. Grain overlay retired; `ScrollProgress` remains
-  unmounted.
+  `/emoji`, and `/articlewriter` now mount their own `.sakura` surfaces. Grain overlay retired;
+  `ScrollProgress` remains unmounted.
 - `NO_CHROME` list behavior is preserved, including the restored `/mom` and `/mum` aliases.
 
 ---
@@ -577,7 +577,7 @@ contrast-check script; content model `src/content/site.js` fully populated (pend
 remaining legacy pages verified under new chrome.
 ✅ **Gate:** toggling mode swaps `data-mode` + persists + syncs URL param on `/`;
 `?mode=graph` link opens graph placeholder; contrast script passes; Playwright chrome
-test on remaining legacy routes and `/college`.
+test covers `/pull`, `/permit`, and `/college`; `/articlewriter` has its own lane gate.
 
 **Phase 2 — Terminal mode (~3–4 days)**
 Sections [1]–[5] per §3, mobile fallbacks included. Registry components installed via

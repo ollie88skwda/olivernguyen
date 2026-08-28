@@ -19,17 +19,14 @@ exec-infra   : ALL PHASES + INTEGRATION DONE. Gate 1 ✅ (mode.spec 4/4, legacy
 exec-graph   : ALL PHASES DONE — GATES G1–G4 ✅ (last: 9cbea665). Harness:
                http://localhost:3200/graph-dev.html (bg-vite-dev pane w2Y:pN).
                Full check this session: vitest 216/216 · playwright 26 passed.
-               Standing by for INTEGRATION (X-1..X-4, exec-infra leads — I'm on call).
-               NOTE for X-2 (exec-infra): the graph's ⌘K/prompt "switch to terminal"
-               intent dispatches cancelable CustomEvent 'on:set-mode' (detail =
-               'terminal'|'graph') on window; ModeProvider should listen +
-               preventDefault. Uncaught → graph shows a holding-screen toast.
+               INTEGRATION is complete (X-1..X-4). X-2 handles the graph's
+               cancelable 'on:set-mode' CustomEvent (detail = 'terminal'|'graph')
+               in ModeProvider and calls preventDefault.
                X-1 note: GraphHome imports graph.css itself; lazy-import it and the
                d3 deps ride in its chunk. Dev harness (graph-dev.html) is already
                excluded from prod (build input pinned to index.html).
-Integration  : X-1..X-4 DONE — FINAL GATE ✅ (bd39e909 + deploy). NOT in production (L5).
-               2026-08-18 UPDATE (doc-11 FINAL GATE ✅): the L5 launch-hold is LIFTED —
-               both modes gated on redesign/terminal-v1; production flip = Oliver's call.
+Integration  : X-1..X-4 DONE — FINAL GATE ✅ (bd39e909 + deploy).
+               Both modes are gated; production flip = Oliver's call.
 OWNERSHIP GRANT (2026-08-18, doc-11 follow-up round — exec-graph RETIRED):
                exec-term-core owns src/graph/lib/** + src/intents/registry.js + chrome
                (F-C.2/3: graph focus-intent API + restored top-bar Work/About/Contact).
@@ -45,7 +42,7 @@ OWNERSHIP GRANT (2026-08-18, doc-11 follow-up round — exec-graph RETIRED):
 Blockers     : none · ops note: exec-infra sessions kept dying on provider 429/refusals;
                exec-graph respawned it twice via herdr (pane w2Y:pK, model pinned to
                anthropic/claude-fable-5, SHORT prompt — long prompts triggered refusals).
-               Current run: exec-infra-3, started after Gate G4, tasked I-1.3→X-4.
+               All executors retired after the final gate.
 Preview URL  : https://olivernguyen-94j0tjy5t-ollie88skwdas-projects.vercel.app (integrated graph-v1)
                NOTE: behind Vercel SSO deployment protection (project setting) —
                open while logged into Vercel; disable protection to share publicly.
@@ -58,16 +55,13 @@ Notes for Oliver :
     • Chrome motion is CSS, not framer-motion (05 §6.4 "rebuilt with Motion") —
       chrome was the only eager framer consumer; ~35KB gz off the entry chunk
       to pass Lighthouse mobile ≥ 90. Same easings/durations.
-    • Top-bar Work/About/Contact links dropped: their /#work anchors died with
-      the old home, and the graph has no inbound focus-intent API to jump
-      clusters. Restore when exec-graph exposes one.
+    • Top-bar Work/About/Contact links use the graph focus-intent API on `/` and
+      fall back to `?focus=` navigation elsewhere; covered by the focus-intent gate.
     • SEARCH ⌘K button renders only in graph mode on / with a fine pointer
       (elsewhere no palette exists); it synthesizes the ⌘K keydown.
-  - (exec-infra) TERM→GRAPH round-trip remounts the graph (fresh entry view,
-    state not carried). Deliberate: GraphCanvas owns window-level key handlers
-    that must not run under the holding screen (never-trap). Preserving live
-    camera state across the flip needs a small state-lift in exec-graph's
-    GraphCanvas — post-launch item if you want it.
+  - (exec-infra) TERM→GRAPH round-trip remounts the graph with a fresh entry
+    view; view state is not carried by design because GraphCanvas owns window-level
+    key handlers that must not run under the other mode.
   - (exec-infra) Both Vercel previews 302 → vercel.com/sso-api (deployment
     protection). I-0.7's /api check predates this observation — verify /api
     once logged in, or set a protection-bypass secret for automation.
@@ -76,10 +70,9 @@ Notes for Oliver :
     /transfer redirect to /sign-in, /major + /apply to their passphrase gate.
     Full Clerk sign-in + essay-studio editor/vim need a test account from you.
   - (exec-infra) Pre-existing legacy hygiene, surfaced by Gate 0 but NOT fixed
-    (Gate 1 screenshot-freezes legacy pages): /permit + /articlewriter author
-    <ol>/<h4>/<p> inside <p> (React validateDOMNesting dev warning);
-    react-helmet fires UNSAFE_componentWillMount under StrictMode. Allow-listed
-    in e2e/routes.spec.js with tight regexes; recommend post-launch cleanup.
+    (Gate 1 screenshot-freezes legacy pages): /permit author <ol>/<h4>/<p> inside
+    <p> (React validateDOMNesting dev warning). Allow-listed in e2e/routes.spec.js
+    with a tight regex; recommend post-launch cleanup.
   - (exec-graph) Day beats are still the prototype's curated-fiction set (P5/L6).
     Real redacted beats drop into src/content/site.js `week` — data-only swap.
   - (exec-graph) Content deltas vs prototype, all making stubs real: scopecreep
@@ -106,7 +99,7 @@ One portfolio, two modes over one content model. **Graph mode is the flagship** 
 full-viewport spatial canvas (light "sakura paper" palette) that greets every first-time
 visitor: Oliver as root node, projects/roles/pages as authored nodes, intents routed as
 jade pulses along edges, dossier panel per node, prompt bar + ⌘K, guided tour. Terminal
-mode (dark sakura, herdr-style panes per `09-herdr-panels.md`) is a **later build**.
+mode (dark sakura, herdr-style panes per `09-herdr-panels.md`) is shipped alongside graph mode.
 
 The approved look/feel lives in `prototype/graph/` (hand-rolled DOM+SVG + d3-zoom,
 ~700 LOC). This build ports its **feel** into the production React app — not its code
@@ -132,9 +125,9 @@ verbatim, and with two owner-mandated changes (fonts, edges — §3).
 | # | Decision | Rationale |
 |---|---|---|
 | P1 | **Renderer: port the hand-rolled world-div + SVG-underlay architecture into React. No React Flow.** Supersedes `05-v1-spec.md` §4.1/§7. | The flagship's feel lives exactly in the layer React Flow abstracts away (release inertia, van Wijk fly-to, bead routing on real paths, custom edge geometry). 06 §1 shows the architectures are identical; the prototype is the approved artifact. Deps: `d3-zoom`, `d3-selection`, `d3-transition`, `d3-interpolate` micro-modules only. |
-| P2 | **Token scoping:** `data-mode` attr on `<html>` (for `theme-color`/meta) but sakura CSS variables declared on a `.sakura` scope class, i.e. `html[data-mode="graph"] .sakura { … }`. | Legacy `src/styles/theme.css` defines `--bg`, `--text`, `--accent` on `:root`; putting sakura tokens on `:root[data-mode]` would silently restyle every legacy page. New chrome + GraphHome mount inside `.sakura`; legacy bodies untouched (05 §6.4). |
-| P3 | **Interim mode default = graph for everyone** (incl. mobile → graph list fallback). 05 §6.2's OS-heuristic activates only when terminal ships. | Terminal is a holding screen this build; defaulting anyone into it would greet them with nothing. |
-| P4 | TERM toggle position renders a minimal dark-sakura holding screen (real tokens, one line, no fake content). Old `home.js` left in tree, unmounted, flagged not deleted. | L5/L7. |
+| P2 | **Token scoping:** `data-theme` selects the ladder and `data-mode` selects the interface; both live on `<html>`, while sakura CSS variables stay under `.sakura`. | Legacy `src/styles/theme.css` defines `--bg`, `--text`, `--accent` on `:root`; putting sakura tokens on `:root[data-mode]` would silently restyle every legacy page. New chrome + GraphHome mount inside `.sakura`; remaining legacy bodies stay untouched except explicit restyle lanes (05 §6.4). |
+| P3 | **Default mode = graph for everyone** (incl. mobile → graph list fallback). No OS heuristic selects the interface. | Graph is the public entry view; terminal is available through the mode toggle. |
+| P4 | TERM toggle renders the shipped terminal surface. Old `home.js` remains in the tree, unmounted, and flagged rather than deleted. | L5/L7. |
 | P5 | Content model `src/content/site.js` follows 05 §2.2 schema; prototype copy is the seed. Day beats stay the prototype's curated-fiction set until Oliver supplies real redacted beats (L6) — flag in status header. | Unblocks build; content swap is data-only. |
 | P6 | Graph JS (d3 + canvas code) is lazy-chunked; never fetched on mobile (list fallback) — 05 §8 budget: `/` ≤ 180KB gz before the graph chunk. | Perf gate. |
 
@@ -144,16 +137,15 @@ verbatim, and with two owner-mandated changes (fonts, edges — §3).
 Already loaded via Google Fonts (`public/index.html` line 18 → moves to root
 `index.html` in Phase 0 — preserve the `<link>` tags). Mapping:
 
-- **Big Shoulders** (display): root-node title, dossier titles, stat values. Condensed —
-  it wants larger sizes than Inter did; retune, don't transplant sizes.
+- **Familjen Grotesk** (display): root-node title, dossier titles, stat values. Use the
+  ratified display role rather than the retired condensed face.
 - **Hanken Grotesk** (sans): card titles/metas, blurbs, suggestion rows, tour captions.
-- **Martian Mono** (mono): kind labels, group pills, day nodes, beats, hints, prompt/⌘K
-  inputs, tech chips, toasts, zoom label. **Martian Mono is much wider than JetBrains** —
-  the prototype's 9–11px sizes with .14–.18em tracking will overflow. A dedicated type
-  pass (task G-2.6) retunes size/tracking/max-widths per component against screenshots.
+- **JetBrains Mono** (body) and **Martian Mono** (labels): read-heavy content uses JetBrains;
+  kind labels, group pills, day nodes, beats, hints, prompt/⌘K inputs, tech chips, toasts and
+  zoom labels use Martian. Its width needs a dedicated size/tracking/max-width pass.
 
-Reference vars (exist in `theme.css`, re-declare inside `.sakura` so graph never depends
-on legacy CSS): `--font-display`, `--font-sans`, `--font-mono`.
+Reference vars are re-declared inside `.sakura` so graph never depends on legacy CSS:
+`--font-display`, `--font-sans`, `--font-mono-body`, and `--font-mono-label`.
 
 ### 3.2 Edge rework (L10)
 Current prototype edge = quadratic bézier with perpendicular offset `dist * 0.08` — the
@@ -189,7 +181,7 @@ three behind the query param for Oliver's later review; ship `weighted`.
 | `api/`, `src/auth/`, `src/pages/essay_studio/` | Untouched by both executors |
 | **NEW** `src/styles/sakura.css` | exec-infra — 04 §5 tokens under `.sakura` scoping (P2) + font vars |
 | **NEW** `src/mode/ModeProvider.jsx` | exec-infra — mode state, persistence, `data-mode`, URL sync |
-| **NEW** `src/home/Home.jsx` | exec-infra — mode switch: GraphHome (lazy) / terminal holding screen |
+| **NEW** `src/home/Home.jsx` | exec-infra — mode switch: GraphHome / TerminalHome |
 | **NEW** `src/chrome/` | exec-infra — top bar rebuild + mode toggle (05 §6.4) |
 | **NEW** `src/content/site.js` | exec-graph — content model (05 §2.2 schema) |
 | **NEW** `src/intents/registry.js` | exec-graph — intent list + matcher (prototype's, restructured) |
@@ -252,12 +244,13 @@ Vitest suites green. `/api` verified on a Vercel preview deploy.
 
 **Phase 1 — exec-infra: foundations + chrome shell** (~1–2 days)
 `src/styles/sakura.css` (P2 scoping), contrast-check script (04's pairs), `ModeProvider`,
-`src/home/Home.jsx` (graph placeholder + terminal holding screen), top-bar rebuild + TERM|GRAPH
+`src/home/Home.jsx` (GraphHome + TerminalHome), top-bar rebuild + TERM|GRAPH
 toggle on all chromed routes (05 §6.4; drop dead `/debt` link), `NO_CHROME` preserved.
 ✅ **Gate 1:** toggle swaps `data-mode` + persists + URL-syncs on `/`; `?mode=graph` forces
 graph; pages visually unchanged under new chrome at that point (Playwright screenshot diff on
 `/pull`, `/permit`, `/college`); contrast script passes; zero console errors. Later explicit
-restyle lanes may change individual page surfaces; `/college` is covered by its own lane gate.
+restyle lanes may change individual page surfaces; `/college` and `/articlewriter` are covered by their
+own lane gates.
 
 **Phase G1 — exec-graph: pure modules** (parallel with Phase 0)
 `src/content/site.js` (05 §2.2 schema, prototype copy + 30 nodes incl. week ring
@@ -333,7 +326,7 @@ gate actually passes before building on it (`npx playwright test`, `npx vitest r
 - [x] **I-1.1** `src/styles/sakura.css` — 04 §5 both token sets, `.sakura` scoping (P2), font vars (4531b14a)
 - [x] **I-1.2** Contrast-check script over 04's pairs (CI-runnable: `yarn contrast`, 63 pairs, negative-tested)
 - [x] **I-1.3** `ModeProvider` (P3 default, persistence, URL sync, `data-mode`, theme-color) (dc6899c4; incl. 'on:set-mode' listener per X-2 contract)
-- [x] **I-1.4** `src/home/Home.jsx` — mode switch, graph placeholder, terminal holding screen (P4)
+- [x] **I-1.4** `src/home/Home.jsx` — mode switch, GraphHome and TerminalHome surfaces (P4)
 - [x] **I-1.5** Top bar + TERM|GRAPH toggle on chromed routes; `/debt` dropped; `NO_CHROME` intact (2a9af316)
 - [x] **I-1.6** Playwright: toggle/persist/URL + legacy screenshot diff ×3 → **GATE 1 ✅** (e2e/mode.spec.js 4/4; legacy-visual 3/3 vs pre-swap baselines; contrast 63/63)
 
@@ -347,7 +340,7 @@ gate actually passes before building on it (`npx playwright test`, `npx vitest r
 - [x] **G-2.3** Node components per kind (root/group/day/leaf) on world div
 - [x] **G-2.4** SVG edge underlay w/ §3.2 geometry, `?edges=` switch, draw-in (all 3 styles screenshot-verified)
 - [x] **G-2.5** Hover 1-hop highlight, semantic-zoom fade, dot-grid sync
-- [x] **G-2.6** Type pass: Big Shoulders/Hanken/Martian mapped + retuned (§3.1), screenshots vs prototype (canvas elements done; dossier titles re-checked in G-3.1)
+- [x] **G-2.6** Type pass: Familjen/Hanken/JetBrains/Martian mapped + retuned (§3.1), screenshots vs prototype (canvas elements done; dossier titles re-checked in G-3.1)
 - [x] **G-2.7** Manual + screenshot review vs prototype → **GATE G2 ✅** (side-by-side /tmp/graph-shots; e2e/graph-shots.spec.js env-gated harness shots; pinch = stock d3-zoom touch, not emulatable headless — same code path as prototype)
 - [x] **G-3.1** Dossier: focus fly, panel, linked chips, close cascade, focus trap (157a41e9)
 - [x] **G-3.2** Pulse routing on reworked edges: bead, `.routing`, arrival flash
@@ -362,11 +355,11 @@ gate actually passes before building on it (`npx playwright test`, `npx vitest r
 - [x] **G-4.4** Playwright: mobile/RM/network/axe specs → **GATE G4 ✅** (e2e/graph-a11y.spec.js 3/3; axe via CDN-injected axe-core — no dep change needed; full suite 26 passed / 4 env-gated skips)
 
 ### Integration (exec-infra leads, exec-graph on call)
-- [x] **X-1** Mount GraphHome in Home; old home unmounted + flagged (P4); harness excluded from prod (18edd062; GraphHome static — see status notes; dist verified harness-free; legacy routes lazy-split)
+- [x] **X-1** Mount GraphHome and TerminalHome in Home; old home unmounted + flagged (P4); harness excluded from prod (18edd062; GraphHome static — see status notes; dist verified harness-free; legacy routes lazy-split)
 - [x] **X-2** Toggle/intents wired to ModeProvider; mode round-trip restores a working graph (b1556f52; 'on:set-mode' preventDefaulted — no fallback toast; view state resets by design, see notes)
 - [x] **X-3** Full Playwright suite + Lighthouse + perf budget on integrated `/` (dc3894b9; 36 passed / 4 env-gated; Lighthouse mobile 92–95/100, desktop 99/100; ≈99KB gz ≤ 180)
 - [x] **X-4** ship-check; Vercel PREVIEW deployed (not prod — L5); URL in status header → **FINAL GATE ✅** (bd39e909; 14 shots reviewed, HUD glue fixes; preview 94j0tjy5t, SSO-protected)
 
 ---
-*Prev: `09-herdr-panels.md` (terminal, deferred). This doc is the single source of truth
+*Prev: `09-herdr-panels.md` (terminal reference). This doc is the single source of truth
 for the graph build; on conflict with 05 §4/§7, this doc wins (P1–P6).*
