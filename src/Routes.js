@@ -13,8 +13,8 @@ import RequireClerk, { clerkKey } from "./auth/RequireClerk";
 
 // X-3 perf budget (plan §6 FINAL GATE): "/" route JS ≤ 180KB gz pre-graph-
 // chunk. Legacy routes are lazy so their page code never rides in the entry
-// chunk; each renders under Suspense with a full-height blank (page CSS +
-// theme bg paint on chunk arrival — legacy bodies themselves are unchanged).
+// chunk; each renders under Suspense with a full-height fallback. Frozen legacy
+// bodies stay unchanged unless a route-specific restyle owns their stylesheet.
 const Permit = lazy(() =>
   import("./pages/driving/permit.js").then((m) => ({ default: m.Permit })),
 );
@@ -42,6 +42,7 @@ const Apply = lazy(() => import("./pages/apply/index.js"));
 const EssayStudio = lazy(() => import("./pages/essay_studio/index.js"));
 const WritingRoom = lazy(() => import("./pages/essay_studio/room/index.js"));
 const Transfer = lazy(() => import("./pages/transfer/index.js"));
+const MomFifty = lazy(() => import("./pages/mom/index.js"));
 
 // Dev-only component gallery (/_components). Behind import.meta.env.DEV so the
 // route, its chunk and the whole component-gallery tree are absent from a
@@ -77,8 +78,8 @@ const ClerkBridge = ({ children }) => {
 // every route carries it. I-1.5: src/chrome/SiteChrome replaces the old
 // pages/top_bar (grain retired, /debt dropped, TERM|GRAPH toggle added);
 // top_bar.js stays in the tree unmounted (P4 policy).
-// /be-my-girlfriend is full-bleed with its own art direction and opts out.
-const NO_CHROME = ["/be-my-girlfriend", "/bemygirlfriend", "/girlfriend"];
+// /be-my-girlfriend and the restored /mom + /mum page opt out of chrome.
+const NO_CHROME = ["/be-my-girlfriend", "/bemygirlfriend", "/girlfriend", "/mom", "/mum"];
 
 const SiteChrome = () => {
   const { pathname } = useLocation();
@@ -92,6 +93,14 @@ const RouteFallback = () => {
   const { pathname } = useLocation();
   return pathname === "/sat-resources" ? <SATResourcesLoading /> : <Blank />;
 };
+
+const SATSignupLoading = () => (
+  <main
+    className="sakura"
+    style={{ minHeight: "100dvh", background: "var(--bg)" }}
+    aria-busy="true"
+  />
+);
 
 export const Routes = () => {
   return (
@@ -129,7 +138,9 @@ export const Routes = () => {
           <SATResources />
         </Route>
         <Route path="/sat-signup">
-          <SATSignup />
+          <Suspense fallback={<SATSignupLoading />}>
+            <SATSignup />
+          </Suspense>
         </Route>
         <Route path="/pull">
           <Pull />
@@ -140,6 +151,12 @@ export const Routes = () => {
         <Route path={["/be-my-girlfriend", "/bemygirlfriend", "/girlfriend"]}>
           <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#092441" }} />}>
             <BeMyGirlfriend />
+          </Suspense>
+        </Route>
+        {/* /mom is canonical; /mum stays alive because the link was shared as /mum */}
+        <Route path={["/mom", "/mum"]}>
+          <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#2c0d45" }} />}>
+            <MomFifty />
           </Suspense>
         </Route>
         <Route path="/college">

@@ -1,0 +1,664 @@
+/* Scoped styles for /mom (and its /mum alias). Everything hangs off .mom-root
+ * so the purple palette never leaks into the rest of the site — the global
+ * tokens in styles/theme.css are untouched, only the font stack is borrowed.
+ *
+ * Mobile only: the page is a phone-width column, centred on wider screens.
+ *
+ * Type is deliberately oversized and the padding deliberately tight: she reads
+ * this at arm's length without her glasses, and nothing may need scrolling.
+ * Every screen is a fixed-height flex column, so growing the type eats the
+ * empty space rather than pushing anything off the bottom. */
+
+.mom-root {
+  --mom-paper: #f7f0e2;
+  --mom-accent: #4b1a72;
+  --mom-accent-hi: #7c3aab;
+  --mom-deep: #2c0d45;
+  --mom-petal: #a86fd0;
+  --mom-light: #c9a8e4;
+  --mom-ink: #241033;
+
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 100dvh;
+  overflow: hidden;
+  background: radial-gradient(120% 80% at 50% 0%, #3b1259 0%, var(--mom-deep) 62%);
+  color: var(--mom-paper);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.mom-root *,
+.mom-root *::before,
+.mom-root *::after {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.mom-root ::selection {
+  background: var(--mom-petal);
+  color: var(--mom-deep);
+}
+
+.mom-phone {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  height: 100dvh;
+  overflow: hidden;
+  background: var(--mom-deep);
+}
+
+/* material texture, same trick as the site grain but scoped and non-blocking */
+.mom-phone::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 9;
+  pointer-events: none;
+  opacity: 0.055;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@media (min-width: 520px) {
+  .mom-phone {
+    box-shadow: 0 0 0 1px rgba(201, 168, 228, 0.16), 0 40px 90px rgba(0, 0, 0, 0.45);
+  }
+}
+
+.mom-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mom-eyebrow {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 400;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--mom-light);
+}
+
+/* invisible full-screen tap target, sits above the artwork */
+.mom-fullzone {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* ── opening ─────────────────────────────────────────────────────────────── */
+
+.mom-screen--opening {
+  align-items: center;
+  justify-content: center;
+  padding: 24px 18px;
+  text-align: center;
+}
+
+.mom-fifty {
+  position: relative;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(112px, 42vw, 176px);
+  line-height: 0.8;
+  letter-spacing: -0.01em;
+  color: transparent;
+  -webkit-text-stroke: 2px var(--mom-petal);
+}
+
+/* A second copy of the digits sits exactly on top of the outlined pair and is
+ * revealed from the bottom edge up. Clipping (rather than growing a box) keeps
+ * the two copies in pixel-perfect register. */
+.mom-fifty-fill {
+  position: absolute;
+  inset: 0;
+  color: var(--mom-paper);
+  /* same stroke width as the outline underneath, so the fill swallows it
+     cleanly instead of leaving a purple halo */
+  -webkit-text-stroke: 2px var(--mom-paper);
+  /* the clip is bled past the box so the stroke of the glyphs, which overflows
+     the tight 0.8 line box, is covered too */
+  clip-path: inset(100% -8% -12% -8%);
+  animation: mom-fill 1.6s 0.25s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+.mom-fifty--short .mom-fifty-fill {
+  animation-duration: 0.85s;
+  animation-delay: 0.1s;
+}
+
+@keyframes mom-fill {
+  to {
+    clip-path: inset(-16% -8% -12% -8%);
+  }
+}
+
+.mom-cap {
+  margin: 20px 0 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(36px, 10.5vw, 44px);
+  line-height: 1.02;
+  letter-spacing: 0.01em;
+  color: var(--mom-paper);
+  opacity: 0;
+  animation: mom-rise 0.8s 1.85s var(--ease-out, cubic-bezier(0.16, 1, 0.3, 1)) forwards;
+}
+
+.mom-fifty--short + .mom-cap {
+  animation-delay: 0.95s;
+}
+
+.mom-cap-sub {
+  margin-top: 14px;
+  opacity: 0;
+  animation: mom-rise 0.8s 2.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.mom-begin {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 34px;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--mom-light);
+  opacity: 0;
+  animation: mom-rise 0.7s 2.7s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+    mom-breathe 2.6s 3.4s ease-in-out infinite;
+}
+
+@keyframes mom-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes mom-breathe {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.42;
+  }
+}
+
+/* ── confetti ────────────────────────────────────────────────────────────── */
+
+.mom-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  contain: strict;
+}
+
+.mom-confetti--back {
+  z-index: 1;
+  opacity: 0.85;
+}
+
+.mom-confetti--front {
+  z-index: 5;
+}
+
+.mom-confetti i {
+  position: absolute;
+  top: 0;
+  display: block;
+  animation-name: mom-drop;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+@keyframes mom-drop {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -14vh, 0) rotate(0deg);
+  }
+  10% {
+    opacity: 1;
+  }
+  88% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(var(--mom-drift), 108vh, 0) rotate(var(--mom-spin));
+  }
+}
+
+/* ── the deck ────────────────────────────────────────────────────────────── */
+
+/* The standing header takes only the height it needs and the card below takes
+   the rest, so the title is always on screen and never crowds the card out. */
+.mom-head {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 18px 6px;
+}
+
+.mom-standing {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(30px, 8.6vw, 36px);
+  line-height: 0.94;
+  letter-spacing: -0.005em;
+  color: var(--mom-paper);
+}
+
+.mom-head-side {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.mom-count {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+  color: var(--mom-petal);
+}
+
+.mom-count-total {
+  font-size: 16px;
+  font-weight: 400;
+  color: rgba(201, 168, 228, 0.6);
+}
+
+.mom-tapzone {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex: 1;
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+  padding: 8px 14px;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.mom-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 20px 20px 18px;
+  border-radius: 20px;
+  background: var(--mom-paper);
+  color: var(--mom-ink);
+  box-shadow: 0 22px 44px rgba(10, 2, 20, 0.42);
+  animation: mom-card-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* the fiftieth lands on its own and is allowed to feel different */
+.mom-card--final {
+  background: linear-gradient(170deg, #fdf8ec 0%, var(--mom-paper) 60%);
+  box-shadow: 0 0 0 1px rgba(168, 111, 208, 0.5), 0 26px 60px rgba(10, 2, 20, 0.5);
+  animation-duration: 0.9s;
+}
+
+@keyframes mom-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.mom-card-num {
+  flex: 0 0 auto;
+  font-family: var(--font-mono);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  color: var(--mom-accent-hi);
+}
+
+/* auto margins centre the words in whatever height is left over; the padding
+   only guards the gap to the number and the rule when the card is nearly full */
+.mom-card-text {
+  margin: auto 0;
+  padding: 14px 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(42px, 14vw, 58px);
+  line-height: 1.06;
+  letter-spacing: 0.005em;
+  color: var(--mom-accent);
+}
+
+/* the shorter the reason, the larger it is set — see sizeBand() in index.js */
+.mom-card-text--lg {
+  font-size: clamp(48px, 16vw, 64px);
+}
+
+.mom-card-text--xl {
+  font-size: clamp(60px, 20.5vw, 82px);
+}
+
+.mom-card--final .mom-card-text {
+  color: var(--mom-deep);
+}
+
+.mom-card-rule {
+  display: block;
+  flex: 0 0 auto;
+  width: 56px;
+  height: 3px;
+  background: var(--mom-petal);
+}
+
+.mom-foot {
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 18px 12px;
+}
+
+.mom-back,
+.mom-close {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin: 0;
+  padding: 0 18px 0 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--mom-light);
+  cursor: pointer;
+}
+
+.mom-close {
+  align-items: flex-start;
+  padding: 6px 0 0;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+}
+
+.mom-back[disabled] {
+  opacity: 0.22;
+  cursor: default;
+}
+
+.mom-foot-hint {
+  color: rgba(201, 168, 228, 0.55);
+}
+
+.mom-progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  height: 3px;
+  background: rgba(201, 168, 228, 0.18);
+}
+
+.mom-progress span {
+  display: block;
+  height: 100%;
+  background: var(--mom-petal);
+  transform-origin: left center;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── the live age ────────────────────────────────────────────────────────── */
+
+.mom-screen--age {
+  justify-content: center;
+  background: var(--mom-paper);
+  color: var(--mom-ink);
+}
+
+.mom-screen--age .mom-eyebrow {
+  color: var(--mom-accent-hi);
+}
+
+.mom-age-body {
+  position: relative;
+  z-index: 2;
+  padding: 0 20px;
+  animation: mom-rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.mom-age-hi {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(64px, 18.5vw, 78px);
+  /* Big Shoulders has long descenders; anything under 1 collides the y of
+     "Happy" with the line below */
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--mom-deep);
+}
+
+.mom-age-rule {
+  margin-top: 22px;
+  background: var(--mom-accent-hi);
+}
+
+.mom-age-lead {
+  margin-top: 16px;
+}
+
+.mom-age-figure {
+  margin: 10px 0 0;
+  font-family: var(--font-mono);
+  font-size: 21px;
+  line-height: 1.55;
+  font-variant-numeric: tabular-nums;
+  color: var(--mom-accent);
+}
+
+.mom-age-figure--small {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--mom-light);
+}
+
+.mom-age-foot {
+  margin: 20px 0 0;
+  font-size: 20px;
+  line-height: 1.35;
+  color: rgba(36, 16, 51, 0.62);
+}
+
+.mom-screen--age .mom-begin {
+  padding-left: 20px;
+  color: var(--mom-accent-hi);
+  animation-delay: 1.2s, 1.9s;
+}
+
+/* ── the grid of fifty ───────────────────────────────────────────────────── */
+
+.mom-scroll {
+  position: relative;
+  z-index: 2;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding: 20px 16px 24px;
+}
+
+.mom-grid-head {
+  animation: mom-rise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.mom-grid-title {
+  margin: 8px 0 0;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(46px, 13vw, 56px);
+  line-height: 0.96;
+  letter-spacing: -0.005em;
+  color: var(--mom-paper);
+}
+
+.mom-grid-sub {
+  margin: 10px 0 0;
+  font-size: 18px;
+  line-height: 1.3;
+  color: rgba(247, 240, 226, 0.62);
+}
+
+.mom-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 7px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mom-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 1px solid rgba(201, 168, 228, 0.32);
+  border-radius: 12px;
+  background: transparent;
+  font-family: var(--font-mono);
+  font-size: 21px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: rgba(201, 168, 228, 0.92);
+  cursor: pointer;
+  animation: mom-tile-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i) * 14ms);
+  transition: transform 0.18s ease, background-color 0.18s ease, color 0.18s ease;
+}
+
+.mom-tile.is-open {
+  border-color: rgba(201, 168, 228, 0.55);
+  background: rgba(168, 111, 208, 0.22);
+  font-weight: 600;
+  color: var(--mom-paper);
+}
+
+.mom-tile:active {
+  transform: scale(0.94);
+}
+
+@keyframes mom-tile-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.mom-grid-foot {
+  margin-top: 22px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(201, 168, 228, 0.18);
+  animation: mom-rise 0.6s 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* ── reading one reason back from the grid ───────────────────────────────── */
+
+.mom-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  background: var(--mom-deep);
+  animation: mom-fade 0.28s ease both;
+}
+
+@keyframes mom-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── reduced motion: no fill, no confetti, no staggering — just the words ── */
+
+@media (prefers-reduced-motion: reduce) {
+  .mom-root *,
+  .mom-root *::before,
+  .mom-root *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .mom-fifty-fill {
+    clip-path: inset(-16% -8% -12% -8%);
+  }
+
+  .mom-cap,
+  .mom-cap-sub,
+  .mom-begin,
+  .mom-age-body,
+  .mom-grid-head,
+  .mom-grid-foot,
+  .mom-tile,
+  .mom-card {
+    opacity: 1;
+    transform: none;
+  }
+}
