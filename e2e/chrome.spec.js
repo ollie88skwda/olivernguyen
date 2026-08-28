@@ -42,12 +42,13 @@ test.describe("site chrome — R-C4", () => {
     const toggle = page.locator('[data-slot="mode-toggle"]');
     await expect(toggle).toHaveCSS("border-radius", "999px");
 
-    // D-23: the theme control is an ORDINARY 3px icon button, square on
-    // purpose so it does not read as half of the pill beside it.
-    const themeBtn = page.getByRole("button", { name: /Switch to .* theme/ });
-    await expect(themeBtn).toHaveCSS("border-radius", "3px");
-    const box = await themeBtn.boundingBox();
-    expect(box.width).toBe(box.height);
+    // Appearance is account-ready and uses the ordinary control radius.
+    const accountBtn = page.getByRole("button", { name: "Open account menu" });
+    await expect(accountBtn).toHaveCSS("border-radius", "3px");
+    await accountBtn.click();
+    await expect(page.getByRole("menuitemradio", { name: "Light" })).toBeVisible();
+    await expect(page.getByRole("menuitemradio", { name: "Dark" })).toBeVisible();
+    await page.keyboard.press("Escape");
 
     // D-29: the pages-menu trigger is ☰ drawn as an ICON, not `…` as a Glyph.
     // U+2630 is absent from JetBrains Mono — measured, it renders from a system
@@ -78,14 +79,16 @@ test.describe("site chrome — R-C4", () => {
 
   test("the theme control round-trips and leaves the mode alone", async ({ page }) => {
     await page.goto("/?mode=terminal&theme=dark");
-    await page.getByRole("button", { name: "Switch to light theme" }).click();
+    await page.getByRole("button", { name: "Open account menu" }).click();
+    await page.getByRole("menuitemradio", { name: "Light" }).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
     await expect(page.locator("html")).toHaveAttribute("data-mode", "terminal");
     expect(
       await page.locator('meta[name="theme-color"]').getAttribute("content"),
     ).toBe(THEME_COLOR.light);
 
-    await page.getByRole("button", { name: "Switch to dark theme" }).click();
+    await page.getByRole("button", { name: "Open account menu" }).click();
+    await page.getByRole("menuitemradio", { name: "Dark" }).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
     await expect(page.locator("html")).toHaveAttribute("data-mode", "terminal");
   });

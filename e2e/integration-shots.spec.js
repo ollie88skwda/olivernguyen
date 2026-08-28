@@ -109,7 +109,8 @@ test.describe("R-I1 · integrated / — REBUILD DONE", () => {
     await page.waitForSelector(".g-stage");
 
     // theme moves, mode holds
-    await page.getByRole("button", { name: "Switch to dark theme" }).click();
+    await page.getByRole("button", { name: "Open account menu" }).click();
+    await page.getByRole("menuitemradio", { name: "Dark" }).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
     await expect(page.locator("html")).toHaveAttribute("data-mode", "graph");
 
@@ -120,7 +121,8 @@ test.describe("R-I1 · integrated / — REBUILD DONE", () => {
     await expect(page.locator("html")).toHaveAttribute("data-mode", "terminal");
 
     // and back to the other diagonal: terminal · light
-    await page.getByRole("button", { name: "Switch to light theme" }).click();
+    await page.getByRole("button", { name: "Open account menu" }).click();
+    await page.getByRole("menuitemradio", { name: "Light" }).click();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
     await expect(page.locator("html")).toHaveAttribute("data-mode", "terminal");
     expect(
