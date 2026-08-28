@@ -130,17 +130,18 @@ Adding a project = adding one entity object; both modes pick it up.
 
 ### 2.3 Future public-page mapping (owner requirement c)
 
-How the currently-text-only public pages will be represented **later** in each mode. V1 ships
-them untouched under the new chrome; the table is the committed direction so nothing in v1
-paints us into a corner (concretely: every page below already gets an `entities[]` stub with
-`kind: "page"` in v1 so both modes can link to them).
+How the currently-text-only public pages will be represented **later** in each mode. V1 keeps
+their information and working interactions under the new chrome; `/sat-resources` now uses its
+intentional Sakura empty state, while the table remains the committed direction for later page
+content (concretely: every page below already gets an `entities[]` stub with `kind: "page"` in
+v1 so both modes can link to them).
 
 | Route | Content today | Terminal treatment (later) | Graph treatment (later) | Phase |
 |---|---|---|---|---|
 | `/pull` | text utility page | `man pull` — man-page layout: NAME/SYNOPSIS/DESCRIPTION headers in mono, sakura-dark | node in a `utilities` cluster; dossier opens the page inline | v1: link stub only · restyle v1.2 |
 | `/permit` | driving-permit notes | `man permit` man page; checklist items as numbered log lines | node under `guides` cluster, edge to `/license` | v1: stub · v1.2 |
 | `/license` | driver's-license notes | `man license`, cross-linked in SEE ALSO ↔ permit | node under `guides`, edge to `/permit` | v1: stub · v1.2 |
-| `/sat-resources` | resource list | `ls sat/` directory listing; each resource a file row with description | `guides` cluster node; resources as leaf sub-nodes | v1: stub · v1.2 |
+| `/sat-resources` | intentional empty state (`Coming soon`) | `ls sat/` directory listing; each resource a file row with description | `guides` cluster node; resources as leaf sub-nodes | v1: stub · v1.2 |
 | `/sat-signup` | signup form | form kept as-is inside terminal chrome (forms never fake-terminalized) | leaf node linking out | later, low priority |
 | `/articlewriter` | project archive page | `man articlewriter` + real pipeline output image | already a project node in v1 graph; dossier links here | v1: linked from entity |
 | `/emoji` | toy page | easter egg: listed only in `ls -a` (hidden index) | hidden node, revealed by `:emoji` | later, joke preserved |

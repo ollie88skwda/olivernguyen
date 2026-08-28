@@ -29,7 +29,7 @@ e2e/__shots__/
 .playwright-mcp/
 .vercel/
 
-# Stale Next.js artifacts. This project is Create React App; nothing here reads them.
+# Stale Next.js artifacts. This project is Vite; nothing here reads them.
 .next/
 next-env.d.ts
 
