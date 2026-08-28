@@ -1,0 +1,3 @@
+# Keep validation pull requests based on the active redesign line.
+pr:
+  base_branch: feat/component-library
