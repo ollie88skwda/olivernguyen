@@ -89,6 +89,7 @@ export function toolsSection() {
   return {
     file: 'tools.txt',
     heading: `tools/ · ${items.length} registered`,
+    summary: entityById.get('agents').blurb,
     items,
   };
 }
@@ -99,6 +100,7 @@ export function roboticsSection() {
   return {
     file: 'robotics.log',
     heading: `robotics.log · ${items.length} entries`,
+    summary: entityById.get('robotics').blurb,
     items,
     strip: items.map((i) => i.statLine).filter(Boolean).join(' · '),
   };
@@ -110,6 +112,7 @@ export function whoamiSection() {
   return {
     file: 'whoami.txt',
     heading: `whoami.txt · ${root.title}`,
+    summary: meta.tagline,
     bio: root.blurb,
     items: children('leadership').map(pick),
     strip: statLine(root.stats),
@@ -123,10 +126,24 @@ export function contactSection() {
   return {
     file: 'contact.txt',
     heading: `contact.txt · ${group.type}`,
+    summary: group.blurb,
     big: `${group.type}.`.toUpperCase(),
     blurb: group.blurb,
     channels: children('contact').map(pick),
     footer: `${group.type} · ${root.title} · ${root.status.toLowerCase()}`,
+  };
+}
+
+export function guideData() {
+  const root = entityById.get('oliver');
+  return {
+    name: root.title,
+    tagline: meta.tagline,
+    stats: root.stats,
+    agents: toolsSection(),
+    robotics: roboticsSection(),
+    leadership: whoamiSection(),
+    contact: contactSection(),
   };
 }
 

@@ -286,13 +286,13 @@ test("theme and mode round-trip over a mounted terminal (D-19)", async ({ page }
     timeout: 20_000,
   });
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
-  const log = page.locator(".term-buffer .k-log").first();
-  await expect(log).toBeVisible();
-  const logStyle = await log.evaluate((el) => {
+  const reader = page.locator(".term-buffer .reader-summary").first();
+  await expect(reader).toBeVisible();
+  const logStyle = await reader.evaluate((el) => {
     const style = getComputedStyle(el);
     return { color: style.color, fontFamily: style.fontFamily };
   });
   expect(logStyle.color).toBe("rgb(111, 68, 89)");
-  expect(logStyle.fontFamily).toContain("JetBrains Mono");
+  expect(logStyle.fontFamily).not.toContain("JetBrains Mono");
   expect(errors).toEqual([]);
 });

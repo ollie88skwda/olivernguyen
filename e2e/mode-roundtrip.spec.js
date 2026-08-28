@@ -20,10 +20,9 @@ const watchErrors = (page) => {
 };
 
 const bootEcho = (page) =>
-  expect(page.locator(".ln.echo .cmdtext").first()).toHaveText(
-    "operator --replay --day 3",
-    { timeout: 15_000 },
-  );
+  expect(page.locator(".reader-intro h1")).toHaveText("Oliver Nguyen", {
+    timeout: 15_000,
+  });
 
 test.describe("mode round-trip — X-3", () => {
   test("P6: terminal chunk not fetched until the mode flips (network assert)", async ({
@@ -63,7 +62,7 @@ test.describe("mode round-trip — X-3", () => {
     await page.getByTestId("term-promptline").click();
     await page.keyboard.type("ls");
     await page.keyboard.press("Enter");
-    await expect(page.locator(".ln.echo")).toHaveCount(2);
+    await expect(page.locator(".ln.echo")).toHaveCount(1);
     expect(
       await page.evaluate(() => document.body.style.overflow),
     ).toBe("hidden");
@@ -82,7 +81,7 @@ test.describe("mode round-trip — X-3", () => {
     await page.keyboard.press("Escape"); // close the graph dossier first
     await page.getByRole("button", { name: "TERM" }).click();
     await bootEcho(page);
-    await expect(page.locator(".ln.echo")).toHaveCount(1); // ls echo is gone
+    await expect(page.locator(".ln.echo")).toHaveCount(0); // ls echo is gone
     expect(errors).toEqual([]);
   });
 

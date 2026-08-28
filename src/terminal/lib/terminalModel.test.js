@@ -20,6 +20,7 @@ import {
   windowByN,
   artifact,
   bootData,
+  guideData,
   contactSection,
   dayInfo,
   entityIds,
@@ -125,6 +126,20 @@ describe('sections mirror the entity tree', () => {
   it('sectionByFile dispatches all four files, null otherwise', () => {
     for (const f of FILE_NAMES) expect(sectionByFile(f).file).toBe(f);
     expect(sectionByFile('nosuch.txt')).toBeNull();
+  });
+});
+
+describe('guided reader data', () => {
+  it('keeps the opener and semantic groups sourced from site.js', () => {
+    const data = guideData();
+    expect(data.name).toBe(meta.name);
+    expect(data.tagline).toBe(meta.tagline);
+    expect(data.agents.summary).toBe(entityById.get('agents').blurb);
+    expect(data.robotics.summary).toBe(entityById.get('robotics').blurb);
+    expect(data.contact.summary).toBe(entityById.get('contact').blurb);
+    expect(data.agents.items.map((item) => item.id)).toEqual(
+      allEntities.filter((e) => e.graph.parent === 'agents').map((e) => e.id),
+    );
   });
 });
 

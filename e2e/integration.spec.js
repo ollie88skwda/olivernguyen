@@ -38,16 +38,15 @@ test.describe("integrated / — FINAL GATE", () => {
     await page.waitForSelector(".g-stage");
 
     await page.getByRole("button", { name: "TERM" }).click();
-    // X-2: the doc-10 holding screen is gone — the lazy terminal mounts + boots
+    // X-2: the doc-10 holding screen is gone — the lazy terminal mounts + opens
     await expect(page.getByTestId("terminal-home")).toBeVisible();
-    await expect(page.locator(".ln.echo .cmdtext").first()).toHaveText(
-      "operator --replay --day 3",
-      { timeout: 15_000 },
-    );
+    await expect(page.locator(".reader-intro h1")).toHaveText("Oliver Nguyen", {
+      timeout: 15_000,
+    });
     await expect(page.locator(".graph-root")).toHaveCount(0); // unmounted — no key hijack
     await expect(page.locator("html")).toHaveAttribute("data-mode", "terminal");
 
-    await page.getByRole("button", { name: "GRAPH" }).click();
+    await page.getByRole("button", { name: "GRAPH", exact: true }).click();
     await expect(page.locator(".graph-root")).toBeVisible();
     // graph is functional again: Tab cycles to the root node, dossier opens
     await page.waitForTimeout(600);

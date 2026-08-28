@@ -58,6 +58,7 @@ import {
   artifactLines,
   bootLines,
   dayLines,
+  guideLines,
   emailCopiedText,
   helpLines,
   lsLines,
@@ -323,6 +324,11 @@ export default function TerminalHome({ devHook, autoboot = true }) {
         await api.print(bootLines(day), { stagger: 70 });
         setActiveWindow(1);
       },
+      printGuide: async () => {
+        await api.print(guideLines(), { stagger: 0 });
+        api.scrollEnd('top');
+        setActiveWindow(1);
+      },
       printSection: async (file) => {
         await api.print(sectionLinesByFile(file));
         setActiveWindow(FILES[file].n);
@@ -368,13 +374,13 @@ export default function TerminalHome({ devHook, autoboot = true }) {
     return createRunner(ctx);
   }, [api, navigate, panesOpen]);
 
-  /* ---- boot = the site runs its own first command (§3.1.4) ---- */
+  /* ---- guided opener: plain-language reading comes before shell grammar ---- */
   useEffect(() => {
     if (!autoboot || bootedRef.current) return; // StrictMode double-effect guard
     bootedRef.current = true;
     api.print(motdLines(), { stagger: 0 });
-    runner.run(windowByN(1).cmd, { autotype: true });
-  }, [api, runner, autoboot]);
+    api.print(guideLines(), { stagger: 0 }).then(() => api.scrollEnd('top'));
+  }, [api, autoboot]);
 
   const runIntent = useCallback(
     (it) => {

@@ -18,6 +18,7 @@ const mockCtx = () => ({
   autotype: vi.fn(async () => {}),
   clearPrompt: vi.fn(),
   printBoot: vi.fn(),
+  printGuide: vi.fn(),
   printSection: vi.fn(),
   printLs: vi.fn(),
   printHelp: vi.fn(),
@@ -32,6 +33,7 @@ const mockCtx = () => ({
 describe('execute() dispatch table', () => {
   it.each([
     ['ls', 'printLs'],
+    ['guide', 'printGuide'],
     ['ls -la', 'printLs'],
     ['help', 'printHelp'],
     ['email', 'copyEmail'],

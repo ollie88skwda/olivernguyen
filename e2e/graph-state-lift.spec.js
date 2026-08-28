@@ -83,12 +83,11 @@ async function roundTrip(page, errors) {
   const t1 = await worldTransform(page);
   const zoom1 = await page.locator(".z-label").textContent();
 
-  // → TERM: boots fresh, then interact for real
+  // → TERM: opens fresh, then interact for real
   await page.getByRole("button", { name: "TERM" }).click();
-  await expect(page.locator(".ln.echo .cmdtext").first()).toHaveText(
-    "operator --replay --day 3",
-    { timeout: 15_000 },
-  );
+  await expect(page.locator(".reader-intro h1")).toHaveText("Oliver Nguyen", {
+    timeout: 15_000,
+  });
   await page.keyboard.press("5"); // empty-prompt digit → cat contact.txt
   await expect(page.locator(".ln.echo .cmdtext").last()).toHaveText(
     "cat contact.txt",
