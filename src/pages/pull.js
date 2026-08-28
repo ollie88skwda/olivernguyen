@@ -1,6 +1,18 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { toast } from "sonner";
+import "../styles/sakura.css";
 import "../styles/Pull.css";
 import { supabase } from "../lib/supabase";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Toaster } from "@/components/ui/sonner";
+import { Display, Glyph, MonoLabel, SectionHead, StatusPill } from "@/components/brand";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -16,6 +28,10 @@ function formatAmount(amount) {
   if (amount >= 1000000) return "$1M";
   if (amount >= 1000) return `$${(amount / 1000).toFixed(0)}K`;
   return `$${amount}`;
+}
+
+function formatPool(pool) {
+  return pool >= 1000 ? `$${(pool / 1000).toFixed(0)}K` : `$${pool}`;
 }
 
 function formatDate(iso) {
@@ -48,23 +64,31 @@ function NameScreen({ onSubmit }) {
     <div className="pull-name-screen">
       <div className="pull-name-card">
         <div className="pull-logo-area">
-          <p className="pull-subtitle">AU Tournament Scheduler</p>
-          <h1 className="pull-title">PULL.</h1>
-          <p className="pull-tagline">Mark your weekends. Commit to the game.</p>
+          <MonoLabel tone="accent">AU Tournament Scheduler</MonoLabel>
+          <Display as="h1">PULL.</Display>
+          <p className="pull-tagline on-prose">Mark your weekends. Commit to the game.</p>
         </div>
-        <div className="pull-divider" />
-        <p className="pull-label">Who are you?</p>
-        <form onSubmit={(e) => { e.preventDefault(); if (input.trim()) onSubmit(input.trim()); }}>
-          <input
+        <Separator />
+        <form
+          className="pull-name-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (input.trim()) onSubmit(input.trim());
+          }}
+        >
+          <Label htmlFor="pull-name">Who are you?</Label>
+          <Input
+            id="pull-name"
             autoFocus
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Your name"
-            className="pull-input"
+            maxLength={40}
+            autoComplete="off"
           />
-          <button type="submit" disabled={!input.trim()} className="pull-btn-primary">
+          <Button type="submit" disabled={!input.trim()} className="pull-enter-btn">
             Enter PULL →
-          </button>
+          </Button>
         </form>
         <p className="pull-fine-print">
           Your name is saved to this device. Others in the group
@@ -79,32 +103,35 @@ function NameScreen({ onSubmit }) {
 
 function CommitmentSelector({ currentAmount, onSelect, onClear }) {
   return (
-    <div className="pull-commitment-selector">
-      <p className="pull-label" style={{ marginBottom: "10px" }}>
-        How much would it take to make you miss this?
-      </p>
-      {LEVELS.map((level) => (
-        <button
-          key={level.amount}
-          onClick={() => onSelect(level.amount)}
-          className={`pull-level-btn ${currentAmount === level.amount ? "active" : ""}`}
-        >
-          <div className="pull-level-text">
-            <span className="pull-level-label">{level.label}</span>
-            <span className="pull-level-sub">{level.sub}</span>
-          </div>
-          <div className="pull-level-right">
-            <span className={`pull-level-amount ${currentAmount === level.amount ? "active" : ""}`}>
-              {formatAmount(level.amount)}
-            </span>
-            {currentAmount === level.amount && <div className="pull-dot" />}
-          </div>
-        </button>
-      ))}
+    <div className="pull-selector">
+      <MonoLabel tone="muted">How much would it take to make you miss this?</MonoLabel>
+      <div className="pull-levels">
+        {LEVELS.map((level) => {
+          const selected = currentAmount === level.amount;
+          return (
+            <button
+              key={level.amount}
+              type="button"
+              onClick={() => onSelect(level.amount)}
+              aria-pressed={selected}
+              className="pull-level"
+            >
+              <span className="pull-level-text">
+                <span className="pull-level-label">{level.label}</span>
+                <MonoLabel tone="faint">{level.sub}</MonoLabel>
+              </span>
+              <span className="pull-level-right">
+                <span className="pull-level-amount">{formatAmount(level.amount)}</span>
+                {selected && <Glyph name="dot" />}
+              </span>
+            </button>
+          );
+        })}
+      </div>
       {currentAmount !== null && (
-        <button onClick={onClear} className="pull-clear-btn">
-          × Mark as unavailable
-        </button>
+        <Button type="button" variant="ghost" onClick={onClear} className="pull-clear">
+          <Glyph name="close" /> Mark as unavailable
+        </Button>
       )}
     </div>
   );
@@ -119,62 +146,75 @@ function WeekendCard({ weekend, picks, myPick, playerName, onPick }) {
   const totalPool = available.reduce((sum, p) => sum + Math.min(p.amount, 5000), 0);
   const myAmount = myPick ? myPick.amount : null;
   const isAvailable = myAmount !== null && myAmount > 0;
+  const poolPct = Math.min((totalPool / 25000) * 100, 100);
 
   return (
-    <div className={`pull-card ${isAvailable ? "active" : ""}`}>
-      <button className="pull-card-header" onClick={() => setExpanded((e) => !e)}>
-        <div className="pull-card-left">
-          <div className="pull-card-date">
-            <span className="pull-card-month">{date.month}</span>
+    <Card interactive className="pull-weekend">
+      <button
+        type="button"
+        className="pull-card-toggle"
+        aria-expanded={expanded}
+        onClick={() => setExpanded((e) => !e)}
+      >
+        <span className="pull-card-left">
+          <span className="pull-card-date">
+            <MonoLabel tone="faint">{date.month}</MonoLabel>
             <span className="pull-card-day">{date.day}</span>
-          </div>
-          <span className={`pull-card-status ${isAvailable ? "committed" : ""}`}>
-            {isAvailable ? `${formatAmount(myAmount)} committed ✓` : "Weekend"}
           </span>
-        </div>
-        <div className="pull-card-right">
-          {available.length > 0 ? (
-            <>
-              <span className="pull-card-count">{available.length} in</span>
-              <span className="pull-card-pool">
-                Pool: {totalPool >= 1000 ? `$${(totalPool / 1000).toFixed(0)}K` : `$${totalPool}`}
-              </span>
-            </>
+          {isAvailable ? (
+            <StatusPill status="routing">{formatAmount(myAmount)} committed</StatusPill>
           ) : (
-            <span className="pull-card-empty">No picks yet</span>
+            <MonoLabel tone="muted">Weekend</MonoLabel>
           )}
-        </div>
+        </span>
+        <span className="pull-card-meta">
+          {available.length > 0 ? (
+            <span className="pull-card-stats">
+              <span className="pull-card-count">{available.length} in</span>
+              <Glyph name="sep" />
+              <span className="pull-card-pool">pool {formatPool(totalPool)}</span>
+            </span>
+          ) : (
+            <MonoLabel tone="faint">No picks yet</MonoLabel>
+          )}
+          <Glyph name={expanded ? "up" : "down"} />
+        </span>
       </button>
 
       {available.length > 0 && (
-        <div className="pull-card-chips">
+        <div className="pull-chips">
           {available.map((p) => (
-            <span key={p.id} className={`pull-chip ${p.player === playerName ? "mine" : ""}`}>
+            <Badge
+              key={p.id}
+              tone={p.player === playerName ? "accent" : "neutral"}
+              className="pull-chip"
+            >
               {p.player} {formatAmount(p.amount)}
-            </span>
+            </Badge>
           ))}
         </div>
       )}
 
       {available.length > 0 && (
-        <div className="pull-card-bar-wrap">
-          <div
-            className="pull-card-bar-fill"
-            style={{ width: `${Math.min((totalPool / 25000) * 100, 100)}%` }}
-          />
-        </div>
+        <Progress value={poolPct} aria-label="Group pool size" className="pull-card-progress" />
       )}
 
       {expanded && (
         <div className="pull-card-expanded">
           <CommitmentSelector
             currentAmount={myAmount}
-            onSelect={(amount) => { onPick(weekend, amount); setExpanded(false); }}
-            onClear={() => { onPick(weekend, null); setExpanded(false); }}
+            onSelect={(amount) => {
+              onPick(weekend, amount);
+              setExpanded(false);
+            }}
+            onClear={() => {
+              onPick(weekend, null);
+              setExpanded(false);
+            }}
           />
         </div>
       )}
-    </div>
+    </Card>
   );
 }
 
@@ -194,21 +234,25 @@ function BestWeekendsBanner({ picks, weekends }) {
   if (ranked.length === 0) return null;
 
   return (
-    <div className="pull-banner">
-      <p className="pull-banner-title">Best Weekends So Far</p>
+    <Card className="pull-banner">
+      <MonoLabel as="h2" tone="accent">
+        Best Weekends So Far
+      </MonoLabel>
       <div className="pull-banner-items">
         {ranked.map((w, i) => {
           const date = formatDate(w.weekend);
           return (
             <div key={w.weekend} className="pull-banner-item">
-              <span className="pull-banner-rank">#{i + 1}</span>
-              <span className="pull-banner-date">{date.month} {date.day}</span>
-              <span className="pull-banner-count">{w.count} in</span>
+              <MonoLabel tone="faint">#{i + 1}</MonoLabel>
+              <span className="pull-banner-date">
+                {date.month} {date.day}
+              </span>
+              <MonoLabel tone="muted">{w.count} in</MonoLabel>
             </div>
           );
         })}
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -218,6 +262,7 @@ export const Pull = () => {
   const [playerName, setPlayerName] = useState(null);
   const [picks, setPicks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(false);
   const weekends = getUpcomingWeekends();
 
   useEffect(() => {
@@ -225,108 +270,162 @@ export const Pull = () => {
     if (saved) setPlayerName(saved);
   }, []);
 
-  useEffect(() => {
-    async function fetchPicks() {
-      const { data } = await supabase
+  // Initial load shows the skeleton and can fail into the error panel; the
+  // realtime refresh is silent so a transient blip never blanks a loaded list.
+  const loadPicks = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) setLoading(true);
+    try {
+      const { data, error } = await supabase
         .from("pull_picks")
         .select("*")
         .order("created_at", { ascending: true });
-      if (data) setPicks(data);
-      setLoading(false);
+      if (error) throw error;
+      setPicks(data || []);
+      setFetchError(false);
+    } catch {
+      if (!silent) setFetchError(true);
+    } finally {
+      if (!silent) setLoading(false);
     }
+  }, []);
 
-    fetchPicks();
+  useEffect(() => {
+    loadPicks();
 
     const channel = supabase
       .channel("pull_picks_changes")
       .on("postgres_changes", { event: "*", schema: "public", table: "pull_picks" }, () => {
-        fetchPicks();
+        loadPicks({ silent: true });
       })
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
-  }, []);
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [loadPicks]);
 
   const handleSetName = useCallback((name) => {
     localStorage.setItem("pull_player_name", name);
     setPlayerName(name);
   }, []);
 
-  const handlePick = useCallback(async (weekend, amount) => {
-    if (!playerName) return;
+  const handleChangeName = useCallback(() => {
+    localStorage.removeItem("pull_player_name");
+    setPlayerName(null);
+  }, []);
 
-    setPicks((prev) => {
-      const without = prev.filter((p) => !(p.player === playerName && p.weekend === weekend));
-      if (amount === null) return without;
-      return [...without, { id: `optimistic-${weekend}`, player: playerName, weekend, amount, created_at: new Date().toISOString() }];
-    });
+  const handlePick = useCallback(
+    async (weekend, amount) => {
+      if (!playerName) return;
 
-    // Writes go through our own route, which holds the service-role key and validates the
-    // weekend and amount. The browser has no write access to pull_picks at all. Reads and
-    // the realtime subscription above still go direct, on anon SELECT.
-    await fetch("/api/pull/pick", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ player: playerName, weekend, amount }),
-    });
-  }, [playerName]);
+      setPicks((prev) => {
+        const without = prev.filter((p) => !(p.player === playerName && p.weekend === weekend));
+        if (amount === null) return without;
+        return [
+          ...without,
+          {
+            id: `optimistic-${weekend}`,
+            player: playerName,
+            weekend,
+            amount,
+            created_at: new Date().toISOString(),
+          },
+        ];
+      });
+
+      // Writes go through our own route, which holds the service-role key and validates the
+      // weekend and amount. The browser has no write access to pull_picks at all. Reads and
+      // the realtime subscription above still go direct, on anon SELECT.
+      try {
+        const res = await fetch("/api/pull/pick", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ player: playerName, weekend, amount }),
+        });
+        if (!res.ok) throw new Error(`pick save failed: ${res.status}`);
+      } catch {
+        // Roll the optimistic row back to server truth; the realtime channel
+        // still reconciles if the write actually landed.
+        toast.error("couldn't save your pick — check the connection and try again");
+        loadPicks({ silent: true });
+      }
+    },
+    [playerName, loadPicks],
+  );
 
   if (playerName === null) {
-    return <NameScreen onSubmit={handleSetName} />;
+    return (
+      <div className="pull sakura">
+        <NameScreen onSubmit={handleSetName} />
+        <Toaster />
+      </div>
+    );
   }
 
   return (
-    <div className="pull-page">
-      <div className="pull-content">
-        <div className="pull-page-header">
-          <div>
-            <h1 className="pull-page-title">PULL.</h1>
-            <p className="pull-page-sub">AU Tournament Scheduler</p>
+    <div className="pull sakura">
+      <div className="pull-page">
+        <div className="pull-content">
+          <div className="pull-page-header">
+            <SectionHead kicker="AU Tournament Scheduler" title="PULL." as="h1" rule={false} />
+            <div className="pull-user-info">
+              <MonoLabel tone="text" className="pull-user-name">
+                {playerName}
+              </MonoLabel>
+              <Button variant="ghost" size="sm" onClick={handleChangeName} className="pull-change-btn">
+                Change
+              </Button>
+            </div>
           </div>
-          <div className="pull-user-info">
-            <span className="pull-user-name">{playerName}</span>
-            <button
-              className="pull-change-btn"
-              onClick={() => { localStorage.removeItem("pull_player_name"); setPlayerName(null); }}
-            >
-              change
-            </button>
-          </div>
-        </div>
 
-        <p className="pull-instructions">
-          Tap a weekend to mark your availability. The commitment scale shows{" "}
-          <strong>how much it would take to make you miss it</strong> — so the
-          group can find which weekends are real priorities.
-        </p>
+          <p className="pull-instructions on-prose">
+            Tap a weekend to mark your availability. The commitment scale shows{" "}
+            <strong>how much it would take to make you miss it</strong> — so the
+            group can find which weekends are real priorities.
+          </p>
 
-        {!loading && <BestWeekendsBanner picks={picks} weekends={weekends} />}
+          {!loading && !fetchError && <BestWeekendsBanner picks={picks} weekends={weekends} />}
 
-        {loading ? (
-          <div className="pull-loading">Loading...</div>
-        ) : (
-          <div className="pull-grid">
-            {weekends.map((weekend) => {
-              const weekendPicks = picks.filter((p) => p.weekend === weekend);
-              const myPick = weekendPicks.find((p) => p.player === playerName) || null;
-              return (
-                <WeekendCard
-                  key={weekend}
-                  weekend={weekend}
-                  picks={weekendPicks}
-                  myPick={myPick}
-                  playerName={playerName}
-                  onPick={handlePick}
-                />
-              );
-            })}
-          </div>
-        )}
+          {loading ? (
+            <div className="pull-loading" aria-busy="true">
+              {[0, 1, 2].map((i) => (
+                <Skeleton key={i} shape="surface" className="pull-loading-card" />
+              ))}
+            </div>
+          ) : fetchError ? (
+            <div className="pull-error" role="alert">
+              <p className="pull-error-title">Couldn't load the picks</p>
+              <p className="pull-error-detail">
+                The group's weekends didn't come through. Check your connection and try again.
+              </p>
+              <Button onClick={() => loadPicks()}>Try again</Button>
+            </div>
+          ) : (
+            <ul className="pull-grid">
+              {weekends.map((weekend) => {
+                const weekendPicks = picks.filter((p) => p.weekend === weekend);
+                const myPick = weekendPicks.find((p) => p.player === playerName) || null;
+                return (
+                  <li key={weekend} className="pull-grid-item">
+                    <WeekendCard
+                      weekend={weekend}
+                      picks={weekendPicks}
+                      myPick={myPick}
+                      playerName={playerName}
+                      onPick={handlePick}
+                    />
+                  </li>
+                );
+              })}
+            </ul>
+          )}
 
-        <div className="pull-footer">
-          PULL. — Made for the group. Updates in real time.
+          <footer className="pull-footer">
+            <MonoLabel tone="faint">PULL. — Made for the group. Updates in real time.</MonoLabel>
+          </footer>
         </div>
       </div>
+      <Toaster />
     </div>
   );
 };
