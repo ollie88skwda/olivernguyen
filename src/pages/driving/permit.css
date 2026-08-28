@@ -1,0 +1,186 @@
+/* ============================================================================
+ * permit.css — /permit, restyled onto the sakura ladder
+ * (docs/redesign-research/16-legacy-restyle.md, /permit lane).
+ *
+ * Page-specific composition only. The type roles come from components.css
+ * (.on-prose body, .on-label kickers, .on-display title, .on-section-title);
+ * every value declared below is a token from sakura.css, which is a BRAND.md
+ * §4–§10 value. No hex, no font name, no duration literal, no gradient, no
+ * shadow, no arbitrary radius.
+ *
+ * Ladder: mounts on .sakura (light default; html[data-theme="dark"] picks
+ * Night Plum). Mode-independent — reads no --term-* / --node-* tokens, so it
+ * renders identically under data-mode="graph" and data-mode="terminal".
+ * ========================================================================== */
+
+/* --- shell ---------------------------------------------------------------- */
+
+.permit {
+  min-height: 100dvh;
+}
+
+.pm-guide {
+  box-sizing: border-box;
+  max-width: 70ch; /* §5: body measure caps at ~70ch */
+  margin: 0 auto;
+  /* top clears the fixed chrome bar (--s-16) plus one 32 step, like the
+     graph glue in chrome.css; bottom is a §5 ladder rung */
+  padding: calc(var(--s-16) + var(--s-8)) var(--s-6) var(--s-24);
+}
+
+.pm-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3); /* §5: label → content 12 */
+}
+
+.pm-title {
+  /* §7: the page title takes the "section heads ~32–40px" rung — the nearest
+     ratified display size below the hero clamp */
+  font-size: var(--fs-section);
+}
+
+/* --- section rhythm -------------------------------------------------------- */
+
+.pm-section {
+  margin-top: var(--s-36); /* §5: section gap 144 */
+}
+@media (max-width: 767px) {
+  .pm-section {
+    margin-top: var(--s-24); /* §5: section gap 96 on phone */
+  }
+  .pm-guide {
+    padding-left: var(--s-4);
+    padding-right: var(--s-4);
+  }
+}
+
+/* --- sub-heads ------------------------------------------------------------- */
+/* h3 = the §7 display title rung (D-12 card/node titles 24px);
+   h4 = §7 sans 600 at body size — Hanken Grotesk 400/500/600 is the §7 range,
+   so the 600 weight is not invented. */
+
+.pm-sub {
+  margin: var(--s-6) 0 var(--s-3);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-title);
+  letter-spacing: var(--track-display);
+  line-height: 1.1;
+  color: var(--text);
+}
+
+.pm-h4 {
+  margin: var(--s-4) 0 var(--s-3);
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text);
+}
+
+.pm-guide strong {
+  /* emphasis is full-strength ink, not a second colour (§2 rationing) */
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* --- prose flow ------------------------------------------------------------ */
+
+.pm-guide .on-prose + .on-prose {
+  margin-top: var(--s-3); /* §5 ladder step for consecutive paragraphs */
+}
+
+/* --- links ----------------------------------------------------------------- */
+/* §2 accent ink; the underline follows the chrome nav treatment D-32 landed
+   on — hairline at rest, full ink on hover — so state is not colour-alone.
+   §6 140ms; focus is the shared --focus-ring treatment components.css ships
+   for every on-* control. */
+
+.pm-guide a {
+  color: var(--accent-hi);
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong, var(--border));
+  text-underline-offset: 3px;
+  transition:
+    color var(--dur-state) var(--ease-state),
+    text-decoration-color var(--dur-state) var(--ease-state);
+}
+.pm-guide a:hover {
+  text-decoration-color: currentColor;
+}
+.pm-guide a:focus-visible {
+  outline: var(--focus-ring-w) solid var(--focus-ring);
+  outline-offset: 1px;
+  border-radius: var(--r-control);
+}
+
+/* --- the DMV screenshot ---------------------------------------------------- */
+/* Square media frame: §4 surface radius + §9 hairline, on --surface. FLAGGED:
+   the brand has no explicit media-frame rule for image crop, sizing or border
+   (coverage record, "Images/data graphics" row) — this is the nearest
+   sanctioned surface treatment, pending a product/design decision. */
+
+.pm-shot-link {
+  display: block;
+  margin-top: var(--s-4);
+  border: 1px solid var(--border);
+  border-radius: var(--r-surface);
+  background: var(--surface);
+  transition: border-color var(--dur-state) var(--ease-state);
+}
+.pm-shot-link:hover {
+  border-color: var(--accent);
+}
+.pm-shot {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* --- the 23-step DMV app walkthrough --------------------------------------- */
+/* A real ordered list (semantics preserved from the legacy <ol>): §7 label
+   role for the markers (JetBrains mono), §7 sans body for the steps. */
+
+.pm-steps {
+  margin: var(--s-4) 0;
+  padding-left: var(--s-6);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+}
+.pm-steps li + li {
+  margin-top: var(--s-3);
+}
+.pm-steps li::marker {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  color: var(--accent-hi);
+}
+
+/* --- entrance: §6 opacity-only, ratified 140ms ease-out -------------------- */
+/* The legacy framer-motion entrance was an 0.8s translate reveal — §6 bans
+   translate-up reveals and "premium" durations. Replaced with a plain
+   opacity fade at --dur-state; static content under reduced motion. */
+
+@keyframes pm-fade {
+  from {
+    opacity: 0;
+  }
+}
+.permit.pm-in {
+  animation: pm-fade var(--dur-state) var(--ease-state);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* .permit.pm-in must out-specify the entrance rule so the fade is truly
+     static — same reason components.css uses !important there */
+  .permit.pm-in {
+    animation: none;
+  }
+  .pm-guide a,
+  .pm-shot-link {
+    transition: none;
+  }
+}
