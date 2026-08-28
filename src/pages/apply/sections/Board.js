@@ -41,9 +41,8 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
   const [showAll, setShowAll] = useState(false);
   const [sortBy, setSortBy] = useState('total');
 
-  const { ahp, normalized, wsm } = derived;
+  const { ahp, normalized, wsm, schools } = derived;
   const { criteria } = doc;
-  const schools = doc.schools.filter((s) => s && s.scores);
 
   const totalOf = (id) => (wsm[id] && wsm[id].total) || 0;
   const contributionOf = (schoolId, critId) =>
@@ -158,22 +157,24 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
                     if (editing) {
                       return (
                         <TableCell className="ap-cell-edit" key={criterion.id}>
-                          {['lo', 'mid', 'hi'].map((key) => (
-                            <span className="ap-in-row" key={key}>
-                              <i>{key}</i>
-                              <Input
-                                className="ap-in"
-                                face="mono"
-                                type="number"
-                                step="0.5"
-                                value={score[key]}
-                                aria-label={`${school.name}, ${criterion.label}, ${key}`}
-                                onChange={(event) =>
-                                  setScore(school.id, criterion.id, key, event.target.value)
-                                }
-                              />
-                            </span>
-                          ))}
+                          <div className="ap-cell-edit-inner">
+                            {['lo', 'mid', 'hi'].map((key) => (
+                              <span className="ap-in-row" key={key}>
+                                <i>{key}</i>
+                                <Input
+                                  className="ap-in"
+                                  face="mono"
+                                  type="number"
+                                  step="0.5"
+                                  value={score[key]}
+                                  aria-label={`${school.name}, ${criterion.label}, ${key}`}
+                                  onChange={(event) =>
+                                    setScore(school.id, criterion.id, key, event.target.value)
+                                  }
+                                />
+                              </span>
+                            ))}
+                          </div>
                         </TableCell>
                       );
                     }

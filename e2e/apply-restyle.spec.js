@@ -165,8 +165,9 @@ test.describe("phone", () => {
     await expect(page.getByRole("heading", { name: "Where To Apply" })).toBeVisible();
     // board scrolls horizontally instead of squashing
     const board = page.locator(".ap-board");
-    await expect(board).toBeVisible();
-    const scrollable = await board.evaluate((el) => el.scrollWidth > el.clientWidth);
+    const tableWrap = board.locator(".on-table-wrap");
+    await expect(tableWrap).toBeVisible();
+    const scrollable = await tableWrap.evaluate((el) => el.scrollWidth > el.clientWidth);
     expect(scrollable).toBe(true);
     // controls are 44px tall on a coarse pointer (--ctl-h)
     for (const name of ["EDIT"]) {

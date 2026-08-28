@@ -151,14 +151,14 @@
   text-anchor: middle;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 20px;
+  font-size: var(--fs-title);
   letter-spacing: var(--track-display);
   fill: var(--accent-hi);
 }
 .ap-dial-k {
   text-anchor: middle;
   font-family: var(--font-mono-label);
-  font-size: 10px;
+  font-size: var(--fs-label);
   letter-spacing: var(--track-label);
   text-transform: uppercase;
   fill: var(--text-faint);
@@ -327,11 +327,13 @@
 }
 /* EDIT dock: three mono inputs per criterion */
 .ap-cell-edit {
+  background: var(--surface-2);
+  min-width: 116px;
+}
+.ap-cell-edit-inner {
   display: flex;
   flex-direction: column;
   gap: var(--s-1);
-  background: var(--surface-2);
-  min-width: 116px;
 }
 .ap-in-row {
   display: flex;
