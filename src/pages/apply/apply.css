@@ -5,8 +5,8 @@
    reads the frozen legacy :root ladder (docs/BRAND.md §11.2/§11.3).
 
    Data graphics the brand has no chart primitive for are drawn from tokens
-   and flagged in the lane coverage record (see PR): the S0 dial ring, the S1
-   ink cells + unresearched hatch, the S2 duel rungs, the S3 rho/budget range
+   and documented in the lane coverage record: the S0 dial ring, the S1 ink
+   cells + unresearched hatch, the S2 duel rungs, the S3 rho/budget range
    sliders, the S3 compare bars + ghost hatch + marginal curve, the S5 gantt,
    and the S7 cost/value bars.
    ========================================================================== */
@@ -460,6 +460,14 @@
   background: var(--accent);
   border-color: var(--accent);
 }
+@media (pointer: coarse) {
+  .ap-ladder {
+    overflow-x: auto;
+  }
+  .ap-rung {
+    flex: 0 0 var(--ctl-h);
+  }
+}
 .ap-verdict-line {
   margin: 0 0 var(--s-4);
   font-size: var(--fs-body);
@@ -581,7 +589,7 @@
 .ap-range {
   width: 100%;
   accent-color: var(--accent);
-  height: var(--s-6);
+  height: var(--ctl-h-sm);
 }
 .ap-rho-note {
   margin: var(--s-2) 0 0;

@@ -145,11 +145,17 @@ test("evidence toggle filters to gaps only", async ({ page }) => {
   await mockBackend(page);
   await page.goto("/apply?theme=light");
 
+  const rows = page.locator(".ap-ev-table tbody tr");
+  const before = await rows.count();
+  expect(before).toBeGreaterThan(0);
+
   await page.getByRole("checkbox", { name: "Only show schools with open gaps" }).check();
-  // every remaining row has a gaps figure
+
+  await expect.poll(() => rows.count()).toBeLessThan(before);
   const gaps = page.locator(".ap-ev-gaps");
-  const count = await gaps.count();
-  expect(count).toBeGreaterThan(0);
+  const values = await gaps.allTextContents();
+  expect(values.length).toBeGreaterThan(0);
+  expect(values.every((value) => Number(value.trim()) > 0)).toBe(true);
 });
 
 test.describe("phone", () => {
