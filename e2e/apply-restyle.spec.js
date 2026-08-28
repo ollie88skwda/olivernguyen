@@ -17,7 +17,7 @@ const ROW = {
   updated_at: "2026-08-20T12:00:00.000Z",
 };
 
-async function mockBackend(page) {
+async function mockBackend(page, row = ROW) {
   await page.route("**/api/auth/session", (route) =>
     route.fulfill({ status: 200, contentType: "application/json", body: '{"ok":true}' })
   );
@@ -28,7 +28,7 @@ async function mockBackend(page) {
     route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify(ROW),
+      body: JSON.stringify(row),
     })
   );
   // The realtime channel must never reach the real Supabase instance — a live
@@ -142,10 +142,13 @@ test("duel rungs answer and drive weights", async ({ page }) => {
 });
 
 test("evidence toggle filters to gaps only", async ({ page }) => {
-  await mockBackend(page);
+  const evidenceDoc = createSeed();
+  evidenceDoc.schools[0] = { ...evidenceDoc.schools[0], needsResearch: [] };
+  await mockBackend(page, { ...ROW, doc: evidenceDoc });
   await page.goto("/apply?theme=light");
 
   const rows = page.locator(".ap-ev-table tbody tr");
+  await expect(rows.first()).toBeVisible();
   const before = await rows.count();
   expect(before).toBeGreaterThan(0);
 

@@ -467,9 +467,9 @@ Replaces `top_bar.js` on all chromed routes:
   hamburger for the pages menu (Pull, College, Driving, SAT — current sidebar content
   minus dead `/debt`). Hide-on-scroll-down behavior kept, rebuilt with Motion.
 - **Remaining legacy routes** render inside the chrome with sakura tokens applied to chrome only;
-  page bodies keep their existing stylesheets. Explicit restyle lanes are the exception — `/college`,
-  `/emoji`, `/license`, `/permit`, `/articlewriter`, `/sat-resources`, `/sat-signup`, and `/major`
-  now mount their own `.sakura` surfaces. Grain overlay retired; `ScrollProgress` remains unmounted.
+  page bodies keep their existing stylesheets. Explicit restyle lanes are the exception; their
+  current list and status live in `docs/redesign-research/16-legacy-restyle.md`. Grain overlay
+  retired; `ScrollProgress` remains unmounted.
 - `NO_CHROME` list behavior is preserved, including the restored `/mom` and `/mum` aliases.
 
 ---
