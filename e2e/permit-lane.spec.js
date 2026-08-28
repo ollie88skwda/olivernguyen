@@ -32,6 +32,10 @@ const EXPECTED_ACCENT = {
   light: "rgb(168, 58, 104)",
   dark: "rgb(255, 183, 209)",
 };
+const EXPECTED_BORDER = {
+  light: "rgb(226, 201, 212)",
+  dark: "rgb(58, 36, 48)",
+};
 
 async function assertPermit(page, { theme, mode, coarse }) {
   await expect(page.locator("main.sakura.permit")).toBeVisible();
@@ -95,6 +99,8 @@ async function assertPermit(page, { theme, mode, coarse }) {
 
   const firstLink = links.first();
   const shotLink = page.locator(".pm-shot-link");
+  const restingUnderline = await firstLink.evaluate((element) => getComputedStyle(element).textDecorationColor);
+  expect(restingUnderline).toBe(EXPECTED_BORDER[theme]);
   if (!coarse) {
     const linkColor = await firstLink.evaluate((element) => getComputedStyle(element).color);
     await firstLink.hover();

@@ -95,7 +95,7 @@
 .pm-guide a {
   color: var(--accent-hi);
   text-decoration: underline;
-  text-decoration-color: var(--border-strong, var(--border));
+  text-decoration-color: var(--border);
   text-underline-offset: 3px;
   transition:
     color var(--dur-state) var(--ease-state),
