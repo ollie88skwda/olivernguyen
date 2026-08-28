@@ -1,0 +1,41 @@
+/* /sat-signup — legacy restyle lane (docs/redesign-research/16-legacy-restyle).
+ * Page composition only; type roles come from the library (Display, .on-prose).
+ * Every value is a sakura token or a named BRAND.md rule (BRAND.md §11.1).
+ */
+
+.sat-signup {
+  box-sizing: border-box;
+  min-height: 100dvh;
+  /* background, color and font-family come from .sakura itself (sakura.css) */
+}
+
+.sat-signup-main {
+  box-sizing: border-box;
+  max-width: 70ch; /* §5 body measure cap */
+  margin-inline: auto;
+  /* top clears the fixed 64px chrome bar plus a breathing rung (R-I1 offset
+     precedent: bar + --s-8 = 96px); sides and bottom are §5 ladder rungs */
+  padding: calc(var(--s-16) + var(--s-8)) var(--s-6) var(--s-24);
+}
+
+/* Type-role sizing + spacing. .on-display is a size-less role (components.css
+   gives face/weight/tracking; consumers pick a ratified rung), so the heading
+   takes --fs-section — §7 "section heads ~32–40px", the same rung SectionHead
+   uses, and the largest that fits the 70ch column at 375px without wrapping
+   (--fs-display's 40px floor overflows the phone column). The .sakura
+   compound mount root keeps everything above components.css's `.sakura
+   .on-*` (COMPONENTS.md cascade rule). */
+.sakura .sat-signup-main .on-display {
+  font-size: var(--fs-section);
+  margin-bottom: var(--s-6); /* heading → body: §5 row gap inside a group */
+}
+.sakura .sat-signup-main .on-prose + .on-prose {
+  margin-top: var(--s-4); /* paragraph flow: §5 16px rung */
+}
+
+@media (max-width: 767px) {
+  .sat-signup-main {
+    padding-left: var(--s-4);
+    padding-right: var(--s-4);
+  }
+}
