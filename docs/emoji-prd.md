@@ -91,7 +91,7 @@ Key observations from examples:
 The source fishbowl image (from Ollie's reference) is a JPG with a baked-white background. On the black or chrome-purple background swatch, a circular floodfill is applied at runtime to strip the outside white (preserving the eye-whites). This works for most cases but isn't perfect — post-MVP we should ship a proper transparent PNG.
 
 ## Technical notes (for implementer)
-- Stack: React 18.3 + CRA (react-scripts 5), react-router-dom v5, Geist font (via `geist` package), Yarn.
+- Stack: Vite + React 18.3, react-router-dom v5, Geist font (via `geist` package), Yarn.
 - Route: `/emoji` — already cleared in the previous step. Create new component e.g. `src/pages/emoji/index.js`.
 - Assets:
   - Copy `Attachment(2).jpg` → `public/fishbowl.png` (convert to PNG for transparent support; confirm alpha channel).
