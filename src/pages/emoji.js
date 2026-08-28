@@ -6,6 +6,11 @@ import React, {
   useState,
 } from "react";
 import "../styles/Emoji.css";
+import "../styles/sakura.css";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Display, MonoLabel } from "@/components/brand/typography";
 
 const FISHBOWL_SRC = "/fishbowl.jpg";
 const FISHBOWL_COVERAGE = 0.7; // 70% of canvas
@@ -318,12 +323,14 @@ export const EmojiPage = () => {
   const itemColor = isDarkBg ? "#ffffff" : "#131313";
 
   return (
-    <div className="emoji-page" style={{ background: "#ffffff" }}>
+    <div className="emoji-page sakura">
       <header className="emoji-header">
-        <a href="/" className="wordmark" aria-label="home">
+        <Display as="a" href="/" className="emoji-wordmark" aria-label="home">
           fishbowl
-        </a>
-        <span className="attribution">made by ollie</span>
+        </Display>
+        <MonoLabel tone="faint" className="emoji-attribution">
+          made by ollie
+        </MonoLabel>
       </header>
 
       <main className="emoji-stage">
@@ -358,11 +365,8 @@ export const EmojiPage = () => {
         </div>
 
         <div className="emoji-controls">
-          <div className="emoji-input-pill">
-            <span className="emoji-plus-icon" aria-hidden="true">
-              +
-            </span>
-            <input
+          <div className="emoji-input-row">
+            <Input
               ref={inputRef}
               className="emoji-input"
               value={inputValue}
@@ -371,21 +375,27 @@ export const EmojiPage = () => {
               placeholder="type emoji or text, then hit return"
               aria-label="emoji or text"
             />
-            <div className="emoji-count-group" aria-label="count">
-              <span className="emoji-count-x" aria-hidden="true">×</span>
+            <div className="emoji-count-group" role="group" aria-labelledby="emoji-count-label">
+              <MonoLabel tone="faint" id="emoji-count-label" className="emoji-count-label">
+                count
+              </MonoLabel>
               {COUNT_PRESETS.map((preset) => (
-                <button
+                <Button
                   key={preset}
                   type="button"
-                  className={`emoji-count-preset ${count === preset ? "active" : ""}`}
+                  size="sm"
+                  variant={count === preset ? "primary" : "ghost"}
+                  className="emoji-count-preset"
                   onClick={() => setCount(preset)}
                   aria-label={`${preset} emojis`}
+                  aria-pressed={count === preset}
                 >
                   {preset}
-                </button>
+                </Button>
               ))}
-              <input
+              <Input
                 type="number"
+                face="mono"
                 className="emoji-count-input"
                 min="1"
                 max={MAX_COUNT}
@@ -395,12 +405,11 @@ export const EmojiPage = () => {
                 aria-label="custom count"
               />
             </div>
-            <span className="emoji-return-hint" aria-hidden="true">
-              ↵
-            </span>
           </div>
 
-          <div className="emoji-action-pill">
+          <Separator className="emoji-controls-sep" />
+
+          <div className="emoji-action-row">
             <div className="emoji-swatches" role="radiogroup" aria-label="background color">
               {BG_PRESETS.map((preset) => (
                 <button
@@ -428,26 +437,26 @@ export const EmojiPage = () => {
                 />
               </label>
             </div>
-            <div className="emoji-divider" />
-            <button
+            <Separator orientation="vertical" decorative className="emoji-divider" />
+            <Button
+              variant="ghost"
+              size="sm"
+              type="button"
               className="emoji-clear"
               onClick={handleClear}
               disabled={items.length === 0}
             >
               Clear
-            </button>
-            <button className="emoji-download" onClick={handleDownload}>
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              type="button"
+              className="emoji-download"
+              onClick={handleDownload}
+            >
               Download
-            </button>
+            </Button>
           </div>
         </div>
       </main>
