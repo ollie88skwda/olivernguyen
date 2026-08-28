@@ -101,7 +101,7 @@
   font-family: var(--font-display);
   font-weight: 700;
   letter-spacing: var(--track-display);
-  line-height: 1.1;
+  line-height: 1.05;
   color: var(--text);
   margin: var(--s-8) 0 var(--s-3);
 }

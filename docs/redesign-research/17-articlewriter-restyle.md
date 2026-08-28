@@ -26,7 +26,7 @@ gate `e2e/articlewriter.spec.js`. Base `origin/feat/component-library`.
 - **Trust boundary unchanged.** `dangerouslySetInnerHTML` on generator output is preserved exactly; this lane found no separate security requirement and did not change product behavior. Flag: security review of the generator output boundary is out of scope for a visual lane.
 - **Visible failure state added.** The old page swallowed fetch errors into `console.error`; the plan's done criteria require a visible, accessible failure state, so the lane added `role="alert"` + a `--danger-text` message. The request, loading, and success behavior are unchanged (plus `!response.ok` now surfaces non-2xx JSON bodies instead of rendering nothing).
 
-**Hard-coded visual values:** none outside tokens. `max-width:880px` and `max-width:70ch` are `BRAND.md §5`'s named column caps (the library's own `.on-code` uses the same 880px literal); loading lines use the content measure at full width, then subtract `--s-12` and `--s-24`; `text-underline-offset:3px` mirrors `.on-btn`'s link treatment; `1px` hairlines are `BRAND.md §9`; `767px` is the shared phone breakpoint (`sakura.css`/`components.css`).
+**Hard-coded visual values:** none outside tokens or shared brand roles. `max-width:880px` and `max-width:70ch` are `BRAND.md §5`'s named column caps (the library's own `.on-code` uses the same 880px literal); loading lines use the content measure at full width, then subtract `--s-12` and `--s-24`; generated heading line-height `1.05` mirrors the shared `Display`/`SectionHead` role in `components.css`; `text-underline-offset:3px` mirrors `.on-btn`'s link treatment; `1px` hairlines are `BRAND.md §9`; `767px` is the shared phone breakpoint (`sakura.css`/`components.css`).
 
 ## Verification
 

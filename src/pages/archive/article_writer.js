@@ -51,7 +51,11 @@ export const ArticleWriter = () => {
         throw new Error(`request failed with status ${response.status}`);
       }
       const data = await response.json();
-      setArticleHTML(data.html_content);
+      const htmlContent = data.html_content;
+      if (typeof htmlContent !== "string" || htmlContent.trim() === "") {
+        throw new Error("generator returned invalid article content");
+      }
+      setArticleHTML(htmlContent);
     } catch (err) {
       console.error("Error generating article:", err);
       setError("Couldn't generate the article: the local generator service may be offline.");
