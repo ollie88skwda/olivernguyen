@@ -1,62 +1,75 @@
-/* Emoji Fishbowl Generator */
+/* Emoji Fishbowl Generator — mounted inside .sakura (legacy restyle lane
+ * /emoji). Page composition only: every visual value is a sakura token, a
+ * BRAND.md rule, or an explicitly FLAGGED content value (see the lane's brand
+ * coverage record in docs/plans/emoji-restyle.md and the PR).
+ * No hexes, radii, durations or font names beyond the token layer. */
 
 .emoji-page {
   min-height: 100vh;
   min-height: 100svh;
-  /* Clears the fixed 64px site top bar without overflowing the viewport. */
+  /* Clears the fixed site chrome (64px = --s-16) without overflowing the
+     viewport. Background/color/font come from .sakura. */
   box-sizing: border-box;
-  padding-top: 64px;
-  background: #ffffff;
-  font-family: "GeistSans", "Geist", "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
-  color: #131313;
+  padding-top: var(--s-16, 64px);
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
 }
 
+/* --- page header: the toy's own title row, below the site chrome ---------- */
 .emoji-header {
   display: flex;
+  align-items: baseline;
   justify-content: space-between;
-  align-items: center;
-  padding: 18px 28px;
-  font-size: 14px;
-  letter-spacing: -0.01em;
+  gap: var(--s-4);
+  padding: var(--s-4) var(--s-6);
 }
 
-.emoji-header .wordmark {
-  font-weight: 600;
-  color: #131313;
-  text-decoration: none;
-  letter-spacing: -0.02em;
-}
-
-.emoji-header .attribution {
-  color: #8a8a8a;
-  font-size: 12px;
+.emoji-wordmark {
+  /* Display role at the card-title rung (§7 / D-12) — the toy's name, not the
+     site wordmark (§10). */
+  font-size: var(--fs-title);
   text-decoration: none;
 }
 
+.emoji-wordmark:hover {
+  /* link state — underline, the treatment chrome nav ships (D-32) */
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* --- stage: canvas centered, controls below -------------------------------- */
 .emoji-stage {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 8px 16px 24px;
-  gap: 24px;
+  padding: var(--s-2) var(--s-4) var(--s-6);
+  gap: var(--s-6);
 }
 
+/* The artboard. Surface treatment per §4 (square) + §9 (1px hairline); the
+   shadow and 16px radius the old PRD notes specified are off-brand (§9's
+   one-shadow rule) and were dropped. The BACKGROUND is the user's chosen
+   export colour — content, not page chrome (FLAGGED). The 70vmin/100vh/640px
+   geometry is functional fit math, not a brand value (FLAGGED). */
 .emoji-canvas {
   position: relative;
-  /* 260px of chrome below the stage, plus the 64px site top bar. */
-  width: min(70vmin, calc(100vh - 324px), 640px);
+  /* 100vh minus the chrome + header + controls below the stage. */
+  width: min(70vmin, calc(100vh - 364px), 640px);
   aspect-ratio: 1 / 1;
   overflow: hidden;
   touch-action: none;
   user-select: none;
+  border: 1px solid var(--border);
+  border-radius: var(--r-surface);
 }
 
 .emoji-fishbowl {
+  /* FLAGGED content: the toy's centre illustration (fishbowl photo, white
+     stripped at runtime). Kept as the PRD's fixed centre asset; no brand
+     source for the image itself. */
   position: absolute;
   top: 50%;
   left: 50%;
@@ -73,6 +86,10 @@
 .emoji-item {
   position: absolute;
   transform: translate(-50%, -50%);
+  /* FLAGGED content typography: the size (0.13 of canvas), 900 weight and
+     -0.04em tracking are the toy's content rendering (must match the export
+     at ITEM_COVERAGE), and the face must be the system emoji stack — none of
+     that is §7 page type. The fallback maps to the brand sans. */
   font-size: calc(min(70vmin, 640px) * 0.13);
   font-weight: 900;
   line-height: 1;
@@ -80,10 +97,12 @@
   user-select: none;
   touch-action: none;
   white-space: nowrap;
-  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "GeistSans", "Inter", system-ui, sans-serif;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji",
+    var(--font-sans), sans-serif;
   letter-spacing: -0.04em;
-  padding: 4px;
-  transition: transform 120ms ease;
+  padding: var(--s-1);
+  /* §6: hover/drag are state changes → 140ms ease-out */
+  transition: transform var(--dur-state) var(--ease-state);
   z-index: 2;
 }
 
@@ -94,118 +113,64 @@
 .emoji-item.dragging {
   cursor: grabbing;
   transform: translate(-50%, -50%) scale(1.1);
-  filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.2));
+  /* the legacy drop-shadow was dropped — §9 allows exactly one shadow on the
+     whole site and this is not it (FLAGGED in coverage record). */
   z-index: 10;
 }
 
-/* Control pill */
+/* --- controls: one square surface (§4), hairline (§9), --pad-card (§5) ----- */
 .emoji-controls {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--s-6);
   width: 100%;
-  max-width: min(70vmin, 640px);
+  /* the panel shares the canvas's width formula so the two never mismatch */
+  max-width: min(70vmin, calc(100vh - 364px), 640px);
+  box-sizing: border-box;
+  padding: var(--pad-card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-surface);
+  background: var(--surface);
 }
 
-.emoji-input-pill {
-  position: relative;
+/* --- input row: text input + count group ----------------------------------- */
+.emoji-input-row {
   display: flex;
   align-items: center;
-  gap: 10px;
-  background: #ffffff;
-  border: 1.5px solid #131313;
-  border-radius: 999px;
-  padding: 10px 16px;
-  transition: border-color 120ms ease, box-shadow 120ms ease;
-}
-
-.emoji-input-pill:focus-within {
-  border-color: #092441;
-  box-shadow: 0 0 0 3px rgba(9, 36, 65, 0.15);
-}
-
-.emoji-plus-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  background: #131313;
-  color: #ffffff;
-  font-size: 16px;
-  line-height: 1;
-  flex-shrink: 0;
+  gap: var(--s-4);
+  flex-wrap: wrap;
 }
 
 .emoji-input {
   flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-family: inherit;
-  font-size: 15px;
-  color: #131313;
   min-width: 0;
 }
 
-.emoji-input::placeholder {
-  color: #9a9a9a;
-}
-
 .emoji-count-group {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--s-2);
   flex-shrink: 0;
-  background: rgba(9, 36, 65, 0.06);
-  border: 1px solid rgba(9, 36, 65, 0.15);
-  border-radius: 999px;
-  padding: 3px 8px 3px 10px;
 }
 
-.emoji-count-x {
-  color: #092441;
-  font-size: 12px;
-  font-weight: 600;
-  margin-right: 2px;
-}
-
-.emoji-count-preset {
-  background: transparent;
-  border: none;
-  color: #092441;
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  padding: 3px 7px;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: background 120ms ease;
-}
-
-.emoji-count-preset:hover {
-  background: rgba(9, 36, 65, 0.12);
-}
-
-.emoji-count-preset.active {
-  background: #092441;
-  color: #ffffff;
+.emoji-count-label {
+  flex-shrink: 0;
 }
 
 .emoji-count-input {
-  width: 44px;
-  background: #ffffff;
-  border: 1px solid rgba(9, 36, 65, 0.2);
-  border-radius: 999px;
-  padding: 3px 6px;
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 600;
-  color: #092441;
+  /* narrow numeric field (JetBrains body face via face="mono", D-08). The
+     width must beat .on-field's width:100% (components.css loads later), so
+     it rides on flex-basis; the height drops to the sm rung to sit with the
+     size="sm" presets (§4: 40 default / 32 small) and needs the page-root
+     compound to out-specify .sakura .on-field. */
+  flex: 0 0 var(--s-12);
+  min-width: 0;
   text-align: center;
-  outline: none;
   -moz-appearance: textfield;
+}
+
+.emoji-page.sakura .emoji-count-input {
+  height: var(--ctl-h-sm);
 }
 
 .emoji-count-input::-webkit-outer-spin-button,
@@ -214,53 +179,62 @@
   margin: 0;
 }
 
-.emoji-count-input:focus {
-  border-color: #092441;
-  box-shadow: 0 0 0 2px rgba(9, 36, 65, 0.15);
-}
-
-.emoji-return-hint {
-  color: #bdbdbd;
-  font-size: 14px;
-  flex-shrink: 0;
-}
-
-/* Action pill (black) */
-.emoji-action-pill {
+/* --- action row: swatches · divider · clear · download ---------------------- */
+.emoji-action-row {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 10px 16px;
-  background: #131313;
-  border-radius: 999px;
-  color: #ffffff;
-  justify-content: space-between;
+  gap: var(--s-4);
   flex-wrap: wrap;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
 }
 
 .emoji-swatches {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--s-3);
+  margin-right: auto;
+}
+
+.emoji-preset-swatches {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
 }
 
 .emoji-swatch {
-  width: 24px;
-  height: 24px;
-  border-radius: 999px;
-  cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  /* Round because these are radio buttons (§4's third named exception,
+     D-12 — the one round control). Sized --s-8 (32px) desktop, --ctl-h
+     (44px) on a coarse pointer so §1's tap target holds. The FILL is the
+     user's export colour — content, not a brand token (FLAGGED). */
+  width: var(--s-8);
+  height: var(--s-8);
+  border-radius: var(--r-pill);
+  border: 1px solid var(--border);
   padding: 0;
-  transition: transform 120ms ease;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-state) var(--ease-state),
+    transform var(--dur-state) var(--ease-state);
 }
 
 .emoji-swatch:hover {
-  transform: scale(1.08);
+  border-color: var(--accent);
 }
 
-.emoji-swatch.active {
-  box-shadow: 0 0 0 2px #131313, 0 0 0 4px #092441;
+/* §1/§4: on a coarse pointer every control height becomes 44px — the swatch
+   is a radio-style control, so it grows with the ladder's coarse rung. */
+@media (pointer: coarse) {
+  .emoji-swatch {
+    width: var(--ctl-h);
+    height: var(--ctl-h);
+  }
+}
+
+/* active and focus share the one ring treatment (--focus-ring) */
+.emoji-swatch.active,
+.emoji-swatch:focus-visible,
+.emoji-swatch:has(.emoji-swatch-color-input:focus-visible) {
+  outline: var(--focus-ring-w) solid var(--focus-ring);
+  outline-offset: 1px;
 }
 
 .emoji-swatch-custom {
@@ -272,9 +246,13 @@
 }
 
 .emoji-swatch-rainbow {
+  /* FLAGGED: a conic rainbow has no brand source (§9 allows one texture per
+     mode and the palette bans gradients). Kept as the custom-colour
+     affordance — not replaced with arbitrary sakura decoration, pending the
+     owner decision on the custom picker. */
   position: absolute;
   inset: 0;
-  border-radius: 999px;
+  border-radius: var(--r-pill);
   background: conic-gradient(
     from 0deg,
     #ff5b5b,
@@ -288,10 +266,12 @@
   );
   opacity: 0.95;
   pointer-events: none;
-  mix-blend-mode: normal;
 }
 
 .emoji-swatch-color-input {
+  /* FLAGGED: the native <input type="color"> has no brand home — it is the
+     only browser-native way to pick an arbitrary colour; the visible
+     affordance is the round swatch above it. */
   position: absolute;
   inset: 0;
   width: 100%;
@@ -304,93 +284,51 @@
 }
 
 .emoji-divider {
-  width: 1px;
-  height: 20px;
-  background: rgba(255, 255, 255, 0.15);
+  align-self: stretch;
 }
 
-.emoji-clear {
-  background: transparent;
-  border: none;
-  color: #ffffff;
-  font-family: inherit;
-  font-size: 13px;
-  cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 999px;
-  transition: background 120ms ease;
-}
-
-.emoji-clear:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.emoji-clear:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.emoji-download {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: #ffffff;
-  color: #131313;
-  border: none;
-  border-radius: 999px;
-  padding: 8px 16px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  margin-left: auto;
-  transition: transform 120ms ease;
-}
-
-.emoji-download:hover {
-  transform: translateY(-1px);
-}
-
-.emoji-download svg {
-  width: 14px;
-  height: 14px;
-}
-
-/* Mobile */
+/* --- mobile (BRAND.md §1/§5: phone stacks, coarse targets already 44px) ---- */
 @media (max-width: 640px) {
   .emoji-header {
-    padding: 14px 18px;
+    padding: var(--s-2) var(--s-4);
   }
   .emoji-stage {
-    padding: 4px 12px 16px;
-    gap: 16px;
+    padding: var(--s-1) var(--s-3) var(--s-4);
+    gap: var(--s-4);
   }
   .emoji-canvas {
-    width: calc(100vw - 24px);
-    max-width: 100vw;
+    width: calc(100vw - var(--s-6));
   }
   .emoji-controls {
-    max-width: calc(100vw - 24px);
+    max-width: calc(100vw - var(--s-6));
+    gap: var(--s-4);
   }
   .emoji-item {
-    font-size: calc((100vw - 24px) * 0.13);
-  }
-  .emoji-action-pill {
-    padding: 8px 12px;
-    gap: 10px;
+    font-size: calc((100vw - var(--s-6)) * 0.13);
   }
   .emoji-input {
-    font-size: 14px;
-  }
-  .emoji-input-pill {
-    flex-wrap: wrap;
+    flex-basis: 100%;
   }
   .emoji-count-group {
-    order: 3;
     width: 100%;
     justify-content: space-between;
   }
-  .emoji-count-input {
-    width: 50px;
+  .emoji-action-row {
+    gap: var(--s-3);
+  }
+  /* the divider is a decorative hairline; on a wrapped phone row it would
+     lead the second line, so it drops (responsive §1/§5). */
+  .emoji-divider {
+    display: none;
+  }
+}
+
+/* §6: every animated element sits behind prefers-reduced-motion. The library
+   components kill their own transitions in components.css; these are the
+   page's custom controls. */
+@media (prefers-reduced-motion: reduce) {
+  .emoji-item,
+  .emoji-swatch {
+    transition: none !important;
   }
 }

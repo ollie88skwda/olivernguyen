@@ -6,6 +6,11 @@ import React, {
   useState,
 } from "react";
 import "../styles/Emoji.css";
+import "../styles/sakura.css";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Display, MonoLabel } from "@/components/brand/typography";
 
 const FISHBOWL_SRC = "/fishbowl.jpg";
 const FISHBOWL_COVERAGE = 0.7; // 70% of canvas
@@ -20,20 +25,40 @@ const BG_PRESETS = [
 
 const COUNT_PRESETS = [67, 41, 25];
 const MAX_COUNT = 200;
+const LIGHT_ITEM_COLOR = "#ffffff";
+const DARK_ITEM_COLOR = "#000000";
 
-function isDarkColor(hex) {
-  if (!hex || typeof hex !== "string") return false;
+function getRelativeLuminance(hex) {
+  if (!hex || typeof hex !== "string") return null;
   let h = hex.trim().replace("#", "");
   if (h.length === 3) {
     h = h.split("").map((c) => c + c).join("");
   }
-  if (h.length !== 6) return false;
-  const r = parseInt(h.slice(0, 2), 16);
-  const g = parseInt(h.slice(2, 4), 16);
-  const b = parseInt(h.slice(4, 6), 16);
-  // Relative luminance (sRGB)
-  const lum = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-  return lum < 0.6;
+  if (h.length !== 6 || !/^[0-9a-fA-F]+$/.test(h)) return null;
+  const channels = [0, 2, 4].map((start) => parseInt(h.slice(start, start + 2), 16) / 255);
+  return channels.reduce(
+    (sum, channel, index) =>
+      sum + (channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4) * [0.2126, 0.7152, 0.0722][index],
+    0,
+  );
+}
+
+function getContrastRatio(first, second) {
+  return (Math.max(first, second) + 0.05) / (Math.min(first, second) + 0.05);
+}
+
+function getItemColor(background) {
+  const backgroundLuminance = getRelativeLuminance(background);
+  if (backgroundLuminance === null) return DARK_ITEM_COLOR;
+  const whiteContrast = getContrastRatio(
+    backgroundLuminance,
+    getRelativeLuminance(LIGHT_ITEM_COLOR),
+  );
+  const darkContrast = getContrastRatio(
+    backgroundLuminance,
+    getRelativeLuminance(DARK_ITEM_COLOR),
+  );
+  return whiteContrast > darkContrast ? LIGHT_ITEM_COLOR : DARK_ITEM_COLOR;
 }
 
 function getFirstGrapheme(str) {
@@ -154,7 +179,7 @@ export const EmojiPage = () => {
   const fishbowlCanvasRef = useRef(null);
   const [draggingId, setDraggingId] = useState(null);
 
-  const isDarkBg = useMemo(() => isDarkColor(bgColor), [bgColor]);
+  const itemColor = useMemo(() => getItemColor(bgColor), [bgColor]);
 
   // Load + strip fishbowl on mount
   useEffect(() => {
@@ -288,13 +313,13 @@ export const EmojiPage = () => {
     ctx.font = `900 ${itemSize}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", system-ui, sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillStyle = isDarkBg ? "#ffffff" : "#131313";
+    ctx.fillStyle = itemColor;
     for (const it of items) {
       ctx.fillText(it.content, it.x * size, it.y * size);
     }
 
     return canvas.toDataURL("image/png");
-  }, [bgColor, isDarkBg, items]);
+  }, [bgColor, itemColor, items]);
 
   const handleDownload = () => {
     const dataUrl = exportPNG();
@@ -315,15 +340,15 @@ export const EmojiPage = () => {
     };
   }, [exportPNG]);
 
-  const itemColor = isDarkBg ? "#ffffff" : "#131313";
-
   return (
-    <div className="emoji-page" style={{ background: "#ffffff" }}>
+    <div className="emoji-page sakura">
       <header className="emoji-header">
-        <a href="/" className="wordmark" aria-label="home">
+        <Display as="a" href="/" className="emoji-wordmark" aria-label="home">
           fishbowl
-        </a>
-        <span className="attribution">made by ollie</span>
+        </Display>
+        <MonoLabel tone="faint" className="emoji-attribution">
+          made by ollie
+        </MonoLabel>
       </header>
 
       <main className="emoji-stage">
@@ -358,11 +383,8 @@ export const EmojiPage = () => {
         </div>
 
         <div className="emoji-controls">
-          <div className="emoji-input-pill">
-            <span className="emoji-plus-icon" aria-hidden="true">
-              +
-            </span>
-            <input
+          <div className="emoji-input-row">
+            <Input
               ref={inputRef}
               className="emoji-input"
               value={inputValue}
@@ -371,21 +393,27 @@ export const EmojiPage = () => {
               placeholder="type emoji or text, then hit return"
               aria-label="emoji or text"
             />
-            <div className="emoji-count-group" aria-label="count">
-              <span className="emoji-count-x" aria-hidden="true">×</span>
+            <div className="emoji-count-group" role="group" aria-labelledby="emoji-count-label">
+              <MonoLabel tone="faint" id="emoji-count-label" className="emoji-count-label">
+                count
+              </MonoLabel>
               {COUNT_PRESETS.map((preset) => (
-                <button
+                <Button
                   key={preset}
                   type="button"
-                  className={`emoji-count-preset ${count === preset ? "active" : ""}`}
+                  size="sm"
+                  variant={count === preset ? "primary" : "ghost"}
+                  className="emoji-count-preset"
                   onClick={() => setCount(preset)}
                   aria-label={`${preset} emojis`}
+                  aria-pressed={count === preset}
                 >
                   {preset}
-                </button>
+                </Button>
               ))}
-              <input
+              <Input
                 type="number"
+                face="mono"
                 className="emoji-count-input"
                 min="1"
                 max={MAX_COUNT}
@@ -395,28 +423,29 @@ export const EmojiPage = () => {
                 aria-label="custom count"
               />
             </div>
-            <span className="emoji-return-hint" aria-hidden="true">
-              ↵
-            </span>
           </div>
 
-          <div className="emoji-action-pill">
-            <div className="emoji-swatches" role="radiogroup" aria-label="background color">
-              {BG_PRESETS.map((preset) => (
-                <button
-                  key={preset.color}
-                  className={`emoji-swatch ${bgColor.toLowerCase() === preset.color.toLowerCase() ? "active" : ""}`}
-                  style={{ background: preset.color }}
-                  onClick={() => setBgColor(preset.color)}
-                  aria-label={`${preset.label} background`}
-                  role="radio"
-                  aria-checked={bgColor.toLowerCase() === preset.color.toLowerCase()}
-                />
-              ))}
+          <Separator className="emoji-controls-sep" />
+
+          <div className="emoji-action-row">
+            <div className="emoji-swatches">
+              <div className="emoji-preset-swatches" role="radiogroup" aria-label="background color">
+                {BG_PRESETS.map((preset) => (
+                  <button
+                    key={preset.color}
+                    type="button"
+                    className={`emoji-swatch ${bgColor.toLowerCase() === preset.color.toLowerCase() ? "active" : ""}`}
+                    style={{ background: preset.color }}
+                    onClick={() => setBgColor(preset.color)}
+                    aria-label={`${preset.label} background`}
+                    role="radio"
+                    aria-checked={bgColor.toLowerCase() === preset.color.toLowerCase()}
+                  />
+                ))}
+              </div>
               <label
                 className="emoji-swatch emoji-swatch-custom"
                 style={{ background: bgColor }}
-                aria-label="custom background color"
                 title="Pick a custom color"
               >
                 <span className="emoji-swatch-rainbow" aria-hidden="true" />
@@ -425,29 +454,30 @@ export const EmojiPage = () => {
                   className="emoji-swatch-color-input"
                   value={/^#[0-9a-fA-F]{6}$/.test(bgColor) ? bgColor : "#ffffff"}
                   onChange={(e) => setBgColor(e.target.value)}
+                  aria-label="custom background color"
                 />
               </label>
             </div>
-            <div className="emoji-divider" />
-            <button
+            <Separator orientation="vertical" decorative className="emoji-divider" />
+            <Button
+              variant="ghost"
+              size="sm"
+              type="button"
               className="emoji-clear"
               onClick={handleClear}
               disabled={items.length === 0}
             >
               Clear
-            </button>
-            <button className="emoji-download" onClick={handleDownload}>
-              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path
-                  d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              type="button"
+              className="emoji-download"
+              onClick={handleDownload}
+            >
               Download
-            </button>
+            </Button>
           </div>
         </div>
       </main>
