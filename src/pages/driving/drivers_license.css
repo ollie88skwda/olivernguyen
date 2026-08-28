@@ -1,0 +1,80 @@
+/* /license — sakura content page (16-legacy-restyle lane).
+ *
+ * Composition only, same rule as every sakura surface stylesheet: values are
+ * BRAND.md / sakura.css tokens, no hex, no bespoke radius, spacing, duration
+ * or font name. The two brand axes (data-theme ladder, data-mode interface)
+ * apply through .sakura — this page never reads :root / theme.css.
+ */
+
+.dl {
+  box-sizing: border-box;
+  min-height: 100dvh;
+  /* Clear the fixed 64px chrome bar plus one rung of breathing room — the
+     same 96px clearance R-I1 measures for the graph's mobile list, on the §5
+     ladder. */
+  padding: calc(var(--s-16) + var(--s-8)) var(--s-6) var(--s-24);
+}
+
+/* Content column = the §5 body measure (70ch); .on-prose's cap is the same
+   value, so prose fills the column and the hero shares its alignment. */
+.dl-col {
+  max-width: 70ch;
+  margin: 0 auto;
+}
+
+.dl-hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3); /* §5: label → content is 12 */
+  margin-bottom: var(--s-24); /* §5: section gap, phone rung */
+}
+/* Display sets the §7 role (Familjen 700, -0.02em) but not the size — the
+   consumer names the rung. A page title is the hero scale (§7). */
+.dl-hero h1 {
+  font-size: var(--fs-display);
+}
+
+/* section head → first paragraph: §5 row gap inside a group (24) */
+.dl-section .on-prose {
+  margin-top: var(--s-6);
+}
+
+/* Prose link — the library's link treatment (components.css link variant,
+   chrome.css D-32 underline-reveal) in the prose's sans face. Rest is a
+   transparent underline; hover and focus reveal it, exactly like the nav. */
+.dl-link {
+  color: var(--accent-hi);
+  text-decoration: underline solid transparent;
+  text-underline-offset: 3px; /* the link variant's offset (components.css) */
+  transition: text-decoration-color var(--dur-state) var(--ease-state);
+}
+.dl-link:hover,
+.dl-link:focus-visible {
+  text-decoration-color: currentColor;
+}
+/* Focus ring: the library's one treatment (components.css .on-focus). */
+.dl-link:focus-visible {
+  outline: var(--focus-ring-w) solid var(--focus-ring);
+  outline-offset: 1px;
+}
+
+/* §6: every animated element sits behind prefers-reduced-motion. The library
+   block only covers `on-*` classes, so the page link kills its own transition. */
+@media (prefers-reduced-motion: reduce) {
+  .dl-link {
+    transition: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .dl-hero {
+    margin-bottom: var(--s-36); /* §5: section gap, desktop rung */
+  }
+}
+
+@media (max-width: 767px) {
+  /* gutter drops a rung on phone, mirroring the chrome bar */
+  .dl {
+    padding: calc(var(--s-16) + var(--s-8)) var(--s-4) var(--s-24);
+  }
+}
