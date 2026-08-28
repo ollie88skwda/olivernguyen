@@ -33,6 +33,15 @@ export function isTypingTarget(el) {
   );
 }
 
+/** True when a site chrome menu owns the event target. */
+export function isChromeMenuTarget(el) {
+  return Boolean(
+    el?.closest?.(
+      '[data-slot="dropdown-menu-trigger"], [data-slot="dropdown-menu-content"]',
+    ),
+  );
+}
+
 /** True when the event is a modifier chord the keymap must not hijack. */
 export function isModifierChord(e) {
   return Boolean(e.metaKey || e.ctrlKey || e.altKey);

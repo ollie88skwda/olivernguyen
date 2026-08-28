@@ -20,7 +20,14 @@ import { resolveEdgeStyle } from '../lib/edges.js';
 import { edgeKeySet, ARRIVED_FLASH_MS } from '../lib/pulse.js';
 import { filterEntities } from '../lib/filter.js';
 import { TOUR_STOPS, TOUR_IDLE_AUTOSTART_MS, TOUR_STOP_DWELL_MS, stepTour } from '../lib/tour.js';
-import { escAction, isTypingTarget, isModifierChord, isPaletteCombo, cycleId } from '../lib/keys.js';
+import {
+  escAction,
+  isTypingTarget,
+  isChromeMenuTarget,
+  isModifierChord,
+  isPaletteCombo,
+  cycleId,
+} from '../lib/keys.js';
 import useCamera from '../useCamera.js';
 import runPulse from '../runPulse.js';
 import startDrift from '../drift.js';
@@ -264,6 +271,7 @@ export default function GraphCanvas() {
 
   useEffect(() => {
     const onKey = (e) => {
+      if (isChromeMenuTarget(e.target)) return;
       if (isPaletteCombo(e)) {
         e.preventDefault();
         setPaletteOpen((o) => !o);

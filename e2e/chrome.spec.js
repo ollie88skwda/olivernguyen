@@ -117,6 +117,15 @@ test.describe("site chrome — R-C4", () => {
     }
   });
 
+  test("graph menus retain keyboard ownership", async ({ page }) => {
+    await page.goto("/?mode=graph&theme=light&still");
+    await page.getByRole("button", { name: "Open account menu" }).click();
+    await page.keyboard.press("ArrowDown");
+    await expect(page.getByRole("menuitemradio", { name: "Light" })).toBeFocused();
+    expect(await page.locator(".node.active").count()).toBe(0);
+    await page.keyboard.press("Escape");
+  });
+
   test("current OS theme becomes persistent after selection", async ({ browser }) => {
     const osContext = await browser.newContext({
       baseURL: "http://localhost:3100",
