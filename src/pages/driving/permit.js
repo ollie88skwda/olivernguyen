@@ -4,6 +4,19 @@ import { Display, MonoLabel, SectionHead } from "@/components/brand";
 import "../../styles/sakura.css";
 import "./permit.css";
 
+const PermitSectionHead = ({ kicker, number, title }) => (
+  <SectionHead
+    as="h2"
+    kicker={kicker}
+    title={
+      <>
+        <span aria-hidden="true">{title}</span>
+        <span className="sr-only">{number}: {title}</span>
+      </>
+    }
+  />
+);
+
 // /permit — restyled onto the sakura ladder (docs/redesign-research/
 // 16-legacy-restyle.md). Content, links, image + alt text and heading
 // semantics are preserved from the legacy page; only the presentation moved
@@ -28,7 +41,7 @@ export const Permit = () => {
         </header>
 
         <section className="pm-section">
-          <SectionHead as="h2" kicker="01" title="Driver's ed" />
+          <PermitSectionHead kicker="01" number="1" title="Driver's ed" />
           <p className="on-prose">
             Driver's ed will be the biggest time commitment when getting your
             permit. All online courses will cost money, although if your school
@@ -44,7 +57,9 @@ export const Permit = () => {
             </a>
             . This link gives you a $10 discount.*
           </p>
-          <h3 className="pm-sub">Driver's ed info</h3>
+          <Display as="h3" className="pm-sub">
+            Driver's ed info
+          </Display>
           <p className="on-prose">
             Driver's ed is going to be long and boring. It's projected to take
             about 30 hours, but if you read quickly you can get through it in
@@ -64,7 +79,7 @@ export const Permit = () => {
         </section>
 
         <section className="pm-section">
-          <SectionHead as="h2" kicker="02" title="Other stuff" />
+          <PermitSectionHead kicker="02" number="2" title="Other stuff" />
           <p className="on-prose">
             Once you've done all the driver's ed stuff, everything else will be
             pretty easy. You can visit the{" "}
@@ -92,25 +107,27 @@ export const Permit = () => {
             />
           </a>
           <section>
-            <h3 className="pm-sub">Be at least 15 ½ but under 18</h3>
+            <Display as="h3" className="pm-sub">
+              Be at least 15 ½ but under 18
+            </Display>
             <p className="on-prose">
               If you are at the dmv and don't meet this requirement, I can't
               help.
             </p>
           </section>
           <section>
-            <h3 className="pm-sub">
+            <Display as="h3" className="pm-sub">
               Have a Certificate of Completion/Enrollment of Driver Education
-            </h3>
+            </Display>
             <p className="on-prose">
               Make sure to bring in the PHYSICAL certificate that you should be
               mailed after completing your driver's ed course.
             </p>
           </section>
           <section>
-            <h3 className="pm-sub">
+            <Display as="h3" className="pm-sub">
               Complete the California Driver's License or ID Card Application
-            </h3>
+            </Display>
             <p className="on-prose">
               This one's a bit more complicated. Visit the hyperlink on the
               website or{" "}
@@ -166,16 +183,18 @@ export const Permit = () => {
               whatever applies to you.
             </p>
             <section>
-              <h3 className="pm-sub">
+              <Display as="h3" className="pm-sub">
                 Have a parent(s)/guardian(s) sign the application
-              </h3>
+              </Display>
               <p className="on-prose">
                 Either have your parents sign electronically or at the dmv
                 appointment.
               </p>
             </section>
             <section>
-              <h3 className="pm-sub">Visit a DMV office where you will:</h3>
+              <Display as="h3" className="pm-sub">
+                Visit a DMV office where you will:
+              </Display>
               <div>
                 <h4 className="pm-h4">
                   1. Bring your California Identification Card or proof of
@@ -221,7 +240,7 @@ export const Permit = () => {
         </section>
 
         <section className="pm-section">
-          <SectionHead as="h2" kicker="03" title="The knowledge test" />
+          <PermitSectionHead kicker="03" number="3" title="The knowledge test" />
           <p className="on-prose">
             This is the part that most people fail. You need to get at least
             38/46 questions right to pass. You can take the test 3 times before
@@ -241,7 +260,7 @@ export const Permit = () => {
         </section>
 
         <section className="pm-section">
-          <SectionHead as="h2" kicker="04" title="Congrats!" />
+          <PermitSectionHead kicker="04" number="4" title="Congrats!" />
           <p className="on-prose">
             If you've made it this far, you should have your permit! Now you can
             start practicing driving with your parents or a licensed driver over

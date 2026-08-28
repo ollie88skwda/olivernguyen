@@ -21,11 +21,13 @@ const EXPECTED_HREFS = [
 ];
 
 const EXPECTED_HEADINGS = [
-  "Driver's ed",
-  "Other stuff",
-  "The knowledge test",
-  "Congrats!",
+  "1: Driver's ed",
+  "2: Other stuff",
+  "3: The knowledge test",
+  "4: Congrats!",
 ];
+
+const EXPECTED_KICKERS = ["01", "02", "03", "04"];
 
 async function assertPermit(page, { theme, mode, coarse }) {
   await expect(page.locator("main.sakura.permit")).toBeVisible();
@@ -38,7 +40,12 @@ async function assertPermit(page, { theme, mode, coarse }) {
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(
     "How to get your permit (for high schoolers)",
   );
-  await expect(page.locator("main h2")).toHaveText(EXPECTED_HEADINGS);
+  const sectionHeadings = page.getByRole("heading", { level: 2 });
+  await expect(sectionHeadings).toHaveCount(EXPECTED_HEADINGS.length);
+  for (let i = 0; i < EXPECTED_HEADINGS.length; i += 1) {
+    await expect(sectionHeadings.nth(i)).toHaveAccessibleName(EXPECTED_HEADINGS[i]);
+  }
+  await expect(page.locator(".pm-section > .on-section-head > .on-label")).toHaveText(EXPECTED_KICKERS);
   await expect(page.locator("ol.pm-steps")).toHaveCount(1);
   await expect(page.locator("ol.pm-steps li")).toHaveCount(23);
   const image = page.locator("img[alt='dmv permit requirements']");

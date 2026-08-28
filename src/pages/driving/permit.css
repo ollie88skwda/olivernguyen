@@ -62,12 +62,7 @@
 
 .pm-sub {
   margin: var(--s-6) 0 var(--s-3);
-  font-family: var(--font-display);
-  font-weight: 700;
   font-size: var(--fs-title);
-  letter-spacing: var(--track-display);
-  line-height: 1.1;
-  color: var(--text);
 }
 
 .pm-h4 {
