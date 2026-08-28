@@ -28,49 +28,7 @@ render is what killed Fraunces in D-07.
 
 ---
 
-## 2 · The wordmark dot on the dark ladder
-
-**State:** open, and `BRAND.md` §10 **contradicts itself** — fix the doc whichever way this goes.
-
-- §10 sentence 1 says the dot is `--accent`. That is the normative one and it is what shipped.
-- §10 sentence 2 says the dot is "the same colour as the routing pulse". On **both** ladders
-  `--routing-pulse` is jade (`--success`), not `--accent`. The two sentences cannot both hold.
-
-**Why it matters visually:** on dark, `--accent` (`#ffb7d1`) sits close to `--text` (`#f5dce6`), so
-the dot barely reads as a separate mark. Legible at 20px and at 6× zoom, but subtle. Making it
-louder is a **palette** decision, not a component one.
-
-**Decided when:** Oliver picks — leave subtle · use jade on dark · a third value — and §10 is
-rewritten so only one sentence is normative.
-
-**Detail:** `docs/redesign-research/12-rebuild-plan.md` note 6.
-
----
-
-## 3 · The focus ring's colour and width
-
-**State:** open, and **the weakest-tracked item here** — it was never actually written down.
-`src/styles/sakura.css:268` carries a comment saying it is "flagged in docs/COMPONENTS.md". It is
-not. COMPONENTS.md only lists `--focus-ring` / `--focus-ring-w` in its derived-token table. That
-comment was pointing at a flag nobody ever added; this entry is the flag.
-
-`BRAND.md` §4 fixes the focus ring's **radius** (3px) and nothing else. The shipped values were
-picked, not decided:
-
-```css
---focus-ring: var(--accent-hi);
---focus-ring-w: 2px;
-```
-
-**Decided when:** the two values are ratified into `BRAND.md` §4 (or changed), logged in
-`DECISIONS.md`, and the stale sakura.css comment is corrected.
-
-**Do not skip on size.** Every keyboard user sees it on every control in the library, and it is the
-one visual token in the system with no brand authority behind it.
-
----
-
-## 4 · Merge `feat/component-library`
+## 2 · Merge `feat/component-library`
 
 **State:** open. Not a design call, but it gates everything above shipping.
 
@@ -109,7 +67,8 @@ risk.
 
 `D-27` idle shimmer · `D-28` camera frames clear of the bar · `D-29` the three R-C3 chrome removals
 (1 restored, 2 confirmed) · `D-30` bar blur restored, scoped to the graph home · `D-31` veil 82→74% ·
-`D-32` bar labels full strength, nav hover underline, veil 74→50% · `D-33` `/pull` Sakura restyle.
+`D-32` bar labels full strength, nav hover underline, veil 74→50% · `D-33` `/pull` Sakura restyle ·
+`D-34` wordmark dot stays subtle · `D-35` focus ring values ratified.
 
 **D-29's third X-1 finding ("the blur re-rasterises the graph canvas soft") was WRONG** — it was the
 graph's 6s guided-tour autostart moving the camera between two screenshots. Independently

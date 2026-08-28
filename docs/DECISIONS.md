@@ -25,6 +25,28 @@ covers other frozen or excluded surfaces and remains tracked in `docs/COMPONENTS
 
 ---
 
+## 2026-08-28 · The wordmark dot stays subtle
+
+### D-34 · The wordmark dot stays `--accent`
+Oliver chose **leave it subtle**. `BRAND.md` §10 now has one authority: the wordmark dot uses
+`--accent`. The shipped component remains unchanged; the jade routing pulse is unrelated.
+
+*Rejected:* jade on dark or a third colour, because either would change the shipped mark.
+
+---
+
+## 2026-08-28 · Focus rings get brand authority
+
+### D-35 · Focus rings use `--accent-hi` at `2px`
+The focus ring colour is `--accent-hi` and its width is `2px`. The existing 3px control radius
+remains unchanged. This ratifies the values already shipped; no visual change is intended.
+
+*Rejected:* 3px width, after comparing the 2px and 3px renders; 2px preserves the chosen treatment.
+
+Detail: `docs/BRAND.md` §4 and `src/styles/sakura.css`.
+
+---
+
 ## 2026-08-26 · The bar's labels get louder so the glass can get stronger
 
 ### D-32 · Bar labels are `--text`, nav hover is an UNDERLINE, and the veil opens to 50%

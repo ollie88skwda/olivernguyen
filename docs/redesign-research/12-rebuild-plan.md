@@ -16,7 +16,7 @@ exec-graph-home : R-G1 ✅ R-G2 ✅ R-G3 ✅ — GATE GRAPH-HOME ✅, nothing ou
 exec-terminal   : R-T1 ✅ R-T2 ✅ R-T3 ✅ — GATE TERMINAL ✅, nothing outstanding
 Integration     : R-I1 ✅ — the plan is complete. Branch `feat/component-library`, NOT merged.
 Blockers        : none. Every checklist box in §8 is ticked; the only open items are
-                  Oliver's calls in the notes below (5, 6, 7, 9, 11).
+                  Oliver's calls in notes 7 and 9 below.
 
 All three executors are closed out. Known-failing, both pre-existing and documented:
   - e2e/terminal-panes.spec.js + terminal-shots.spec.js time out under `--workers=3`
@@ -60,12 +60,7 @@ Notes for Oliver:
      blanket-kept. Brief: `docs/redesign-research/14-chrome-restorations.md`.
      Two of the three need a BRAND.md amendment + a D-29 entry to restore, not
      just a revert; that doc says which.
-  6. §10 says the wordmark dot is "the same colour as the routing pulse", but
-     it also says the dot is `--accent`, and on BOTH ladders --routing-pulse is
-     jade, not --accent. The normative sentence (dot = --accent) was followed.
-     On the dark ladder --accent (#ffb7d1) sits close to --text (#f5dce6), so
-     the dot is subtle there; it is legible at 20px and 6x zoom, but if you want
-     it louder that is a palette decision, not a component one.
+  6. RESOLVED — D-34. The shipped `--accent` dot stays subtle; `BRAND.md` §10 is the authority.
   7. §10 also fixes the favicon as "`oN` on --bg, square, 3px radius".
      index.html still points at /on_logo_navy.png. That needs an asset, not
      code, so it was left alone.
@@ -113,12 +108,12 @@ Notes for Oliver:
 
      Closed since this plan: note 5 — D-29 (chrome removals: ☰ restored,
      ScrollProgress out) and D-30 … D-32 (bar blur restored, scoped to the
-     graph home, veil at 50%). note 10 — D-27. note 12 — D-28. note 11 — group
-     nodes, tour HUD, toast, legend chips and tech tokens are square, and the
-     canvas's bespoke card shadow is gone (§4 / §9). note 8 — re-measured at
-     R-I1, inside budget.
-     Still open, carried into OPEN-DECISIONS.md: note 6 (wordmark dot on dark),
-     note 7 (§10 favicon asset), note 9 (one worktree per executor).
+     graph home, veil at 50%). note 6 — D-34 (`--accent` wordmark dot stays
+     subtle). note 10 — D-27. note 12 — D-28. note 11 — group nodes, tour HUD,
+     toast, legend chips and tech tokens are square, and the canvas's bespoke
+     card shadow is gone (§4 / §9). note 8 — re-measured at R-I1, inside budget.
+     Still open, carried into OPEN-DECISIONS.md: note 7 (§10 favicon asset),
+     note 9 (one worktree per executor).
      The `/permit` visual baseline and lane are now complete (note 3). Merging is your call —
      nobody merged anything.
 ```
