@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import "../styles/sakura.css";
 import "../styles/Pull.css";
@@ -65,7 +65,7 @@ function NameScreen({ onSubmit }) {
       <div className="pull-name-card">
         <div className="pull-logo-area">
           <MonoLabel tone="accent">AU Tournament Scheduler</MonoLabel>
-          <Display as="h1">PULL.</Display>
+          <Display as="h1" className="pull-name-title">PULL.</Display>
           <p className="pull-tagline on-prose">Mark your weekends. Commit to the game.</p>
         </div>
         <Separator />
@@ -261,6 +261,7 @@ function BestWeekendsBanner({ picks, weekends }) {
 export const Pull = () => {
   const [playerName, setPlayerName] = useState(null);
   const [picks, setPicks] = useState([]);
+  const picksRef = useRef([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
   const weekends = getUpcomingWeekends();
@@ -268,6 +269,12 @@ export const Pull = () => {
   useEffect(() => {
     const saved = localStorage.getItem("pull_player_name");
     if (saved) setPlayerName(saved);
+  }, []);
+
+  const setPicksFromSource = useCallback((nextPicks) => {
+    const normalized = nextPicks || [];
+    picksRef.current = normalized;
+    setPicks(normalized);
   }, []);
 
   // Initial load shows the skeleton and can fail into the error panel; the
@@ -280,14 +287,16 @@ export const Pull = () => {
         .select("*")
         .order("created_at", { ascending: true });
       if (error) throw error;
-      setPicks(data || []);
+      setPicksFromSource(data);
       setFetchError(false);
+      return true;
     } catch {
       if (!silent) setFetchError(true);
+      return false;
     } finally {
       if (!silent) setLoading(false);
     }
-  }, []);
+  }, [setPicksFromSource]);
 
   useEffect(() => {
     loadPicks();
@@ -318,20 +327,25 @@ export const Pull = () => {
     async (weekend, amount) => {
       if (!playerName) return;
 
-      setPicks((prev) => {
-        const without = prev.filter((p) => !(p.player === playerName && p.weekend === weekend));
-        if (amount === null) return without;
-        return [
-          ...without,
-          {
-            id: `optimistic-${weekend}`,
-            player: playerName,
-            weekend,
-            amount,
-            created_at: new Date().toISOString(),
-          },
-        ];
-      });
+      const previousPicks = picksRef.current;
+      const without = previousPicks.filter(
+        (p) => !(p.player === playerName && p.weekend === weekend),
+      );
+      const optimisticPicks =
+        amount === null
+          ? without
+          : [
+              ...without,
+              {
+                id: `optimistic-${weekend}`,
+                player: playerName,
+                weekend,
+                amount,
+                created_at: new Date().toISOString(),
+              },
+            ];
+      picksRef.current = optimisticPicks;
+      setPicks(optimisticPicks);
 
       // Writes go through our own route, which holds the service-role key and validates the
       // weekend and amount. The browser has no write access to pull_picks at all. Reads and
@@ -347,10 +361,11 @@ export const Pull = () => {
         // Roll the optimistic row back to server truth; the realtime channel
         // still reconciles if the write actually landed.
         toast.error("couldn't save your pick — check the connection and try again");
-        loadPicks({ silent: true });
+        const reconciled = await loadPicks({ silent: true });
+        if (!reconciled) setPicksFromSource(previousPicks);
       }
     },
-    [playerName, loadPicks],
+    [playerName, loadPicks, setPicksFromSource],
   );
 
   if (playerName === null) {

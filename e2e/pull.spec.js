@@ -205,6 +205,43 @@ test("POST failure toasts and rolls the optimistic row back", async ({ page }) =
   expect(errors, `console errors: ${errors.join(" | ")}`).toEqual([]);
 });
 
+test("POST failure with failed reconciliation restores prior state", async ({ page }) => {
+  const errors = [];
+  page.on("console", (m) => {
+    if (m.type() === "error" && !/ERR_FAILED|500/.test(m.text())) errors.push(m.text());
+  });
+  page.on("pageerror", (e) => errors.push(String(e)));
+  const saturdays = upcomingSaturdays(4);
+  const rows = pickRows(saturdays);
+  let reads = 0;
+  await page.route("**/rest/v1/pull_picks*", (route) => {
+    reads += 1;
+    if (reads === 1) {
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(rows),
+      });
+    }
+    return route.abort();
+  });
+  await page.route("**/api/pull/pick", (route) =>
+    route.fulfill({ status: 500, contentType: "application/json", body: "{}" }),
+  );
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await gotoPull(page, "light");
+  await enterName(page);
+
+  const w3 = page.locator(".pull-grid-item").nth(2);
+  await w3.getByRole("button").click();
+  await w3.getByRole("button", { name: /high priority/i }).click();
+
+  await expect(page.getByText(/couldn't save your pick/i)).toBeVisible();
+  await expect(w3.getByText("$5K committed")).toHaveCount(0);
+  await expect(w3.getByText("No picks yet")).toBeVisible();
+  expect(errors, `console errors: ${errors.join(" | ")}`).toEqual([]);
+});
+
 test("375px: no horizontal overflow; coarse pointer: 44px tap targets", async ({ page }) => {
   const errors = await noPageErrors(page);
   const saturdays = upcomingSaturdays(4);

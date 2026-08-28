@@ -29,6 +29,10 @@
   margin: auto;
 }
 
+.pull-name-title {
+  font-size: var(--fs-display);
+}
+
 .pull-logo-area {
   display: flex;
   flex-direction: column;
@@ -198,7 +202,7 @@
   font-family: var(--font-mono-body);
   font-size: var(--fs-title);
   font-weight: 500;
-  line-height: 1.1;
+  line-height: var(--lh-mono);
   color: var(--text);
 }
 
