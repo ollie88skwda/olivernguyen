@@ -17,7 +17,7 @@ Notes for Oliver:
   2. §9 was NOT narrowed. The blur was rendered and lost on merit — including a
      cost nobody had spotted: it re-rasterises the whole graph canvas soft.
   3. X-3's rebuild-on-`Progress` option is DEFERRED, not rejected. It needs real
-     section ids, and those live in frozen `src/pages/**`. Revisit at the legacy
+     section ids, and those live in un-restyled `src/pages/**`. Revisit at the legacy
      restyle. Say the word if you want it built for `/permit` alone anyway.
   4. Bar height and background are unchanged, so `--graph-chrome-inset` (D-28,
      exec-graph's files) needed nothing. Nothing was raised to exec-graph.
@@ -169,7 +169,7 @@ Removed because it was dead on `/`, not because of a brand rule. Verify the evid
 - It only adds `.visible` when scroll > 1%. The terminal screen is `100dvh` and never scrolls, so on
   `/` it was invisible in both modes.
 - Where it did render (legacy routes in terminal mode) it was painted by `.scroll-station` in
-  `src/styles/theme.css` — the **frozen** navy/gold legacy stack — inside a sakura bar.
+  `src/styles/theme.css` — the **frozen** navy/gold stack for un-restyled legacy pages — inside a sakura bar.
 - **`src/styles/theme.css` is frozen. Do not edit it** (`AGENTS.md` §2).
 - Three options, in increasing cost: leave out · restore as-is (accept legacy paint) · rebuild on the
   library. Legacy pages genuinely do scroll, so it has a real job there — a rebuild would use
@@ -181,7 +181,7 @@ Removed because it was dead on `/`, not because of a brand rule. Verify the evid
 Yours: `src/chrome/**`, `src/components/brand/glyph.jsx`, `src/components/ScrollProgress.js`,
 `docs/BRAND.md`, `docs/DECISIONS.md`, `docs/COMPONENTS.md`, `docs/redesign-research/14-*`.
 
-Do not touch: `src/graph/**`, `src/terminal/**` (both shipped and gated), `src/styles/theme.css` (frozen).
+Do not touch: `src/graph/**`, `src/terminal/**` (both shipped and gated), `src/styles/theme.css` (frozen), or un-restyled `src/pages/**`.
 
 ## Gates — all must pass before you finish
 

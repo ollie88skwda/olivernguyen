@@ -141,7 +141,7 @@ direction for later page content; pages represented in v1 get an `entities[]` st
 
 | Route | Content today | Terminal treatment (later) | Graph treatment (later) | Phase |
 |---|---|---|---|---|
-| `/pull` | text utility page | `man pull` — man-page layout: NAME/SYNOPSIS/DESCRIPTION headers in mono, sakura-dark | node in a `utilities` cluster; dossier opens the page inline | v1: link stub only · restyle v1.2 |
+| `/pull` | AU tournament scheduler with Supabase-backed weekend commitments | `man pull` — man-page layout: NAME/SYNOPSIS/DESCRIPTION headers in mono, sakura-dark | node in a `utilities` cluster; dossier opens the page inline | v1: link stub · Sakura surface shipped in its explicit restyle lane |
 | `/permit` | driving-permit notes | `man permit` man page; checklist items as numbered log lines | node under `guides` cluster, edge to `/license` | v1: stub · v1.2; Sakura surface shipped in its explicit restyle lane |
 | `/license` | driver's-license notes | `man license`, cross-linked in SEE ALSO ↔ permit | node under `guides`, edge to `/permit` | v1: stub · v1.2 |
 | `/sat-resources` | intentional empty state (`Coming soon`) | `ls sat/` directory listing; each resource a file row with description | `guides` cluster node; resources as leaf sub-nodes | v1: stub · v1.2 |

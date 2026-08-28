@@ -13,31 +13,7 @@ Rules:
 
 ---
 
-## 1 · Restyle the remaining legacy pages — the big one
-
-**State:** open. One route under `src/pages/` remains on the frozen navy/gold stack
-(`src/styles/theme.css`): `/pull`. `/apply`, `/college`, `/emoji`, `/license`, `/permit`,
-`/articlewriter`, `/sat-resources`, `/sat-signup`, and `/major` are complete in the explicit
-Sakura restyle lanes. `BRAND.md` §11.2 and `05-v1-spec.md` §2.3 freeze the remaining page until
-its restyle is explicitly scheduled.
-
-**Decided when:** Oliver says go, and a plan doc exists with an owner.
-
-**It still blocks three follow-ups:**
-- The bar blur remains **opted out on every remaining legacy route** (D-30) because the sakura bar
-  over a navy legacy headline turns to mud.
-- `ScrollProgress` cannot be rebuilt (D-29). It needs real section ids, and those live in frozen
-  pages. The remaining legacy route barely scrolls — fix the page and re-measure before building
-  anything.
-- `index.html:29` still downloads **Big Shoulders** because the remaining frozen page uses
-  `theme.css`'s `--font-display`. Drop it from the font URL after `/pull` is restyled.
-
-**Detail:** `docs/COMPONENTS.md` follow-up 2 · `docs/redesign-research/14-chrome-restorations.md`
-X-3 · `docs/redesign-research/15-blur-restore.md` note 6.
-
----
-
-## 2 · The favicon asset
+## 1 · The favicon asset
 
 **State:** open, and it is an **asset, not code**. `BRAND.md` §10 fixes the favicon as **`oN` on
 `--bg`, square, 3px radius**. `index.html:5` and `:16` still point at `/on_logo_navy.png` — the
@@ -52,7 +28,7 @@ render is what killed Fraunces in D-07.
 
 ---
 
-## 3 · The wordmark dot on the dark ladder
+## 2 · The wordmark dot on the dark ladder
 
 **State:** open, and `BRAND.md` §10 **contradicts itself** — fix the doc whichever way this goes.
 
@@ -71,7 +47,7 @@ rewritten so only one sentence is normative.
 
 ---
 
-## 4 · The focus ring's colour and width
+## 3 · The focus ring's colour and width
 
 **State:** open, and **the weakest-tracked item here** — it was never actually written down.
 `src/styles/sakura.css:268` carries a comment saying it is "flagged in docs/COMPONENTS.md". It is
@@ -94,7 +70,7 @@ one visual token in the system with no brand authority behind it.
 
 ---
 
-## 5 · Merge `feat/component-library`
+## 4 · Merge `feat/component-library`
 
 **State:** open. Not a design call, but it gates everything above shipping.
 
@@ -113,7 +89,7 @@ There is no documented failure exception for the completed restyle lanes. Any re
 
 ---
 
-## 6 · Process — one worktree per executor
+## 5 · Process — one worktree per executor
 
 **State:** open, applies to the next multi-agent build, not to anything shipped.
 
@@ -133,7 +109,7 @@ risk.
 
 `D-27` idle shimmer · `D-28` camera frames clear of the bar · `D-29` the three R-C3 chrome removals
 (1 restored, 2 confirmed) · `D-30` bar blur restored, scoped to the graph home · `D-31` veil 82→74% ·
-`D-32` bar labels full strength, nav hover underline, veil 74→50%.
+`D-32` bar labels full strength, nav hover underline, veil 74→50% · `D-33` `/pull` Sakura restyle.
 
 **D-29's third X-1 finding ("the blur re-rasterises the graph canvas soft") was WRONG** — it was the
 graph's 6s guided-tour autostart moving the camera between two screenshots. Independently
