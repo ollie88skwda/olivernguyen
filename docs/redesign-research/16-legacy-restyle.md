@@ -9,7 +9,7 @@
 | Route | Page entry | Current stylesheet(s) | Current state |
 |---|---|---|---|
 | `/permit` | `src/pages/driving/permit.js` | `src/styles/App.css` | Long driving-permit guide with headings, paragraphs, links, ordered steps, and the DMV image. Uses a large display heading, mono section headings, navy/gold legacy tokens, and a Framer Motion entrance. |
-| `/license` | `src/pages/driving/drivers_license.js` | `src/styles/App.css` | Short follow-on guide with one section and a link back to `/permit`; currently inherits the generic legacy content treatment. |
+| `/license` | `src/pages/driving/drivers_license.js` | `src/pages/driving/drivers_license.css` | Restyled Sakura content page with one semantic section and a brand-treated link back to `/permit`; covered by `docs/license-restyle-coverage.md` and `e2e/license-lane.spec.js`. |
 | `/articlewriter` | `src/pages/archive/article_writer.js` | `src/styles/App.css` | Minimal article-generation form: product input, generate action, loading copy, generated HTML, and clipboard action. It calls the local generation service and injects returned HTML. |
 | `/sat-resources` | `src/pages/sat/sat_resources.js` | `src/styles/App.css` | Placeholder resource page with a single “Coming soon” state. |
 | `/sat-signup` | `src/pages/sat/sat_signup.js` | `src/styles/App.css` | Placeholder information page with a heading and explanatory copy; no working form yet. |

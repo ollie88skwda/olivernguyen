@@ -39,8 +39,9 @@
 //   3. <ScrollProgress> — STAYS OUT. Measured: on "/" scrollHeight ===
 //      innerHeight in all four combinations at 1440 and 375, and mounted it
 //      renders at opacity 0 reading "00%". Its four probe ids exist on NO route
-//      on the site, so the section designator can never appear. Eight of the nine
-//      remaining legacy routes scroll <=216px; only /permit really scrolls. Restoring it
+//      on the site, so the section designator can never appear. Most remaining legacy
+//      routes scroll <=216px; only /permit really scrolls. See docs/OPEN-DECISIONS.md
+//      for the current count. Restoring it
 //      as-is also drags in .scroll-station from the frozen theme.css, which is
 //      backdrop-filter: blur(6px) over hardcoded cream — the same §9 violation
 //      rejected in (1). The component stays in the tree for
