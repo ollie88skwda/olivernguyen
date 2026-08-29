@@ -2,7 +2,7 @@
 // (/terminal-dev.html → window.__term). Gate T0 cases (C-0.5): the page never
 // scrolls, blocks print line-at-a-time + pin, echo renders, clear empties,
 // pos% follows buffer scroll, reduced-motion prints instantly, zero console
-// errors. Gate C1 (C-1.6): boot hero, tabs/digits print sections, command
+// errors. Gate C1 (C-1.6): guided opener, tabs/digits print sections, command
 // errors, history/Tab, content spot-checks vs site.js (kept literal so the
 // spec fails loudly if content drifts — graph.spec pattern).
 import { test, expect } from "@playwright/test";
@@ -239,7 +239,7 @@ const bootDone = async (page) => {
   });
 };
 
-test.describe("terminal core — Gate C1 (prompt, commands, sections, boot)", () => {
+test.describe("terminal core — Gate C1 (prompt, commands, sections, opener)", () => {
   test("guided opener explains the work before shell grammar (§3.1.4)", async ({
     page,
   }) => {

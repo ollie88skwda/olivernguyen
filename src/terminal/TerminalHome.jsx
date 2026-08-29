@@ -217,8 +217,8 @@ export default function TerminalHome({ devHook, autoboot = true }) {
 
   // §3.1.1 — the page NEVER scrolls while the terminal is mounted; only the
   // buffer does. Restored on unmount so graph mode is untouched (P3).
-  // P9/X-3: coarse pointers get an INSTANT cadence — typing theater is a
-  // fine-pointer experience, and the typed boot pushed mobile LCP to ~5s.
+  // P9/X-3: coarse pointers get an INSTANT cadence — the guided reader is
+  // static, while manual replay commands keep the existing typing theater.
   useEffect(() => {
     const html = document.documentElement;
     const body = document.body;

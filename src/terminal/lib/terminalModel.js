@@ -4,7 +4,8 @@
  *
  * Every string the terminal prints as CONTENT comes from here, derived from
  * src/content/site.js (entities by kind/group + week). Section shape:
- * window 1 = boot (operator replay hero), 2–5 = the four groups that carry
+ * window 1 = opener/replay (the reader opens first; operator replay remains
+ * executable), 2–5 = the four groups that carry
  * narrative sections (agents/robotics/leadership/contact — the `pages` group
  * stays graph-only; its routes live in the chrome menu). Renderers live in
  * sections.jsx; this module is data only.
@@ -22,7 +23,7 @@ export const EMAIL = meta.email;
 export const NAME = meta.name;
 export const TAGLINE = meta.tagline;
 export const DAY_COUNT = week.length;
-export const BOOT_DAY = 3; // §6 C1: boot auto-types `operator --replay --day 3`
+export const BOOT_DAY = 3; // Default day for manual `operator --replay`
 export const GUIDE_INTRO =
   'Oliver makes computer programs that can plan and do work on their own, then coaches students through robotics and leadership. This is the readable version: what he builds, how it works, and the results you can verify.';
 

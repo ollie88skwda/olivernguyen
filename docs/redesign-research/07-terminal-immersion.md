@@ -59,10 +59,11 @@ then pins to bottom — it does not `scrollIntoView` a pre-laid-out document. Hi
 accumulates like a real session; revisiting re-prints; `clear` works and means something.
 Keep sections as `<template>`s cloned on print (plus a static no-JS render for crawlers).
 
-**Boot = pre-seeded session.** On load the site "runs" its own first command (satnaing
-pattern): types `operator --replay --day 3`, streams the transcript, prints name +
-tagline + CTA row as that command's output. The operator conceit — the loop drives the
-site — for free.
+**Opening = a pre-seeded guided session.** On load the site prints the motd and a
+plain-language reader before shell grammar: name, tagline, summary, evidence cards, and
+visible next steps. The `guide` command reprints that reader; `operator --replay --day 3`
+remains the manual replay command. The content-first opening keeps the terminal conceit
+without making a nontechnical visitor learn commands first.
 
 **Cell-grid discipline.** Size in `ch` and line-height multiples: panels padded whole
 cells, rules on row boundaries, box-drawing chars (`─ │ ╭ ╮`) for frames. Block cursor =
@@ -96,9 +97,10 @@ no visible affordances, and any command that doesn't do something real.
 3. **Persistent live prompt.** Real input docked under the buffer, focused on load,
    document-click refocus, Up/Down history, Tab completion over the intent registry;
    `:` becomes just a prefix in the same input — delete the separate cmdline overlay.
-4. **Boot as command #1.** Reuse the existing typed transcript, but as the output of a
-   visible auto-typed `operator --replay` in the prompt; name/tagline/CTAs print as
-   output lines. Delete `.hero { min-height: 100vh }` — the buffer owns height now.
+4. **Guided opener before shell grammar.** Print a readable, semantic document as the
+   first buffer block: plain-language introduction, explicit headings, evidence cards,
+   and progressive hints. Keep `operator --replay` as an executable manual command.
+   Delete `.hero { min-height: 100vh }` — the buffer owns height now.
 5. **tmux-ify the chrome.** Fold the floating left rail into the statusbar as window
    tabs — `[1:boot] [2:agents*] [3:robotics]…` (tmux window-list grammar), active in
    accent; right side keeps `%` + clock. One chrome element, all clickable.
