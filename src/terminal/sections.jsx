@@ -8,6 +8,19 @@
  * buffer click delegation turns them into run() calls (§3.1.2 affordances).
  */
 import React, { useEffect, useRef, useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Kbd } from '@/components/ui/kbd';
+import {
+  Display,
+  MonoLabel,
+  NodeCard,
+  SectionHead,
+  StatBlock,
+  StatRow,
+  StatusPill,
+  TechRow,
+  TechToken,
+} from '@/components/brand';
 import { ln } from './Buffer.jsx';
 import { motionOK } from './lib/cadence.js';
 import {
@@ -15,6 +28,7 @@ import {
   DAY_COUNT,
   EMAIL,
   bootData,
+  guideData,
   artifact,
   dayInfo,
   lsEntries,
@@ -29,10 +43,10 @@ const span = (c, t, key) => (
   </span>
 );
 
-const obtn = (label, attrs, key) => (
-  <button type="button" className="obtn" key={key} {...attrs}>
+const obtn = (label, attrs, key, variant = 'ghost') => (
+  <Button type="button" variant={variant} size="sm" className="obtn" key={key} {...attrs}>
     {label}
-  </button>
+  </Button>
 );
 
 const statusCls = (status) =>
@@ -124,6 +138,134 @@ export function bootLines(day = BOOT_DAY) {
 }
 
 /* ------------------------------- sections -------------------------------- */
+
+const statusTone = (status) =>
+  /RAN|NOW|ACTIVE|FASTEST|SHIPPED/.test(status || '')
+    ? 'live'
+    : /ARCHIVED/.test(status || '')
+      ? 'warning'
+      : 'neutral';
+
+function ReaderCard({ item }) {
+  return (
+    <NodeCard
+      as="article"
+      className="reader-card"
+      kicker={`${item.glyph} ${item.type}`}
+      title={item.title}
+    >
+      {item.status && (
+        <StatusPill status={statusTone(item.status)} dot={false} className="reader-status">
+          {item.status}
+        </StatusPill>
+      )}
+      <p className="reader-card-blurb">{item.blurb}</p>
+      {item.stats.length > 0 && (
+        <StatRow className="reader-stats">
+          {item.stats.map((stat) => (
+            <StatBlock key={stat.label} value={stat.value} label={stat.label} />
+          ))}
+        </StatRow>
+      )}
+      {item.tech.length > 0 && (
+        <TechRow className="reader-tech">
+          {item.tech.map((tech) => <TechToken key={tech}>{tech}</TechToken>)}
+        </TechRow>
+      )}
+      <div className="reader-card-actions">
+        <Button
+          type="button"
+          variant="link"
+          size="sm"
+          className="reader-command"
+          data-cmd={`open ${item.id}`}
+          aria-label={`Read details about ${item.title}`}
+        >
+          read details
+        </Button>
+        {item.link && (
+          <Button variant="link" size="sm" className="reader-link" asChild>
+            <a
+              href={item.link.href}
+              target={item.link.href.startsWith('/') ? undefined : '_blank'}
+              rel={item.link.href.startsWith('/') ? undefined : 'noreferrer'}
+            >
+              {item.link.label}
+            </a>
+          </Button>
+        )}
+      </div>
+    </NodeCard>
+  );
+}
+
+function ReaderSection({ id, kicker, title, summary, items }) {
+  return (
+    <section className="reader-section" id={id} aria-label={title}>
+      <SectionHead kicker={kicker} title={title} />
+      <p className="reader-section-summary">{summary}</p>
+      <div className="reader-cards">
+        {items.map((item) => <ReaderCard key={item.id} item={item} />)}
+      </div>
+    </section>
+  );
+}
+
+export function guideLines() {
+  const data = guideData();
+  return [
+    <div className="ln reader-document" key="guide">
+      <section className="reader-intro" aria-labelledby="reader-intro-title">
+        <MonoLabel tone="accent">start here · a plain-language tour</MonoLabel>
+        <Display as="h1" id="reader-intro-title" className="reader-name name">{data.name}</Display>
+        <p className="reader-lede tagline">{data.tagline}</p>
+        <p className="reader-summary">{data.intro}</p>
+        <StatRow className="reader-intro-stats">
+          {data.stats.map((stat) => <StatBlock key={stat.label} value={stat.value} label={stat.label} />)}
+        </StatRow>
+        <div className="reader-actions" aria-label="Ways to continue">
+          {obtn('read the work', { 'data-cmd': 'cat tools.txt' }, 'work', 'primary')}
+          {obtn('coaching & robotics', { 'data-cmd': 'cat robotics.log' }, 'robotics')}
+          {obtn('open graph view', { 'data-cmd': 'mode graph' }, 'graph')}
+        </div>
+        <div className="reader-hints">
+          <MonoLabel>optional controls</MonoLabel>
+          <span><Kbd>1–5</Kbd> switch sections</span>
+          <span><Kbd>⌘K</Kbd> search</span>
+          <span><Kbd>?</Kbd> help anytime</span>
+        </div>
+      </section>
+      <ReaderSection
+        id="reader-work"
+        kicker="01 / WORK"
+        title="Systems that do useful work"
+        summary={data.agents.summary}
+        items={data.agents.items}
+      />
+      <ReaderSection
+        id="reader-coaching"
+        kicker="02 / COACHING"
+        title="Building people and machines"
+        summary={data.robotics.summary}
+        items={data.robotics.items}
+      />
+      <ReaderSection
+        id="reader-leadership"
+        kicker="03 / LEADERSHIP"
+        title="Work beyond the terminal"
+        summary={data.leadership.summary}
+        items={data.leadership.items}
+      />
+      <ReaderSection
+        id="reader-contact"
+        kicker="04 / CONTACT"
+        title="Start a conversation"
+        summary={data.contact.summary}
+        items={data.contact.channels}
+      />
+    </div>,
+  ];
+}
 
 function itemLines(items, out) {
   items.forEach((it, i) => {
@@ -276,7 +418,7 @@ export function artifactLines(id) {
 export function helpLines() {
   const rows = [
     ['keys      ', 'j/k scroll · 1-5 windows · gg/G top/bottom · ? help sheet · ⌘K palette'],
-    ['commands  ', 'ls · cat FILE · day N · open NODE · mode graph · email · clear · help'],
+    ['commands  ', 'guide · ls · cat FILE · day N · open NODE · mode graph · email · clear · help'],
     ['prompt    ', 'Tab completes · ↑/↓ history · Esc clears · : prefix works'],
   ];
   return rows.map(([k, v], i) => ln('', [span('dim', k, 'k'), span('mut', v, 'v')], i));

@@ -39,6 +39,7 @@ const PANES = [
 ];
 
 const CMDS = [
+  ['guide', 'return to the readable tour'],
   ['ls', 'list files'],
   ['cat FILE', 'print a file (tools.txt, whoami.txt, …)'],
   ['day N', 'replay day N of the operator week'],

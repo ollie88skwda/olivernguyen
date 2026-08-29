@@ -8,9 +8,9 @@ This doc is restart-safe: any fresh agent must be able to resume from it alone.
 ## CURRENT STATUS / NEXT TASK  ← executors MUST keep this block updated
 
 ```
-Last updated   : exec-term-core — FINAL GATE ✅ (X-1..X-4 done). TERMINAL BUILD COMPLETE
-                 (preview only). Doc-10 L5 launch-hold is LIFTED — both modes gated;
-                 the production flip stays Oliver's call.
+Last updated   : guided-terminal-reader-build — guided opener implementation complete;
+                 browser validation remains with the owning validation phase. The prior
+                 terminal build remains validated and preview-only; production stays Oliver's call.
                  Evidence: 341 vitest + 80 e2e green (×3 runs); Lighthouse — graph /
                  91-93 perf / 100 a11y mobile · 100/100 desktop (baseline-matched via
                  graph-v1 worktree bench), terminal /?mode=terminal 95/100 mobile ·
@@ -72,8 +72,8 @@ Notes for Oliver :
     protection-bypass secret to share the URL publicly.
   - Terminal ⌘K drops the graph-only tour/fit intents (L7: every palette row must
     do something real). Flag if you want terminal equivalents.
-  - Touch devices boot INSTANTLY (typed boot pushed mobile LCP to 5.0s → gate
-    fail); desktop keeps the full typing theater. Flag if you want typing on touch.
+  - Touch devices open the guided reader instantly; the opener no longer types a boot
+    command. Manual `operator --replay` still uses the existing replay cadence.
   - day N / open <entity> auto-split panes on wide screens; when the 40ch×12 pane
     floor refuses (narrow windows), content prints in-buffer + an E96 statusbar
     error — intended degradation.
@@ -114,7 +114,7 @@ one live prompt, tmux statusbar) **plus** Herdr-style panes per `09-herdr-panels
 |---|---|
 | L1 | Terminal = dark sakura ("Night Plum" tokens, 04 §2.2/§5 — already in sakura.css) |
 | L2 | Graph stays the flagship + default; terminal lives behind the TERM toggle (doc 10 L2/P3) |
-| L3 | Immersion model per 07: page NEVER scrolls; sections PRINT into a scrollback buffer; one always-live prompt; boot = the site runs its own first command. Feel reference = `prototype/terminal/` v2 |
+| L3 | Immersion model per 07: page NEVER scrolls; sections PRINT into a scrollback buffer; one always-live prompt; the guided reader opens before shell grammar, while `operator --replay` remains executable. Feel reference = `prototype/terminal/` v2 |
 | L4 | Herdr panes per 09 §C: binary split tree, prefix-key grammar, named panes, max 4 |
 | L5 | Both modes are gated; the production flip stays Oliver's call |
 | L6 | Fonts follow `BRAND.md` §7: JetBrains Mono for read-heavy terminal text, Martian Mono for labels, Familjen Grotesk for display |
@@ -127,7 +127,7 @@ one live prompt, tmux statusbar) **plus** Herdr-style panes per `09-herdr-panels
 | P1 | **Port `prototype/terminal/` v2 architecture into React. No xterm.js, no terminal libs, no Lenis, no new deps at all.** | The approved feel is ~650 LOC of DOM we already own; xterm solves emulation we don't need. 07 declared Lenis unnecessary in this model. |
 | P2 | **Default mode stays graph for everyone.** 05 §6.2's OS heuristic is NOT activated. Terminal reached via toggle / `?mode=terminal` / intents. | Doc 10 L2 locked "graph greets all first-time visitors". Flag in status notes if Oliver wants the heuristic — one-line change in ModeProvider (exec-infra territory, not ours). |
 | P3 | **Never-trap by unmount, mirroring graph:** `Home.jsx` renders exactly ONE of GraphHome/TerminalHome. TerminalHome binds its single window keydown listener in an effect with cleanup — zero terminal handlers exist while graph is mounted, and vice versa. Round-trip remounts terminal fresh (scrollback + pane layout die, like a real session — 09's no-persistence call). | Graph's window handlers already work this way (doc 10 status notes); symmetry is the safety property the round-trip E2E asserts. |
-| P4 | **Read-only dependencies:** `src/content/site.js`, `src/intents/registry.js`, everything under `src/graph/**`, and graph-era e2e specs — DO NOT EDIT. Terminal derives its view via `src/terminal/lib/terminalModel.js` (sections from entity kind/group; no `terminal:{}` hints added to site.js) and wraps intents in `src/terminal/lib/intents.js` (imports INTENTS + matchIntents; swaps `mode-terminal` → a mode-graph intent; appends terminal-only entries: clear, help, day jumps ride the matcher's built-in `day N`). | Graph must not change behavior (its ⌘K must not grow terminal rows). Graph focus-intent API + top-bar link restore = separate follow-up, OUT of scope. |
+| P4 | **Read-only dependencies:** `src/content/site.js`, `src/intents/registry.js`, everything under `src/graph/**`, and graph-era e2e specs — DO NOT EDIT. Terminal derives site-backed sections via `src/terminal/lib/terminalModel.js` (selectors from entity kind/group; the guided opener's plain-language copy is owned there; no `terminal:{}` hints added to site.js) and wraps intents in `src/terminal/lib/intents.js` (imports INTENTS + matchIntents; swaps `mode-terminal` → a mode-graph intent; appends terminal-only entries: clear, help, day jumps ride the matcher's built-in `day N`). | Graph must not change behavior (its ⌘K must not grow terminal rows). Graph focus-intent API + top-bar link restore = separate follow-up, OUT of scope. |
 | P5 | **05 §3 (scrolling column, scroll-scrub, Magic UI components) is superseded by 07** — 07 explicitly amends it. Week replay = `day N` printing that day's beats + the `replay` pane program. No pinned scrub, no FlickeringGrid/Terminal components. | 07 §4 "spec fallout" paragraph. |
 | P6 | **TerminalHome is lazy-imported by Home** — terminal is never the first paint (P2), so the chunk loads only when mode flips. Network-asserted like graph's mobile rule. `/` entry budget ≤ 180KB gz unchanged. | Perf gate parity. Terminal has no heavy deps; the lazy split is cheap insurance. |
 | P7 | **Pane grammar = 09 §C verbatim:** prefix `Ctrl+G` (Cmd+G also accepted), the 8 bindings, one-shot prefix + sticky resize mode, 1.2s pending expiry shown in statusbar; limits ≤4 panes / split depth 2 per axis / min ~40ch×12 rows (violations → statusbar E-error); boot opens 1 pane; artifact commands auto-split RIGHT (main stays LEFT) with a toast advertising `^G x`; nested-flex render; zoom = CSS visibility, tree untouched; no layout persistence. | Researched + decided in 09; Herdr is Oliver's own muscle memory. |
@@ -146,8 +146,9 @@ one live prompt, tmux statusbar) **plus** Herdr-style panes per `09-herdr-panels
    prefixes complete deterministically, while ambiguous prefixes print useful matches and keep
    focus. `:` is just a prefix in the same input, block cursor = full-cell inverse,
    NORMAL/INSERT/COMMAND indicator in the statusbar.
-4. Boot = motd + auto-typed `operator --replay --day 3` whose output is the hero
-   (log frame, scramble-reveal name, tagline, CTA row).
+4. Guided opener = motd + a readable semantic document before shell grammar (name,
+   tagline, summary, evidence cards, next steps, and progressive hints). The opener is
+   model-backed; `operator --replay --day 3` remains the manual replay command.
 5. Cadence: commands TYPE (~26–52ms/char); output PRINTS line-at-a-time (34–74ms
    stagger). Keystrokes echo instantly. Reduced-motion: everything instant.
 6. Statusbar = tmux grammar: `[oN.c]` + window tabs `1:boot…5:contact` (click = run) +
@@ -168,8 +169,9 @@ side-frame widths (`SP_COLS`-style constants) and font sizes were retuned agains
 screenshots in task C-3.4, not with ad-hoc tweaks. Familjen Grotesk supplies display text.
 
 ### 3.4 What changes vs the prototype
-Content comes from `site.js` via terminalModel (zero hardcoded copy — the prototype's
-`<template>`s become React renderers fed by selectors); `mode graph` actually dispatches
+Content comes from `site.js` via terminalModel where it is entity-backed; the guided
+opener's plain-language summary is owned by terminalModel (the prototype's `<template>`s
+become React renderers fed by selectors). `mode graph` actually dispatches
 `'on:set-mode'`; the context side-pane becomes a real pane (program `main` boots alone;
 the old `#sidepane` is dropped — panes replace it); intents come from the shared registry.
 
@@ -275,13 +277,14 @@ files + terminal intents, doc-click refocus fine-pointer-only), command executor
 (`ls`, `cat FILE`, `cd <destination>` from linked graph routes, `cd ..`, `cd /`, `day N` → prints
 that day's real beats from `site.week`, `open <entity>` → artifact via `panes.open` (in-buffer
 until panes lands), `mode graph|term`, `email` copy + printed confirm, `help`, `clear`, `1–5`,
-`quit` line; invalid destinations print inline errors with available matches), terminalModel selectors
-(ALL copy from site.js — zero hardcoded content), section renderers, boot sequence as
-command #1 (motd → auto-typed `operator --replay --day 3` → log frame + scramble name +
-tagline + CTA row), statusbar tabs + % + clock.
-✅ **GATE C1:** Playwright: boot autoruns and prints the hero; every tab + `1–5` prints
-its section; `cat nosuch.txt` errors properly; history/Tab work; content assertions match
-site.js values (spot-check 3 entities + day-3 beats); zero console errors.
+`quit` line; invalid destinations print inline errors with available matches), terminalModel
+selectors (site-backed content plus model-owned opener copy), section renderers, reader-first
+opener (motd → semantic guide → progressive hints), manual replay command
+`operator --replay --day 3`, and statusbar tabs + % + clock.
+✅ **GATE C1:** Playwright: the guided opener prints the reader before shell grammar;
+`guide` remains executable; every tab + `1–5` prints its section; `cat nosuch.txt` errors
+properly; history/Tab work; content assertions match site.js values (spot-check 3
+entities + day-3 beats); zero console errors.
 
 **Phase C2 — exec-term-core: vim keys, palette, mode dispatch, never-trap** (~1–2 days)
 Empty-prompt motions (`j/k` rows, `gg`/`G` with `g‥` pending + 1.2s expiry, `?` help
@@ -356,11 +359,11 @@ status block, commit (`terminal-v1(<executor>): <task-id> <summary>`).
 - [x] **C-0.4** `lib/cadence.js` (type/print timings, RM-instant) + Vitest on cadence/queue
 - [x] **C-0.5** Playwright: no-page-scroll, print/pin/clear/pos, RM-instant → **GATE T0 ✅**
 - [x] **C-1.1** `Prompt.jsx` — echo + block cursor, mode indicator, history, Tab completion, refocus rules
-- [x] **C-1.2** `lib/terminalModel.js` — section/artifact/beat selectors over site.js (+tests, zero hardcoded copy)
+- [x] **C-1.2** `lib/terminalModel.js` — section/artifact/beat selectors over site.js plus model-owned opener copy (+tests)
 - [x] **C-1.3** `lib/commands.js` + `sections.jsx` — full command set + section renderers
-- [x] **C-1.4** Boot sequence as command #1 (motd, auto-type, log frame, scramble name, CTAs)
+- [x] **C-1.4** Reader-first opener (motd, semantic sections, evidence cards, progressive hints) plus manual replay command
 - [x] **C-1.5** `StatusBar.jsx` — tabs, mode, %, clock (pane props stubbed)
-- [x] **C-1.6** Playwright: boot/tabs/commands/content assertions → **GATE C1 ✅**
+- [x] **C-1.6** Playwright: guided opener, reader hierarchy, keyboard controls, guide command, tabs, and existing-command assertions → **GATE C1 ✅**
 - [x] **C-2.1** Vim motions in empty prompt (`j/k`, `gg/G` + `g‥`, `1–5`, `?`), Esc cascade
 - [x] **C-2.2** `lib/intents.js` wrapper (P4) + `Palette.jsx` (⌘K, suggestions) + `HelpSheet.jsx`
 - [x] **C-2.3** `mode graph|term` → cancelable `'on:set-mode'` dispatch + printErr fallback

@@ -2,7 +2,7 @@
 // (/terminal-dev.html → window.__term). Gate T0 cases (C-0.5): the page never
 // scrolls, blocks print line-at-a-time + pin, echo renders, clear empties,
 // pos% follows buffer scroll, reduced-motion prints instantly, zero console
-// errors. Gate C1 (C-1.6): boot hero, tabs/digits print sections, command
+// errors. Gate C1 (C-1.6): guided opener, tabs/digits print sections, command
 // errors, history/Tab, content spot-checks vs site.js (kept literal so the
 // spec fails loudly if content drifts — graph.spec pattern).
 import { test, expect } from "@playwright/test";
@@ -239,42 +239,119 @@ const bootDone = async (page) => {
   });
 };
 
-test.describe("terminal core — Gate C1 (prompt, commands, sections, boot)", () => {
-  test("boot autoruns: motd, auto-typed command, day-3 frame, hero, CTAs (§3.1.4)", async ({
+test.describe("terminal core — Gate C1 (prompt, commands, sections, opener)", () => {
+  test("guided opener explains the work before shell grammar (§3.1.4)", async ({
     page,
   }) => {
     const errors = collectErrors(page);
-    await openHarness(page, ""); // REAL boot, full cadence
+    await openHarness(page, "");
 
-    // motd printed before the first command
     await expect(page.locator(".ln.faint").first()).toContainText("Last login:");
-    // the site types its own first command → echo line
-    await expect(page.locator(".ln.echo .cmdtext").first()).toHaveText(
-      "operator --replay --day 3",
-      { timeout: 15_000 },
-    );
-    // day-3 log frame from site.week + operator stats summary
-    await expect(page.locator(".ln.k-log").first()).toContainText(DAY3_BEAT, {
-      timeout: 15_000,
-    });
-    await expect(page.locator(".ln.k-ok").first()).toContainText(
-      "257 decision entries",
-    );
-    // scramble settles on the real name; tagline is site.meta's
     await bootDone(page);
-    await expect(page.locator(".ln.tagline").first()).toHaveText(TAGLINE);
-    // CTA row buttons
+    await expect(page.locator(".reader-intro")).toContainText(TAGLINE);
+    await expect(page.locator(".reader-summary")).toContainText(
+      "Oliver makes computer programs",
+    );
+    await expect(page.locator(".reader-section")).toHaveCount(4);
+    await expect(page.locator(".reader-section h2").first()).toHaveText(
+      "Systems that do useful work",
+    );
+    await expect(page.locator(".reader-card").first()).toContainText("257");
+    await expect(page.locator(".reader-card").first()).toContainText(
+      "decision entries",
+    );
+    await expect(page.locator("#reader-leadership .reader-section-summary")).toHaveText(
+      "Roles and credentials from outside the terminal.",
+    );
     await expect(
       page.locator('button.obtn[data-cmd="cat tools.txt"]'),
     ).toBeVisible();
     await expect(
       page.locator('button.obtn[data-cmd="mode graph"]'),
     ).toBeVisible();
-    // statusbar: window 1 active, prompt back to NORMAL
     await expect(page.getByRole("button", { name: "1:boot" })).toHaveClass(
       /active/,
     );
     await expect(page.getByTestId("sb-mode")).toHaveText("-- NORMAL --");
+    assertClean(errors);
+  });
+
+  test("guided opener exposes progressive hints and a complete reading hierarchy", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await openHarness(page, "");
+    await bootDone(page);
+    const reader = page.locator(".reader-document");
+    const levels = await reader.locator("h1, h2, h3").evaluateAll((headings) =>
+      headings.map((heading) => Number(heading.tagName.slice(1))),
+    );
+
+    expect(levels[0]).toBe(1);
+    expect(levels).toContain(2);
+    expect(levels).toContain(3);
+    await expect(reader.locator("h1")).toHaveCount(1);
+    await expect(reader.locator("h2")).toHaveCount(4);
+    await expect(reader.locator("h3").first()).toBeVisible();
+    await expect(reader.locator(".reader-hints")).toContainText(
+      "optional controls",
+    );
+    await expect(reader.locator(".reader-hints")).toContainText("1–5");
+    await expect(reader.locator(".reader-hints")).toContainText("⌘K");
+    await expect(reader.locator(".reader-hints")).toContainText("?");
+    await expect(page.getByTestId("term-help")).toHaveCount(0);
+    assertClean(errors);
+  });
+
+  test("guided opener has named landmarks and keyboard controls", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await openHarness(page, "");
+    await bootDone(page);
+    const reader = page.locator(".reader-document");
+
+    await expect(
+      reader.locator('section[aria-labelledby="reader-intro-title"]'),
+    ).toHaveCount(1);
+    await expect(
+      reader.getByRole("heading", { name: "Oliver Nguyen", level: 1 }),
+    ).toBeVisible();
+    await expect(
+      reader.getByRole("region", { name: "Systems that do useful work" }),
+    ).toBeVisible();
+    await expect(page.locator("#term-prompt-input")).toHaveAccessibleName(
+      "Terminal prompt",
+    );
+
+    const readWork = reader.getByRole("button", { name: "read the work" });
+    await expect(readWork).toBeVisible();
+    await readWork.focus();
+    await expect(readWork).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(page.locator(".ln.echo .cmdtext").last()).toHaveText(
+      "cat tools.txt",
+    );
+    await expect(page.locator(".reader-section").last()).toBeVisible();
+    assertClean(errors);
+  });
+
+  test("guide remains executable while g stays out of Tab completion", async ({
+    page,
+  }) => {
+    const errors = collectErrors(page);
+    await openHarness(page, "?still");
+    await bootDone(page);
+    const prompt = page.locator("#term-prompt-input");
+
+    await prompt.fill("guide");
+    await prompt.press("Enter");
+    await expect(page.locator(".ln.echo .cmdtext").last()).toHaveText("guide");
+    await expect(page.locator(".reader-document").last()).toBeVisible();
+
+    await prompt.fill("g");
+    await prompt.press("Tab");
+    await expect(prompt).toHaveValue("g");
     assertClean(errors);
   });
 
@@ -300,7 +377,7 @@ test.describe("terminal core — Gate C1 (prompt, commands, sections, boot)", ()
     await expectSection("4:leadership", "Eagle Scout");
     await expectSection("5:contact", "OPEN CHANNEL.");
     // echoes are real commands
-    await expect(page.locator(".ln.echo .cmdtext").nth(1)).toHaveText(
+    await expect(page.locator(".ln.echo .cmdtext").nth(0)).toHaveText(
       "cat tools.txt",
     );
     assertClean(errors);
@@ -314,7 +391,7 @@ test.describe("terminal core — Gate C1 (prompt, commands, sections, boot)", ()
     await page.waitForFunction(() => !!window.__term);
     await bootDone(page);
     await page.keyboard.press("2");
-    await expect(page.locator(".ln.echo .cmdtext").nth(1)).toHaveText(
+    await expect(page.locator(".ln.echo .cmdtext").nth(0)).toHaveText(
       "cat tools.txt",
     );
     await expect(page.locator(".blk").last()).toContainText("ScopeCreep Notary");
@@ -461,7 +538,7 @@ test.describe("terminal core — Gate C1 (prompt, commands, sections, boot)", ()
     await page.waitForFunction(() => !!window.__term);
     await bootDone(page);
     await page.locator('button.obtn[data-cmd="cat tools.txt"]').click();
-    await expect(page.locator(".ln.echo .cmdtext").nth(1)).toHaveText(
+    await expect(page.locator(".ln.echo .cmdtext").nth(0)).toHaveText(
       "cat tools.txt",
     );
     await expect(page.locator(".blk").last()).toContainText("Articlewriter");

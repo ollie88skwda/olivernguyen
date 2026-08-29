@@ -18,6 +18,7 @@ const mockCtx = () => ({
   autotype: vi.fn(async () => {}),
   clearPrompt: vi.fn(),
   printBoot: vi.fn(),
+  printGuide: vi.fn(),
   printSection: vi.fn(),
   printLs: vi.fn(),
   printHelp: vi.fn(),
@@ -32,6 +33,7 @@ const mockCtx = () => ({
 describe('execute() dispatch table', () => {
   it.each([
     ['ls', 'printLs'],
+    ['guide', 'printGuide'],
     ['ls -la', 'printLs'],
     ['help', 'printHelp'],
     ['email', 'copyEmail'],
@@ -155,6 +157,14 @@ describe('complete()', () => {
     expect(complete('c')).toBeNull();
     expect(completionMatches('c')).toEqual(['cat ', 'cd ', 'clear', 'contact']);
     expect(complete('ca')).toBe('cat ');
+  });
+
+  it('keeps guide executable without adding it to Tab completion', async () => {
+    const ctx = mockCtx();
+    await execute('guide', ctx);
+    expect(ctx.printGuide).toHaveBeenCalledTimes(1);
+    expect(complete('g')).toBeNull();
+    expect(completionMatches('g')).toEqual([]);
   });
 });
 

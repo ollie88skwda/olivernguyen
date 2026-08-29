@@ -129,7 +129,7 @@ test.describe("R-I1 · integrated / — REBUILD DONE", () => {
       await page.locator('meta[name="theme-color"]').getAttribute("content"),
     ).toBe(THEME_COLOR.light);
 
-    await page.getByRole("button", { name: "GRAPH" }).click();
+    await page.getByRole("button", { name: "GRAPH", exact: true }).click();
     await expect(page.locator(".graph-root")).toBeVisible();
     await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
     expect(errors, errors.join(" | ")).toEqual([]);
@@ -162,10 +162,9 @@ test.describe("R-I1 · integrated / — REBUILD DONE", () => {
       }
 
       if (mode === "terminal") {
-        // signature 1 is the typing cadence — under reduce the transcript must
-        // already be complete, not mid-type
-        await expect(page.locator(".ln.echo .cmdtext").first()).toHaveText(
-          "operator --replay --day 3",
+        // reduced motion still lands the guided document as complete content
+        await expect(page.locator(".reader-intro h1")).toHaveText(
+          "Oliver Nguyen",
         );
       } else {
         await expect(page.locator(".graph-root")).toBeVisible();

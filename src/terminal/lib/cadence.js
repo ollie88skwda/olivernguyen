@@ -27,8 +27,8 @@ export const printDelay = (base = PRINT_BASE_MS, rand = Math.random) =>
   base + rand() * PRINT_JITTER_MS;
 
 /** App-set still override (C-3.2/X-3): TerminalHome flips this on for
- * coarse-pointer devices — P9 touch-first, and the typed boot otherwise
- * pushes mobile LCP past the §6 Lighthouse gate (name paints ~5s in). */
+ * coarse-pointer devices — P9 touch-first; the guided opener is static, while
+ * manual command replay keeps the typing theater on fine pointers. */
 let stillOverride = false;
 export const setStill = (v) => {
   stillOverride = Boolean(v);

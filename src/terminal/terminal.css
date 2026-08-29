@@ -199,6 +199,128 @@
 .term-screen .ln b { color: var(--text); font-weight: 700; }
 .term-screen .ind { padding-left: 4ch; }
 
+/* guided reader — the terminal skin stays mono at its edges, while the first
+   read uses the brand's semantic display/body hierarchy and a 75ch measure. */
+.term-screen .reader-document {
+  max-width: 75ch;
+  min-height: 0;
+  margin: 0 auto;
+  padding: var(--s-4) 0 var(--s-12);
+  white-space: normal;
+  overflow-wrap: normal;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+}
+.term-screen .reader-intro {
+  padding: var(--s-6) 0 var(--s-8);
+  border-bottom: 1px solid var(--border);
+}
+.term-screen .reader-intro > .on-label {
+  display: block;
+  margin-bottom: var(--s-3);
+}
+.term-screen .reader-name {
+  margin: 0;
+  font-size: var(--fs-display);
+  line-height: 1;
+}
+.term-screen .reader-lede {
+  max-width: 55ch;
+  margin: var(--s-3) 0 0;
+  color: var(--accent-hi);
+  font-family: var(--font-display);
+  font-size: var(--fs-title);
+  font-weight: 700;
+  letter-spacing: var(--track-display);
+  line-height: 1.15;
+}
+.term-screen .reader-summary,
+.term-screen .reader-section-summary,
+.term-screen .reader-card-blurb {
+  max-width: 68ch;
+  margin: var(--s-4) 0 0;
+  color: var(--text-muted);
+}
+.term-screen .reader-intro-stats {
+  margin-top: var(--s-6);
+  gap: var(--s-6);
+}
+.term-screen .reader-actions,
+.term-screen .reader-hints,
+.term-screen .reader-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+}
+.term-screen .reader-actions {
+  margin-top: var(--s-6);
+}
+.term-screen .reader-hints {
+  margin-top: var(--s-6);
+  color: var(--text-faint);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+.term-screen .reader-hints .on-label {
+  color: var(--text-muted);
+  flex-basis: 100%;
+}
+.term-screen .reader-hints > span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+.term-screen .reader-section {
+  padding-top: var(--s-12);
+}
+.term-screen .reader-section .on-section-head {
+  max-width: 68ch;
+}
+.term-screen .reader-section-summary {
+  margin-top: var(--s-4);
+}
+.term-screen .reader-cards {
+  display: grid;
+  gap: var(--s-4);
+  margin-top: var(--s-6);
+}
+.term-screen .reader-card.on-node {
+  gap: var(--s-3);
+  padding: var(--s-6);
+  text-align: left;
+}
+.term-screen .reader-card .on-label {
+  color: var(--text-muted);
+}
+.term-screen .reader-card .on-node-title {
+  font-size: var(--fs-title);
+}
+.term-screen .reader-status {
+  align-self: flex-start;
+}
+.term-screen .reader-card-blurb {
+  margin-top: 0;
+}
+.term-screen .reader-stats {
+  gap: var(--s-6);
+  margin-top: var(--s-2);
+}
+.term-screen .reader-tech {
+  margin-top: 0;
+}
+.term-screen .reader-card-actions {
+  margin-top: var(--s-1);
+}
+.term-screen .reader-command,
+.term-screen .reader-link {
+  min-height: var(--s-6);
+  padding: 0;
+}
+
 .term-screen .k-log { color: var(--term-log, var(--text-muted)); }
 .term-screen .k-ok { color: var(--success); }
 
@@ -408,8 +530,10 @@
 
 /* ---------- touch (P9): ≥44px targets; keyboard never pops uninvited ----- */
 
-@media (pointer: coarse) {
+@media (max-width: 880px), (pointer: coarse) {
   .term-screen .obtn,
+  .term-screen .reader-command,
+  .term-screen .reader-link,
   .term-screen .term-statusbar .tab,
   .term-screen .term-statusbar .sb-cmdk {
     min-height: 44px;

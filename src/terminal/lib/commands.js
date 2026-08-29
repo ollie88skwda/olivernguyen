@@ -7,7 +7,7 @@
  *     echo(cmd) · print(lines,{stagger}) · printLine(cls,text) · printErr(t)
  *     clear()                            // buffer api pass-throughs
  *     autotype(cmd) · clearPrompt()      // prompt handle
- *     printBoot(day) · printSection(file) · printLs() · printHelp()
+ *     printBoot(day) · printGuide() · printSection(file) · printLs() · printHelp()
  *     printDay(n) · openArtifact(id)     // section printers (sections.jsx)
  *     copyEmail() · dispatchMode('graph'|'terminal') · quitLine()
  *   }
@@ -123,6 +123,8 @@ export async function execute(raw, ctx) {
     const dm = cmd.match(/--day\s+(\d+)/);
     return ctx.printBoot(dm ? Number(dm[1]) : BOOT_DAY);
   }
+
+  if (cmd === 'guide') return ctx.printGuide();
 
   if (cmd === 'ls' || cmd === 'ls -la') return ctx.printLs();
 
