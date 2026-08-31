@@ -1,6 +1,6 @@
 import React from 'react';
 
-// Only reachable in local development: `react-scripts start` answers /api/* with
+// Only reachable in local development: `vite` answers /api/* with
 // index.html, so no gate can ever open. Say that plainly instead of showing a
 // passphrase box that will never accept anything.
 export const ApiMissing = ({ route }) => (
@@ -10,7 +10,7 @@ export const ApiMissing = ({ route }) => (
       <h1 className="gate-title">No API</h1>
       <p className="gate-hint">
         The <code>/api/*</code> routes are Vercel serverless functions.{' '}
-        <code>react-scripts start</code> does not run them — it answers every path with{' '}
+        <code>vite</code> does not run them — it answers every path with{' '}
         <code>index.html</code>, so the gate can never open.
       </p>
       <p className="gate-hint">

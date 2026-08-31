@@ -1,8 +1,8 @@
 {
-  "buildCommand": "react-scripts build",
-  "outputDirectory": "build",
+  "buildCommand": "vite build",
+  "outputDirectory": "dist",
   "installCommand": "yarn install",
-  "devCommand": "react-scripts start",
+  "devCommand": "vite",
   "framework": null,
   "rewrites": [
     {

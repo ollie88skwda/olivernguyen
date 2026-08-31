@@ -1,4 +1,4 @@
-// Shared fetch wrapper for the /api routes. `react-scripts start` does not serve
+// Shared fetch wrapper for the /api routes. `vite` does not serve
 // api/* — it answers every path with index.html at 200 — so an HTML body is a hard
 // error rather than an empty result, and callers can tell "no backend" apart from
 // "not logged in".
@@ -18,7 +18,7 @@ export async function apiFetch(path, options = {}) {
   const contentType = res.headers.get('content-type') || '';
   if (!contentType.includes('application/json')) {
     const err = new Error(
-      'The /api routes are not running. Start the site with `vercel dev` — `react-scripts start` cannot serve them.'
+      'The /api routes are not running. Start the site with `vercel dev` — `vite` cannot serve them.'
     );
     err.status = res.status;
     err.noApi = true;

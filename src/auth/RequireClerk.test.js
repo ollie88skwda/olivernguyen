@@ -1,10 +1,11 @@
 import React from 'react';
+import { vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import RequireClerk from './RequireClerk';
 import { useAuth } from '@clerk/react';
 
-jest.mock('@clerk/react', () => ({ useAuth: jest.fn() }));
+vi.mock('@clerk/react', () => ({ useAuth: vi.fn() }));
 
 const renderGate = () =>
   render(

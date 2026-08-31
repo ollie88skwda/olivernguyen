@@ -1,4 +1,5 @@
 import React from "react";
+import { vi } from "vitest";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import MomFifty from "./index";
 import { REASONS } from "./reasons";
@@ -30,16 +31,16 @@ describe("/mom", () => {
   test("progress saved under the old /mum keys is still honoured", () => {
     window.localStorage.setItem("mum50.seenOpening", "1");
     window.localStorage.setItem("mum50.deckDone", "1");
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     try {
       render(<MomFifty />);
       act(() => {
-        jest.advanceTimersByTime(2000);
+        vi.advanceTimersByTime(2000);
       });
       fireEvent.click(screen.getByRole("button", { name: /read the fifty reasons/i }));
       expect(screen.getAllByRole("button", { name: /^Reason \d+$/ })).toHaveLength(50);
     } finally {
-      jest.useRealTimers();
+      vi.useRealTimers();
     }
   });
 
@@ -60,18 +61,18 @@ describe("/mom", () => {
   test("a later visit shows the live age, then the grid of all fifty", () => {
     window.localStorage.setItem("mom50.seenOpening", "1");
     window.localStorage.setItem("mom50.deckDone", "1");
-    jest.useFakeTimers();
+    vi.useFakeTimers();
     try {
       render(<MomFifty />);
       act(() => {
-        jest.advanceTimersByTime(2000);
+        vi.advanceTimersByTime(2000);
       });
       expect(screen.getByText(/to be precise/i)).toBeInTheDocument();
 
       fireEvent.click(screen.getByRole("button", { name: /read the fifty reasons/i }));
       expect(screen.getAllByRole("button", { name: /^Reason \d+$/ })).toHaveLength(50);
     } finally {
-      jest.useRealTimers();
+      vi.useRealTimers();
     }
   });
 
