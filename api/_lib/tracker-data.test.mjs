@@ -7,9 +7,9 @@ vi.mock("../_lib/tracker.mjs", () => ({
   readTracker: vi.fn(),
 }));
 
-import { requireOwnerSession } from "../_lib/auth.mjs";
-import { mutateTracker, readTracker } from "../_lib/tracker.mjs";
-import handler from "./data.mjs";
+import { requireOwnerSession } from "./auth.mjs";
+import { mutateTracker, readTracker } from "./tracker.mjs";
+import handler from "../tracker/data.mjs";
 
 function response() {
   return {
