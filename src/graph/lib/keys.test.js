@@ -39,14 +39,20 @@ describe('keyboard — never-trap guards (05 §5.4.2)', () => {
     expect(isChromeMenuTarget(null)).toBe(false);
   });
 
-  it('interactive controls form a keyboard boundary', () => {
-    const button = { closest: (selector) => selector.includes('button') ? button : null };
-    const dossier = { closest: (selector) => selector.includes('[role="dialog"]') ? dossier : null };
-    const outside = { closest: () => null };
-    expect(isInteractiveTarget(button)).toBe(true);
-    expect(isInteractiveTarget(dossier)).toBe(true);
-    expect(isInteractiveTarget(outside)).toBe(false);
+  it('chrome and dossier focus are keyboard boundaries, node cards are not', () => {
+    document.body.innerHTML = `
+      <header class="site-chrome-bar"><button><span /></button></header>
+      <aside class="dossier"><button><span /></button></aside>
+      <div class="card" role="button" tabindex="-1"><span /></div>
+    `;
+    const chromeChild = document.querySelector('.site-chrome-bar span');
+    const dossierChild = document.querySelector('.dossier span');
+    const card = document.querySelector('.card');
+    expect(isInteractiveTarget(chromeChild)).toBe(true);
+    expect(isInteractiveTarget(dossierChild)).toBe(true);
+    expect(isInteractiveTarget(card)).toBe(false);
     expect(isInteractiveTarget(null)).toBe(false);
+    document.body.replaceChildren();
   });
 
   it('modifier chords are never hijacked (shift excepted — Shift+Tab cycles)', () => {

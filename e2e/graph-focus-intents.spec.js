@@ -116,6 +116,12 @@ test.describe("graph focus intents — F-C.2/3", () => {
     await page.locator(".d-close").focus();
     await page.keyboard.press("ArrowRight");
     await expect(page.locator(".d-title")).toHaveText("Oliver Nguyen");
+
+    await page.locator(".d-close").click();
+    await expect(page.locator(".dossier")).toHaveAttribute("aria-hidden", "true");
+    await page.keyboard.press("Tab");
+    await expect(page.locator(".dossier")).toHaveAttribute("aria-hidden", "false");
+    await expect(page.locator(".d-title")).toHaveText("Oliver Nguyen");
     expect(errors).toEqual([]);
   });
 
