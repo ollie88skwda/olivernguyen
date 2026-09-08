@@ -1,6 +1,7 @@
 import React from 'react';
-import SectionHeading from '../../../components/SectionHeading';
-import Reveal from '../../../components/Reveal';
+import { Display, Glyph, MonoLabel, SectionHead, Statusline } from '@/components/brand';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import Tip from '../../../components/Tooltip';
 
 const DIAL_RADIUS = 70;
@@ -50,10 +51,16 @@ const readDeadline = (raw) => {
   return { pending: false, text: days >= 0 ? `${days} DAYS · ${when}` : `PASSED · ${when}` };
 };
 
+// The status dial: a circular gauge. All of its strokes are token colours (the track is
+// the §9 hairline, the arc is the ladder's state colour via currentColor, the inner
+// dashed ring is --text-faint); the CIRCULAR ENCODING itself is flagged in the lane
+// coverage record — Progress is the only ratified progress mark, and the owner decides
+// whether the dial keeps its shape (it stays readable because the % figure and the
+// verdict sentence restate the same number in text).
 const Dial = ({ score, label }) => (
   <div className={`mj-dial ${LEVELS[label] || 'mj-lvl-coin'}`}>
     <svg viewBox="0 0 168 168" width="168" height="168" aria-hidden="true">
-      <circle cx="84" cy="84" r={DIAL_RADIUS} fill="none" stroke="rgba(18,34,49,.12)" strokeWidth="13" />
+      <circle cx="84" cy="84" r={DIAL_RADIUS} fill="none" stroke="var(--border)" strokeWidth="13" />
       <circle
         cx="84"
         cy="84"
@@ -66,11 +73,15 @@ const Dial = ({ score, label }) => (
         strokeDashoffset={DIAL_LENGTH * (1 - Math.max(0, Math.min(100, score)) / 100)}
         transform="rotate(-90 84 84)"
       />
-      <circle cx="84" cy="84" r="53" fill="none" stroke="rgba(18,34,49,.18)" strokeWidth="1" strokeDasharray="2 6" />
+      <circle cx="84" cy="84" r="53" fill="none" stroke="var(--text-faint)" strokeWidth="1" strokeDasharray="2 6" />
     </svg>
     <div className="mj-dial-mid">
-      <span className="mj-dial-num">{Math.round(score)}%</span>
-      <span className="mj-dial-lbl">{label}</span>
+      <Display as="span" className="mj-dial-num">
+        {Math.round(score)}%
+      </Display>
+      <MonoLabel tone="muted" className="mj-dial-lbl">
+        {label}
+      </MonoLabel>
     </div>
   </div>
 );
@@ -102,21 +113,19 @@ export const Status = ({ doc, derived }) => {
 
   return (
     <section id="status" className="mj-sec">
-      <SectionHeading eyebrow="S0 / Status" title="Where It Stands" />
+      <SectionHead kicker="S0 / Status" title="Where It Stands" />
 
       <div className="mj-status">
-        <Reveal>
-          <Dial score={confidence.score} label={confidence.label} />
-        </Reveal>
+        <Dial score={confidence.score} label={confidence.label} />
 
-        <Reveal delay={0.08}>
+        <div className="mj-verdict">
           {leader && (
             <>
-              <p className="mj-verdict-h">
+              <Display as="p" className="mj-verdict-h">
                 {shortName(leader)} is ahead.
                 <br />
                 {confidence.label === 'CLEAR' ? 'Enough to act on.' : 'Not by enough to act on yet.'}
-              </p>
+              </Display>
               <p className="mj-verdict-p">
                 Across <Tip term="monte-carlo">10,000 simulated runs</Tip>,{' '}
                 {shortName(leader)} finished first {pct(winRate[leader.id])}% of the time
@@ -126,44 +135,50 @@ export const Status = ({ doc, derived }) => {
             </>
           )}
 
-          <div className="mj-countdown">
-            <span>APP DEADLINE</span>
+          <Statusline className="mj-countdown">
+            <MonoLabel tone="muted">App deadline</MonoLabel>
             <span className={deadline.pending ? 'mj-todo' : undefined}>{deadline.text}</span>
             {updated && (
               <>
-                <span aria-hidden="true">·</span>
-                <span>UPDATED {updated}</span>
+                <Glyph name="sep" />
+                <span>Updated {updated}</span>
               </>
             )}
-          </div>
-        </Reveal>
+          </Statusline>
+        </div>
       </div>
 
-      <Reveal as="p" className="section-eyebrow mj-agenda-eyebrow">
+      <MonoLabel tone="muted" className="mj-agenda-eyebrow">
         S0.1 / Go find out, ranked by how much it would change the answer
-      </Reveal>
+      </MonoLabel>
 
       <div className="mj-agenda">
         {agenda.map((unknown, i) => {
           const flip = flipOf(unknown);
           return (
-            <Reveal className="mj-card" key={unknown.id} delay={i * 0.06}>
+            <Card key={unknown.id} className="mj-card">
               <span className="mj-rank" aria-hidden="true">
                 {i + 1}
               </span>
-              <h4>{unknown.question}</h4>
-              <div className="mj-chips">
-                <Tip term="flip-fraction" className={flip >= 0.2 ? 'mj-chip mj-chip-hot' : 'mj-chip'}>
-                  changes the winner {pct(flip)}% of the time
-                </Tip>
-                {unknown.effort && <span className="mj-chip">{unknown.effort}</span>}
-                {(unknown.criteria || []).map((id) => (
-                  <span className="mj-chip" key={id}>
-                    {criterionLabel(id)}
-                  </span>
-                ))}
-              </div>
-            </Reveal>
+              <CardTitle as="h4" className="mj-card-q">
+                {unknown.question}
+              </CardTitle>
+              <CardContent>
+                <div className="mj-chips">
+                  <Badge tone={flip >= 0.2 ? 'warning' : 'neutral'} className="mj-chip">
+                    <Tip term="flip-fraction">
+                      changes the winner {pct(flip)}% of the time
+                    </Tip>
+                  </Badge>
+                  {unknown.effort && <Badge className="mj-chip">{unknown.effort}</Badge>}
+                  {(unknown.criteria || []).map((id) => (
+                    <Badge key={id} className="mj-chip">
+                      {criterionLabel(id)}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           );
         })}
       </div>

@@ -1,0 +1,245 @@
+/* Shared chrome — LAYOUT ONLY (plan R-C3, D-26).
+ *
+ * The rebuild moved every control in the bar into the component library, so
+ * this file no longer draws a single button, menu panel or label. What is left
+ * is the three things no component can own:
+ *   1. where the bar sits and how tall it is,
+ *   2. how it hides on scroll,
+ *   3. how far the two home surfaces must sit below it.
+ * Theme choices live in the account menu and use the shared DropdownMenu radio
+ * items; this file does not own theme state or theme-control icons.
+ *
+ * Values are tokens only (BRAND.md §11.1). Fallbacks are carried on the tokens
+ * that matter because this file loads on legacy routes too, where components.css
+ * may not be in the tree.
+ *
+ * Scope: .site-chrome-bar also carries .sakura, so the sakura ladder applies to
+ * the chrome and stops there — page bodies keep their own stylesheets (P2).
+ */
+
+.site-chrome-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  box-sizing: border-box;
+  height: var(--s-16, 64px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4, 16px);
+  padding: 0 var(--s-6, 24px);
+  z-index: 1000;
+  /* SOLID is the default, on every route and in both modes. §9 permits exactly
+     one blurred surface on this site and it is scoped IN at the bottom of this
+     file rather than declared here — see D-30. */
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-sans);
+  /* §6: hiding the bar is an ordinary state change, so 140ms ease-out — not
+     the old bespoke 350ms curve, and not the camera curve. Killed under
+     prefers-reduced-motion at the bottom of this file. */
+  transition: transform var(--dur-state, 140ms) var(--ease-state, ease-out);
+}
+.site-chrome-bar.sc-hidden {
+  transform: translateY(-100%);
+}
+
+/* F-C.3: section links, graph mode only. A nav link is a link — the type comes
+   from <MonoLabel> (§7's label role) and only the interactive state is here.
+   The min-height gives §1's 44px tap target on a coarse pointer via --ctl-h. */
+.sc-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--s-4);
+  margin-left: var(--s-6);
+  margin-right: auto;
+}
+.sc-nav-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--ctl-h);
+  text-decoration: none;
+}
+/* [data-tone] is carried so this beats components.css's own
+   `.sakura .on-label[data-tone="muted"]`, which is one class heavier. */
+/* D-32: hover is an UNDERLINE, not a colour change.
+   The nav labels are the only foreground in the bar that sits directly on the
+   veil with no background of its own — the ghost buttons paint --surface-2 on
+   hover and the mode toggle carries its own fill, so both are already safe.
+   Hovering used to swap the label to --accent-hi, and measured over the real
+   blurred backdrop that reads 4.06–4.47:1 in graph · dark: it FAILS §2.3, and
+   it failed at D-31's 74% too. It is also colour-alone signalling.
+   An underline fixes both, keeps the label at --text (8.10–8.91:1), and is the
+   treatment components.css already ships for `.on-btn[data-variant="link"]`.
+   The transparent underline is declared at rest so only its COLOUR animates —
+   §6's 140ms state change, killed under reduced motion at the bottom. */
+.sc-nav-link .on-label[data-tone] {
+  text-decoration: underline solid transparent;
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--dur-state) var(--ease-state);
+}
+
+/* D-32: the bar's labels are FULL STRENGTH, not §7's muted label tone.
+   Chosen by Oliver against a render, and it is what pays for the blur: the
+   veil's floor is set by the weakest foreground sitting on it, so muted labels
+   capped it at 74% (D-31) and --text lets it open to 56%.
+
+   Applied in BOTH modes and on legacy routes, not just where the bar is
+   blurred. Scoping it to the blur would make the labels change weight as you
+   flip TERM/GRAPH, on a bar that D-26 deliberately made one component. Off the
+   blur this only raises contrast (--text on --bg is 13.5:1 against
+   --text-muted's 7.16:1), so it costs nothing there.
+
+   Doubled up as `.sakura.site-chrome-bar` on purpose: components.css's
+   `.sakura .on-label[data-tone="muted"]` is the same weight as a single-class
+   version of this, and equal weight means load order decides — which is not
+   something this file should depend on. */
+.sakura.site-chrome-bar .on-label[data-tone="muted"] {
+  color: var(--text);
+}
+.sc-nav-link:hover .on-label[data-tone],
+.sc-nav-link:focus-visible .on-label[data-tone] {
+  text-decoration-color: currentColor;
+}
+@media (max-width: 700px) {
+  .sc-nav {
+    display: none; /* deep links still work by URL; the bar stays uncrowded */
+  }
+}
+
+.sc-right {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+}
+/* Nothing in the right cluster may shrink: the mode toggle's two cells are
+   `1fr` each, so letting it compress collapses TERM|GRAPH into the thumb.
+   At 375px the row fits exactly once the ⌘K button is hidden below. */
+.sc-right > * {
+  flex: none;
+}
+
+/* ⌘K reads as one chord, so it is one flex item — .on-btn puts an 8px gap
+   between its children, which would space the ⌘ off the K. */
+.sc-cmdk-chord {
+  white-space: nowrap;
+}
+
+/* Retained selectors for old review artefacts; the current Account → Appearance
+   menu renders its sun/moon icons through the shared DropdownMenu items. */
+.sc-theme-icons {
+  position: relative;
+  display: block;
+  width: var(--icon, 18px);
+  height: var(--icon, 18px);
+}
+.sc-theme-icon {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--dur-state, 140ms) var(--ease-state, ease-out);
+}
+.sc-theme-icon[data-on="true"] {
+  opacity: 1;
+}
+
+/* The ⌘K affordance only exists where GraphCanvas mounts (desktop + fine
+   pointer — GraphHome's DESKTOP_MQ); on the mobile list it would be a dead
+   button, so hide it there. */
+@media (max-width: 767px), (pointer: coarse) {
+  /* .sakura-scoped so it outweighs components.css's `.sakura .on-btn`, which
+     is one class heavier than a bare `.sc-cmdk`. */
+  .sakura .sc-cmdk {
+    display: none;
+  }
+}
+
+/* §5: the bar's gutter drops a rung on phone, like --pad-card does. Without it
+   the right-hand cluster has nowhere left to go at 375px. */
+@media (max-width: 767px) {
+  .site-chrome-bar {
+    padding: 0 var(--s-4);
+  }
+}
+
+/* -------------------------------------------------------------------------
+   Integration glue (X-4 ship-check): on "/" the fixed bar overlays the graph's
+   top-anchored HUD and the top of the 100dvh terminal screen. Both dev
+   harnesses render on a bare viewport and never load this file, so the nudge
+   lives here rather than in graph.css / terminal.css (§2 ownership).
+   The offsets are the bar height, on the 4px ladder. */
+html[data-mode="graph"] .graph-root .legend,
+html[data-mode="graph"] .graph-root .filterbar,
+html[data-mode="graph"] .graph-root .tourhud {
+  top: calc(var(--s-16, 64px) + var(--s-4, 16px));
+}
+html[data-mode="graph"] .graph-root .dossier {
+  top: var(--s-16, 64px);
+}
+/* R-I1: the mobile fallback is the third top-anchored graph surface, and the
+   only one that was missing an offset — `.g-list` starts at y=0 with its own
+   32px of padding, so the whole `oN.c GRAPH MODE` brand line rendered BEHIND
+   the bar at 375px. Add the bar height to the list's own padding rather than
+   replacing it, so the gap survives a change to either value. (It sums to 96,
+   a §5 rung.) The list scrolls inside itself, not the window, so the bar never
+   hides out from under it and a static offset is correct. */
+html[data-mode="graph"] .graph-root.listing .g-list {
+  padding-top: calc(var(--s-16, 64px) + var(--s-8, 32px));
+}
+/* Terminal: same problem, other mode. Clear the bar with padding — the buffer
+   row shrinks and the page still never scrolls. */
+html[data-mode="terminal"] .term-screen {
+  padding-top: var(--s-16, 64px);
+}
+
+/* -------------------------------------------------------------------------
+   §9's ONE permitted blurred surface (D-30, 2026-08-26, partially reversing
+   D-29 at Oliver's explicit instruction). ONE LINE TO UNDO: delete this block.
+
+   Scoped to the only place the effect actually exists. Each opt-out is a
+   render, not an opinion — measured as the largest single-channel delta inside
+   the bar, solid vs blurred, at 1440×900:
+
+     graph canvas, world panned so nodes pass under the bar   4–7/255  SHIPS
+     graph canvas at its resting fit (dot grid only)          1–2/255
+     terminal, either theme (100dvh, nothing ever scrolls)    2/255    opt out
+     375 / coarse pointer (the list scrolls inside itself)    1–2/255  opt out
+     legacy /permit scrolled back up                          10/255   opt out
+
+   The radius stayed at 8px when the veil opened up to 74% (D-31). Wider was
+   tried: 12px, 14px, 16px and 20px all buy contrast headroom, because a wider
+   average pulls the backdrop's extremes toward --bg — but they smear the
+   backdrop into a flat wash, and the point of the effect is that you can make
+   out WHAT is behind the bar. 8px keeps node-card edges legible as ghosts.
+
+   The legacy opt-out is the one that is about looks rather than cost: those
+   routes are the only place on the site where the WINDOW scrolls, and their
+   navy body text smears up through the pink sakura bar. Two palettes mixing is
+   what §9 was written against, and D-29 was right about it.
+
+   :has(.graph-root) is load-bearing: legacy routes carry data-mode="graph" too
+   (the mode toggle works everywhere), so the attribute alone would blur the bar
+   on exactly the routes rejected above. .graph-root only mounts on "/".
+
+   @supports guards the whole thing: without backdrop-filter a translucent bar
+   would show unblurred content straight through it, which is worse than solid.
+   No prefers-reduced-motion fallback — a backdrop-filter does not animate. */
+@supports (backdrop-filter: blur(8px)) or (-webkit-backdrop-filter: blur(8px)) {
+  @media (min-width: 768px) and (pointer: fine) {
+    html[data-mode="graph"] body:has(.graph-root) .site-chrome-bar {
+      background: var(--chrome-veil);
+      -webkit-backdrop-filter: blur(8px);
+      backdrop-filter: blur(8px);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-chrome-bar,
+  .sc-nav-link .on-label[data-tone],
+  .sc-theme-icon {
+    transition: none;
+  }
+}

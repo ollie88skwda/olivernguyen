@@ -1,6 +1,9 @@
 import React, { useMemo, useState } from 'react';
-import SectionHeading from '../../../components/SectionHeading';
-import Reveal from '../../../components/Reveal';
+import { SectionHead, StatBlock } from '../../../components/brand';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
+import { Badge } from '@/components/ui/badge';
 
 // Fields worth surfacing individually, in the order they matter for a decision. Anything
 // not listed here still counts towards the gap totals; this is just what gets a column.
@@ -65,31 +68,27 @@ export const Evidence = ({ doc }) => {
 
   return (
     <section id="evidence" className="ap-sec">
-      <SectionHeading eyebrow="S8 / Evidence" title="What This Page Does Not Know" />
+      <SectionHead kicker="S8 / Evidence" title="What This Page Does Not Know" />
 
-      <Reveal as="p" className="ap-hint">
+      <p className="on-prose ap-hint">
         Every populated field on this page came off a real university page and carries its link and
         the date it was read. Everything else is listed here as missing rather than filled in with
         something plausible. A confident wrong deadline costs an application cycle; a visible gap
         costs an afternoon.
-      </Reveal>
+      </p>
 
       <div className="ap-ev-stats">
         <div>
-          <span className="ap-ev-n">{rows.length}</span>
-          <span className="ap-ev-k">schools</span>
+          <StatBlock value={rows.length} label="schools" />
         </div>
         <div>
-          <span className="ap-ev-n">{doc.programs.length}</span>
-          <span className="ap-ev-k">programs</span>
+          <StatBlock value={doc.programs.length} label="programs" />
         </div>
         <div>
-          <span className="ap-ev-n">{totalGaps}</span>
-          <span className="ap-ev-k">open gaps</span>
+          <StatBlock value={totalGaps} label="open gaps" />
         </div>
-        <div>
-          <span className={unsourced > 0 ? 'ap-ev-n ap-ev-bad' : 'ap-ev-n'}>{unsourced}</span>
-          <span className="ap-ev-k">values with no source</span>
+        <div className={unsourced > 0 ? 'ap-ev-bad' : undefined}>
+          <StatBlock value={unsourced} label="values with no source" />
         </div>
       </div>
 
@@ -100,51 +99,67 @@ export const Evidence = ({ doc }) => {
         </p>
       )}
 
-      <label className="ap-toggle">
-        <input
-          type="checkbox"
-          checked={onlyGaps}
-          onChange={(event) => setOnlyGaps(event.target.checked)}
-        />
-        Only show schools with open gaps
-      </label>
+      <div className="ap-toggle">
+        <span className="on-check-row">
+          <Checkbox
+            id="only-gaps"
+            checked={onlyGaps}
+            onCheckedChange={(checked) => setOnlyGaps(!!checked)}
+          />
+          <Label htmlFor="only-gaps" role="inline">
+            Only show schools with open gaps
+          </Label>
+        </span>
+      </div>
 
       <div className="ap-ev-table">
-        <div className="ap-ev-head">
-          <span>School</span>
-          {TRACKED.map((tracked) => (
-            <span key={tracked.path}>{tracked.label}</span>
-          ))}
-          <span>gaps</span>
-        </div>
-        {visible.map((row) => (
-          <div className="ap-ev-row" key={row.school.id}>
-            <span className="ap-ev-name">{row.school.name}</span>
-            {row.cells.map((cell) => (
-              <span className="ap-ev-cell" key={cell.path}>
-                {cell.ok ? (
-                  cell.url ? (
-                    <a href={cell.url} target="_blank" rel="noreferrer" title={cell.url}>
-                      cited
-                    </a>
-                  ) : (
-                    <em className="ap-ev-nosrc">no source</em>
-                  )
-                ) : (
-                  <em className="ap-ev-missing">missing</em>
-                )}
-              </span>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>School</TableHead>
+              {TRACKED.map((tracked) => (
+                <TableHead key={tracked.path}>{tracked.label}</TableHead>
+              ))}
+              <TableHead numeric>gaps</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {visible.map((row) => (
+              <TableRow key={row.school.id}>
+                <TableCell className="ap-ev-name">{row.school.name}</TableCell>
+                {row.cells.map((cell) => (
+                  <TableCell className="ap-ev-cell" key={cell.path}>
+                    {cell.ok ? (
+                      cell.url ? (
+                        <a href={cell.url} target="_blank" rel="noreferrer" title={cell.url}>
+                          cited
+                        </a>
+                      ) : (
+                        <em className="ap-ev-nosrc">no source</em>
+                      )
+                    ) : (
+                      <em className="ap-ev-missing">missing</em>
+                    )}
+                  </TableCell>
+                ))}
+                <TableCell numeric className={row.gaps > 0 ? 'ap-ev-gaps ap-ev-bad' : 'ap-ev-gaps'}>
+                  {row.gaps}
+                </TableCell>
+              </TableRow>
             ))}
-            <span className={row.gaps > 0 ? 'ap-ev-gaps ap-ev-bad' : 'ap-ev-gaps'}>{row.gaps}</span>
-          </div>
-        ))}
+          </TableBody>
+        </Table>
       </div>
 
       <h3 className="ap-sub">What changed the plan</h3>
       <ul className="ap-ev-log">
         {(doc.assumptions || []).map((assumption) => (
-          <li key={assumption.id} className={`ap-assume ap-assume-${assumption.status}`}>
-            <span className="ap-assume-status">{assumption.status}</span>
+          <li key={assumption.id} className="ap-assume">
+            <div className="ap-assume-status">
+              <Badge tone={assumption.status === 'refuted' ? 'danger' : 'neutral'}>
+                {assumption.status}
+              </Badge>
+            </div>
             <span className="ap-assume-claim">{assumption.claim}</span>
             {assumption.note && <span className="ap-assume-note">{assumption.note}</span>}
             {!assumption.note && <span className="ap-assume-note">Test: {assumption.test}</span>}

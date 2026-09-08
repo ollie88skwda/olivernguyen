@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en" data-mode="terminal">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#180f14" />
+    <title>terminal-dev — TerminalHome harness (DEV ONLY)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Big+Shoulders:wght@400;700;800;900&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;1,400&family=Martian+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Bare-viewport mount (no chrome, no legacy CSS): the screen owns
+         100dvh. Tokens come from the real src/styles/sakura.css, which
+         TerminalHome imports — no fallback block needed (unlike graph-dev,
+         this harness postdates sakura.css). data-mode is hardcoded above, so
+         the Night Plum set applies without ModeProvider. */
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/terminal/dev.jsx"></script>
+  </body>
+</html>

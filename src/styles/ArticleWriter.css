@@ -1,0 +1,160 @@
+/* /articlewriter — page composition for the restyled article generator.
+ *
+ * Values are sakura tokens only (BRAND.md §11.1): no hex, no rgba, no
+ * gradient, no shadow, no radius/duration/font literals. Controls and
+ * surfaces come from the library (components.css); this file only composes
+ * them on the page. Composition stays page-local — BRAND.md §11.3.
+ */
+
+.aw-page {
+  box-sizing: border-box;
+  min-height: 100dvh;
+  margin: 0;
+  /* top: the fixed 64px chrome bar plus one rung of air — the same
+     calc(var(--s-16) + var(--s-8)) recipe chrome.css uses for the graph
+     phone list. Bottom: §5 section gap. */
+  padding: calc(var(--s-16) + var(--s-8)) var(--s-6) var(--s-36);
+  background: var(--bg);
+}
+
+.aw-content {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 880px; /* §5: content column cap */
+  margin: 0 auto;
+}
+
+/* ---- form: label → field → action, stacked with §5 gaps ---- */
+.aw-form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-3); /* §5: label → content = 12 */
+  margin-top: var(--s-12); /* air under the section head */
+}
+.aw-form .on-field {
+  max-width: 70ch; /* §5: body measure */
+}
+.aw-form .aw-submit {
+  margin-top: var(--s-3); /* 12 gap + 12 margin = the §5 24 row gap */
+}
+
+/* ---- failure state: §2.3 danger roles only ---- */
+.aw-error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--s-3);
+  margin-top: var(--s-6);
+}
+.aw-error p {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--danger-text);
+}
+
+/* ---- loading state: library Skeleton pulse (--dur-pulse), which dies
+   under prefers-reduced-motion via components.css; the text carries the
+   state for readers ---- */
+.aw-loading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  margin-top: var(--s-36); /* §5: section gap */
+}
+.aw-loading-lines {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+  max-width: 70ch;
+}
+.aw-loading-line--full { width: 100%; }
+.aw-loading-line--medium { width: calc(100% - var(--s-12)); }
+.aw-loading-line--short { width: calc(100% - var(--s-24)); }
+
+/* ---- success card: square surface, hairline, §5 card padding ---- */
+.aw-card {
+  margin-top: var(--s-36); /* §5: section gap */
+}
+
+/* ---- the generated article is ARBITRARY HTML from the local generator.
+   The library has no prose-headings component, so this page maps the
+   returned elements onto the ratified §7 roles (display face for headings,
+   sans body for prose, mono body for code, §9 hairline for blockquote/hr).
+   FLAGGED in the lane coverage record: an owner decision on a shared prose
+   treatment is required before this mapping can leave the page. ---- */
+.aw-article {
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  max-width: 70ch; /* §5: body measure */
+}
+.aw-article > *:first-child {
+  margin-top: 0;
+}
+.aw-article h1,
+.aw-article h2,
+.aw-article h3,
+.aw-article h4 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: var(--track-display);
+  line-height: 1.05;
+  color: var(--text);
+  margin: var(--s-8) 0 var(--s-3);
+}
+.aw-article h1 { font-size: var(--fs-title-lg); }
+.aw-article h2 { font-size: var(--fs-title); }
+.aw-article h3 { font-size: var(--fs-body); }
+.aw-article h4 { font-size: var(--fs-body); }
+.aw-article p {
+  margin: 0 0 var(--s-4);
+}
+.aw-article a {
+  color: var(--accent-hi);
+  text-decoration: underline;
+  text-underline-offset: 3px; /* same underline treatment as .on-btn link */
+}
+.aw-article ul,
+.aw-article ol {
+  margin: 0 0 var(--s-4);
+  padding-left: var(--s-6);
+}
+.aw-article li {
+  margin-bottom: var(--s-2);
+}
+.aw-article strong { color: var(--text); font-weight: 600; }
+.aw-article em { font-style: italic; }
+.aw-article code {
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  line-height: var(--lh-mono);
+  color: var(--text);
+}
+.aw-article blockquote {
+  margin: 0 0 var(--s-4);
+  padding-left: var(--s-4);
+  border-left: 1px solid var(--border); /* §9 hairline */
+}
+.aw-article hr {
+  border: 0;
+  border-top: 1px solid var(--border); /* §9 hairline */
+  margin: var(--s-6) 0;
+}
+.aw-article img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ---- §5: section gaps drop a rung on phone, like --pad-card does ---- */
+@media (max-width: 767px) {
+  .aw-page {
+    padding: calc(var(--s-16) + var(--s-8)) var(--s-4) var(--s-24);
+  }
+  .aw-loading,
+  .aw-card {
+    margin-top: var(--s-24); /* 96, the phone section gap */
+  }
+}

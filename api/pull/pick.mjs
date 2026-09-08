@@ -19,15 +19,24 @@ const ALLOWED_AMOUNTS = new Set([20, 100, 500, 5000, 1000000]);
 
 const MAX_PLAYER_LEN = 40;
 
-// The page only ever offers upcoming Saturdays up to 2027-01-01. Bounding the range keeps
+// The page only offers future Saturdays up to 2027-01-01. Bounding the range keeps
 // the table from being used as free storage via arbitrary date keys.
-function isLegalWeekend(value) {
+export function isLegalWeekend(value, now = new Date()) {
   if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  const d = new Date(`${value}T12:00:00Z`);
-  if (Number.isNaN(d.getTime())) return false;
-  if (d.getUTCDay() !== 6) return false; // Saturdays only
-  const year = d.getUTCFullYear();
-  return year >= 2025 && year <= 2027;
+  const [year, month, day] = value.split("-").map(Number);
+  const d = new Date(Date.UTC(year, month - 1, day, 12));
+  if (
+    Number.isNaN(d.getTime()) ||
+    d.getUTCFullYear() !== year ||
+    d.getUTCMonth() !== month - 1 ||
+    d.getUTCDate() !== day ||
+    d.getUTCDay() !== 6
+  ) return false;
+
+  const today = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()));
+  const daysUntilSaturday = (6 - today.getUTCDay() + 7) % 7 || 7;
+  today.setUTCDate(today.getUTCDate() + daysUntilSaturday);
+  return d >= today && d < new Date("2027-01-01T00:00:00Z");
 }
 
 export default async function handler(req, res) {

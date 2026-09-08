@@ -1,0 +1,680 @@
+/* ============================================================================
+ * src/terminal/terminal.css — screen / buffer / prompt / statusbar / overlays.
+ *
+ * R-T1 (12-rebuild-plan §8): PORTED ONTO THE COMPONENT LIBRARY. Every value in
+ * this file is now a `var(--token)` from src/styles/sakura.css — there is no
+ * hex, no radius literal, no duration literal and no font name below, per
+ * BRAND.md §11.1. The two things that are NOT tokens are the terminal's own
+ * cell metrics (`ch` and `--row` multiples, §3.1.7) — those are a character
+ * grid, not a design value, and they are derived from the type tokens.
+ *
+ * WHAT THE MARKUP NOW USES (docs/COMPONENTS.md):
+ *   statusbar   <Statusline>/<StatuslineSpacer>/<StatusPill>/<MonoLabel>
+ *   overlays    .on-overlay / .on-panel / .on-command-* / .on-menu-item
+ *   glyphs      <Glyph> — the ✕/▸/· marks, never a literal character in JSX
+ *   key hints   <Kbd>
+ * This file only carries what the library cannot: the full-bleed console
+ * geometry (100dvh grid, cell rhythm, block cursor, scanline) and the
+ * surface-level overrides those need.
+ *
+ * CASCADE NOTE. components.css is imported by the brand components, i.e. AFTER
+ * this file in the bundle, so a plain `.term-statusbar` would lose to
+ * `.sakura .on-statusline` on source order at equal specificity. Anything that
+ * overrides a library class therefore qualifies with the COMPOUND screen root
+ * `.term-screen.sakura` (the mount carries both classes), giving 0-3-0 and a
+ * win regardless of import order. Those overrides are geometry only — type,
+ * colour and density still come from the library rule.
+ *
+ * TEXTURE: BRAND.md §9 / D-10 wants exactly one material layer per mode —
+ * scanline in terminal, reinstated 2026-08-25 at 3% (D-16). Do not strip it
+ * (COMPONENTS.md "Follow-up work" 5).
+ *
+ * THEME FALLBACKS: `--term-*` is only declared when <html data-theme> is set
+ * (sakura.css). Every read of one below therefore carries the shared-ladder
+ * fallback that components.css uses, so a terminal mounted before the theme
+ * attribute lands is never token-less.
+ * ========================================================================== */
+
+/* the legacy app has no global border-box reset; without this, chrome.css's
+   padding-top glue makes 100dvh overflow the document by 64px and typing
+   focus-scrolls the page under the fixed bar (X-2 regression). */
+.term-screen,
+.term-screen *,
+.term-screen *::before,
+.term-screen *::after {
+  box-sizing: border-box;
+}
+
+.term-screen {
+  /* --- the console's own cell grid (§3.1.7), derived from the §7 type tokens.
+     The buffer is a mono BODY (D-08) — so the cell IS --fs-mono/--lh-mono, and
+     every vertical rhythm in the screen is a multiple of one row. --- */
+  --term-fs: var(--fs-mono);
+  --row: calc(var(--fs-mono) * var(--lh-mono));
+
+  /* --- the one loop BRAND.md §6 grants the terminal: the cursor blink. It has
+     no site-wide token because nothing else in the system blinks; naming it
+     here is the definition site, the same way components.css defines --ctl-h.
+     The value is the shipped one, unchanged by this port. --- */
+  --term-blink: 1.06s;
+
+  position: relative; /* the ::after texture layer anchors here */
+  height: 100dvh;
+  display: grid;
+  grid-template-rows: 1fr auto auto; /* main (buffer/panes) / promptline / statusbar */
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono-body);
+  font-size: var(--term-fs);
+  font-weight: 400;
+  line-height: var(--row);
+}
+
+/* The ONE texture layer for terminal mode (§9, D-16). Static, non-interactive,
+   tinted off --text so it holds in any theme, and sits under the overlays
+   (z-index 80) and the site chrome (1000). */
+.term-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    0deg,
+    color-mix(in srgb, var(--text) 3%, transparent) 0 1px,
+    transparent 1px 3px
+  );
+}
+
+.term-screen button {
+  font: inherit;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* one focus treatment, same as components.css §4 */
+.term-screen :focus-visible {
+  outline: var(--focus-ring-w) solid var(--focus-ring);
+  outline-offset: 1px;
+  border-radius: var(--r-control);
+}
+
+.term-screen .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* skip link (C-3.3): hidden until keyboard-focused */
+.term-skip {
+  position: absolute;
+  left: 2ch;
+  top: calc(var(--s-24) * -1); /* parked off-screen until focused */
+  z-index: 90;
+  padding: var(--s-1) 1ch;
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: var(--r-control);
+  text-decoration: none;
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+.term-skip:focus-visible {
+  top: var(--s-2);
+}
+
+/* ---------- main row (PaneGrid) ---------- */
+
+.term-main {
+  display: flex;
+  min-height: 0; /* the grid row must be allowed to shrink — buffers scroll */
+}
+
+/* ---------- scrollback buffer ---------- */
+
+.term-buffer {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--row) 2ch;
+}
+.term-buffer::-webkit-scrollbar {
+  width: var(--s-2);
+}
+.term-buffer::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+.term-buffer::-webkit-scrollbar-thumb {
+  background: var(--border-strong, var(--text-faint));
+  border-radius: var(--r-control);
+}
+
+/* A printed line. Same type role as the library's .on-log-line (§7 mono body,
+   §5 density) — the console is that surface full-bleed, so it takes the role
+   and not the library's bounded 880px card. */
+.term-screen .ln {
+  margin: 0;
+  max-width: 100ch;
+  min-height: var(--row);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+.term-screen .pending {
+  display: none; /* output lines not yet "printed" */
+}
+
+/* prompt echo of an executed command */
+.term-screen .echo {
+  margin-top: var(--row);
+}
+.term-screen .echo .cmdtext {
+  color: var(--text);
+}
+
+.term-screen .psigil {
+  color: var(--term-prompt, var(--accent-hi));
+  font-weight: 700;
+  white-space: pre;
+}
+
+/* color roles (one hue ladder, rationed — 04 §5) */
+.term-screen .dim { color: var(--term-log-dim, var(--text-faint)); }
+.term-screen .faint { color: var(--text-faint); }
+.term-screen .mut { color: var(--text-muted); }
+.term-screen .ok { color: var(--success); }
+.term-screen .err { color: var(--danger-text); }
+.term-screen .acc { color: var(--accent); }
+.term-screen .hot { color: var(--accent-hi); }
+.term-screen .ln b { color: var(--text); font-weight: 700; }
+.term-screen .ind { padding-left: 4ch; }
+
+/* guided reader — the terminal skin stays mono at its edges, while the first
+   read uses the brand's semantic display/body hierarchy and a 75ch measure. */
+.term-screen .reader-document {
+  max-width: 75ch;
+  min-height: 0;
+  margin: 0 auto;
+  padding: var(--s-4) 0 var(--s-12);
+  white-space: normal;
+  overflow-wrap: normal;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+}
+.term-screen .reader-intro {
+  padding: var(--s-6) 0 var(--s-8);
+  border-bottom: 1px solid var(--border);
+}
+.term-screen .reader-intro > .on-label {
+  display: block;
+  margin-bottom: var(--s-3);
+}
+.term-screen .reader-name {
+  margin: 0;
+  font-size: var(--fs-display);
+  line-height: 1;
+}
+.term-screen .reader-lede {
+  max-width: 55ch;
+  margin: var(--s-3) 0 0;
+  color: var(--accent-hi);
+  font-family: var(--font-display);
+  font-size: var(--fs-title);
+  font-weight: 700;
+  letter-spacing: var(--track-display);
+  line-height: 1.15;
+}
+.term-screen .reader-summary,
+.term-screen .reader-section-summary,
+.term-screen .reader-card-blurb {
+  max-width: 68ch;
+  margin: var(--s-4) 0 0;
+  color: var(--text-muted);
+}
+.term-screen .reader-intro-stats {
+  margin-top: var(--s-6);
+  gap: var(--s-6);
+}
+.term-screen .reader-actions,
+.term-screen .reader-hints,
+.term-screen .reader-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--s-2);
+}
+.term-screen .reader-actions {
+  margin-top: var(--s-6);
+}
+.term-screen .reader-hints {
+  margin-top: var(--s-6);
+  color: var(--text-faint);
+  font-family: var(--font-mono-label);
+  font-size: var(--fs-label);
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+}
+.term-screen .reader-hints .on-label {
+  color: var(--text-muted);
+  flex-basis: 100%;
+}
+.term-screen .reader-hints > span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+}
+.term-screen .reader-section {
+  padding-top: var(--s-12);
+}
+.term-screen .reader-section .on-section-head {
+  max-width: 68ch;
+}
+.term-screen .reader-section-summary {
+  margin-top: var(--s-4);
+}
+.term-screen .reader-cards {
+  display: grid;
+  gap: var(--s-4);
+  margin-top: var(--s-6);
+}
+.term-screen .reader-card.on-node {
+  gap: var(--s-3);
+  padding: var(--s-6);
+  text-align: left;
+}
+.term-screen .reader-card .on-label {
+  color: var(--text-muted);
+}
+.term-screen .reader-card .on-node-title {
+  font-size: var(--fs-title);
+}
+.term-screen .reader-status {
+  align-self: flex-start;
+}
+.term-screen .reader-card-blurb {
+  margin-top: 0;
+}
+.term-screen .reader-stats {
+  gap: var(--s-6);
+  margin-top: var(--s-2);
+}
+.term-screen .reader-tech {
+  margin-top: 0;
+}
+.term-screen .reader-card-actions {
+  margin-top: var(--s-1);
+}
+.term-screen .reader-command,
+.term-screen .reader-link {
+  min-height: var(--s-6);
+  padding: 0;
+}
+
+.term-screen .k-log { color: var(--term-log, var(--text-muted)); }
+.term-screen .k-ok { color: var(--success); }
+
+/* hero output (printed by `operator --replay`) — the ONE non-mono element:
+   the display face on the printed name only (L6). D-07: Familjen Grotesk 700,
+   tracking -0.02em (BRAND.md §7). Same values as the library's .on-display. */
+.term-screen .name {
+  font-family: var(--font-display);
+  font-size: var(--fs-display);
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: var(--track-display);
+  color: var(--text);
+  margin: var(--row) 0 0;
+  min-height: 0;
+}
+.term-screen .tagline {
+  color: var(--text-muted);
+}
+
+/* the contact section's one big line — §7's section-head size */
+.term-screen .big {
+  font-family: var(--font-display);
+  font-size: var(--fs-section);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: var(--track-display);
+  color: var(--text);
+  margin-top: var(--row);
+}
+
+/* buttons + links printed inside output */
+.term-screen .obtn {
+  color: var(--accent);
+  transition: color var(--dur-state) var(--ease-state);
+}
+.term-screen .obtn:hover {
+  color: var(--accent-hi);
+  background: var(--selection);
+}
+.term-screen .plain {
+  color: var(--text-muted);
+  text-underline-offset: var(--s-1);
+  transition: color var(--dur-state) var(--ease-state);
+}
+.term-screen .plain:hover {
+  color: var(--accent);
+}
+
+/* ---------- prompt line ---------- */
+
+/* The library's PromptBar is the 3px control version of this shape; the
+   console's prompt is full-bleed and carries a block cursor instead of a
+   caret, so it keeps its own geometry and takes the shared type + focus
+   values. --term-cursor drives both. */
+.term-screen .promptline {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  padding: var(--s-1) 2ch;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  position: relative;
+  cursor: text;
+}
+
+.term-screen .pecho {
+  white-space: pre;
+  flex: 1;
+  color: var(--text);
+  overflow: hidden;
+}
+
+/* block cursor: full-cell inverse, steps(1) blink (§3.1.3) */
+.term-screen .pcursor {
+  background: var(--term-cursor, var(--accent-hi));
+  color: var(--on-accent);
+  animation: term-blink var(--term-blink) steps(1) infinite;
+}
+@keyframes term-blink {
+  50% {
+    background: transparent;
+    color: var(--text);
+  }
+}
+.term-screen .promptline.blurred .pcursor {
+  animation: none;
+  background: transparent;
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--term-cursor, var(--accent-hi));
+}
+
+/* the real input is visually offscreen; the echo + cursor are the prompt */
+.term-screen .promptline input {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  border: none;
+}
+
+/* ---------- tmux statusbar ----------
+ * The markup is <Statusline>, so type (Martian, uppercase, tracking), density
+ * and colour all come from `.sakura .on-statusline`. What is overridden here is
+ * geometry the library cannot know: the bar is the bottom row of a 100dvh grid,
+ * so it is square, borderless except on top, and does not scroll as a card.
+ * Qualified with .term-screen (0-3-0) — see the cascade note at the top. */
+
+.term-screen.sakura .term-statusbar {
+  gap: 2ch;
+  padding: var(--s-1) 2ch;
+  border: 0;
+  border-top: 1px solid var(--border);
+  border-radius: var(--r-surface);
+  overflow: hidden;
+}
+
+.term-screen .term-statusbar .sb-sess {
+  color: var(--accent-hi);
+  font-weight: 700;
+}
+
+.term-screen .term-statusbar .sb-tabs {
+  display: flex;
+  gap: 1ch;
+  overflow-x: auto; /* 5 tabs still reachable on narrow screens (P9) */
+  scrollbar-width: none;
+}
+.term-screen .term-statusbar .sb-tabs::-webkit-scrollbar {
+  display: none;
+}
+.term-screen .term-statusbar .tab {
+  color: var(--text-faint);
+  padding: 0 1ch;
+  border-radius: var(--r-control);
+  transition:
+    color var(--dur-state) var(--ease-state),
+    background-color var(--dur-state) var(--ease-state);
+}
+.term-screen .term-statusbar .tab:hover {
+  color: var(--text);
+}
+.term-screen .term-statusbar .tab.active {
+  color: var(--on-accent);
+  background: var(--accent);
+}
+.term-screen .term-statusbar .tab.active::after {
+  content: "*";
+}
+
+.term-screen .term-statusbar .sb-right {
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+  color: var(--text-faint);
+}
+.term-screen .term-statusbar .sb-panes {
+  color: var(--warning);
+}
+
+.term-screen .term-statusbar .sb-cmdk {
+  color: var(--text-faint);
+  padding: 0 1ch;
+  border-radius: var(--r-control);
+  transition: color var(--dur-state) var(--ease-state);
+}
+.term-screen .term-statusbar .sb-cmdk:hover {
+  color: var(--accent);
+}
+
+.term-screen .term-statusbar .sb-mode {
+  color: var(--accent-hi);
+  font-weight: 700;
+}
+.term-screen .term-statusbar .sb-dim {
+  color: var(--text-faint);
+}
+.term-screen .term-statusbar .sb-err {
+  white-space: nowrap;
+}
+
+/* the two transient pane states ride <StatusPill> (§4's pill exception). In an
+   11px bar the library's control padding is too tall for one row, so the pill
+   is flattened to the cell rhythm — colour, radius and tone stay the library's. */
+.term-screen.sakura .term-statusbar .on-pill {
+  height: var(--row);
+  padding: 0 1ch;
+  font-size: inherit;
+  letter-spacing: inherit;
+  background: none;
+}
+
+@media (max-width: 760px) {
+  .term-screen .term-statusbar .sb-right {
+    display: none;
+  }
+}
+
+/* P9: splits are disabled on flat layouts — the pane title buttons are dead
+   grammar there, so they go away entirely (single pane carries no ops). */
+@media (max-width: 880px), (pointer: coarse) {
+  .term-panes .pane-btns {
+    display: none;
+  }
+}
+
+/* ---------- touch (P9): ≥44px targets; keyboard never pops uninvited ----- */
+
+@media (max-width: 880px), (pointer: coarse) {
+  .term-screen .obtn,
+  .term-screen .reader-command,
+  .term-screen .reader-link,
+  .term-screen .term-statusbar .tab,
+  .term-screen .term-statusbar .sb-cmdk {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+  }
+  .term-screen .term-statusbar {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .term-screen .promptline {
+    min-height: 44px;
+    align-items: center;
+  }
+}
+
+/* ---------- panes integration (X-1) ---------- */
+
+/* boot opens ONE full-screen main pane (09 §C): until a split exists the
+   card chrome flattens (no border/gap/bg) so the boot screen reads like the
+   approved prototype — but the title ROW stays: its [|] [–] [z] [✕] buttons
+   are 09's mouse-discoverability requirement (gate-asserted by panes).
+   Lives here (core file), not panes.css (§5 ownership). */
+.term-panes:has(> .pane:only-child) {
+  padding: 0;
+}
+.term-panes > .pane:only-child {
+  border: none;
+  border-radius: var(--r-surface);
+  background: none;
+}
+
+/* ---------- overlays: help sheet + ⌘K palette (C-2.2) ----------
+ * Both panels are library surfaces now: the backdrop is `.on-overlay`, the
+ * panel is `.on-panel` (radius 0, hairline, NO shadow — §4/§9; the old 6px +
+ * 24/64 drop shadow was a straight brand violation), the palette rows are
+ * `.on-command-*` / `.on-menu-item`, and the help keys are <Kbd>. Only the
+ * console-specific placement and the cell rhythm live here. */
+
+.term-screen .term-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  font-family: var(--font-mono-body);
+  font-size: var(--term-fs);
+  line-height: var(--row);
+}
+
+/* the library backdrop sits at z-index 1200 inside this stacking context, so
+   the panels take the 1201 the library's own command dialog uses. */
+.term-screen.sakura .term-overlay .on-panel {
+  position: relative;
+  z-index: 1201;
+}
+
+.term-screen.sakura .term-overlay .help-panel {
+  max-width: 60ch;
+  margin: 10vh auto 0;
+  padding: var(--row) 3ch;
+  overflow-y: auto;
+  max-height: 80vh;
+}
+.term-screen .term-overlay .help-panel .help-head {
+  display: block;
+  margin: 0 0 var(--s-2);
+}
+.term-screen .term-overlay .help-panel .help-head + table {
+  margin-bottom: var(--s-3);
+}
+.term-screen .term-overlay .help-panel table {
+  border-collapse: collapse;
+  width: 100%;
+}
+/* rows sit on the console's cell grid, so the whole table fits one screen */
+.term-screen .term-overlay .help-panel td {
+  padding: 0;
+  font-size: var(--fs-mono);
+  line-height: var(--row);
+  color: var(--text-muted);
+  vertical-align: middle;
+}
+.term-screen .term-overlay .help-panel .key {
+  white-space: nowrap;
+  width: 1%; /* shrink-to-fit: the description follows the key, not a gutter */
+  padding-right: 3ch;
+}
+.term-screen .term-overlay .help-panel .help-close {
+  margin-top: var(--s-2);
+}
+
+.term-screen.sakura .term-overlay .palette-panel {
+  width: min(640px, 92vw);
+  margin: 12vh auto 0;
+  overflow: hidden;
+}
+/* the input row and list: library command values, console gutter + cell rhythm */
+.term-screen.sakura .term-overlay .prow {
+  padding: var(--s-2) 2ch;
+}
+.term-screen.sakura .term-overlay .palette-list {
+  list-style: none;
+  margin: 0;
+  padding: var(--s-1);
+  max-height: calc(var(--row) * 15); /* 15 cell rows */
+  overflow-y: auto;
+}
+.term-screen.sakura .term-overlay .palette-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 2ch;
+  padding: var(--s-1) 2ch;
+}
+.term-screen .term-overlay .palette-list li .hint {
+  color: var(--text-muted); /* text-faint fails 4.5:1 at 13px (axe C-3.3) */
+  font-size: var(--fs-mono);
+}
+.term-screen.sakura .term-overlay .palette-list li.empty {
+  color: var(--text-faint);
+  cursor: default;
+}
+
+/* bare buttons inside an overlay inherit the console face — the library
+   <Button> is exempt, it owns its own box. */
+.term-screen .term-overlay button:not(.on-btn) {
+  font: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+/* ---------- reduced motion (scoped — this chunk lazily joins graph pages) - */
+
+@media (prefers-reduced-motion: reduce) {
+  .term-screen *,
+  .term-screen *::before,
+  .term-screen *::after,
+  .term-overlay *,
+  .term-overlay *::before,
+  .term-overlay *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
