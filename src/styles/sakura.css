@@ -1,0 +1,294 @@
+/* ============================================================================
+ * SAKURA TOKENS — 04-sakura-palette.md §5, verbatim hexes.
+ *
+ * Scoping (plan P2): legacy src/styles/theme.css owns :root (--bg/--text/
+ * --accent…). Sakura tokens therefore live under a `.sakura` scope class and
+ * NEVER on :root — new chrome, GraphHome and explicitly restyled pages mount
+ * inside `.sakura`; remaining legacy page bodies are untouched.
+ *
+ * SCOPING SCHEME — theme and mode are INDEPENDENT switches (BRAND.md §3).
+ *
+ *   <html data-theme="light|dark">   which LADDER the tokens sit on
+ *   <html data-mode="graph|terminal"> which INTERFACE is mounted
+ *
+ * Four combinations, two axes, one palette:
+ *
+ *   ladder  → `.sakura`                      light  (Sakura Paper) — the safe
+ *                                            un-themed default, so sakura UI is
+ *                                            never token-less before hydration
+ *             `html[data-theme="dark"]`      dark   (Night Plum)
+ *   console → `[data-mode="terminal"]`       adds --term-* on whichever ladder
+ *   canvas  → --node-, --edge, --dot-grid     ship WITH the ladder (each ladder
+ *                                            declares its own), and are only
+ *                                            READ under html[data-mode="graph"]
+ *                                            (components.css / graph.css).
+ *
+ * src/theme/ThemeProvider.jsx writes data-theme (?theme= → localStorage →
+ * prefers-color-scheme → light) and src/mode/ModeProvider.jsx writes data-mode.
+ * The two never read each other. The `html:not([data-theme])` back-compat
+ * bridge that kept the shipped terminal dark before the provider existed is
+ * gone as of the provider landing (THEMES.md §2, D-19).
+ *
+ * Contrast pairs for ALL FOUR themes are enforced by scripts/contrast-check.mjs
+ * (04 §2.3 / §3.4 dark+light cores, §6.2 / §6.4 the two derived themes).
+ * ========================================================================== */
+
+/* ---- LIGHT SAKURA LADDER — "Sakura Paper" (default, and the graph canvas) ---- */
+.sakura {
+  --bg: #faf1f5;
+  --surface: #fdf8fa;
+  --surface-2: #f2e2ea;
+  --border: #e2c9d4;
+  --text: #3a1e2b;
+  --text-muted: #6f4459;
+  --text-faint: #84536a;
+  --accent: #a83a68;
+  --accent-hi: #93275a;
+  --on-accent: #fdf8fa;
+  --success: #15734f;
+  --warning: #835b10;
+  --error: #b93a2c;
+  --selection: #f7cede;
+  /* graph-specific (04 §3.3) */
+  --node-fill: #fdf8fa;
+  --node-border: #a97188;
+  --node-border-active: #a83a68;
+  --edge: #d9b6c4;
+  --routing-pulse: #15734f;
+  --dot-grid: #e8d3dc;
+
+  /* NOTE: --border-strong and --error-hi are deliberately NOT declared on the
+   * light core. Adding them here would change shipped graph · light rendering
+   * (components.css reads `var(--border-strong, var(--text-faint))` for control
+   * hairlines), which is a brand decision, not part of deriving a theme. They
+   * are declared on the terminal · light block below, which needs them, and are
+   * a candidate for promotion to the core in a later decision (04 §6.5). */
+
+  /* Fonts — BRAND.md §7 / DECISIONS D-07 + D-08. Re-declared here so sakura
+   * never depends on legacy theme.css being loaded (which still points its
+   * own :root --font-display at Big Shoulders; that stack is frozen).
+   *
+   * The mono is SPLIT (D-08): JetBrains Mono for anything you read many lines
+   * of, Martian Mono for labels/chips/statusline/key hints. `--font-mono` is
+   * kept as the label face because every existing sakura-scoped use of it
+   * (chrome nav, mode toggle, graph chips/legend/hintbar) is a label. */
+  --font-display: "Familjen Grotesk", sans-serif;
+  --font-sans: "Hanken Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono-body: "JetBrains Mono", ui-monospace, monospace;
+  --font-mono-label: "Martian Mono", ui-monospace, monospace;
+  --font-mono: var(--font-mono-label);
+
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
+/* ---- DARK SAKURA LADDER — "Night Plum" (04 §2.1) ---- */
+html[data-theme="dark"] .sakura {
+  --bg: #180f14;
+  --surface: #1f1319;
+  --surface-2: #2a1b22;
+  --border: #3a2430;
+  --border-strong: #5c3a48;
+  --text: #f5dce6;
+  --text-muted: #d888a8;
+  --text-faint: #b0788f;
+  --accent: #ffb7d1;
+  --accent-hi: #ff6fb0;
+  --on-accent: #1f1319;
+  --success: #46b989;
+  --warning: #e8a94a;
+  --error: #e15647;
+  --error-hi: #ea897e;
+  --selection: #3a2430;
+
+  /* graph-specific on the dark ladder — GRAPH · DARK, derived 2026-08-26
+   * (04 §6.3/§6.4). Same rule the light set was built with: hold the hue
+   * slice, move only the ladder position. node-fill is --surface (elevation
+   * goes lighter in both ladders); node-border is roseDim, the value BRAND.md
+   * §2.3 reserves for decorative strokes — 3.49:1 on the canvas, mirroring
+   * light's 3.51:1; edge and dot-grid mirror light's 1.66 / 1.28 canvas
+   * ratios so the canvas texture is exactly as quiet at night. */
+  --node-fill: #1f1319;
+  --node-border: #8f5b70;
+  --node-border-active: #ffb7d1;
+  --edge: #4f323e;
+  --routing-pulse: #46b989;
+  --dot-grid: #34242b;
+}
+
+/* ---- TERMINAL CONSOLE · DARK LADDER (04 §2.2) ---- */
+html[data-theme="dark"][data-mode="terminal"] .sakura {
+  --term-log: #d888a8;
+  --term-log-dim: #b0788f;
+  --term-prompt: #ff6fb0;
+  --term-active-line: #31202a;
+  --term-cursor: #ff6fb0;
+  --term-success-line: #182520;
+  --term-error-line: #2b1917;
+}
+
+/* ---- TERMINAL CONSOLE · LIGHT LADDER — plum ink on sakura paper.
+ * TERMINAL · LIGHT, derived 2026-08-26 (04 §6.1/§6.2).
+ *
+ * The console roles keep their dark job description and take the light
+ * ladder's rung for it: log = --text-muted, dim = --text-faint, prompt and
+ * cursor = --accent-hi. What changes is the emphasis mechanism. Dark marks the
+ * executing line with a wash it can afford to make loud, because everything
+ * around it is near-black. Paper cannot: a wash dark enough to read at a glance
+ * pushes --error and --success under 4.5:1 on top of it. So per BRAND.md §3
+ * the light log leans on HAIRLINES AND WEIGHT — the washes sit at the same
+ * quietness as --surface-2 (1.11:1 on the page) and the active row is carried
+ * by a --border-strong rule plus 500 weight. See 04 §6.5 for the ledger. */
+html[data-theme="light"][data-mode="terminal"] .sakura {
+  /* the console's own hairline, and the deep red its .err class needs. Scoped
+   * here rather than to the light core on purpose — see the note above. */
+  --border-strong: #a97188;
+  --error-hi: #95241a;
+
+  --term-log: #6f4459;
+  --term-log-dim: #84536a;
+  --term-prompt: #93275a;
+  --term-active-line: #f9e2ed;
+  --term-cursor: #93275a;
+  --term-success-line: #daece3;
+  --term-error-line: #fae3de;
+}
+
+/* ::selection uses --selection in both modes (04 §5 rationing rules). */
+.sakura ::selection {
+  background: var(--selection);
+  color: var(--text);
+}
+
+/* ============================================================================
+ * SYSTEM TOKENS — names for values already locked in BRAND.md.
+ *
+ * Nothing here is a new design decision: every value is lifted verbatim from
+ * BRAND.md §4 (radius), §5 (spacing), §6 (motion), §7 (type). They exist so a
+ * component can say `var(--r-control)` instead of `3px`, which is the rule in
+ * BRAND.md §11.1. Where BRAND.md states a RANGE (mono body 13–14px, mono label
+ * 10–11px, label tracking 0.08–0.16em) a single point inside it is picked and
+ * flagged in docs/COMPONENTS.md — no value outside a stated range is invented.
+ * ========================================================================== */
+.sakura {
+  /* --- radius (§4): surfaces square · controls 3 · only toggles round --- */
+  --r-surface: 0;
+  --r-control: 3px;
+  --r-pill: 999px;
+
+  /* --- spacing (§5): the 4px ladder, and nothing between its rungs --- */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-12: 48px;
+  --s-16: 64px;
+  --s-24: 96px;
+  --s-36: 144px;
+  --pad-card: 28px; /* §5 table: card/panel padding (20 on phone) */
+
+  /* --- motion (§6): 140ms ease-out is EVERYTHING except the two signatures */
+  --dur-state: 140ms;
+  --ease-state: ease-out;
+  --dur-camera: 640ms;
+  --ease-camera: cubic-bezier(0.16, 1, 0.3, 1);
+  --type-cadence: 28ms; /* signature 1: terminal typing, per character */
+  /* D-18: the second ratified exception to §6's infinite-loop ban (the cursor
+   * blink is the first). Skeleton breathing — opacity only, deliberately slow. */
+  --dur-pulse: 1800ms;
+
+  /* --- type (§7) --- */
+  --fs-display: clamp(40px, 5.5vw, 64px);
+  --fs-section: clamp(32px, 3.4vw, 40px);
+  /* §7 fixes hero, section head, body, mono body and mono label, but not the
+   * sizes between a section head and body copy — card, dialog and node titles
+   * live there. These two are 4px-ladder rungs chosen to sit under §7's
+   * "section heads ~32–40px"; ratified 2026-08-25 (D-12). */
+  --fs-title-lg: 32px;
+  --fs-title: 24px;
+  --fs-body: 16px;
+  --lh-body: 1.6;
+  --fs-mono: 13px; /* §7 range 13–14 */
+  --lh-mono: 1.7;
+  --fs-label: 11px; /* §7 range 10–11 */
+  /* §10 fixes the wordmark's own size: "Nav: ~20px. Minimum legible size:
+   * 12px." This names the nav value — it is not a new decision, and it is a
+   * 4px-ladder rung. The 12px floor is a constraint on shrinking it, not a
+   * second size, so no token is minted for it. */
+  --fs-wordmark: 20px;
+
+  /* --- icons (§8) --- */
+  /* §8: real icons are sized "on an 18px grid". This is that grid unit. It is
+   * NOT a spacing-ladder value and must not be used for layout. D-17 fixed the
+   * checkbox tick at exactly this size after it had been drawn smaller. */
+  --icon: 18px;
+  --track-display: -0.02em;
+  --track-label: 0.12em; /* §7 range 0.08–0.16em */
+
+  /* --- derived roles (no new colour: aliases onto §2 tokens) --- */
+  /* §2.3: `--error` on `--surface-2` fails contrast; dark ships `--error-hi`
+   * for exactly that. Light's own `--error` clears 4.5:1 on all three surfaces
+   * (04 §3.4), so it stays the danger text even now that terminal · light
+   * defines an `--error-hi` — changing that is a decision, not a derivation. */
+  --danger-text: var(--error);
+  /* the backdrop behind an overlay — same recipe chrome.css and terminal.css
+   * already use, expressed once. */
+  --overlay: color-mix(in srgb, var(--bg) 65%, transparent);
+  /* §9's ONE permitted blurred surface: the fixed chrome bar (D-30, opened to
+   * 74% by D-31, to 50% by D-32). Not --overlay — 65% is the modal scrim,
+   * whose job is to DIM what is behind it, while the bar has to stay a surface
+   * you read controls on.
+   *
+   * 50% is a MEASURED §2.3 floor, not a taste value. The measurement is the
+   * real composite — bar contents hidden, real backdrop-filter running, worst
+   * single pixel in the bar band — over 60 canvas states (zoom × pan) in both
+   * graph themes. The binding case is a zoomed-in node card's own text passing
+   * under the bar; in dark that turns the backdrop pale.
+   *
+   * This number is only reachable because of the two changes D-32 made in
+   * chrome.css: the bar's labels are --text instead of the muted tone, and nav
+   * hover is an underline instead of a swap to --accent-hi. --accent-hi on this
+   * veil measured 4.06–4.47:1 and was ALWAYS the real cap — it failed at
+   * D-31's 74% too, on a worse run. With --text as the only foreground sitting
+   * directly on the veil, 50% measures 7.15:1 in graph · dark; 40% fails.
+   *
+   * So: do not lower this, and do not put a --accent-hi (or any muted) label
+   * back in the bar without re-running the measurement in D-32. */
+  --chrome-veil: color-mix(in srgb, var(--bg) 50%, transparent);
+  /* §9: the ONE permitted shadow, on the open dossier only. §9 names it but
+   * gives no value; settled 2026-08-25 (D-15). LIGHT casts SIDEWAYS, because
+   * that is the direction the panel slides in from — same recipe graph.css
+   * already ships for the real dossier. */
+  --shadow-dossier: -18px 0 56px color-mix(in srgb, var(--text) 8%, transparent);
+  --dossier-border: var(--border);
+  /* Focus ring values ratified in BRAND.md §4 / DECISIONS.md D-35. */
+  --focus-ring: var(--accent-hi);
+  --focus-ring-w: 2px;
+}
+
+/* Derived roles that follow the LADDER, not the interface. These keyed off
+ * data-mode while mode implied theme; they are theme-keyed now (D-15 says
+ * "sideways in light, none in dark" — that is a statement about the ladder). */
+html[data-theme="dark"] .sakura {
+  --danger-text: var(--error-hi);
+  /* D-15: on Night Plum a shadow is near-invisible whatever value it takes — a
+   * shadow reads by being darker than its background, and --bg is already
+   * nearly black. Rendered side by side, five candidates were indistinguish-
+   * able. So dark does not fake depth: no shadow, and the dossier is separated
+   * by the strong hairline instead. (A --text-tinted shadow here would be a
+   * pink halo, which §9 bans outright.) */
+  --shadow-dossier: none;
+  --dossier-border: var(--border-strong);
+}
+
+@media (max-width: 767px) {
+  /* --pad-card is declared once, on the base .sakura block, and no ladder
+   * overrides it — so one selector at the same specificity, later in the file,
+   * covers every theme. */
+  .sakura {
+    --pad-card: 20px; /* §5: card padding drops a rung on phone */
+  }
+}

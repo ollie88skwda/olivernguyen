@@ -1,6 +1,15 @@
 import React from 'react';
 import Tip from '../../../components/Tooltip';
 import { EMPTY_PROFILE, clearProfile, isProfileEmpty } from '../profile';
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Button } from '@/components/ui/button';
 
 // Percentile bands rather than raw numbers. admitProbability has always consumed
 // percentiles, so nothing is lost by never asking for a GPA or a score — and what is
@@ -20,6 +29,9 @@ const FIELDS = [
   { id: 'rigorPercentile', label: 'Course rigour', hint: 'how heavy your schedule is next to what is offered' },
   { id: 'activitiesPercentile', label: 'Activities and awards', hint: 'the part an essay cannot fake' },
 ];
+
+// Radix Select has no null value, so "not set" is a sentinel option.
+const NOT_SET = 'not-set';
 
 export const Profile = ({ profile, setProfile }) => {
   const empty = isProfileEmpty(profile);
@@ -44,42 +56,48 @@ export const Profile = ({ profile, setProfile }) => {
       <div className="ap-profile-grid">
         {FIELDS.map((field) => (
           <div className="ap-pfield" key={field.id}>
-            <label htmlFor={`pf-${field.id}`}>
+            <Label htmlFor={`pf-${field.id}`}>
               {field.label}
-              <span>{field.hint}</span>
-            </label>
-            <select
-              id={`pf-${field.id}`}
-              className="ap-pselect"
-              value={profile[field.id] == null ? '' : String(profile[field.id])}
-              onChange={(event) =>
-                set(field.id, event.target.value === '' ? null : Number(event.target.value))
+              <span className="ap-pfield-hint">{field.hint}</span>
+            </Label>
+            <Select
+              value={profile[field.id] == null ? NOT_SET : String(profile[field.id])}
+              onValueChange={(value) =>
+                set(field.id, value === NOT_SET ? null : Number(value))
               }
             >
-              <option value="">not set</option>
-              {BANDS.map((band) => (
-                <option key={band.value} value={band.value}>
-                  {band.label}
-                </option>
-              ))}
-            </select>
+              <SelectTrigger id={`pf-${field.id}`} className="ap-pselect" aria-label={field.label}>
+                <SelectValue placeholder="not set" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={NOT_SET}>not set</SelectItem>
+                {BANDS.map((band) => (
+                  <SelectItem key={band.value} value={String(band.value)}>
+                    {band.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         ))}
 
         <div className="ap-pfield">
-          <label htmlFor="pf-residency">
+          <Label htmlFor="pf-residency">
             Residency
-            <span>in-state helps a lot at public universities</span>
-          </label>
-          <select
-            id="pf-residency"
-            className="ap-pselect"
+            <span className="ap-pfield-hint">in-state helps a lot at public universities</span>
+          </Label>
+          <Select
             value={profile.residency || 'in'}
-            onChange={(event) => set('residency', event.target.value)}
+            onValueChange={(value) => set('residency', value)}
           >
-            <option value="in">California resident</option>
-            <option value="out">out of state everywhere</option>
-          </select>
+            <SelectTrigger id="pf-residency" className="ap-pselect" aria-label="Residency">
+              <SelectValue placeholder="California resident" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="in">California resident</SelectItem>
+              <SelectItem value="out">out of state everywhere</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
@@ -96,13 +114,13 @@ export const Profile = ({ profile, setProfile }) => {
           </span>
         )}
         {!empty && (
-          <button
+          <Button
             type="button"
-            className="ap-profile-clear"
+            variant="danger"
             onClick={() => setProfile(clearProfile() || { ...EMPTY_PROFILE })}
           >
             clear
-          </button>
+          </Button>
         )}
       </div>
     </div>

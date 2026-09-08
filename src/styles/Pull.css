@@ -1,521 +1,393 @@
-/* PULL — navy / gold redesign. Tokens from theme.css. Class names unchanged
-   so pull.js logic (Supabase realtime, localStorage, optimistic) is untouched. */
+/* PULL — restyled onto the sakura brand ladder (legacy restyle lane, plan 16).
+   Page-specific composition only: every value is a BRAND.md token from
+   src/styles/sakura.css or a library rule in components.css. The route mounts
+   at .pull.sakura (contract 1), so tokens are always in scope and this file
+   never reads :root or theme.css. Class names keep the pull-* prefix while the
+   scheduler behavior stays intact; the 10px radii, navy/gold palette, shadows,
+   pill chips and transform-heavy transitions are gone. */
+
+/* ─── Page shell ─────────────────────────────────────────────────────────── */
+.pull {
+  min-height: 100dvh;
+}
 
 /* ─── Name Screen ─────────────────────────────────────────────────────────── */
+/* Top-anchored column (clears the fixed 64px chrome bar) with the card
+   centered in the remaining space via flex auto margins, which never clip on
+   short viewports (a plain justify-content center would). */
 .pull-name-screen {
-  min-height: 100vh;
-  background-color: var(--bg-base);
+  box-sizing: border-box;
+  min-height: 100dvh;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
+  flex-direction: column;
+  padding: var(--s-16) var(--s-4) var(--s-12);
 }
 
 .pull-name-card {
   width: 100%;
   max-width: 440px;
+  margin: auto;
+}
+
+.pull-name-title {
+  font-size: var(--fs-display);
 }
 
 .pull-logo-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  margin-bottom: 32px;
+  gap: var(--s-3); /* §5: label → content */
+  margin-bottom: var(--s-8);
 }
 
-.pull-subtitle {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--accent);
-  font-weight: 500;
-  margin: 0 0 10px;
+.pull-name-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3); /* §5: label → content */
+  margin-top: var(--s-6);
 }
 
-.pull-title {
-  font-family: var(--font-display);
-  text-transform: uppercase;
-  font-size: 5.5rem;
-  font-weight: 900;
-  letter-spacing: 0.01em;
-  color: var(--text);
-  margin: 0;
-  line-height: 0.9;
-}
-
-.pull-tagline {
-  font-family: var(--font-sans);
-  font-size: 0.95rem;
-  color: var(--text-muted);
-  margin: 12px 0 0;
-}
-
-.pull-divider {
-  border-top: 1px solid var(--border);
-  margin-bottom: 28px;
-}
-
-.pull-label {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-  margin: 0 0 10px;
-}
-
-.pull-input {
+.pull-enter-btn {
   width: 100%;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 13px 16px;
-  font-family: var(--font-sans);
-  font-size: 1rem;
-  color: var(--text);
-  box-sizing: border-box;
-  transition: border-color 0.2s ease;
 }
 
-.pull-input::placeholder {
-  color: var(--text-faint);
-}
-
-.pull-input:focus {
-  outline: none;
-  border-color: var(--accent);
-}
-.pull-input:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-color: var(--accent);
-}
-
-.pull-btn-primary {
-  margin-top: 12px;
-  width: 100%;
-  background-color: var(--accent);
-  color: var(--on-accent);
-  border: none;
-  border-radius: 10px;
-  padding: 13px 24px;
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
-  letter-spacing: 0.03em;
-  font-weight: 500;
-  cursor: pointer;
-  transition: transform 0.14s var(--ease-out), background 0.2s ease;
-}
-
-.pull-btn-primary:hover:not(:disabled) {
-  background-color: var(--accent-hi);
-}
-.pull-btn-primary:active:not(:disabled) {
-  transform: scale(0.99);
-}
-.pull-btn-primary:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
+/* Fine print: quiet informational prose — sans body at the --fs-mono rung,
+   --text-faint, body line height. §7 keeps captions short and the label face
+   for marks; a two-sentence privacy note reads better in the body voice. */
 .pull-fine-print {
-  margin-top: 16px;
+  margin: var(--s-6) 0 0;
   text-align: center;
-  font-size: 0.75rem;
+  font-family: var(--font-sans);
+  font-size: var(--fs-mono);
+  line-height: var(--lh-body);
   color: var(--text-faint);
-  line-height: 1.6;
 }
 
 /* ─── Main Page ───────────────────────────────────────────────────────────── */
 .pull-page {
-  min-height: 100vh;
-  background-color: var(--bg-base);
+  box-sizing: border-box;
+  min-height: 100dvh;
 }
 
+/* Content column: 96px top padding (64px chrome bar + one §5 rung), body
+   measure cap from §5 (~70ch). */
 .pull-content {
   max-width: 680px;
   margin: 0 auto;
-  padding: 100px 20px 40px;
+  padding: calc(var(--s-16) + var(--s-8)) var(--s-4) var(--s-12);
 }
 
 .pull-page-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.pull-page-title {
-  font-family: var(--font-display);
-  text-transform: uppercase;
-  font-size: 3rem;
-  font-weight: 900;
-  letter-spacing: 0.01em;
-  color: var(--text);
-  margin: 0;
-  line-height: 0.9;
-}
-
-.pull-page-sub {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--accent);
-  margin: 6px 0 0;
+  flex-wrap: wrap;
+  gap: var(--s-4);
+  margin-bottom: var(--s-6);
 }
 
 .pull-user-info {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--s-2);
 }
 
 .pull-user-name {
-  font-family: var(--font-mono);
-  font-size: 0.85rem;
-  font-weight: 500;
-  color: var(--accent);
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.pull-change-btn {
-  background: none;
-  border: none;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  color: var(--text-faint);
-  cursor: pointer;
-  padding: 0;
-  transition: color 0.2s ease;
-}
-.pull-change-btn:hover {
-  color: var(--text);
-}
-
+/* Instructions: body copy role (§7) with the page's block gap below it. The
+   compound selector beats .sakura .on-prose on specificity (0-4-0) so the
+   margin lands regardless of stylesheet order. */
 .pull-instructions {
-  font-family: var(--font-sans);
-  font-size: 0.95rem;
-  color: var(--text-muted);
-  line-height: 1.6;
-  margin: 0 0 24px;
+  max-width: 70ch;
+}
+.sakura.pull .pull-instructions.on-prose {
+  margin: 0 0 var(--s-6);
 }
 .pull-instructions strong {
-  color: var(--accent);
+  color: var(--text);
   font-weight: 600;
 }
 
-/* ─── Banner ──────────────────────────────────────────────────────────────── */
+/* ─── Banner (best weekends) ──────────────────────────────────────────────── */
 .pull-banner {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 20px;
-}
-
-.pull-banner-title {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: var(--accent);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  margin: 0 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
+  margin-bottom: var(--s-6);
 }
 
 .pull-banner-items {
   display: flex;
-  gap: 24px;
   flex-wrap: wrap;
+  gap: var(--s-6); /* §5: row gap inside a group */
 }
 
 .pull-banner-item {
   display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.pull-banner-rank {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--text-faint);
+  align-items: baseline;
+  gap: var(--s-2);
 }
 
 .pull-banner-date {
-  font-size: 1.1rem;
-  font-weight: 700;
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  font-weight: 500;
   color: var(--text);
 }
 
-.pull-banner-count {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--accent);
-}
-
-/* ─── Cards ───────────────────────────────────────────────────────────────── */
+/* ─── Weekend list ────────────────────────────────────────────────────────── */
 .pull-grid {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--s-6); /* §5: row gap inside a group */
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.pull-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-  transition: border-color 0.2s ease;
-}
-.pull-card.active {
-  border-color: var(--accent);
-}
-.pull-card:hover {
-  border-color: rgba(9, 36, 65, 0.35);
-}
-.pull-card.active:hover {
-  border-color: var(--accent);
+.pull-grid-item {
+  margin: 0;
 }
 
-.pull-card-header {
+/* Card header is a disclosure control: full-width row, 3px control radius,
+   44px coarse-pointer target via --ctl-h, focus ring from the shared tokens. */
+.pull-card-toggle {
+  box-sizing: border-box;
+  appearance: none;
   width: 100%;
-  background: none;
-  border: none;
-  text-align: left;
-  padding: 16px;
-  cursor: pointer;
+  min-height: var(--ctl-h);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  flex-wrap: wrap;
+  gap: var(--s-3);
+  padding: var(--s-2) 0;
+  border: 0;
+  border-radius: var(--r-control);
+  background: transparent;
+  color: var(--text);
   font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  text-align: left;
+  cursor: pointer;
+  transition: background-color var(--dur-state) var(--ease-state);
+}
+.pull-card-toggle:hover {
+  background: var(--surface-2);
 }
 
 .pull-card-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--s-3);
+  min-width: 0;
 }
 
+/* Date figure: month is the label role (§7), the day numeral is the mono body
+   face at the --fs-title rung — a ratified face and a ratified size, no
+   invented value. */
 .pull-card-date {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  min-width: 0;
 }
-
-.pull-card-month {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--text-faint);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  line-height: 1;
-}
-
 .pull-card-day {
-  font-family: var(--font-display);
-  font-size: 2.2rem;
-  font-weight: 800;
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-title);
+  font-weight: 500;
+  line-height: var(--lh-mono);
   color: var(--text);
-  line-height: 1;
 }
 
-.pull-card-status {
-  font-size: 0.8rem;
-  color: var(--text-faint);
-}
-.pull-card-status.committed {
-  color: var(--accent);
-  font-weight: 500;
+.pull-card-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--s-3);
+  margin-left: auto;
 }
 
-.pull-card-right {
-  text-align: right;
-  flex-shrink: 0;
+/* Group stats: mono body voice (§7, D-08 — the "read it" face). */
+.pull-card-stats {
+  display: flex;
+  align-items: center;
+  gap: var(--s-2);
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
+  line-height: var(--lh-mono);
 }
-
 .pull-card-count {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
+  color: var(--text);
   font-weight: 500;
-  color: var(--accent);
 }
-
 .pull-card-pool {
-  display: block;
-  font-size: 0.75rem;
   color: var(--text-faint);
 }
 
-.pull-card-empty {
-  font-size: 0.75rem;
-  color: var(--text-faint);
-}
-
-.pull-card-chips {
-  padding: 0 16px 12px;
+.pull-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: var(--s-2); /* §5: inline chip / token gap */
+  margin-top: var(--s-3);
 }
 
+/* A pathological 40-char name must never overflow the card (or the page at
+   375px): the badge clips with an ellipsis instead. */
 .pull-chip {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  background: var(--surface-2);
-}
-.pull-chip.mine {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: rgba(9, 36, 65, 0.08);
-}
-
-.pull-card-bar-wrap {
-  margin: 0 16px 12px;
-  height: 4px;
-  background: var(--border);
-  border-radius: 999px;
+  max-width: 100%;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.pull-card-bar-fill {
-  height: 100%;
-  background: var(--accent);
-  border-radius: 999px;
-  transition: width 0.6s var(--ease-out);
+.pull-card-progress {
+  margin-top: var(--s-3);
 }
 
 .pull-card-expanded {
-  border-top: 1px solid var(--border);
-  padding: 0 16px 16px;
+  margin-top: var(--s-4);
+  padding-top: var(--s-4);
+  border-top: 1px solid var(--border); /* §9 hairline */
+  animation: pull-fade-in var(--dur-state) var(--ease-state); /* §6 opacity only */
 }
 
 /* ─── Commitment Selector ─────────────────────────────────────────────────── */
-.pull-commitment-selector {
-  padding-top: 14px;
+.pull-selector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-3);
 }
 
-.pull-level-btn {
-  width: 100%;
+.pull-levels {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-2);
+}
+
+/* Level rows are selection rows (menu-item-like, §4 = 3px), not the legacy
+   10px rounded blocks. Selected = accent hairline + surface-2 wash + accent
+   amount; jade stays out (§2 — it means "it worked"). */
+.pull-level {
+  box-sizing: border-box;
+  appearance: none;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--surface-2);
+  gap: var(--s-3);
+  width: 100%;
+  min-height: var(--ctl-h);
+  padding: var(--s-2) var(--s-3);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 14px;
-  margin-bottom: 6px;
-  cursor: pointer;
+  border-radius: var(--r-control);
+  background: transparent;
+  color: var(--text);
   font-family: var(--font-sans);
+  font-size: var(--fs-body);
   text-align: left;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  cursor: pointer;
+  transition:
+    border-color var(--dur-state) var(--ease-state),
+    background-color var(--dur-state) var(--ease-state);
 }
-.pull-level-btn:hover {
-  border-color: rgba(9, 36, 65, 0.5);
+.pull-level:hover {
+  background: var(--surface-2);
 }
-.pull-level-btn.active {
+.pull-level[aria-pressed="true"] {
   border-color: var(--accent);
-  background: rgba(9, 36, 65, 0.07);
+  background: var(--surface-2);
 }
 
 .pull-level-text {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--s-1);
+  min-width: 0;
 }
-
 .pull-level-label {
-  font-size: 0.9rem;
   font-weight: 500;
-  color: var(--text);
-}
-
-.pull-level-sub {
-  font-size: 0.75rem;
-  color: var(--text-faint);
 }
 
 .pull-level-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--s-2);
   flex-shrink: 0;
 }
-
 .pull-level-amount {
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
+  font-family: var(--font-mono-body);
+  font-size: var(--fs-mono);
   font-weight: 500;
   color: var(--text);
 }
-.pull-level-amount.active {
-  color: var(--accent);
+.pull-level[aria-pressed="true"] .pull-level-amount {
+  color: var(--accent-hi);
 }
 
-.pull-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-
-.pull-clear-btn {
+.pull-clear {
   width: 100%;
-  background: none;
-  border: none;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  color: var(--text-faint);
-  cursor: pointer;
-  padding: 8px 0;
-  text-align: center;
-  transition: color 0.2s ease;
-}
-.pull-clear-btn:hover {
-  color: var(--text);
 }
 
-/* ─── Loading / Footer ────────────────────────────────────────────────────── */
+/* ─── Loading / Error / Footer ────────────────────────────────────────────── */
 .pull-loading {
-  text-align: center;
-  padding: 48px 0;
-  color: var(--text-faint);
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-6);
+}
+
+.pull-loading-card {
+  height: var(--s-24);
+}
+
+.pull-error {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--s-3);
+  padding: var(--s-6);
+  border: 1px solid var(--error);
+  border-radius: var(--r-surface);
+}
+.pull-error-title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--danger-text);
+}
+.pull-error-detail {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--text-muted);
+  max-width: 70ch;
 }
 
 .pull-footer {
-  margin-top: 40px;
-  padding-top: 20px;
-  border-top: 1px solid var(--border);
+  margin-top: var(--s-12);
+  padding-top: var(--s-6);
+  border-top: 1px solid var(--border); /* §9 hairline */
   text-align: center;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--text-faint);
 }
 
-/* Keyboard focus + reduced motion */
-.pull-btn-primary:focus-visible,
-.pull-level-btn:focus-visible,
-.pull-change-btn:focus-visible,
-.pull-clear-btn:focus-visible,
-.pull-card-header:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: 8px;
-}
-
+/* ─── Focus + reduced motion ──────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .pull-card-bar-fill,
-  .pull-btn-primary,
-  .pull-level-btn,
-  .pull-card,
-  .pull-input {
-    transition: none !important;
+  .pull-card-toggle,
+  .pull-level {
+    transition: none;
+  }
+  .pull-card-expanded {
+    animation: none;
+  }
+}
+
+@keyframes pull-fade-in {
+  from {
+    opacity: 0;
   }
 }

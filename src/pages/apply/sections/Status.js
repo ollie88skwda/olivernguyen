@@ -1,6 +1,5 @@
 import React from 'react';
-import SectionHeading from '../../../components/SectionHeading';
-import Reveal from '../../../components/Reveal';
+import { SectionHead, MonoLabel } from '../../../components/brand';
 import Tip from '../../../components/Tooltip';
 
 // Never round up to a flat 100%. It is arithmetically defensible and it reads as either a
@@ -15,8 +14,11 @@ const pct1 = (value) => {
 // The dial reads the chance of at least one admission, not a fit score. Shut out is the
 // outcome the whole list exists to prevent, so it is what the biggest number on the page
 // should be about.
+//
+// Data graphic, token-mapped, flagged in the lane coverage record: BRAND has no chart
+// primitive, so the ring is SVG stroke/text in §2 tokens at its own 96-unit space.
 const Dial = ({ value, label, provisional }) => {
-  const radius = 54;
+  const radius = 38;
   const circumference = 2 * Math.PI * radius;
   const filled = Math.max(0, Math.min(1, value)) * circumference;
 
@@ -26,23 +28,23 @@ const Dial = ({ value, label, provisional }) => {
   return (
     <svg
       className={provisional ? 'ap-dial ap-dial-prov' : 'ap-dial'}
-      viewBox="0 0 128 128"
+      viewBox="0 0 96 96"
       role="img"
       aria-label={`${label}: ${pct(value)}${provisional ? ', provisional, no profile entered yet' : ''}`}
     >
-      <circle cx="64" cy="64" r={radius} className="ap-dial-track" />
+      <circle cx="48" cy="48" r={radius} className="ap-dial-track" />
       <circle
-        cx="64"
-        cy="64"
+        cx="48"
+        cy="48"
         r={radius}
         className="ap-dial-arc"
         strokeDasharray={provisional ? '4 6' : `${filled} ${circumference}`}
-        transform="rotate(-90 64 64)"
+        transform="rotate(-90 48 48)"
       />
-      <text x="64" y="60" className="ap-dial-v">
+      <text x="48" y="44" className="ap-dial-v">
         {pct(value)}
       </text>
-      <text x="64" y="80" className="ap-dial-k">
+      <text x="48" y="62" className="ap-dial-k">
         {provisional ? 'provisional' : label}
       </text>
     </svg>
@@ -72,7 +74,7 @@ export const Status = ({ doc, derived, clock }) => {
 
   return (
     <section id="status" className="ap-sec">
-      <SectionHeading eyebrow="S0 / Status" title="Where The List Stands" />
+      <SectionHead kicker="S0 / Status" title="Where The List Stands" />
 
       <div className="ap-status">
         <Dial value={outcome.pAtLeastOne} label="at least one" provisional={profileEmpty} />
@@ -107,26 +109,26 @@ export const Status = ({ doc, derived, clock }) => {
       </div>
 
       {profileEmpty && (
-        <Reveal as="p" className="ap-flag">
+        <p className="ap-flag">
           Every probability above is built from published admit rates alone. Nothing about you has
           been entered yet, so these are wide on purpose and describe the schools, not your odds.
           Turn on EDIT and fill in the profile to make them yours.
-        </Reveal>
+        </p>
       )}
 
       {reachHeavy && (
-        <Reveal as="p" className="ap-flag ap-flag-warn">
+        <p className="ap-flag ap-flag-warn">
           This list is top heavy. With only {outcome.byTier.likely} likely-tier school
           {outcome.byTier.likely === 1 ? '' : 's'}, the correlated shut-out risk above is doing
           real work. Adding a floor is cheaper than adding another reach.
-        </Reveal>
+        </p>
       )}
 
       {gaps > 0 && (
-        <Reveal as="p" className="ap-flag">
+        <p className="ap-flag">
           {gaps} researched fields are still open across {doc.schools.length} schools. They are
           listed per school in S8 rather than filled in with something plausible.
-        </Reveal>
+        </p>
       )}
 
       <details className="plain">

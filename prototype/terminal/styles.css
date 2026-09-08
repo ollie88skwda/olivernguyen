@@ -1,0 +1,307 @@
+/* olivernguyen.com — terminal-mode prototype v2 ("inside the terminal")
+   DARK SAKURA "Night Plum" — tokens verbatim from docs/redesign-research/04-sakura-palette.md §5 */
+
+:root[data-mode="terminal"] {
+  --bg: #180f14;        --surface: #1f1319;    --surface-2: #2a1b22;
+  --border: #3a2430;    --border-strong: #5c3a48;
+  --text: #f5dce6;      --text-muted: #d888a8; --text-faint: #b0788f;
+  --accent: #ffb7d1;    --accent-hi: #ff6fb0;  --on-accent: #1f1319;
+  --success: #46b989;   --warning: #e8a94a;    --error: #e15647; --error-hi: #ea897e;
+  --selection: #3a2430;
+  --term-log: #d888a8;  --term-log-dim: #b0788f; --term-prompt: #ff6fb0;
+  --term-active-line: #31202a; --term-cursor: #ff6fb0;
+  --term-success-line: #182520; --term-error-line: #2b1917;
+
+  --mono: ui-monospace, "SF Mono", Menlo, "Cascadia Mono", Consolas, monospace;
+  --fs: 16px;
+  --row: 24px; /* one cell row = line-height; all vertical rhythm sits on this */
+}
+
+* { box-sizing: border-box; }
+
+[hidden] { display: none !important; }
+
+html, body { height: 100%; }
+
+body {
+  margin: 0;
+  height: 100dvh;
+  overflow: hidden; /* the page NEVER scrolls — only #buffer does */
+  background: var(--bg);
+  color: var(--text);
+  font: 400 var(--fs) / var(--row) var(--mono);
+}
+
+::selection { background: var(--selection); }
+
+:focus-visible {
+  outline: 2px solid var(--accent-hi);
+  outline-offset: 1px;
+  border-radius: 2px;
+}
+
+button {
+  font: inherit;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- the screen ---------- */
+
+#screen {
+  height: 100dvh;
+  display: grid;
+  grid-template-rows: 1fr auto auto; /* buffer / cmdline / statusbar */
+}
+
+/* ---------- main row: buffer (dominant) + context pane ---------- */
+
+#main {
+  display: flex;
+  min-height: 0;
+}
+
+#sidepane {
+  flex: 0 0 38ch;
+  border-left: 1px solid var(--border);
+  padding: var(--row) 2ch;
+  overflow: hidden;
+  user-select: none;
+}
+#sidepane .ln { white-space: pre; max-width: none; }
+.sp-block + .sp-block { margin-top: var(--row); }
+
+@media (max-width: 1100px) {
+  #sidepane { display: none; }
+}
+
+/* ---------- scrollback buffer ---------- */
+
+#buffer {
+  flex: 1;
+  min-width: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--row) 2ch;
+}
+#buffer::-webkit-scrollbar { width: 8px; }
+#buffer::-webkit-scrollbar-track { background: var(--bg); }
+#buffer::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+
+.ln {
+  margin: 0;
+  max-width: 100ch;
+  min-height: var(--row);
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+.pending { display: none; } /* output lines not yet "printed" */
+
+/* prompt echo of an executed command */
+.echo { margin-top: var(--row); }
+.echo .cmdtext { color: var(--text); }
+
+.psigil { color: var(--term-prompt); font-weight: 700; }
+
+/* color roles (one hue ladder, rationed) */
+.dim   { color: var(--term-log-dim); }
+.faint { color: var(--text-faint); }
+.mut   { color: var(--text-muted); }
+.ok    { color: var(--success); }
+.err   { color: var(--error-hi); }
+.acc   { color: var(--accent); }
+.hot   { color: var(--accent-hi); }
+.ln b  { color: var(--text); font-weight: 700; }
+.ind   { padding-left: 4ch; }
+
+.k-log { color: var(--term-log); }
+.k-ok  { color: var(--success); }
+
+/* hero output (printed by `operator --replay`) */
+.name {
+  font-size: clamp(38px, 5.2vw, 60px);
+  line-height: 1.15;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin: var(--row) 0 0;
+  min-height: 0;
+}
+.tagline { color: var(--text-muted); }
+
+.big {
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text);
+  margin-top: var(--row);
+}
+
+/* buttons + links printed inside output */
+.obtn { color: var(--accent); }
+.obtn:hover { color: var(--accent-hi); background: var(--selection); }
+.plain { color: var(--text-muted); text-underline-offset: 3px; }
+.plain:hover { color: var(--accent); }
+
+/* ---------- prompt line ---------- */
+
+.promptline {
+  display: flex;
+  align-items: baseline;
+  padding: 6px 2ch;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  position: relative;
+  cursor: text;
+}
+
+#pecho { white-space: pre; flex: 1; color: var(--text); overflow: hidden; }
+
+/* block cursor: full-cell inverse, steps(1) blink */
+.pcursor {
+  background: var(--term-cursor);
+  color: var(--on-accent);
+  animation: blink 1.06s steps(1) infinite;
+}
+@keyframes blink {
+  50% { background: transparent; color: var(--text); }
+}
+.promptline.blurred .pcursor {
+  animation: none;
+  background: transparent;
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px var(--term-cursor);
+}
+
+/* the real input is invisible; the echo + cursor are the visible prompt */
+#prompt-input {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  border: none;
+}
+
+/* ---------- tmux statusbar ---------- */
+
+#statusbar {
+  display: flex;
+  align-items: center;
+  gap: 2ch;
+  padding: 3px 2ch;
+  background: var(--surface-2);
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sb-sess { color: var(--accent-hi); font-weight: 700; }
+
+#tabs { display: flex; gap: 1ch; }
+.tab {
+  color: var(--text-faint);
+  padding: 0 1ch;
+  border-radius: 2px;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--on-accent); background: var(--accent); }
+.tab.active::after { content: "*"; }
+
+.sb-right {
+  margin-left: auto;
+  display: flex;
+  gap: 1ch;
+  color: var(--text-faint);
+}
+#sb-mode { color: var(--accent-hi); font-weight: 700; }
+#sb-mode.errflash { color: var(--error-hi); }
+.sb-dim { color: var(--text-faint); }
+
+@media (max-width: 760px) { .sb-right { display: none; } }
+
+/* ---------- overlays ---------- */
+
+.overlay { position: fixed; inset: 0; z-index: 80; }
+.backdrop { position: absolute; inset: 0; background: rgba(24, 15, 20, 0.65); }
+
+.panel {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+}
+
+.help-panel {
+  max-width: 480px;
+  margin: 10vh auto 0;
+  padding: var(--row) 3ch;
+}
+.help-panel h3 { margin: 0 0 8px; color: var(--accent); font-size: 14px; }
+.help-panel h3 + table { margin-bottom: var(--row); }
+.help-panel table { border-collapse: collapse; width: 100%; }
+.help-panel td { padding: 2px 0; font-size: 14px; color: var(--text-muted); }
+.help-panel .key { color: var(--accent); white-space: nowrap; padding-right: 3ch; }
+#help-close { margin-top: 4px; }
+
+.palette-panel {
+  width: min(620px, 92vw);
+  margin: 12vh auto 0;
+  overflow: hidden;
+}
+.prow {
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+  padding: 10px 2ch;
+  border-bottom: 1px solid var(--border);
+}
+#palette-input {
+  flex: 1;
+  background: none;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font: inherit;
+  caret-color: var(--term-cursor);
+}
+#palette-input::placeholder { color: var(--text-faint); }
+
+#palette-list {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  max-height: 336px;
+  overflow-y: auto;
+}
+#palette-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 2ch;
+  padding: 5px 2ch;
+  border-radius: 3px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+#palette-list li .hint { color: var(--text-faint); font-size: 13px; }
+#palette-list li.sel { background: var(--selection); color: var(--accent); }
+#palette-list li.empty { color: var(--text-faint); cursor: default; }
+
+/* ---------- reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

@@ -159,7 +159,7 @@ vercel env add SUPABASE_SERVICE_ROLE_KEY development --value "PASTE_KEY_HERE" --
 <div class="callout crit">
 <p><b>A second variable is needed, and this guide originally missed it.</b> Both routes also read
 <code>process.env.REACT_APP_SUPABASE_URL</code>. That currently lives only in the committed
-<code>.env</code>, which Create React App reads <em>at build time</em> to bake into the browser bundle.
+<code>.env</code>, which the Vite compatibility layer reads <em>at build time</em> to bake into the browser bundle.
 Vercel does <b>not</b> feed a committed <code>.env</code> to functions at runtime, and
 <code>vercel.json</code> has no <code>env</code> block, so in production the value would be
 <code>undefined</code> and <code>createClient()</code> would throw before it ever reached your database.</p>

@@ -1,0 +1,55 @@
+/* /sat-resources — empty-state page composition (legacy restyle lane).
+ *
+ * Brand coverage record — /sat-resources
+ *
+ * | Visual aspect | Brand source / implementation | Phone: 375px + coarse pointer | Desktop: 1440px + fine pointer |
+ * |---|---|---|---|
+ * | Sakura mount and palette | `.sakura`; BRAND §2–3; `data-theme` and `data-mode` stay independent | Light/dark ladders render the same empty state without legacy bleed | Light/dark ladders render the same empty state without legacy bleed |
+ * | Fixed-chrome clearance and page height | BRAND §5; `--s-16` + `--s-8` top inset, `100dvh` | SAT kicker starts below the fixed bar; page does not clip at the viewport edge | SAT kicker starts below the fixed bar; page does not clip at the viewport edge |
+ * | Editorial column | BRAND §5 body measure; `70ch`, centered | Column stays within the phone inset and remains readable | Column is centered and capped at the 70ch measure |
+ * | Kicker and heading | `SectionHead`; BRAND §7 Martian Mono + Familjen Grotesk roles | `SAT` and `Study resources` remain visible and correctly ordered | `SAT` and `Study resources` remain visible and correctly ordered |
+ * | Section rule | `SectionHead` default rule; BRAND §9 1px hairline in `--border` | Hairline spans the editorial column below the heading | Hairline spans the editorial column below the heading |
+ * | Empty-state status | `StatusPill status="neutral"`; BRAND §2/§4/§7, `--r-pill` | `Coming soon` stays a compact neutral pill; no invented resource list appears | `Coming soon` stays a compact neutral pill; no invented resource list appears |
+ * | Status spacing | `--s-6`; BRAND §5 row gap | Pill clears the heading rule with the same token spacing | Pill clears the heading rule with the same token spacing |
+ * | Loading and error states | `SATResourcesLoading` / `SATResourcesError`; same composition and tokens | Delayed load shows branded `Loading`; rejected load shows branded `Unable to load` | Delayed load shows branded `Loading`; rejected load shows branded `Unable to load` |
+ * | Route-local interaction and motion | No route-local controls or animation; reduced-motion-safe component defaults | No hover dependency; state content remains reachable by touch | No hover dependency; state content remains reachable by pointer |
+ *
+ * Unmapped aspects: none. The route intentionally has no resource cards, imagery, icons,
+ * decorative texture, custom controls, or route-local motion to map.
+ * Hard-coded visual values: `100dvh`, `70ch`, `0 auto`, and `1px` are documented
+ * viewport/measure/centering/hairline primitives; fallback lengths mirror `--s-16`,
+ * `--s-8`, and `--s-6`. No unratified visual values are used.
+ *
+ * Mounted on `.sakura` (the tokens in sakura.css supply the background,
+ * text and sans face). Everything below is composition only, and every value
+ * is a BRAND.md token — see BRAND.md §5 (spacing ladder) and §5 body measure.
+ */
+
+.sat-resources {
+  min-height: 100dvh;
+  box-sizing: border-box;
+  /* Clear the fixed 64px chrome bar, then editorial space. The bar offset is
+     chrome's own recipe (chrome.css: --s-16 + --s-8); both are §5 rungs. */
+  padding: calc(var(--s-16, 64px) + var(--s-8, 32px)) var(--s-6, 24px) var(--s-16, 64px);
+}
+
+.sat-resources__column {
+  /* §5: body measure caps at ~70ch. The section head and status pill share
+     the same editorial column. */
+  max-width: 70ch;
+  margin: 0 auto;
+}
+
+.sat-resources__status {
+  /* §5: row gap inside a group. The pill is a chip, not a stretched band —
+     it sits below the section head's hairline rule. */
+  margin-top: var(--s-6);
+}
+
+.sat-resources__message {
+  max-width: 70ch;
+  margin: var(--s-6) 0 0;
+  color: var(--text-muted);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+}

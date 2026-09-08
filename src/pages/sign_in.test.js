@@ -4,9 +4,9 @@ import SignInPage from './sign_in';
 
 // Clerk's real <SignIn> throws outside a ClerkProvider. That throw is the bug
 // this suite guards, so the mock stands in for "Clerk rendered something".
-jest.mock('@clerk/react', () => ({
+vi.mock('@clerk/react', () => ({
   SignIn: () => <div>clerk sign in card</div>,
-  useAuth: jest.fn(),
+  useAuth: vi.fn(),
 }));
 
 describe('SignInPage', () => {

@@ -12,7 +12,7 @@ Source: implements `~/Documents/College_Apps/future.md` in full (all 3 of its ro
 
 **Corrections to future.md's assumptions, found by reading the real repo and vault:**
 
-- **Not Next.js.** `olivernguyen` is Create React App + `react-router-dom` v5, deployed to Vercel (`vercel.json` → `framework: null`, `buildCommand: react-scripts build`). The `next` package and `.next/` folder present in the repo are unused leftovers — nothing in `src/` imports from `next`. So "Next.js API routes" → **Vercel zero-config `/api/*.js` serverless functions**, which Vercel deploys regardless of frontend framework.
+- **Not Next.js.** `olivernguyen` is Vite + React 18.3 + `react-router-dom` v5, deployed to Vercel (`vercel.json` → `framework: null`, `buildCommand: vite build`, `outputDirectory: dist`). The `next` package and `.next/` folder present in the repo are unused leftovers — nothing in `src/` imports from `next`. So "Next.js API routes" → **Vercel zero-config `/api/*.js` serverless functions**, which Vercel deploys regardless of frontend framework.
 - **No auth or DB to reuse.** `@supabase/supabase-js` is used in `/pull` and `/major`, but only the anon key — no Supabase Auth, no session code anywhere in the repo. This feature needs real server-side secrets (GitHub PAT, Gemini key), so it's getting its own auth layer (see Locked decisions) rather than reusing Supabase for that.
 - **`College_Apps` is not a git repo yet.** `git remote -v` there returns `fatal: not a git repository`. Cloud GitHub sync is impossible until it's pushed to a private GitHub repo with Obsidian Git installed and syncing. **This blocks everything past Phase 1 and is Ollie's to do, not mine** — it needs his GitHub account/credentials.
 - **Vault structure verified live**, matches future.md exactly: `UC/1_Leadership/Draft v2 - 07.27/Leadership v2 - 07.27.md`, a `00_Overview.md` per prompt, `Counselor Notes.md` and `Changelog.md` inside v2+ draft folders, and a real `Draft v3 - 07.27 (Odyssey)` folder — an actual counselor-authored pass, exactly the case Module D's attribution banner exists to catch. Frontmatter schema, confirmed byte-for-byte from real files:
@@ -72,7 +72,7 @@ olivernguyen/
     index.js              /counselor-portal/:token, public read-only, calls /api/export/shared/[token]
 ```
 
-**New dependencies** (none exist in `package.json` today): `@octokit/rest`, `jose`, `bcryptjs`, `gray-matter`, `@uiw/react-codemirror`, `@codemirror/lang-markdown`, `@codemirror/lang-yaml`, `@codemirror/merge`, `@google/generative-ai`.
+**Dependencies still needed** (check `package.json` before adding anything): `@codemirror/lang-yaml` and `@google/generative-ai`. The other dependencies used by this plan are already installed.
 
 **New env vars** (`.env.example` to be added, real values set as Vercel project env vars — Ollie-owned): `GITHUB_TOKEN` (fine-grained PAT, contents read/write scoped to the `College_Apps` repo only), `GITHUB_OWNER`, `GITHUB_REPO`, `JWT_SECRET`, `AUTH_PASSPHRASE_HASH` (bcrypt hash, never plaintext), `GEMINI_API_KEY`.
 

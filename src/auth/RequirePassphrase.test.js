@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import RequirePassphrase from './RequirePassphrase';
 import usePassphraseStore from './passphrase/store';
 
-jest.mock('./passphrase/store');
+vi.mock('./passphrase/store');
 
 const mockStore = (state) => {
   usePassphraseStore.mockImplementation((selector) =>
@@ -12,8 +12,8 @@ const mockStore = (state) => {
       authed: false,
       error: null,
       apiMissing: false,
-      check: jest.fn(),
-      login: jest.fn(),
+      check: vi.fn(),
+      login: vi.fn(),
       ...state,
     })
   );

@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en" data-mode="terminal">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#180f14">
+  <link rel="icon" href="data:,">
+  <title>Oliver Nguyen · terminal mode (prototype)</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div id="screen">
+
+    <div id="main">
+      <div id="buffer" role="log" aria-label="Terminal scrollback"></div>
+      <aside id="sidepane" aria-label="Context pane">
+        <div class="sp-block" id="sp-context"></div>
+        <div class="sp-block" id="sp-session"></div>
+      </aside>
+    </div>
+
+    <div id="promptline" class="promptline">
+      <span class="psigil">oliver@on.c:~$&nbsp;</span><span id="pecho"><span class="pcursor">&nbsp;</span></span>
+      <label class="sr-only" for="prompt-input">Terminal prompt</label>
+      <input id="prompt-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false">
+    </div>
+
+    <div id="statusbar">
+      <span class="sb-sess">[oN.c]</span>
+      <nav id="tabs" aria-label="Windows">
+        <button class="tab" data-n="1">1:boot</button>
+        <button class="tab" data-n="2">2:agents</button>
+        <button class="tab" data-n="3">3:robotics</button>
+        <button class="tab" data-n="4">4:leadership</button>
+        <button class="tab" data-n="5">5:contact</button>
+      </nav>
+      <span class="sb-right">
+        <span id="sb-mode">-- NORMAL --</span>
+        <span class="sb-dim">· ? help · &#8984;K ·</span>
+        <span id="sb-pos">100%</span>
+        <span class="sb-dim">·</span>
+        <span id="sb-time"></span>
+      </span>
+    </div>
+
+  </div>
+
+  <!-- section templates: cloned + printed into the buffer by `cat` -->
+
+  <template id="tpl-2">
+    <p class="ln"><span class="dim">tools/</span> · 4 registered</p>
+    <p class="ln"></p>
+    <p class="ln"><span class="dim">01</span>  <b>voice/operator</b>  <span class="faint">autonomous Claude Code loop</span>  <span class="ok">[RAN 7 DAYS]</span></p>
+    <p class="ln ind mut">A LaunchAgent woke a Claude Code loop every morning and let it run a real project unattended. 257 decision entries over seven days; every morning it emailed a summary before I woke up.</p>
+    <p class="ln ind faint">· Claude Code · Python · LaunchAgent</p>
+    <p class="ln"></p>
+    <p class="ln"><span class="dim">02</span>  <b>mac-agent</b>  <span class="faint">MCP toolbelt for macOS</span>  <span class="mut">[8 TOOLS]</span></p>
+    <p class="ln ind mut">A Model Context Protocol server that gives agents hands on my Mac — calendar, mail, files, screenshots. A first-class tool source for every local loop.</p>
+    <p class="ln ind faint">· MCP · Node · AppleScript</p>
+    <p class="ln"></p>
+    <p class="ln"><span class="dim">03</span>  <b>scopecreep notary</b>  <span class="faint">Chrome extension</span>  <span class="mut">[0 LLM CALLS]</span></p>
+    <p class="ln ind mut">Flags scope-creep language in client emails with a hand-built lexicon. Pure pattern matching, sub-millisecond, honest about it.</p>
+    <p class="ln ind faint">· Chrome · TypeScript · lexicon</p>
+    <p class="ln"></p>
+    <p class="ln"><span class="dim">04</span>  <b>articlewriter</b>  <span class="faint">writing pipeline</span>  <span class="faint">[ARCHIVED]</span></p>
+    <p class="ln ind mut">A multi-stage writing pipeline from the pre-agent era. Kept as an honest artifact of what came before the loop.</p>
+    <p class="ln ind faint">· Python · cron</p>
+  </template>
+
+  <template id="tpl-3">
+    <p class="ln"><span class="dim">robotics.log</span> · 4 entries</p>
+    <p class="ln"></p>
+    <p class="ln mut"><span class="dim">2024 · </span>TechX Robotics — mentor &amp; coach · 15+ students</p>
+    <p class="ln mut"><span class="dim">2024 · </span>Worlds-qualified team · regional finalists</p>
+    <p class="ln mut"><span class="dim">2023 · </span>17 awards across four seasons · 4&times; state qualifiers</p>
+    <p class="ln mut"><span class="dim">2022 · </span>first season as student captain · design award</p>
+    <p class="ln"></p>
+    <p class="ln faint"><b class="acc">15+</b> students · <b class="acc">17</b> awards · <b class="acc">4&times;</b> states · <b class="acc">1</b> Worlds slot</p>
+  </template>
+
+  <template id="tpl-4">
+    <p class="ln mut">Agent builder in California. I run my projects — and, for one week, an entire codebase — through terminals and loops. Before the agents: robotics mentor, virtual-enterprise CEO, Eagle Scout. The site you are reading is one of the loops.</p>
+    <p class="ln"></p>
+    <p class="ln mut"><span class="dim">2027 · </span><span class="hot">now</span> — building agent infrastructure</p>
+    <p class="ln mut"><span class="dim">2026 · </span>the operator week — one loop, seven days, alone</p>
+    <p class="ln mut"><span class="dim">2025 · </span>Virtual Enterprise — CEO · state finals</p>
+    <p class="ln mut"><span class="dim">2024 · </span>Eagle Scout · service project lead</p>
+    <p class="ln"></p>
+    <p class="ln faint"><b class="acc">Eagle</b> Scout · <b class="acc">1540</b> SAT · <b class="acc">4.0</b> UW</p>
+  </template>
+
+  <template id="tpl-5">
+    <p class="ln big">LET'S BUILD SOMETHING.</p>
+    <p class="ln"></p>
+    <p class="ln"><button class="obtn" data-cmd="email">[ copy email ]</button>  <a class="plain" href="#">github</a>  <a class="plain" href="#">linkedin</a>  <a class="plain" href="#">resume</a></p>
+    <p class="ln"></p>
+    <p class="ln faint">channel open · &copy; 2026 Oliver Nguyen · oN.c REV 2027</p>
+  </template>
+
+  <!-- help overlay -->
+  <div id="help" class="overlay" hidden>
+    <div class="backdrop" data-close="help"></div>
+    <div class="panel help-panel" role="dialog" aria-modal="true" aria-label="Keyboard help">
+      <h3>keys</h3>
+      <table>
+        <tbody>
+          <tr><td class="key">j / k</td><td>scroll the buffer</td></tr>
+          <tr><td class="key">1&ndash;5</td><td>open window (prints its file)</td></tr>
+          <tr><td class="key">gg / G</td><td>scrollback top / bottom</td></tr>
+          <tr><td class="key">Tab</td><td>complete command</td></tr>
+          <tr><td class="key">&uarr; / &darr;</td><td>command history</td></tr>
+          <tr><td class="key">&#8984;K / Ctrl+K</td><td>command palette</td></tr>
+          <tr><td class="key">?</td><td>this help</td></tr>
+          <tr><td class="key">Esc</td><td>clear prompt / close</td></tr>
+        </tbody>
+      </table>
+      <h3>commands</h3>
+      <table>
+        <tbody>
+          <tr><td class="key">ls</td><td>list files</td></tr>
+          <tr><td class="key">cat FILE</td><td>print a file (tools.txt, whoami.txt, &hellip;)</td></tr>
+          <tr><td class="key">day N</td><td>replay day N (stub)</td></tr>
+          <tr><td class="key">mode graph</td><td>switch mode (coming soon)</td></tr>
+          <tr><td class="key">email · clear · help</td><td>what they say</td></tr>
+        </tbody>
+      </table>
+      <button id="help-close" class="obtn">[ close ]</button>
+    </div>
+  </div>
+
+  <!-- command palette -->
+  <div id="palette" class="overlay" hidden>
+    <div class="backdrop" data-close="palette"></div>
+    <div class="panel palette-panel" role="dialog" aria-modal="true" aria-label="Command palette">
+      <div class="prow"><span class="psigil">&rsaquo;</span><input id="palette-input" type="text"
+        placeholder="type a command… try: replay the week" autocomplete="off" spellcheck="false"
+        aria-label="Search commands"></div>
+      <ul id="palette-list" role="listbox" aria-label="Commands"></ul>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
