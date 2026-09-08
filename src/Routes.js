@@ -10,6 +10,7 @@ import { SATResourcesError, SATResourcesLoading } from "./pages/sat/sat_route_st
 import Home from "./home/Home.jsx";
 import RequirePassphrase from "./auth/RequirePassphrase";
 import RequireClerk, { clerkKey } from "./auth/RequireClerk";
+import RequireOwner from "./auth/RequireOwner.jsx";
 
 // X-3 perf budget (plan §6 FINAL GATE): "/" route JS ≤ 180KB gz pre-graph-
 // chunk. Legacy routes are lazy so their page code never rides in the entry
@@ -42,6 +43,7 @@ const Apply = lazy(() => import("./pages/apply/index.js"));
 const EssayStudio = lazy(() => import("./pages/essay_studio/index.js"));
 const WritingRoom = lazy(() => import("./pages/essay_studio/room/index.js"));
 const Transfer = lazy(() => import("./pages/transfer/index.js"));
+const Tracker = lazy(() => import("./pages/tracker/TrackerPage.jsx"));
 const MomFifty = lazy(() => import("./pages/mom/index.js"));
 
 // Dev-only component gallery (/_components). Behind import.meta.env.DEV so the
@@ -108,10 +110,10 @@ const NavigationBridge = () => {
   return null;
 };
 
-const SiteChrome = () => {
+const SiteChrome = ({ clerkEnabled }) => {
   const { pathname } = useLocation();
   if (NO_CHROME.some((route) => pathname.startsWith(route))) return null;
-  return <ChromeBar />;
+  return <ChromeBar clerkEnabled={clerkEnabled} />;
 };
 
 const Blank = () => <div style={{ minHeight: "100dvh" }} />;
@@ -137,9 +139,9 @@ export const Routes = () => {
           interface). Neither reads the other. */}
       <ThemeProvider>
       <ModeProvider>
-      <NavigationBridge />
-      <SiteChrome />
       <ClerkBridge>
+      <NavigationBridge />
+      <SiteChrome clerkEnabled={Boolean(clerkKey())} />
       <Suspense fallback={<RouteFallback />}>
       <Switch>
         <Route path="/" exact>
@@ -224,6 +226,11 @@ export const Routes = () => {
               <Transfer />
             </Suspense>
           </RequireClerk>
+        </Route>
+        <Route path="/tracker">
+          <RequireOwner>
+            <Tracker />
+          </RequireOwner>
         </Route>
         <Route>
           <NotFoundPage />

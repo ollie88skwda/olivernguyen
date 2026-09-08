@@ -47,6 +47,7 @@
 // Lighthouse perf gate. The hide-on-scroll slide now runs at §6's 140ms state
 // duration instead of the old bespoke 350ms curve.
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useAuth, useClerk, useUser } from "@clerk/react";
 import { useLocation } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
@@ -64,6 +65,7 @@ import { Glyph, Icon, ModeToggle, MonoLabel, Wordmark } from "@/components/brand
 
 import { useMode } from "../mode/ModeProvider";
 import { useTheme } from "../theme/ThemeProvider";
+import { useOwnerAccess } from "../auth/useOwnerAccess";
 import { FOCUS_PARAM, dispatchGraphIntent } from "../graph/lib/focusIntent.js";
 import "../styles/sakura.css";
 import "./chrome.css";
@@ -82,6 +84,57 @@ const NAV_LINKS = [
 ];
 
 const SCROLL_TOP_THRESHOLD = 25;
+
+export const AccountMenuItems = ({ status, name, onAccount, onSignOut }) => {
+  if (status === "loading") {
+    return <DropdownMenuItem disabled>Checking account…</DropdownMenuItem>;
+  }
+  if (status !== "signed-in") {
+    return (
+      <DropdownMenuItem asChild>
+        <a href="/sign-in">Sign in</a>
+      </DropdownMenuItem>
+    );
+  }
+
+  return (
+    <>
+      <DropdownMenuLabel>{name ? `Signed in as ${name}` : "Signed in"}</DropdownMenuLabel>
+      <DropdownMenuItem onSelect={onAccount}>Account</DropdownMenuItem>
+      <DropdownMenuItem onSelect={onSignOut}>Sign out</DropdownMenuItem>
+    </>
+  );
+};
+
+const AccountAuthItems = () => {
+  const { isLoaded, isSignedIn } = useAuth();
+  const { user } = useUser();
+  const { openUserProfile, signOut } = useClerk();
+  return (
+    <AccountMenuItems
+      status={!isLoaded ? "loading" : isSignedIn ? "signed-in" : "signed-out"}
+      name={user?.firstName}
+      onAccount={() => openUserProfile()}
+      onSignOut={() => signOut({ redirectUrl: "/" })}
+    />
+  );
+};
+
+export const TrackerMenuItem = () => (
+  <>
+    <DropdownMenuSeparator />
+    <DropdownMenuLabel>Private</DropdownMenuLabel>
+    <DropdownMenuItem asChild>
+      <a href="/tracker">Life tracker</a>
+    </DropdownMenuItem>
+  </>
+);
+
+const OwnerTrackerItem = () => {
+  const { isLoaded, isSignedIn } = useAuth();
+  const access = useOwnerAccess(isLoaded && isSignedIn);
+  return access.status === "authorized" ? <TrackerMenuItem /> : null;
+};
 
 // Pages menu: the old sidebar content minus dead /debt (05 §6.4).
 const MENU = [
@@ -104,7 +157,7 @@ const MENU = [
   ] },
 ];
 
-export const SiteChrome = () => {
+export const SiteChrome = ({ clerkEnabled = false, accountState = null }) => {
   const { mode, setMode } = useMode();
   const { theme, setTheme } = useTheme();
   const { pathname } = useLocation();
@@ -168,6 +221,14 @@ export const SiteChrome = () => {
                   <DropdownMenuRadioItem value="light"><Icon name="sun" /> Light</DropdownMenuRadioItem>
                   <DropdownMenuRadioItem value="dark"><Icon name="moon" /> Dark</DropdownMenuRadioItem>
                 </DropdownMenuRadioGroup>
+                <DropdownMenuSeparator />
+                {accountState ? (
+                  <AccountMenuItems {...accountState} />
+                ) : clerkEnabled ? (
+                  <AccountAuthItems />
+                ) : (
+                  <AccountMenuItems status="signed-out" />
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
 
@@ -225,6 +286,11 @@ export const SiteChrome = () => {
                     </DropdownMenuItem>
                   ),
                 )}
+                {accountState?.ownerAuthorized ? (
+                  <TrackerMenuItem />
+                ) : clerkEnabled && !accountState ? (
+                  <OwnerTrackerItem />
+                ) : null}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
