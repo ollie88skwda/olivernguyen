@@ -3,6 +3,8 @@ import { createClient } from "@supabase/supabase-js";
 
 const BUCKET = "transfers";
 const ROOT = "_life-tracker";
+const LOCK_ROOT = `${ROOT}/locks`;
+const LOCK_TTL_MS = 120_000;
 const MAX_CLASSES = 100;
 const MAX_NOTES_PER_CLASS = 1000;
 const MAX_NAME_LENGTH = 100;
@@ -22,6 +24,10 @@ export function trackerPath(userId) {
   return `${ROOT}/${encodeURIComponent(userId)}.json`;
 }
 
+function lockPath(userId) {
+  return `${LOCK_ROOT}/${encodeURIComponent(userId)}.lock`;
+}
+
 function storage() {
   const url = process.env.REACT_APP_SUPABASE_URL || process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -37,6 +43,61 @@ function isMissing(error) {
     Number(error.statusCode) === 404 ||
     /not found|does not exist/i.test(error.message || "")
   );
+}
+
+function isConflict(error) {
+  return error && (
+    Number(error.status) === 409 ||
+    Number(error.statusCode) === 409 ||
+    /already exists|already present|duplicate/i.test(error.message || "")
+  );
+}
+
+async function acquireMutationLock(userId) {
+  const bucket = storage();
+  const path = lockPath(userId);
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const { error } = await bucket.upload(
+      path,
+      JSON.stringify({ expiresAt: Date.now() + LOCK_TTL_MS }),
+      { contentType: "application/json", upsert: false },
+    );
+    if (!error) {
+      return async () => {
+        const { error: releaseError } = await bucket.remove([path]);
+        if (releaseError && !isMissing(releaseError)) {
+          throw new TrackerError(500, releaseError.message || "Tracker lock could not be released.");
+        }
+      };
+    }
+    if (!isConflict(error)) {
+      throw new TrackerError(500, error.message || "Tracker could not be locked.");
+    }
+
+    const { data, error: readError } = await bucket.download(path);
+    if (readError) {
+      if (isMissing(readError)) continue;
+      throw new TrackerError(500, readError.message || "Tracker lock could not be checked.");
+    }
+
+    let expiresAt;
+    try {
+      expiresAt = JSON.parse(await data.text()).expiresAt;
+    } catch {
+      expiresAt = null;
+    }
+    if (!Number.isFinite(expiresAt) || expiresAt > Date.now()) {
+      throw new TrackerError(409, "Another tracker change is in progress. Try again.");
+    }
+
+    const { error: removeError } = await bucket.remove([path]);
+    if (removeError && !isMissing(removeError)) {
+      throw new TrackerError(500, removeError.message || "Tracker lock could not be cleared.");
+    }
+  }
+
+  throw new TrackerError(409, "Another tracker change is in progress. Try again.");
 }
 
 function cleanString(value, label, maxLength, { allowEmpty = false } = {}) {
@@ -163,8 +224,13 @@ export function applyTrackerAction(tracker, action, now = new Date().toISOString
 }
 
 export async function mutateTracker(userId, action) {
-  const current = await readTracker(userId);
-  const result = applyTrackerAction(current, action);
-  await writeTracker(userId, result.tracker);
-  return result;
+  const releaseLock = await acquireMutationLock(userId);
+  try {
+    const current = await readTracker(userId);
+    const result = applyTrackerAction(current, action);
+    await writeTracker(userId, result.tracker);
+    return result;
+  } finally {
+    await releaseLock();
+  }
 }

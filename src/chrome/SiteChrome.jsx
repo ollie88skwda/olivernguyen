@@ -131,8 +131,8 @@ export const TrackerMenuItem = () => (
 );
 
 const OwnerTrackerItem = () => {
-  const { isLoaded, isSignedIn } = useAuth();
-  const access = useOwnerAccess(isLoaded && isSignedIn);
+  const { isLoaded, isSignedIn, userId } = useAuth();
+  const access = useOwnerAccess(isLoaded && isSignedIn, userId);
   return access.status === "authorized" ? <TrackerMenuItem /> : null;
 };
 

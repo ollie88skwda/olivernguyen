@@ -27,8 +27,8 @@ const AccessState = ({ title, children, action }) => (
 
 const OwnerGate = ({ children }) => {
   const location = useLocation();
-  const { isLoaded, isSignedIn } = useAuth();
-  const access = useOwnerAccess(isLoaded && isSignedIn);
+  const { isLoaded, isSignedIn, userId } = useAuth();
+  const access = useOwnerAccess(isLoaded && isSignedIn, userId);
 
   if (!isLoaded || (isSignedIn && access.status === "loading")) {
     return (
