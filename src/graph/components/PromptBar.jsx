@@ -19,6 +19,7 @@ import { Kbd } from '@/components/ui/kbd';
 import { Glyph } from '@/components/brand';
 import { matchIntents, PROMPT_PLACEHOLDERS } from '../../intents/registry.js';
 import { bindGraphIntents } from '../lib/focusIntent.js';
+import { isPaletteCombo } from '../lib/keys.js';
 
 export default function PromptBar({ still, onRun, onNoMatch }) {
   useEffect(() => bindGraphIntents(onRun), [onRun]);
@@ -62,7 +63,7 @@ export default function PromptBar({ still, onRun, onNoMatch }) {
       if (n) run(matches[sel]);
       else if (value.trim()) onNoMatch();
     }
-    e.stopPropagation();
+    if (!isPaletteCombo(e)) e.stopPropagation();
   };
 
   return (

@@ -145,6 +145,14 @@ test.describe("terminal core — Gate T0 (buffer engine + screen shell)", () => 
     expect(
       await page.evaluate(() => document.querySelectorAll(".blk").length),
     ).toBe(0);
+    await page.evaluate(async () => {
+      const pending = window.__term.api.print("stale boot output", { stagger: 0 });
+      window.__term.api.clear();
+      await pending;
+    });
+    expect(
+      await page.evaluate(() => document.querySelectorAll(".blk").length),
+    ).toBe(0);
     assertClean(errors);
   });
 
@@ -651,6 +659,8 @@ test.describe("terminal core — Gate C2 (vim keys, palette, mode dispatch, neve
     await page.keyboard.press("ControlOrMeta+k");
     const palette = page.getByTestId("term-palette");
     await expect(palette).toBeVisible();
+    await page.keyboard.press("Tab");
+    await expect(palette.locator(".palette-input")).toBeFocused();
     // suggestions on empty query (§6 C2)
     expect(
       await palette.locator('[role="option"]').count(),
@@ -713,6 +723,10 @@ test.describe("terminal core — Gate C2 (vim keys, palette, mode dispatch, neve
     await expect(
       help.getByRole("dialog", { name: "Keyboard help" }),
     ).toBeVisible();
+    await page.keyboard.press("Tab");
+    await expect(help.getByRole("button", { name: "close" })).toBeFocused();
+    await page.keyboard.press("Shift+Tab");
+    await expect(help.getByRole("button", { name: "close" })).toBeFocused();
     await page.keyboard.press("Escape");
     await expect(help).toBeHidden();
     expect(

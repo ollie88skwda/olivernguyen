@@ -67,6 +67,7 @@ function KeyTable({ rows }) {
 
 export default function HelpSheet({ open, onClose }) {
   const closeRef = useRef(null);
+  const panelRef = useRef(null);
 
   useEffect(() => {
     // preventScroll: the panel is a scroll container now (the <Kbd> chips made
@@ -77,13 +78,25 @@ export default function HelpSheet({ open, onClose }) {
 
   if (!open) return null;
 
+  const onKeyDown = (e) => {
+    if (e.key !== 'Tab') return;
+    const items = panelRef.current?.querySelectorAll(
+      'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+    );
+    if (!items?.length) return;
+    e.preventDefault();
+    (e.shiftKey ? items[items.length - 1] : items[0]).focus();
+  };
+
   return (
     <div className="term-overlay" data-testid="term-help">
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
       <div className="backdrop on-overlay" onClick={onClose} />
       <div
+        ref={panelRef}
         className="panel help-panel on-panel"
         role="dialog"
+        onKeyDown={onKeyDown}
         aria-modal="true"
         aria-label="Keyboard help"
       >

@@ -146,6 +146,8 @@ test.describe("graph mode — Gate G3", () => {
     await page.click(".p-input");
     await page.keyboard.type("j");
     expect(await page.inputValue(".p-input")).toBe("j");
+    await page.keyboard.press("Meta+k");
+    await expect(page.locator(".palette.open")).toBeVisible();
     await page.keyboard.press("Escape");
 
     await page.keyboard.press("Meta+k");
@@ -185,6 +187,16 @@ test.describe("graph mode — Gate G3", () => {
     await expect(page.locator(".dossier")).toHaveAttribute("aria-hidden", "false");
     await page.keyboard.press("Escape");
     await expect(page.locator(".dossier")).toHaveAttribute("aria-hidden", "true");
+
+    await page.locator(".dossier").focus();
+    await page.keyboard.press("Shift+Tab");
+    await expect(page.locator(".d-close")).toBeFocused();
+
+    await page.keyboard.press("Meta+k");
+    await expect(page.locator(".palette.open")).toBeVisible();
+    await page.keyboard.press("Tab");
+    await expect(page.locator(".pal-input")).toBeFocused();
+    await page.keyboard.press("Escape");
 
     // filter Enter flies to top match
     await page.keyboard.press("/");

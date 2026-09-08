@@ -47,6 +47,7 @@ function createEngine() {
   const posListeners = new Set();
   const queue = createQueue();
   let nextId = 1;
+  let printGeneration = 0;
 
   const notify = () => {
     state.version++;
@@ -85,8 +86,10 @@ function createEngine() {
 
   /* ---- public api ---- */
 
-  const print = (items, opts = {}) =>
-    queue.enqueue(async () => {
+  const print = (items, opts = {}) => {
+    const generation = printGeneration;
+    return queue.enqueue(async () => {
+      if (generation !== printGeneration) return;
       const lines = toLines(items);
       const instant = !motionOK();
       const block = { id: nextId++, lines, revealed: instant ? lines.length : 0 };
@@ -94,13 +97,15 @@ function createEngine() {
       if (!instant) {
         for (let i = 0; i < lines.length; i++) {
           await sleep(printDelay(opts.stagger));
+          if (generation !== printGeneration) return;
           block.revealed++;
           notify();
           pin();
         }
       }
-      emitPos();
+      if (generation === printGeneration) emitPos();
     });
+  };
 
   const echo = (cmdText) => {
     const line = (
@@ -116,6 +121,7 @@ function createEngine() {
   const printErr = (text) => print(ln('err', text));
 
   const clear = () => {
+    printGeneration++;
     state.blocks = [];
     notify();
     emitPos();

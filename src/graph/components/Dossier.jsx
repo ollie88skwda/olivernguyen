@@ -57,10 +57,10 @@ export default function Dossier({ entity, open, onClose, onGoto }) {
     if (!items.length) return;
     const first = items[0];
     const last = items[items.length - 1];
-    if (e.shiftKey && document.activeElement === first) {
+    if (e.shiftKey && (document.activeElement === panelRef.current || document.activeElement === first)) {
       e.preventDefault();
       last.focus();
-    } else if (!e.shiftKey && document.activeElement === last) {
+    } else if (!e.shiftKey && (document.activeElement === panelRef.current || document.activeElement === last)) {
       e.preventDefault();
       first.focus();
     }

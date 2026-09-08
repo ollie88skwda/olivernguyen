@@ -47,6 +47,15 @@ import { consumeFocusParam, resolveGraphIntent } from '../lib/focusIntent.js';
  * remount does not re-hijack the reader's scroll position.
  */
 let pendingFocusId = null;
+let pendingFocusClear = null;
+
+function schedulePendingFocusClear() {
+  clearTimeout(pendingFocusClear);
+  pendingFocusClear = setTimeout(() => {
+    pendingFocusId = null;
+    pendingFocusClear = null;
+  }, 0);
+}
 
 function memberIdsOf(groupId) {
   // group's subtree in authored order, excluding the group node itself
@@ -133,16 +142,18 @@ export default function GraphList({ srOnly = false }) {
   // desktop the SR copy of this list must not steal the canvas's deep-link.
   useEffect(() => {
     if (srOnly) return;
+    clearTimeout(pendingFocusClear);
+    pendingFocusClear = null;
     const detail = consumeFocusParam();
     if (detail) {
       const it = resolveGraphIntent(detail);
       pendingFocusId = it?.run?.type === 'node' ? it.run.id : null;
     }
     const id = pendingFocusId;
-    if (!id) return undefined;
+    if (!id) return schedulePendingFocusClear;
     const el =
       document.getElementById(`gl-h-${id}`) || document.getElementById(`gl-${id}`);
-    if (!el) return undefined;
+    if (!el) return schedulePendingFocusClear;
 
     // Align, then KEEP aligning while the list is still settling. These entries
     // are display-type heavy, so the fallback-to-webfont reflow grows the list
@@ -168,7 +179,11 @@ export default function GraphList({ srOnly = false }) {
     window.addEventListener('keydown', stop, true);
     const t = setTimeout(() => { pendingFocusId = null; stop(); }, 2000);
 
-    return () => { clearTimeout(t); stop(); };
+    return () => {
+      clearTimeout(t);
+      stop();
+      schedulePendingFocusClear();
+    };
   }, [srOnly]);
   return (
     <div

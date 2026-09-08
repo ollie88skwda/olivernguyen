@@ -7,6 +7,7 @@ import { INTENTS, matchIntents } from '../../intents/registry.js';
 
 export default function Palette({ open, onClose, onRun }) {
   const inputRef = useRef(null);
+  const panelRef = useRef(null);
   const [q, setQ] = useState('');
   const [sel, setSel] = useState(0);
 
@@ -29,6 +30,17 @@ export default function Palette({ open, onClose, onRun }) {
   const run = (it) => { onClose(); onRun(it); };
 
   const onKeyDown = (e) => {
+    if (e.key === 'Tab') {
+      const items = panelRef.current?.querySelectorAll(
+        'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (items?.length) {
+        e.preventDefault();
+        (e.shiftKey ? items[items.length - 1] : items[0]).focus();
+      }
+      e.stopPropagation();
+      return;
+    }
     const n = Math.min(9, matches.length);
     if (e.key === 'Escape') onClose();
     else if (e.key === 'ArrowDown') { e.preventDefault(); if (n) setSel((s) => (s + 1) % n); }
@@ -40,7 +52,7 @@ export default function Palette({ open, onClose, onRun }) {
   return (
     <div className="palette open" role="dialog" aria-modal="true" aria-label="Command palette">
       <div className="p-backdrop" onClick={onClose} />
-      <div className="p-panel">
+      <div ref={panelRef} className="p-panel" onKeyDown={onKeyDown}>
         <input
           ref={inputRef}
           className="pal-input"
@@ -48,7 +60,6 @@ export default function Palette({ open, onClose, onRun }) {
           placeholder="type an intent — “week”, “day 4”, “robotics”…"
           aria-label="Search intents"
           onChange={(e) => { setQ(e.target.value); setSel(0); }}
-          onKeyDown={onKeyDown}
         />
         <ul className="pal-list">
           {matches.length === 0 && (

@@ -63,7 +63,9 @@ function getUpcomingWeekends() {
   const d = new Date(today);
   d.setDate(d.getDate() + ((6 - d.getDay() + 7) % 7 || 7));
   while (d < end) {
-    weekends.push(d.toISOString().split("T")[0]);
+    weekends.push(
+      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
+    );
     d.setDate(d.getDate() + 7);
   }
   return weekends;

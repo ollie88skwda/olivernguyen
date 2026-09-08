@@ -24,6 +24,7 @@ import { matchTerminalIntents, suggestedIntents } from './lib/intents.js';
 
 export default function Palette({ open, onClose, onRun }) {
   const inputRef = useRef(null);
+  const panelRef = useRef(null);
   const [query, setQuery] = useState('');
   const [sel, setSel] = useState(0);
 
@@ -48,6 +49,16 @@ export default function Palette({ open, onClose, onRun }) {
   };
 
   const onKeyDown = (e) => {
+    if (e.key === 'Tab') {
+      const items = panelRef.current?.querySelectorAll(
+        'button, a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      );
+      if (items?.length) {
+        e.preventDefault();
+        (e.shiftKey ? items[items.length - 1] : items[0]).focus();
+      }
+      return;
+    }
     if (e.key === 'Escape') {
       e.preventDefault();
       e.stopPropagation(); // window cascade must not double-handle
@@ -69,6 +80,7 @@ export default function Palette({ open, onClose, onRun }) {
       {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
       <div className="backdrop on-overlay" onClick={onClose} />
       <div
+        ref={panelRef}
         className="panel palette-panel on-panel on-command"
         role="dialog"
         aria-modal="true"
