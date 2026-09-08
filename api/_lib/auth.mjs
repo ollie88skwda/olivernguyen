@@ -25,30 +25,34 @@ function allowlist() {
     .filter(Boolean);
 }
 
-export async function requireSession(req, res) {
+async function authenticate(req, res) {
   // A misconfigured env is a server problem and should say so, rather than
-  // surfacing as an opaque failure. It also fails closed: no key, no vault.
+  // surfacing as an opaque failure. It also fails closed: no key, no private data.
   if (!process.env.CLERK_SECRET_KEY) {
     res.status(500).json({ error: "CLERK_SECRET_KEY is missing on the server." });
-    return false;
+    return null;
   }
 
   const token = parseCookies(req.headers.cookie).__session;
   if (!token) {
     res.status(401).json({ error: "Not authenticated" });
-    return false;
+    return null;
   }
 
   // verifyToken in @clerk/backend v3 resolves to the JwtPayload and throws on
   // failure. It does not return a { data, errors } pair — that is the internal
   // verifyJwt, and following the wrong one silently accepts every token.
-  let payload;
   try {
-    payload = await verifyToken(token, { secretKey: process.env.CLERK_SECRET_KEY });
+    return await verifyToken(token, { secretKey: process.env.CLERK_SECRET_KEY });
   } catch {
     res.status(401).json({ error: "Session expired" });
-    return false;
+    return null;
   }
+}
+
+export async function requireSession(req, res) {
+  const payload = await authenticate(req, res);
+  if (!payload) return false;
 
   // Clerk permits open sign-up unless it is turned off in the dashboard, so
   // authenticating is not the same as being allowed in. This is the server-side
@@ -63,7 +67,30 @@ export async function requireSession(req, res) {
   }
 
   // Attached so routes can scope data to the caller. The payload.sub is the
-  // Clerk user id, and everything /transfer stores is named under it.
+  // Clerk user id, and every private storage path is named under it.
+  req.userId = payload.sub;
+  return true;
+}
+
+export async function requireOwnerSession(req, res) {
+  const payload = await authenticate(req, res);
+  if (!payload) return false;
+
+  // Reuse the established one-person allowlist unless a dedicated owner id is
+  // supplied. Either way, identity stays in server configuration. Multiple
+  // allowlisted accounts are ambiguous and fail closed rather than sharing data.
+  const explicitOwner = (process.env.CLERK_OWNER_USER_ID || "").trim();
+  const allowed = allowlist();
+  const ownerId = explicitOwner || (allowed.length === 1 ? allowed[0] : "");
+  if (!ownerId) {
+    res.status(500).json({ error: "Exactly one tracker owner must be configured on the server." });
+    return false;
+  }
+  if (payload.sub !== ownerId) {
+    res.status(403).json({ error: "This tracker belongs to a different account." });
+    return false;
+  }
+
   req.userId = payload.sub;
   return true;
 }

@@ -1,7 +1,12 @@
 import bcrypt from "bcryptjs";
-import { signGate, gateCookie } from "../_lib/passphrase.mjs";
+import { requireGate, signGate, gateCookie } from "../_lib/passphrase.mjs";
 
 export default async function handler(req, res) {
+  if (req.method === "GET") {
+    if (!(await requireGate(req, res))) return;
+    res.status(200).json({ ok: true });
+    return;
+  }
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
     return;
