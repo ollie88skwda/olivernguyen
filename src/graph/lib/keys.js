@@ -42,6 +42,15 @@ export function isChromeMenuTarget(el) {
   );
 }
 
+/** True when focus is inside a control that owns normal keyboard navigation. */
+export function isInteractiveTarget(el) {
+  return Boolean(
+    el?.closest?.(
+      'a[href], button, input, textarea, select, summary, [contenteditable="true"], [role="button"], [role="link"], [role="menuitem"], [role="option"], [role="tab"], [role="dialog"], [tabindex]',
+    ),
+  );
+}
+
 /** True when the event is a modifier chord the keymap must not hijack. */
 export function isModifierChord(e) {
   return Boolean(e.metaKey || e.ctrlKey || e.altKey);

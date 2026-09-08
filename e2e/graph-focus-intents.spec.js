@@ -90,9 +90,9 @@ test.describe("graph focus intents — F-C.2/3", () => {
     await expect
       .poll(async () => {
         const box = await page.locator("#gl-h-agents").boundingBox();
-        return box ? Math.abs(box.y) : 9999;
+        return box ? box.y : -9999;
       })
-      .toBeLessThan(120);
+      .toBeGreaterThanOrEqual(64);
     // P6 untouched: still no canvas/d3 on mobile
     const offenders = fetched.filter((u) =>
       /GraphCanvas|GraphEdges|GraphNode|useCamera|runPulse|d3-/.test(u),
@@ -100,6 +100,23 @@ test.describe("graph focus intents — F-C.2/3", () => {
     expect(offenders).toEqual([]);
     expect(errors).toEqual([]);
     await ctx.close();
+  });
+
+  test("graph keymap yields to chrome and dossier controls", async ({ page }) => {
+    const errors = watchErrors(page);
+    await page.goto("/?still");
+    await page.waitForSelector(".g-stage");
+
+    await page.locator(".sc-nav-link").first().focus();
+    await page.keyboard.press("ArrowDown");
+    await expect(page.locator(".dossier")).toHaveAttribute("aria-hidden", "true");
+
+    await page.locator('[data-id="oliver"] .card').click();
+    await expect(page.locator(".d-title")).toHaveText("Oliver Nguyen");
+    await page.locator(".d-close").focus();
+    await page.keyboard.press("ArrowRight");
+    await expect(page.locator(".d-title")).toHaveText("Oliver Nguyen");
+    expect(errors).toEqual([]);
   });
 
   test("terminal mode renders no section links; graph mode restores them", async ({

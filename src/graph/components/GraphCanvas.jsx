@@ -24,6 +24,7 @@ import {
   escAction,
   isTypingTarget,
   isChromeMenuTarget,
+  isInteractiveTarget,
   isModifierChord,
   isPaletteCombo,
   cycleId,
@@ -281,6 +282,7 @@ export default function GraphCanvas() {
         if (e.key === 'Escape') setPaletteOpen(false);
         return;
       }
+      if (isInteractiveTarget(e.target) && e.key !== 'Escape') return;
       if (isTypingTarget(e.target)) return;   // never-trap: inputs win
       if (isModifierChord(e)) return;         // never-trap: no chord hijack
 

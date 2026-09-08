@@ -592,7 +592,11 @@ body:has(.site-chrome-bar) .graph-root {
 
 /* -------------------- dossier-list fallback (G-4.1) -------------------- */
 
-.graph-root.listing { overflow-y: auto; overscroll-behavior: auto; }
+.graph-root.listing {
+  overflow-y: auto;
+  overscroll-behavior: auto;
+  scroll-padding-top: var(--s-16, 64px);
+}
 
 .graph-root .g-list {
   max-width: 640px;

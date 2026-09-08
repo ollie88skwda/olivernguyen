@@ -73,7 +73,7 @@ export function matchIntents(query, intents = INTENTS) {
   const q = (query || '').trim().toLowerCase().replace(/[?!.,;:]+$/, '').trimEnd();
   if (!q) return [];
   const out = [];
-  const day = q.match(/day\s*([1-7])/);
+  const day = q.match(/day\s*([1-7])(?!\d)/);
   if (day) {
     out.push({
       id: 'day-jump', label: `Jump to day ${day[1]}`, kind: 'node',

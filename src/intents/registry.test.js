@@ -45,6 +45,11 @@ describe('intent matcher — prototype behavior (Gate G1)', () => {
     expect(matchIntents('day 9').some((m) => m.id === 'day-jump')).toBe(false);
   });
 
+  it('larger day numbers are not truncated into day jumps', () => {
+    expect(matchIntents('day 10').some((m) => m.id === 'day-jump')).toBe(false);
+    expect(matchIntents('day 40').some((m) => m.id === 'day-jump')).toBe(false);
+  });
+
   it('substring match ranks by earliest occurrence', () => {
     const out = matchIntents('week');
     expect(out[0].id).toBe('show-operator');

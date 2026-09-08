@@ -3,6 +3,7 @@ import {
   escAction,
   isTypingTarget,
   isChromeMenuTarget,
+  isInteractiveTarget,
   isModifierChord,
   isPaletteCombo,
   cycleId,
@@ -36,6 +37,16 @@ describe('keyboard — never-trap guards (05 §5.4.2)', () => {
     expect(isChromeMenuTarget(menu)).toBe(true);
     expect(isChromeMenuTarget(outside)).toBe(false);
     expect(isChromeMenuTarget(null)).toBe(false);
+  });
+
+  it('interactive controls form a keyboard boundary', () => {
+    const button = { closest: (selector) => selector.includes('button') ? button : null };
+    const dossier = { closest: (selector) => selector.includes('[role="dialog"]') ? dossier : null };
+    const outside = { closest: () => null };
+    expect(isInteractiveTarget(button)).toBe(true);
+    expect(isInteractiveTarget(dossier)).toBe(true);
+    expect(isInteractiveTarget(outside)).toBe(false);
+    expect(isInteractiveTarget(null)).toBe(false);
   });
 
   it('modifier chords are never hijacked (shift excepted — Shift+Tab cycles)', () => {
