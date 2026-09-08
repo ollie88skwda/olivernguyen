@@ -150,6 +150,9 @@ test.describe("graph mode — Gate G3", () => {
     await expect(page.locator(".palette.open")).toBeVisible();
     await page.keyboard.press("Escape");
 
+    await page.keyboard.press("Alt+Control+k");
+    await expect(page.locator(".palette.open")).toHaveCount(0);
+
     await page.keyboard.press("Meta+k");
     await expect(page.locator(".pal-input")).toBeFocused();
     await page.keyboard.type("j");

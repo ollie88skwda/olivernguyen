@@ -63,6 +63,17 @@ test.describe("site chrome — R-C4", () => {
     await expect(menuBtn.locator('[data-slot="glyph"]')).toHaveCount(0);
   });
 
+  test("terminal chrome controls do not arm pane prefixes", async ({ page }) => {
+    await page.goto("/?mode=terminal&still");
+    await expect(page.getByTestId("terminal-home")).toBeVisible();
+    const mode = page.getByRole("button", { name: "GRAPH", exact: true });
+    await mode.focus();
+    await page.keyboard.press("Control+g");
+    await page.keyboard.press("v");
+    await expect(page.locator('[data-testid="pane-grid"] [data-pane]')).toHaveCount(1);
+    await expect(page.getByTestId("sb-prefix")).toHaveCount(0);
+  });
+
   for (const { mode, theme } of COMBOS) {
     test(`theme-color follows the ladder, not the mode: ${mode} · ${theme}`, async ({
       page,

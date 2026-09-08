@@ -54,7 +54,9 @@ export function isModifierChord(e) {
 
 /** True for the ⌘K / Ctrl+K palette combo (the one allowed chord). */
 export function isPaletteCombo(e) {
-  return Boolean((e.metaKey || e.ctrlKey) && String(e.key).toLowerCase() === 'k');
+  return Boolean(
+    (e.metaKey || e.ctrlKey) && !e.altKey && String(e.key).toLowerCase() === 'k',
+  );
 }
 
 /**

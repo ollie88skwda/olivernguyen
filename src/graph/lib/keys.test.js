@@ -68,6 +68,8 @@ describe('keyboard — never-trap guards (05 §5.4.2)', () => {
     expect(isPaletteCombo({ ctrlKey: true, key: 'K' })).toBe(true);
     expect(isPaletteCombo({ key: 'k' })).toBe(false);
     expect(isPaletteCombo({ metaKey: true, key: 'j' })).toBe(false);
+    expect(isPaletteCombo({ ctrlKey: true, altKey: true, key: 'k' })).toBe(false);
+    expect(isPaletteCombo({ metaKey: true, altKey: true, key: 'k' })).toBe(false);
   });
 });
 
