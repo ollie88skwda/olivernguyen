@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isLegalWeekend } from "./pick.mjs";
+import { isLegalWeekend } from "../../../api/pull/pick.mjs";
 
 describe("pull weekend validation", () => {
   const now = new Date("2026-09-08T12:00:00Z");
