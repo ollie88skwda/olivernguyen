@@ -86,13 +86,16 @@ test.describe("graph focus intents — F-C.2/3", () => {
     await page.goto("/?focus=agents");
     await expect(page.locator(".g-list")).toBeVisible();
     await expect(page).not.toHaveURL(/focus=/);
-    // the agents section header scrolled to (at/near the viewport top)
+    // the agents section header scrolled to the list scrollport's chrome-safe
+    // top. Allow subpixel device scaling while retaining a half-pixel safety
+    // margin against the fixed 64px bar.
+    const bar = await page.locator(".site-chrome-bar").boundingBox();
     await expect
       .poll(async () => {
         const box = await page.locator("#gl-h-agents").boundingBox();
         return box ? box.y : -9999;
       })
-      .toBeGreaterThanOrEqual(64);
+      .toBeGreaterThanOrEqual(bar.y + bar.height - 0.5);
     // P6 untouched: still no canvas/d3 on mobile
     const offenders = fetched.filter((u) =>
       /GraphCanvas|GraphEdges|GraphNode|useCamera|runPulse|d3-/.test(u),

@@ -9,6 +9,15 @@ and deleting it there.
 
 ---
 
+## 2026-09-08 · The rebuild is integrated
+
+### D-37 · Component-library rebuild merged
+The complete component-library, terminal, graph, theme, and chrome work is integrated in merge commit
+`c70098d7`. The four independent theme × mode combinations and the existing surface behavior remain
+shipped; the merge item is closed in `docs/OPEN-DECISIONS.md`.
+
+---
+
 ## 2026-08-28 · Theme choices move into the account-shaped menu
 
 ### D-36 · Appearance lives under Account

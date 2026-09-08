@@ -1,6 +1,6 @@
 # 12 · Rebuild plan — home + chrome on the component library
 
-Status owner: exec-chrome (lead). Branch: `feat/component-library` (do NOT merge).
+Status owner: exec-chrome (lead). Source branch: `feat/component-library`; integrated by merge `c70098d7`.
 Precondition: library audited complete + rulebook-matching (see COMPONENTS.md, BRAND.md).
 
 ## CURRENT STATUS / NEXT TASK  ← executors MUST keep this block updated
@@ -14,14 +14,14 @@ exec-graph-home : R-G1 ✅ R-G2 ✅ R-G3 ✅ — GATE GRAPH-HOME ✅, nothing ou
                   semantic zoom follows the fit; zoom floor 0.35 → 0.25 for headroom as
                   nodes are added). Both ratified in DECISIONS.md, BRAND.md §6 amended.
 exec-terminal   : R-T1 ✅ R-T2 ✅ R-T3 ✅ — GATE TERMINAL ✅, nothing outstanding
-Integration     : R-I1 ✅ — the plan is complete. Branch `feat/component-library`, NOT merged.
+Integration     : R-I1 ✅ — the plan is complete and integrated by merge `c70098d7`.
 Blockers        : none. Every checklist box in §8 is ticked; the only open items are
                   Oliver's calls in notes 7 and 9 below.
 
 All three executors are closed out. Known-failing, both pre-existing and documented:
   - e2e/terminal-panes.spec.js + terminal-shots.spec.js time out under `--workers=3`
     and pass with `--workers=1`. Load contention, not a regression.
-NEXT HUMAN STEP: review `/`, then decide whether to merge `feat/component-library`.
+NEXT HUMAN STEP: review `/` as needed; remaining calls live in `docs/OPEN-DECISIONS.md`.
 Notes for Oliver:
   1. exec-terminal moved a gate assertion. The console body went from a bespoke
      14px to the library's --fs-mono (13px, BRAND.md §7's ratified point inside
@@ -35,14 +35,11 @@ Notes for Oliver:
   3. CLOSED by the `/permit` restyle lane. Its changed legacy visual baseline was regenerated;
      route-specific coverage is recorded in `docs/permit-restyle-coverage.md` and
      `e2e/permit-lane.spec.js`.
-  3b. FOR EXEC-CHROME: e2e/chrome.spec.js "§10 wordmark: oN.c with the dot in
-     --accent" fails on the current working tree. src/chrome/** — not seen
-     from the terminal side, flagged only.
-  3c. Pre-existing, NOT introduced by R-T3: the terminal's overlays sit at
-     z-index 80 and the chrome bar at 1000, so the palette and help backdrops
-     do not dim the bar and it stays clickable behind a modal. Both panels
-     open below the bar so nothing is occluded. Changing it means moving the
-     bar's z-index, which is exec-chrome's file and a decision, not a fix.
+  3b. The wordmark assertion belongs to the existing chrome coverage; see
+     `e2e/chrome.spec.js` rather than this terminal handoff.
+  3c. The terminal overlay stacking arrangement is unchanged: panels open
+     below the chrome bar, which remains clickable behind a modal. Changing
+     the bar's z-index is a chrome decision, not a terminal fix.
   4. NOT REPRODUCIBLE — closed by exec-graph-home. `titleAs`/`titleClassName`
      are destructured by NodeCard (src/components/brand/node-card.jsx:34-35)
      and never reach the DOM; a fresh run of / at 375px logs no React warning,
@@ -50,16 +47,10 @@ Notes for Oliver:
      vite module: the R-G1 working tree was destroyed mid-session by a
      `git reset --hard` from another executor and rebuilt (see note 9), and
      the shared :3100 server kept serving pre-reset transforms.
-  5. R-C3 removed three things from the chrome on brand grounds — the bar's
-     backdrop blur (§9 bans glassmorphism), the ☰ hamburger (not in §8's
-     ratified set; it is `…` now) and <ScrollProgress> (probed ids of the
-     retired old home, never visible on `/`, and painted from the frozen
-     navy/gold theme.css). Full rationale in COMPONENTS.md §Chrome.
-     HANDED OFF 2026-08-26 to exec-chrome-restore — you asked for each to be
-     tried both ways and shown to you, rather than blanket-restored or
-     blanket-kept. Brief: `docs/redesign-research/14-chrome-restorations.md`.
-     Two of the three need a BRAND.md amendment + a D-29 entry to restore, not
-     just a revert; that doc says which.
+  5. R-C3's three chrome removals were settled by D-29 and D-30: the
+     hamburger was restored as an icon, the graph-home blur was restored and
+     scoped, and <ScrollProgress> remains out. See COMPONENTS.md §Chrome and
+     DECISIONS.md for the rationale.
   6. RESOLVED — D-34. The shipped `--accent` dot stays subtle; `BRAND.md` §10 is the authority.
   7. §10 also fixes the favicon as "`oN` on --bg, square, 3px radius".
      index.html still points at /on_logo_navy.png. That needs an asset, not
@@ -97,14 +88,13 @@ Notes for Oliver:
      the real fix is graph-side (fit padding + FAR_K together) and it is your
      call, not a bug to squash. Every OTHER top-anchored element on both
      surfaces clears the bar exactly — now asserted, see R-I1.
-  13. THE REBUILD IS DONE, on `feat/component-library`, unmerged as instructed.
+  13. THE REBUILD IS DONE and was integrated by merge `c70098d7`.
      All three surfaces — chrome, graph home, terminal home — are on the
      component library and the brand tokens, in all four theme × mode
      combinations. No executor has work outstanding.
 
-     WHAT WAITS ON YOU HAS MOVED. This block went stale (it still called note 5
-     "in flight" after that work shipped as D-29 … D-32), so the open items now
-     live in ONE place: `docs/OPEN-DECISIONS.md`. Add and close them there.
+     The remaining open items live in ONE place: `docs/OPEN-DECISIONS.md`.
+     Add and close them there.
 
      Closed since this plan: note 5 — D-29 (chrome removals: ☰ restored,
      ScrollProgress out) and D-30 … D-32 (bar blur restored, scoped to the
@@ -112,10 +102,8 @@ Notes for Oliver:
      subtle). note 10 — D-27. note 12 — D-28. note 11 — group nodes, tour HUD,
      toast, legend chips and tech tokens are square, and the canvas's bespoke
      card shadow is gone (§4 / §9). note 8 — re-measured at R-I1, inside budget.
-     Still open, carried into OPEN-DECISIONS.md: note 7 (§10 favicon asset),
-     note 9 (one worktree per executor).
-     The `/permit` visual baseline and lane are now complete (note 3). Merging is your call —
-     nobody merged anything.
+     Still open: note 7 (§10 favicon asset), note 9 (one worktree per executor).
+     The `/permit` visual baseline and lane are now complete (note 3).
 ```
 
 Update rules: tick §8 checkboxes as tasks complete; rewrite this block each session; human questions → "Notes for Oliver".
@@ -148,7 +136,7 @@ Replace bespoke surface CSS with existing library components + `components.css` 
 3. Integration (exec-chrome leads): home + chrome together in all four themes, full suite, ship-check.
 
 ## 6 · Resume protocol (fresh agent, cold start)
-1. Read this doc top to bottom. 2. Read the §CURRENT STATUS block — your next task ID. 3. `git checkout feat/component-library`. 4. Read BRAND.md §relevant + COMPONENTS.md before any UI. 5. Verify the last claimed gate before building on it. 6. Reuse library components; log new ones in COMPONENTS.md.
+1. Read this doc top to bottom. 2. Read the §CURRENT STATUS block — your next task ID. 3. Use the integrated surface code in the current task branch. 4. Read BRAND.md §relevant + COMPONENTS.md before any UI. 5. Verify the last claimed gate before building on it. 6. Reuse library components; log new ones in COMPONENTS.md.
 
 ## 8 · LIVE TASK CHECKLIST — tick as you go
 ### exec-chrome

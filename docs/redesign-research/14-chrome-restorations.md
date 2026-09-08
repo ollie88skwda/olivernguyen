@@ -1,21 +1,21 @@
 # 14 · Chrome restorations — the three things R-C3 removed
 
-Owner: exec-chrome-restore. Branch: `feat/component-library` (do NOT merge).
+Owner: exec-chrome-restore. Source branch: `feat/component-library`; integrated by merge `c70098d7`.
 Handed off 2026-08-26 by the exec-chrome that shipped the rebuild (`docs/redesign-research/12-rebuild-plan.md`, complete).
 
 ## CURRENT STATUS / NEXT TASK ← keep updated
 
 ```
 Last updated : 2026-08-26 — DONE, all three settled as D-29
-next         : nothing. Oliver reviews the A/B; see "A/B for Oliver" below.
+next         : nothing. The A/B decision is recorded as D-29 below.
 Blockers     : none
 Notes for Oliver:
   1. X-2 came back as an ICON, not a glyph. ☰ is not in JetBrains Mono — measured
      11.44px advance against the mono's 7.81px, so a system font was drawing it.
      That satisfies §8's own carve-out instead of narrowing it, so §8 gained one
      allow-list name (`menu`) rather than a new glyph.
-  2. §9 was NOT narrowed. The blur was rendered and lost on merit — including a
-     cost nobody had spotted: it re-rasterises the whole graph canvas soft.
+  2. The initial §9 rejection was superseded by D-30. The scoped graph-home blur
+     is documented in `docs/redesign-research/15-blur-restore.md`.
   3. X-3's rebuild-on-`Progress` option is DEFERRED, not rejected. It needs real
      section ids, and those live in un-restyled `src/pages/**`. Revisit at the legacy
      restyle. Say the word if you want it built for `/permit` alone anyway.

@@ -1,6 +1,6 @@
 # 15 · Restore the blurred top bar (X-1 reversal)
 
-Owner: exec-chrome-blur. Branch: `feat/component-library` (do NOT merge).
+Owner: exec-chrome-blur. Source branch: `feat/component-library`; integrated by merge `c70098d7`.
 Handed off 2026-08-26 by exec-chrome-restore, who had just ruled the blur OUT in D-29.
 
 ## CURRENT STATUS / NEXT TASK ← keep updated
@@ -8,7 +8,7 @@ Handed off 2026-08-26 by exec-chrome-restore, who had just ruled the blur OUT in
 ```
 Last updated : 2026-08-26 — round 3 DONE. Option C shipped: bar labels are
                --text, nav hover is an underline, veil 74% -> 50% (D-32).
-next         : nothing. Review http://100.69.165.32:14180/ab/ and say when to merge.
+next         : nothing. The A/B decision is recorded as D-32 below.
 Blockers     : none
 Notes for Oliver:
   -1. ROUND 3. You picked the bolder option, it is shipped. One thing changed
@@ -346,6 +346,6 @@ rejected, and hand Oliver the tunnelled URL.
 
 ## Rules
 
-- Commit to `feat/component-library`. Do **NOT** merge.
+- The source work was committed to `feat/component-library` and integrated by merge `c70098d7`.
 - Every change stays one line to undo. Say which line, in the commit.
 - Never wait for Oliver. Log questions under "Notes for Oliver" in the status block and keep going.

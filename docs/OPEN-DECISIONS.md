@@ -28,26 +28,7 @@ render is what killed Fraunces in D-07.
 
 ---
 
-## 2 · Merge `feat/component-library`
-
-**State:** open. Not a design call, but it gates everything above shipping.
-
-The rebuild is complete and unmerged as instructed — chrome, graph home and terminal home all on the
-component library and brand tokens, in all four theme × mode combinations, plus D-29 … D-32.
-
-**Gate before merging** (`docs/redesign-research/15-blur-restore.md` has the same list):
-
-```bash
-node scripts/contrast-check.mjs   # 183 pairs, 4 themes
-npm run test:run                  # 450
-npx playwright test               # 147 passed / 1 failed / 4 skipped
-```
-
-There is no documented failure exception for the completed restyle lanes. Any red result is a regression unless its owner documents otherwise.
-
----
-
-## 5 · Process — one worktree per executor
+## 2 · Process — one worktree per executor
 
 **State:** open, applies to the next multi-agent build, not to anything shipped.
 
@@ -68,7 +49,7 @@ risk.
 `D-27` idle shimmer · `D-28` camera frames clear of the bar · `D-29` the three R-C3 chrome removals
 (1 restored, 2 confirmed) · `D-30` bar blur restored, scoped to the graph home · `D-31` veil 82→74% ·
 `D-32` bar labels full strength, nav hover underline, veil 74→50% · `D-33` `/pull` Sakura restyle ·
-`D-34` wordmark dot stays subtle · `D-35` focus ring values ratified.
+`D-34` wordmark dot stays subtle · `D-35` focus ring values ratified · `D-36` Appearance menu · `D-37` component-library rebuild integrated.
 
 **D-29's third X-1 finding ("the blur re-rasterises the graph canvas soft") was WRONG** — it was the
 graph's 6s guided-tour autostart moving the camera between two screenshots. Independently

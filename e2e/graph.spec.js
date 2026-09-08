@@ -172,6 +172,10 @@ test.describe("graph mode — Gate G3", () => {
     await page.waitForTimeout(2200);
     await expect(page.locator(".d-title")).toHaveText("Robotics");
 
+    // Shortcuts yield while a dossier control owns focus. Move focus back to
+    // the neutral graph chrome before opening the filter, keeping the dossier
+    // open for the Esc cascade below.
+    await page.evaluate(() => document.activeElement?.blur());
     // dossier open + filter open → Esc cascade: filter, then dossier, then fit
     await page.keyboard.press("/");
     await page.type(".f-input", "sat");
