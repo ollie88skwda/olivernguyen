@@ -43,6 +43,23 @@ describe("tracker persistence", () => {
     expect(await readTracker("user_other")).toEqual({ version: 1, classes: [] });
   });
 
+  it("reports an unavailable store and recovers on the next read", async () => {
+    const originalDownload = bucket.download;
+    bucket.download = vi.fn()
+      .mockRejectedValueOnce(new Error("fetch failed"))
+      .mockImplementation(originalDownload.bind(bucket));
+
+    try {
+      await expect(readTracker("user_owner")).rejects.toMatchObject({
+        status: 503,
+        message: "Tracker storage is temporarily unavailable. Try again.",
+      });
+      expect(await readTracker("user_owner")).toEqual({ version: 1, classes: [] });
+    } finally {
+      bucket.download = originalDownload;
+    }
+  });
+
   it("returns a recoverable conflict instead of allowing overlapping writes", async () => {
     let releaseRead;
     let readStarted;

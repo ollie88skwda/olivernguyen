@@ -9,6 +9,28 @@ async function openTracker(page, query = "mode=graph&theme=light") {
 }
 
 test.describe("life tracker", () => {
+  test("recovers when storage returns after a fresh-load failure", async ({ page }, testInfo) => {
+    const browserErrors = [];
+    page.on("pageerror", (error) => browserErrors.push(error.message));
+    page.on("console", (message) => {
+      if (message.type() === "error") browserErrors.push(message.text());
+    });
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto(`${HARNESS}?mode=graph&theme=light&storage=fail-once`, { waitUntil: "networkidle" });
+
+    const alert = page.getByRole("alert");
+    await expect(alert).toContainText("Tracker storage is temporarily unavailable. Try again.");
+    await page.screenshot({ path: testInfo.outputPath("tracker-storage-unavailable-desktop.png"), fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.screenshot({ path: testInfo.outputPath("tracker-storage-unavailable-mobile.png"), fullPage: true });
+
+    await alert.getByRole("button", { name: "Try again" }).click();
+    await expect(page.getByRole("heading", { name: "Classes & notes" })).toBeVisible();
+    await expect(page.getByRole("button", { name: /Physics 101/ })).toBeVisible();
+    await expect(alert).toHaveCount(0);
+    expect(browserErrors).toEqual([]);
+  });
+
   test("creates, renames, selects, and deliberately deletes classes", async ({ page }) => {
     await openTracker(page);
 
