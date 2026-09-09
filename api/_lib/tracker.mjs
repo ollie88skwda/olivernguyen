@@ -53,32 +53,57 @@ function isConflict(error) {
   );
 }
 
+function storageFailure(error, fallback) {
+  const message = error?.message || "";
+  if (/fetch failed|network|enotfound|timeout|timed? out/i.test(message)) {
+    return new TrackerError(503, "Tracker storage is temporarily unavailable. Try again.");
+  }
+  return new TrackerError(500, message || fallback);
+}
+
+async function storageRequest(request, fallback) {
+  try {
+    return await request();
+  } catch (error) {
+    throw storageFailure(error, fallback);
+  }
+}
+
 async function acquireMutationLock(userId) {
   const bucket = storage();
   const path = lockPath(userId);
 
   for (let attempt = 0; attempt < 3; attempt += 1) {
-    const { error } = await bucket.upload(
-      path,
-      JSON.stringify({ expiresAt: Date.now() + LOCK_TTL_MS }),
-      { contentType: "application/json", upsert: false },
+    const { error } = await storageRequest(
+      () => bucket.upload(
+        path,
+        JSON.stringify({ expiresAt: Date.now() + LOCK_TTL_MS }),
+        { contentType: "application/json", upsert: false },
+      ),
+      "Tracker could not be locked.",
     );
     if (!error) {
       return async () => {
-        const { error: releaseError } = await bucket.remove([path]);
+        const { error: releaseError } = await storageRequest(
+          () => bucket.remove([path]),
+          "Tracker lock could not be released.",
+        );
         if (releaseError && !isMissing(releaseError)) {
-          throw new TrackerError(500, releaseError.message || "Tracker lock could not be released.");
+          throw storageFailure(releaseError, "Tracker lock could not be released.");
         }
       };
     }
     if (!isConflict(error)) {
-      throw new TrackerError(500, error.message || "Tracker could not be locked.");
+      throw storageFailure(error, "Tracker could not be locked.");
     }
 
-    const { data, error: readError } = await bucket.download(path);
+    const { data, error: readError } = await storageRequest(
+      () => bucket.download(path),
+      "Tracker lock could not be checked.",
+    );
     if (readError) {
       if (isMissing(readError)) continue;
-      throw new TrackerError(500, readError.message || "Tracker lock could not be checked.");
+      throw storageFailure(readError, "Tracker lock could not be checked.");
     }
 
     let expiresAt;
@@ -91,9 +116,12 @@ async function acquireMutationLock(userId) {
       throw new TrackerError(409, "Another tracker change is in progress. Try again.");
     }
 
-    const { error: removeError } = await bucket.remove([path]);
+    const { error: removeError } = await storageRequest(
+      () => bucket.remove([path]),
+      "Tracker lock could not be cleared.",
+    );
     if (removeError && !isMissing(removeError)) {
-      throw new TrackerError(500, removeError.message || "Tracker lock could not be cleared.");
+      throw storageFailure(removeError, "Tracker lock could not be cleared.");
     }
   }
 
@@ -118,10 +146,13 @@ function normalizeTracker(value) {
 }
 
 export async function readTracker(userId) {
-  const { data, error } = await storage().download(trackerPath(userId));
+  const { data, error } = await storageRequest(
+    () => storage().download(trackerPath(userId)),
+    "Tracker could not be loaded.",
+  );
   if (error) {
     if (isMissing(error)) return emptyTracker();
-    throw new TrackerError(500, error.message || "Tracker could not be loaded.");
+    throw storageFailure(error, "Tracker could not be loaded.");
   }
 
   try {
@@ -133,12 +164,15 @@ export async function readTracker(userId) {
 }
 
 export async function writeTracker(userId, tracker) {
-  const { error } = await storage().upload(
-    trackerPath(userId),
-    JSON.stringify(tracker),
-    { contentType: "application/json", upsert: true },
+  const { error } = await storageRequest(
+    () => storage().upload(
+      trackerPath(userId),
+      JSON.stringify(tracker),
+      { contentType: "application/json", upsert: true },
+    ),
+    "Tracker could not be saved.",
   );
-  if (error) throw new TrackerError(500, error.message || "Tracker could not be saved.");
+  if (error) throw storageFailure(error, "Tracker could not be saved.");
   return tracker;
 }
 

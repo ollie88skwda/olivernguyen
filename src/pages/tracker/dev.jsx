@@ -49,6 +49,10 @@ function id(prefix) {
 }
 
 async function demoRequest(_path, options = {}) {
+  if (remainingStorageFailures > 0) {
+    remainingStorageFailures -= 1;
+    throw new Error("Tracker storage is temporarily unavailable. Try again.");
+  }
   if (!options.method) return { tracker: structuredClone(tracker) };
   const action = JSON.parse(options.body);
   const stamp = new Date().toISOString();
@@ -97,6 +101,7 @@ async function demoRequest(_path, options = {}) {
 }
 
 const params = new URLSearchParams(window.location.search);
+let remainingStorageFailures = params.get("storage") === "fail-once" ? 1 : 0;
 document.documentElement.dataset.mode = params.get("mode") === "terminal" ? "terminal" : "graph";
 document.documentElement.dataset.theme = params.get("theme") === "dark" ? "dark" : "light";
 
