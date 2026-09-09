@@ -31,6 +31,22 @@ beforeEach(() => {
 });
 
 describe("tracker data boundary", () => {
+  it("checks owner access without reading tracker storage", async () => {
+    requireOwnerSession.mockImplementation(async (req) => {
+      req.userId = "user_owner";
+      return true;
+    });
+    readTracker.mockRejectedValue(new Error("storage unavailable"));
+
+    const res = response();
+    await handler({ method: "GET", headers: {}, query: { access: "1" } }, res);
+
+    expect(res.statusCode).toBe(200);
+    expect(res.body).toEqual({ authorized: true });
+    expect(readTracker).not.toHaveBeenCalled();
+    expect(mutateTracker).not.toHaveBeenCalled();
+  });
+
   it("performs no read or write when owner authorization fails", async () => {
     requireOwnerSession.mockImplementation(async (_req, res) => {
       res.status(403).json({ error: "forbidden" });

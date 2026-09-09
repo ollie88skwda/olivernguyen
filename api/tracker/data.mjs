@@ -12,6 +12,10 @@ export default async function handler(req, res) {
     return;
   }
   if (!(await requireOwnerSession(req, res))) return;
+  if (req.method === "GET" && req.query?.access === "1") {
+    res.status(200).json({ authorized: true });
+    return;
+  }
 
   try {
     if (req.method === "GET") {
