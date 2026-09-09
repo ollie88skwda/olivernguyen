@@ -19,6 +19,7 @@ describe("useOwnerAccess", () => {
     );
 
     await waitFor(() => expect(apiFetch).toHaveBeenCalledTimes(1));
+    expect(apiFetch).toHaveBeenNthCalledWith(1, "/api/tracker/data?access=1");
 
     rerender({ userId: "user_other" });
     expect(result.current.status).toBe("loading");

@@ -19,7 +19,7 @@ export function useOwnerAccess(enabled, userId) {
     }
 
     setState({ status: "loading", error: null, identity });
-    apiFetch("/api/tracker/data")
+    apiFetch("/api/tracker/data?access=1")
       .then(() => {
         if (active) setState({ status: "authorized", error: null, identity });
       })
