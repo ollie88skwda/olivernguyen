@@ -2,6 +2,18 @@ import { expect, test } from "@playwright/test";
 
 const HARNESS = "/time-blocks-dev.html";
 
+async function settleCapture(page) {
+  // Starting a run scrolls to top while the fixed chrome reappears on a
+  // 140ms transition; capture only once the bar is fully back (y >= 0,
+  // no transform) and webfonts are settled, or the shot catches clipped
+  // chrome and fallback type.
+  await page.evaluate(() => document.fonts.ready);
+  await expect.poll(async () => page.locator(".site-chrome-bar").evaluate((bar) => {
+    const box = bar.getBoundingClientRect();
+    return box.y >= 0 && getComputedStyle(bar).transform === "none";
+  })).toBe(true);
+}
+
 async function openBlocks(page, query = "mode=graph&theme=light") {
   await page.goto(`${HARNESS}?${query}`, { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
@@ -38,6 +50,7 @@ test.describe("private time blocks · in-memory test storage", () => {
       await expect(page.getByText("School · hour 1 of 2")).toBeVisible();
       await expect(page.locator(".time-blocks-timer")).toHaveText("60:00");
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(375);
+      await settleCapture(page);
       await page.screenshot({ path: testInfo.outputPath("time-blocks-active-375.png"), fullPage: true });
     } finally {
       await context.close();
@@ -76,6 +89,7 @@ test.describe("private time blocks · in-memory test storage", () => {
       await expect(page.getByRole("heading", { name: "School" })).toBeInViewport({ ratio: 1 });
       await expect(page.getByRole("button", { name: "Confirm this hour" })).toBeInViewport({ ratio: 1 });
       expect(browserErrors).toEqual([]);
+      await settleCapture(page);
       await page.screenshot({ path: testInfo.outputPath("time-blocks-focus-from-editor-bottom-375.png") });
     } finally {
       await context.close();
