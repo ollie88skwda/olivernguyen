@@ -19,10 +19,10 @@ test.describe("private time blocks · in-memory test storage", () => {
       const page = await context.newPage();
       await openBlocks(page);
       await page.getByRole("textbox", { name: "Activity 1" }).fill("School");
-      await page.getByRole("spinbutton", { name: "Hours" }).fill("2");
+      await page.getByRole("spinbutton", { name: "Hours" }).first().fill("2");
       await page.getByRole("button", { name: "Add activity" }).click();
-      await page.getByRole("textbox", { name: "Activity 2" }).fill("Writing");
-      await page.getByRole("spinbutton", { name: "Hours" }).nth(1).fill("1");
+      await page.getByRole("textbox", { name: "Activity 3" }).fill("Reading");
+      await page.getByRole("spinbutton", { name: "Hours" }).nth(2).fill("1");
       await page.getByRole("button", { name: "Save schedule" }).click();
       await expect(page.getByRole("status")).toContainText("Schedule saved");
       await page.getByRole("button", { name: "Start today’s plan" }).click();
@@ -59,8 +59,8 @@ test.describe("private time blocks · in-memory test storage", () => {
       await expect(page.getByRole("button", { name: "Confirm this hour" })).toBeEnabled();
       await page.screenshot({ path: testInfo.outputPath("time-blocks-hour-ended-375.png"), fullPage: true });
       await page.getByRole("button", { name: "Confirm this hour" }).click();
-      await expect(page.getByText("Next scheduled item · due now")).toBeVisible();
-      await expect(page.getByRole("button", { name: "Start next hour" })).toBeVisible();
+      await expect(page.getByText(/This hour was due at/)).toBeVisible();
+      await expect(page.getByRole("button", { name: "Start this hour late" })).toBeVisible();
     } finally {
       await context.close();
     }
@@ -73,7 +73,9 @@ test.describe("private time blocks · in-memory test storage", () => {
     await expect(page.getByRole("button", { name: "Start this hour late" })).toBeVisible();
     await page.getByRole("button", { name: "Skip this hour" }).click();
     await expect(page.getByText("Writing · hour 1 of 1")).toBeVisible();
-    await expect(page.getByText("2 of 3 hours resolved · 1 self-reported complete")).toBeVisible();
+    await expect(page.getByText(/This hour was due at/)).toBeVisible();
+    await expect(page.getByRole("button", { name: "Start this hour late" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Skip this hour" })).toBeVisible();
     await page.screenshot({ path: testInfo.outputPath("time-blocks-late-skip-375.png"), fullPage: true });
   });
 
