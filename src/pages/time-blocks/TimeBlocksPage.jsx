@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import { apiFetch } from "@/auth/api";
 import { Button } from "@/components/ui/button";
@@ -72,10 +72,12 @@ export function TimeBlocksPage({ request = requestTimeBlocks }) {
   const [timeBlocks, setTimeBlocks] = useState(null);
   const [draft, setDraft] = useState(emptySchedule);
   const [now, setNow] = useState(Date.now());
-  const [busy, setBusy] = useState(false);
+  const [pendingAction, setPendingAction] = useState("");
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [editing, setEditing] = useState(false);
+  const validationRef = useRef(null);
+  const busy = Boolean(pendingAction);
 
   const load = useCallback(async () => {
     setError("");
@@ -103,7 +105,7 @@ export function TimeBlocksPage({ request = requestTimeBlocks }) {
 
   const mutate = async (action, successMessage) => {
     if (busy) return false;
-    setBusy(true);
+    setPendingAction(action.type);
     setError("");
     setNotice("");
     try {
@@ -113,13 +115,14 @@ export function TimeBlocksPage({ request = requestTimeBlocks }) {
       });
       setTimeBlocks(result.timeBlocks);
       if (action.type === "save-schedule") setDraft(structuredClone(result.timeBlocks.schedule));
+      if (action.type === "start-run" || action.type === "start-session") setNow(Date.now());
       if (successMessage) setNotice(successMessage);
-      setBusy(false);
       return true;
     } catch (mutationError) {
       setError(mutationError.message || "That change could not be saved. Try again.");
-      setBusy(false);
       return false;
+    } finally {
+      setPendingAction("");
     }
   };
 
@@ -131,7 +134,7 @@ export function TimeBlocksPage({ request = requestTimeBlocks }) {
   const completedCount = run?.slots.filter((slot) => slot.status === "completed").length || 0;
   const remaining = session?.endsAt ? Date.parse(session.endsAt) - now : 0;
   const validationError = scheduleError(draft);
-  const scheduleDirty = !scheduleMatches(timeBlocks?.schedule, draft);
+  const scheduleDirty = Boolean(timeBlocks && !scheduleMatches(timeBlocks.schedule, draft));
   const localDate = new Intl.DateTimeFormat("en-CA").format(new Date());
   const alreadyStartedToday = run?.dateKey === localDate;
   const preferredStart = new Date(now);
@@ -140,6 +143,17 @@ export function TimeBlocksPage({ request = requestTimeBlocks }) {
   const firstHourDue = !run && !alreadyStartedToday && !validationError && now >= preferredStart.getTime();
   const lateSession = state === "due" && session?.plannedStartAt && now > Date.parse(session.plannedStartAt);
   const showingRun = Boolean(run && !editing);
+
+  useEffect(() => {
+    if (!scheduleDirty) return undefined;
+    const warnBeforeUnload = (event) => {
+      event.preventDefault();
+      event.returnValue = "";
+      return "";
+    };
+    window.addEventListener("beforeunload", warnBeforeUnload);
+    return () => window.removeEventListener("beforeunload", warnBeforeUnload);
+  }, [scheduleDirty]);
 
   useLayoutEffect(() => {
     if (showingRun) window.scrollTo(0, 0);
@@ -187,7 +201,18 @@ export function TimeBlocksPage({ request = requestTimeBlocks }) {
     );
   }
 
-  const saveSchedule = () => mutate({ type: "save-schedule", schedule: draft }, "Schedule saved for your next run.");
+  const saveSchedule = () => {
+    if (validationError) {
+      validationRef.current?.focus();
+      return;
+    }
+    mutate({ type: "save-schedule", schedule: draft }, "Schedule saved for your next run.");
+  };
+  const leaveEditor = () => {
+    if (scheduleDirty && !window.confirm("Discard your unsaved schedule changes?")) return;
+    setDraft(structuredClone(timeBlocks.schedule));
+    setEditing(false);
+  };
   const startRun = () => mutate({
     type: "start-run",
     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
@@ -295,7 +320,17 @@ export function TimeBlocksPage({ request = requestTimeBlocks }) {
               <p className="time-blocks-copy">An activity can span several focused hours. Each hour stays a separate session.</p>
               <div className="time-blocks-field">
                 <label htmlFor="time-block-start">Preferred first-hour start</label>
-                <Input id="time-block-start" type="time" value={draft.startTime} onChange={(event) => setDraft((current) => ({ ...current, startTime: event.target.value }))} />
+                <Input
+                  id="time-block-start"
+                  name="preferredStartTime"
+                  type="time"
+                  autoComplete="off"
+                  value={draft.startTime}
+                  disabled={busy}
+                  aria-invalid={Boolean(validationError)}
+                  aria-describedby={validationError ? "time-blocks-validation" : undefined}
+                  onChange={(event) => setDraft((current) => ({ ...current, startTime: event.target.value }))}
+                />
               </div>
               <div className="time-blocks-activities">
                 {draft.activities.length === 0 && <p className="time-blocks-empty">Add an activity to begin your daily plan.</p>}
@@ -304,11 +339,36 @@ export function TimeBlocksPage({ request = requestTimeBlocks }) {
                     <div className="time-blocks-activity-fields">
                       <div className="time-blocks-field">
                         <label htmlFor={`activity-name-${activity.id}`}>Activity {index + 1}</label>
-                        <Input id={`activity-name-${activity.id}`} value={activity.name} maxLength={60} placeholder="For example, School" onChange={(event) => updateActivity(activity.id, "name", event.target.value)} />
+                        <Input
+                          id={`activity-name-${activity.id}`}
+                          name={`activities[${index}].name`}
+                          value={activity.name}
+                          maxLength={60}
+                          autoComplete="off"
+                          disabled={busy}
+                          placeholder="For example, School…"
+                          aria-invalid={Boolean(validationError)}
+                          aria-describedby={validationError ? "time-blocks-validation" : undefined}
+                          onChange={(event) => updateActivity(activity.id, "name", event.target.value)}
+                        />
                       </div>
                       <div className="time-blocks-field">
                         <label htmlFor={`activity-hours-${activity.id}`}>Hours</label>
-                        <Input id={`activity-hours-${activity.id}`} type="number" min="1" max="24" step="1" value={activity.hours} onChange={(event) => updateActivity(activity.id, "hours", event.target.value)} />
+                        <Input
+                          id={`activity-hours-${activity.id}`}
+                          name={`activities[${index}].hours`}
+                          type="number"
+                          min="1"
+                          max="24"
+                          step="1"
+                          value={activity.hours}
+                          autoComplete="off"
+                          disabled={busy}
+                          aria-label={`Activity ${index + 1} hours`}
+                          aria-invalid={Boolean(validationError)}
+                          aria-describedby={validationError ? "time-blocks-validation" : undefined}
+                          onChange={(event) => updateActivity(activity.id, "hours", event.target.value)}
+                        />
                       </div>
                     </div>
                     <div className="time-blocks-row-actions">
@@ -324,10 +384,20 @@ export function TimeBlocksPage({ request = requestTimeBlocks }) {
                 <div><MonoLabel>Plan total</MonoLabel><strong>{totalHours} {totalHours === 1 ? "hour" : "hours"}</strong><span>{totalHours} separate focus sessions</span></div>
                 <div><MonoLabel>Estimated end</MonoLabel><strong>{validationError ? "—" : projectedEnd(draft)}</strong></div>
               </div>
-              {validationError && <p className="time-blocks-validation" role="status">{validationError}</p>}
+              {validationError && (
+                <p
+                  id="time-blocks-validation"
+                  className="time-blocks-validation"
+                  role="alert"
+                  tabIndex="-1"
+                  ref={validationRef}
+                >
+                  {validationError}
+                </p>
+              )}
               <div className="time-blocks-actions">
-                <Button type="button" disabled={busy || Boolean(validationError)} onClick={saveSchedule}>Save schedule</Button>
-                {run && <Button variant="ghost" type="button" disabled={busy} onClick={() => setEditing(false)}>Back to current run</Button>}
+                <Button type="button" disabled={busy} onClick={saveSchedule}>{pendingAction === "save-schedule" ? "Saving…" : "Save schedule"}</Button>
+                {run && <Button variant="ghost" type="button" disabled={busy} onClick={leaveEditor}>Back to current run</Button>}
                 {(!run || (run.status === "complete" && !alreadyStartedToday)) && (
                   <Button variant="ghost" type="button" disabled={busy || Boolean(validationError) || scheduleDirty || alreadyStartedToday} onClick={startRun}>Start today’s plan</Button>
                 )}

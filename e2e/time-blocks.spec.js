@@ -9,6 +9,12 @@ async function openBlocks(page, query = "mode=graph&theme=light") {
 }
 
 test.describe("private time blocks · in-memory test storage", () => {
+  test.use({
+    viewport: { width: 375, height: 812 },
+    isMobile: true,
+    hasTouch: true,
+  });
+
   test("edits the phone schedule and starts a persisted one-hour session", async ({ browser }, testInfo) => {
     const context = await browser.newContext({
       viewport: { width: 375, height: 812 },
@@ -18,15 +24,19 @@ test.describe("private time blocks · in-memory test storage", () => {
     try {
       const page = await context.newPage();
       await openBlocks(page);
+      const chromeBox = await page.locator(".site-chrome-bar").boundingBox();
+      const headerBox = await page.locator(".time-blocks-header").boundingBox();
+      expect(headerBox.y).toBeGreaterThanOrEqual(chromeBox.y + chromeBox.height);
       await page.getByRole("textbox", { name: "Activity 1" }).fill("School");
-      await page.getByRole("spinbutton", { name: "Hours" }).first().fill("2");
+      await page.getByRole("spinbutton", { name: "Activity 1 hours" }).fill("2");
       await page.getByRole("button", { name: "Add activity" }).click();
       await page.getByRole("textbox", { name: "Activity 3" }).fill("Reading");
-      await page.getByRole("spinbutton", { name: "Hours" }).nth(2).fill("1");
+      await page.getByRole("spinbutton", { name: "Activity 3 hours" }).fill("1");
       await page.getByRole("button", { name: "Save schedule" }).click();
       await expect(page.getByText("Schedule saved for your next run.")).toBeVisible();
       await page.getByRole("button", { name: "Start today’s plan" }).click();
       await expect(page.getByText("School · hour 1 of 2")).toBeVisible();
+      await expect(page.locator(".time-blocks-timer")).toHaveText("60:00");
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(375);
       await page.screenshot({ path: testInfo.outputPath("time-blocks-active-375.png"), fullPage: true });
     } finally {
@@ -81,6 +91,41 @@ test.describe("private time blocks · in-memory test storage", () => {
     await openBlocks(page, "owner=no&mode=graph&theme=light");
     await page.getByRole("button", { name: "Open pages menu" }).click();
     await expect(page.getByRole("menuitem", { name: "Time blocks" })).toHaveCount(0);
+  });
+
+  test("names fields, focuses validation, protects edits, and contains long activity names", async ({ page }) => {
+    await openBlocks(page, "mode=graph&theme=dark");
+    const startTime = page.getByLabel("Preferred first-hour start");
+    const firstActivity = page.getByRole("textbox", { name: "Activity 1" });
+    await expect(startTime).toHaveAttribute("name", "preferredStartTime");
+    await expect(startTime).toHaveAttribute("autocomplete", "off");
+    await expect(firstActivity).toHaveAttribute("name", "activities[0].name");
+    await expect(firstActivity).toHaveAttribute("autocomplete", "off");
+    await expect(firstActivity).toHaveAttribute("placeholder", "For example, School…");
+    expect(await startTime.evaluate((input) => getComputedStyle(input).colorScheme)).toBe("dark");
+
+    await firstActivity.fill("");
+    await expect(firstActivity).toHaveAttribute("aria-invalid", "true");
+    await expect(firstActivity).toHaveAttribute("aria-describedby", "time-blocks-validation");
+    await page.getByRole("button", { name: "Save schedule" }).click();
+    await expect(page.locator("#time-blocks-validation")).toBeFocused();
+
+    await firstActivity.fill("A".repeat(60));
+    await page.getByRole("button", { name: "Save schedule" }).click();
+    await expect(page.getByText("Schedule saved for your next run.")).toBeVisible();
+    await page.getByRole("button", { name: "Start today’s plan" }).click();
+    await page.getByRole("button", { name: "Edit next schedule" }).click();
+    await page.getByRole("textbox", { name: "Activity 1" }).fill("Unsaved schedule name");
+
+    page.once("dialog", (dialog) => dialog.dismiss());
+    await page.getByRole("button", { name: "Back to current run" }).click();
+    await expect(page.getByRole("heading", { name: "Your schedule" })).toBeVisible();
+    await expect(page.getByRole("textbox", { name: "Activity 1" })).toHaveValue("Unsaved schedule name");
+
+    page.once("dialog", (dialog) => dialog.accept());
+    await page.getByRole("button", { name: "Back to current run" }).click();
+    await expect(page.getByRole("heading", { name: "A".repeat(60) })).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(375);
   });
 
   test("shows an in-app deadline alert and requires a self-report before advancing", async ({ browser }, testInfo) => {

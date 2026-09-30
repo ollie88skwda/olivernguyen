@@ -1,15 +1,24 @@
 .sakura.time-blocks-page {
   min-height: 100dvh;
   min-width: 0;
+  color-scheme: light;
   background: var(--bg);
   color: var(--text);
+}
+
+html[data-theme="dark"] .sakura.time-blocks-page {
+  color-scheme: dark;
 }
 
 .sakura .time-blocks-shell {
   box-sizing: border-box;
   width: min(100%, 560px);
   margin: 0 auto;
-  padding: 24px 16px 64px;
+  padding:
+    calc(var(--s-16, 64px) + var(--s-6, 24px) + env(safe-area-inset-top))
+    calc(var(--s-4, 16px) + env(safe-area-inset-right))
+    calc(var(--s-16, 64px) + env(safe-area-inset-bottom))
+    calc(var(--s-4, 16px) + env(safe-area-inset-left));
 }
 
 .sakura .time-blocks-header {
@@ -29,6 +38,15 @@
 .sakura .time-blocks-card {
   min-width: 0;
   margin: 0;
+}
+
+.sakura .time-blocks-card [data-slot="card-title"],
+.sakura .time-blocks-session-label,
+.sakura .time-blocks-alert strong,
+.sakura .time-blocks-alert span,
+.sakura .time-blocks-next p {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .sakura.time-blocks-page .time-blocks-card [data-slot="button"] {
@@ -184,7 +202,10 @@
 .sakura .time-blocks-loading { height: 72px; margin-top: 16px; border: 1px solid var(--border); background: var(--surface-2); }
 
 @media (max-width: 360px) {
-  .sakura .time-blocks-shell { padding-inline: 12px; }
+  .sakura .time-blocks-shell {
+    padding-right: calc(var(--s-3, 12px) + env(safe-area-inset-right));
+    padding-left: calc(var(--s-3, 12px) + env(safe-area-inset-left));
+  }
   .sakura .time-blocks-activity-fields { grid-template-columns: minmax(0, 1fr) 72px; gap: 8px; }
   .sakura .time-blocks-row-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
