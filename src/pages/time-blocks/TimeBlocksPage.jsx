@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useState } from "react";
 
 import { apiFetch } from "@/auth/api";
 import { Button } from "@/components/ui/button";
@@ -139,6 +139,11 @@ export function TimeBlocksPage({ request = requestTimeBlocks }) {
   preferredStart.setHours(preferredHour, preferredMinute, 0, 0);
   const firstHourDue = !run && !alreadyStartedToday && !validationError && now >= preferredStart.getTime();
   const lateSession = state === "due" && session?.plannedStartAt && now > Date.parse(session.plannedStartAt);
+  const showingRun = Boolean(run && !editing);
+
+  useLayoutEffect(() => {
+    if (showingRun) window.scrollTo(0, 0);
+  }, [showingRun]);
 
   const updateActivity = (id, field, value) => {
     setDraft((current) => ({

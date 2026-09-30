@@ -1,5 +1,5 @@
 import React from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { applyTimeBlocksAction, emptyTimeBlocks, normalizeSchedule } from "./model";
 import { TimeBlocksPage } from "./TimeBlocksPage";
@@ -18,7 +18,14 @@ function expiredRun() {
   );
 }
 
-afterEach(() => cleanup());
+beforeEach(() => {
+  vi.spyOn(window, "scrollTo").mockImplementation(() => {});
+});
+
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+});
 
 describe("TimeBlocksPage", () => {
   it("shows an in-app alert when the saved focus hour has ended and requires confirmation", async () => {
