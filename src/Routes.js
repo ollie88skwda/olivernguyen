@@ -44,6 +44,7 @@ const EssayStudio = lazy(() => import("./pages/essay_studio/index.js"));
 const WritingRoom = lazy(() => import("./pages/essay_studio/room/index.js"));
 const Transfer = lazy(() => import("./pages/transfer/index.js"));
 const Tracker = lazy(() => import("./pages/tracker/TrackerPage.jsx"));
+const TimeBlocks = lazy(() => import("./pages/time-blocks/TimeBlocksPage.jsx"));
 const MomFifty = lazy(() => import("./pages/mom/index.js"));
 
 // Dev-only component gallery (/_components). Behind import.meta.env.DEV so the
@@ -230,6 +231,11 @@ export const Routes = () => {
         <Route path="/tracker">
           <RequireOwner>
             <Tracker />
+          </RequireOwner>
+        </Route>
+        <Route path="/time-blocks">
+          <RequireOwner>
+            <TimeBlocks />
           </RequireOwner>
         </Route>
         <Route>

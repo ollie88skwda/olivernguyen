@@ -1,0 +1,185 @@
+.sakura.time-blocks-page {
+  min-height: 100dvh;
+  min-width: 0;
+  background: var(--bg);
+  color: var(--text);
+}
+
+.sakura .time-blocks-shell {
+  width: min(100%, 560px);
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.sakura .time-blocks-header {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.sakura .time-blocks-header p,
+.sakura .time-blocks-copy,
+.sakura .time-blocks-footnote {
+  margin: 0;
+  color: var(--text-muted);
+  font: 400 16px/1.6 var(--font-sans);
+}
+
+.sakura .time-blocks-card {
+  min-width: 0;
+  margin: 0;
+}
+
+.sakura .time-blocks-card [data-slot="card-content"] {
+  display: grid;
+  gap: 16px;
+}
+
+.sakura .time-blocks-field {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+}
+
+.sakura .time-blocks-field label {
+  color: var(--text-muted);
+  font: 500 11px/1.4 var(--font-mono-label);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.sakura .time-blocks-field input {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+}
+
+.sakura .time-blocks-activities {
+  display: grid;
+  gap: 12px;
+}
+
+.sakura .time-blocks-activity {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.sakura .time-blocks-activity-fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 88px;
+  gap: 12px;
+}
+
+.sakura .time-blocks-row-actions,
+.sakura .time-blocks-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sakura .time-blocks-row-actions [data-slot="button"] {
+  flex: 1 1 auto;
+  min-height: 44px;
+}
+
+.sakura .time-blocks-actions [data-slot="button"] {
+  flex: 1 1 150px;
+  min-height: 44px;
+}
+
+.sakura .time-blocks-summary {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.sakura .time-blocks-summary > div {
+  display: grid;
+  gap: 4px;
+}
+
+.sakura .time-blocks-summary strong {
+  color: var(--text);
+  font: 700 24px/1.2 var(--font-display);
+}
+
+.sakura .time-blocks-summary span {
+  color: var(--text-muted);
+  font: 400 13px/1.5 var(--font-sans);
+}
+
+.sakura .time-blocks-validation,
+.sakura .time-blocks-error {
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--error);
+  color: var(--error);
+  background: var(--surface);
+}
+
+.sakura .time-blocks-error p { margin: 0 0 12px; }
+.sakura .time-blocks-saved { margin: 0 0 16px; color: var(--success); font: 500 13px/1.5 var(--font-sans); }
+.sakura .time-blocks-empty { margin: 0; padding: 16px 0; color: var(--text-muted); }
+
+.sakura .time-blocks-session-label,
+.sakura .time-blocks-time,
+.sakura .time-blocks-progress-copy {
+  color: var(--text-muted);
+  font: 500 13px/1.5 var(--font-mono-body);
+  font-variant-numeric: tabular-nums;
+}
+
+.sakura .time-blocks-timer {
+  margin: 8px 0 0;
+  color: var(--text);
+  font: 500 clamp(48px, 14vw, 64px)/1.05 var(--font-mono-body);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.05em;
+}
+
+.sakura .time-blocks-time,
+.sakura .time-blocks-progress-copy { margin: 0; }
+
+.sakura .time-blocks-progress {
+  height: 4px;
+  background: var(--surface-2);
+}
+
+.sakura .time-blocks-progress span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+
+.sakura .time-blocks-alert,
+.sakura .time-blocks-next {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.sakura .time-blocks-alert { border-color: var(--accent); }
+.sakura .time-blocks-alert strong { color: var(--text); font: 600 16px/1.4 var(--font-sans); }
+.sakura .time-blocks-alert span,
+.sakura .time-blocks-next p { margin: 0; color: var(--text-muted); font: 400 16px/1.5 var(--font-sans); }
+.sakura .time-blocks-next p { color: var(--text); font-weight: 600; }
+.sakura .time-blocks-due { border-color: var(--accent); }
+.sakura .time-blocks-footnote { font-size: 13px; }
+.sakura .time-blocks-loading { height: 72px; margin-top: 16px; border: 1px solid var(--border); background: var(--surface-2); }
+
+@media (max-width: 360px) {
+  .sakura .time-blocks-shell { padding-inline: 12px; }
+  .sakura .time-blocks-activity-fields { grid-template-columns: minmax(0, 1fr) 72px; gap: 8px; }
+  .sakura .time-blocks-row-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

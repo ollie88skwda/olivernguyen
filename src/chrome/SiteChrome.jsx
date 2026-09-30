@@ -127,6 +127,9 @@ export const TrackerMenuItem = () => (
     <DropdownMenuItem asChild>
       <a href="/tracker">Life tracker</a>
     </DropdownMenuItem>
+    <DropdownMenuItem asChild>
+      <a href="/time-blocks">Time blocks</a>
+    </DropdownMenuItem>
   </>
 );
 
