@@ -88,6 +88,14 @@ describe("private time-block schedule model", () => {
     }, "2026-10-01T14:20:00.000Z");
     expect(skipped.run.slots[0]).toMatchObject({ status: "skipped", completedAt: null });
     expect(skipped.run.status).toBe("waiting");
+    expect(focusState(skipped.run, Date.parse("2026-10-01T14:20:00.000Z"))).toBe("scheduled");
+    expect(() => applyTimeBlocksAction(skipped, {
+      type: "skip-session", sessionId: skipped.run.slots[1].id,
+    }, "2026-10-01T14:20:00.000Z")).toThrow("not due yet");
+    expect(() => applyTimeBlocksAction(skipped, {
+      type: "start-session", sessionId: skipped.run.slots[1].id,
+    }, "2026-10-01T14:20:00.000Z")).toThrow("not due yet");
+    expect(focusState(skipped.run, Date.parse("2026-10-01T15:00:00.000Z"))).toBe("due");
   });
 
   it("allows the owner to skip a missed next hour without auto-advancing it", () => {

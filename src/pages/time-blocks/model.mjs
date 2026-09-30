@@ -122,6 +122,7 @@ export function applyTimeBlocksAction(document, action, now = new Date()) {
       if (run.activeSessionId) fail(409, "Finish or skip the active hour first.");
       const nextPending = run.slots.find((slot) => slot.status === "pending");
       if (!nextPending || nextPending.id !== session.id) fail(409, "This is not the next scheduled hour.");
+      requireSessionDue(session, nowDate);
       session.status = "active";
       session.startedAt = nowIso;
       session.endsAt = new Date(nowDate.getTime() + HOUR_MS).toISOString();
@@ -148,6 +149,7 @@ export function applyTimeBlocksAction(document, action, now = new Date()) {
         && session.status === "pending"
         && currentSession(run)?.id === session.id;
       if (!isActive && !isNextDue) fail(409, "This hour is no longer active.");
+      if (isNextDue) requireSessionDue(session, nowDate);
       if (action.type === "confirm-session" && nowDate.getTime() < Date.parse(session.endsAt)) {
         fail(409, "This hour is not over yet. Keep focusing until the timer ends.");
       }
@@ -183,6 +185,12 @@ function requireRun(document) {
   return document.run;
 }
 
+function requireSessionDue(session, now) {
+  const plannedStart = Date.parse(session.plannedStartAt);
+  if (!Number.isFinite(plannedStart)) fail(500, "Saved time-block timing is invalid.");
+  if (now.getTime() < plannedStart) fail(409, "This hour is not due yet.");
+}
+
 function findSession(run, sessionId) {
   if (typeof sessionId !== "string") fail(400, "Choose a scheduled hour.");
   const session = run.slots.find((slot) => slot.id === sessionId);
@@ -202,6 +210,9 @@ export function focusState(run, now = Date.now()) {
   if (run.status === "complete") return "complete";
   const session = currentSession(run);
   if (!session) return "complete";
-  if (session.status === "pending") return "due";
+  if (session.status === "pending") {
+    const plannedStart = Date.parse(session.plannedStartAt);
+    return now < plannedStart ? "scheduled" : "due";
+  }
   return now >= Date.parse(session.endsAt) ? "awaiting-confirmation" : "active";
 }

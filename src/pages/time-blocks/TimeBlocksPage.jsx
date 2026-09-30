@@ -255,6 +255,17 @@ export function TimeBlocksPage({ request = requestTimeBlocks }) {
                   </div>
                   <Button variant="ghost" type="button" disabled={busy} onClick={() => setEditing(true)}>Edit next schedule</Button>
                 </>
+              ) : state === "scheduled" ? (
+                <>
+                  <div className="time-blocks-next" role="status" aria-live="polite">
+                    <MonoLabel>Next scheduled item · {formatDue(session.plannedStartAt)}</MonoLabel>
+                    <p>{session.activityName} · hour {session.activityHour} of {session.activityHours}</p>
+                  </div>
+                  <p className="time-blocks-copy">This hour opens at the saved time. Starting then begins a full 60-minute session.</p>
+                  <Button type="button" disabled>Start next hour</Button>
+                  <Button variant="ghost" type="button" disabled>Skip this hour</Button>
+                  <Button variant="ghost" type="button" disabled={busy} onClick={() => setEditing(true)}>Edit next schedule</Button>
+                </>
               ) : (
                 <>
                   <div className="time-blocks-next time-blocks-due" role="status" aria-live="polite">

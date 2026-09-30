@@ -63,9 +63,10 @@ async function requestStorage(request, fallback) {
 async function acquireLock(userId) {
   const bucket = storage();
   const path = lockPath(userId);
+  const ownerToken = crypto.randomUUID();
   for (let attempt = 0; attempt < 3; attempt += 1) {
     const { error } = await requestStorage(
-      () => bucket.upload(path, JSON.stringify({ expiresAt: Date.now() + LOCK_TTL_MS }), {
+      () => bucket.upload(path, JSON.stringify({ ownerToken, expiresAt: Date.now() + LOCK_TTL_MS }), {
         contentType: "application/json",
         upsert: false,
       }),
@@ -73,6 +74,21 @@ async function acquireLock(userId) {
     );
     if (!error) {
       return async () => {
+        const { data, error: readError } = await requestStorage(
+          () => bucket.download(path),
+          "The schedule lock could not be checked before release.",
+        );
+        if (readError) {
+          if (missing(readError)) return;
+          throw storageError(readError, "The schedule lock could not be checked before release.");
+        }
+        let lock;
+        try {
+          lock = JSON.parse(await data.text());
+        } catch {
+          return;
+        }
+        if (lock?.ownerToken !== ownerToken) return;
         const { error: releaseError } = await requestStorage(
           () => bucket.remove([path]),
           "The schedule lock could not be released.",
