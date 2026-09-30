@@ -14,6 +14,17 @@ The Vite dev server runs at `http://localhost:3000`.
 
 Use `npm run dev:vercel` when testing Vercel serverless functions under `api/`.
 
+## Owner time blocks
+
+The private `/time-blocks` route is an owner-only phone workflow: edit one ordered daily
+activity template, start each hour explicitly, and self-report completion or skipping. Due and
+ended notices appear only while the page is open; it does not send alerts while an iPhone is
+backgrounded or closed.
+
+For isolated QA, open `http://localhost:3000/time-blocks-dev.html` after `npm run dev`. The
+harness uses in-memory storage. Keep `TIME_BLOCKS_BUCKET` unset until the dedicated private
+bucket is approved and verified; production storage uses the server-side service role.
+
 ## Commands
 
 | Command | Purpose |
