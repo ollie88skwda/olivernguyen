@@ -10,6 +10,17 @@
       href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400..700&family=Hanken+Grotesk:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Martian+Mono:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
+    <style>
+      /* Bare-viewport mount (same reset as tracker-dev.html): Tailwind
+         preflight is disabled and theme.css never loads in this harness,
+         so without this the UA 8px body margin shows as white gutters
+         around the themed page. DEV ONLY — never ships. */
+      html,
+      body {
+        min-height: 100%;
+        margin: 0;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
