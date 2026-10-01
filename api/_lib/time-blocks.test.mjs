@@ -1,9 +1,46 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { applyTimeBlocksAction, emptyTimeBlocks } from "../../src/pages/time-blocks/model.mjs";
 
 const { createClient } = vi.hoisted(() => ({ createClient: vi.fn() }));
 vi.mock("@supabase/supabase-js", () => ({ createClient }));
 
 import { mutateTimeBlocks, readTimeBlocks, timeBlocksPath } from "./time-blocks.mjs";
+
+const scheduleAction = {
+  type: "save-schedule",
+  schedule: { startTime: "07:00", activities: [{ name: "School", hours: 1 }] },
+};
+
+function storageClient({ head = null, acquire = [{ fencing_token: 1 }], published = true, released = true, download } = {}) {
+  const query = {
+    select: vi.fn(() => query),
+    eq: vi.fn(() => query),
+    maybeSingle: vi.fn(async () => ({ data: head, error: null })),
+  };
+  const bucket = {
+    download: vi.fn(download || (async () => ({ data: null, error: { status: 404, message: "not found" } }))),
+    upload: vi.fn(async () => ({ data: {}, error: null })),
+  };
+  const rpc = vi.fn(async (name) => {
+    if (name === "time_blocks_acquire_lease") return { data: acquire, error: null };
+    if (name === "time_blocks_publish_schedule") return { data: published, error: null };
+    if (name === "time_blocks_release_lease") return { data: released, error: null };
+    throw new Error(`unexpected RPC ${name}`);
+  });
+  const client = {
+    rpc,
+    from: vi.fn(() => query),
+    storage: { from: vi.fn(() => bucket) },
+  };
+  createClient.mockReturnValue(client);
+  return { client, bucket, query, rpc };
+}
+
+function configureStorage() {
+  vi.stubEnv("SUPABASE_URL", "https://local.invalid");
+  vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "test-only-key");
+  vi.stubEnv("TIME_BLOCKS_BUCKET", "private-test");
+}
 
 afterEach(() => {
   vi.unstubAllEnvs();
@@ -23,28 +60,66 @@ describe("time-block private storage configuration", () => {
     expect(createClient).not.toHaveBeenCalled();
   });
 
-  it("keeps object paths derived from the server-owned user ID", () => {
-    expect(timeBlocksPath("user/owner")).toBe("_time-blocks/user%2Fowner.json");
+  it("uses an immutable path derived from the server-owned user and lease", () => {
+    expect(timeBlocksPath("user/owner", 12, "lease-token")).toBe(
+      "_time-blocks/schedules/user%2Fowner/12-lease-token.json",
+    );
   });
 
-  it("does not release a replacement lock after the original lease expires", async () => {
-    const bucket = {
-      upload: vi.fn(async () => ({ data: {}, error: null })),
-      download: vi.fn(async (path) => path.endsWith(".json")
-        ? { data: null, error: { status: 404, message: "not found" } }
-        : { data: { text: async () => JSON.stringify({ ownerToken: "replacement", expiresAt: Date.now() + 1000 }) }, error: null }),
-      remove: vi.fn(async () => ({ data: {}, error: null })),
-    };
-    createClient.mockReturnValue({ storage: { from: () => bucket } });
-    vi.stubEnv("SUPABASE_URL", "https://local.invalid");
-    vi.stubEnv("SUPABASE_SERVICE_ROLE_KEY", "test-only-key");
-    vi.stubEnv("TIME_BLOCKS_BUCKET", "private-test");
-
-    await mutateTimeBlocks("user_owner", {
-      type: "save-schedule",
-      schedule: { startTime: "07:00", activities: [{ name: "School", hours: 1 }] },
+  it("reads only the schedule generation published for the owner", async () => {
+    configureStorage();
+    const expected = applyTimeBlocksAction(emptyTimeBlocks(), scheduleAction);
+    const path = timeBlocksPath("user_owner", 4, "lease-token");
+    const { bucket, query } = storageClient({
+      head: { object_path: path },
+      download: async () => ({ data: { text: async () => JSON.stringify(expected) }, error: null }),
     });
 
-    expect(bucket.remove).not.toHaveBeenCalled();
+    await expect(readTimeBlocks("user_owner")).resolves.toEqual(expected);
+    expect(query.maybeSingle).toHaveBeenCalledOnce();
+    expect(bucket.download).toHaveBeenCalledWith(path);
+  });
+
+  it("publishes an immutable schedule only after acquiring a database lease", async () => {
+    configureStorage();
+    const { bucket, rpc, client } = storageClient({ acquire: [{ fencing_token: 9 }] });
+
+    await mutateTimeBlocks("user_owner", scheduleAction, new Date("2026-09-30T12:00:00Z"));
+
+    expect(rpc.mock.calls.map(([name]) => name)).toEqual([
+      "time_blocks_acquire_lease",
+      "time_blocks_publish_schedule",
+      "time_blocks_release_lease",
+    ]);
+    expect(client.from).toHaveBeenCalledWith("time_blocks_schedule_heads");
+    expect(bucket.upload).toHaveBeenCalledOnce();
+    const [path, body, options] = bucket.upload.mock.calls[0];
+    expect(path).toMatch(/^_time-blocks\/schedules\/user_owner\/9-[0-9a-f-]+\.json$/i);
+    expect(JSON.parse(body)).toMatchObject({ schedule: { startTime: "07:00" } });
+    expect(options).toEqual({ contentType: "application/json", upsert: false });
+    expect(rpc.mock.calls[1][1]).toMatchObject({ p_fencing_token: 9, p_object_path: path });
+  });
+
+  it("rejects a second writer before reading or uploading schedule data", async () => {
+    configureStorage();
+    const { client, bucket, rpc } = storageClient({ acquire: [] });
+
+    await expect(mutateTimeBlocks("user_owner", scheduleAction)).rejects.toMatchObject({ status: 409 });
+    expect(client.from).not.toHaveBeenCalled();
+    expect(bucket.upload).not.toHaveBeenCalled();
+    expect(rpc).toHaveBeenCalledOnce();
+  });
+
+  it("does not publish a generation after its lease has been fenced out", async () => {
+    configureStorage();
+    const { bucket, rpc } = storageClient({ acquire: [{ fencing_token: 3 }], published: false, released: false });
+
+    await expect(mutateTimeBlocks("user_owner", scheduleAction)).rejects.toMatchObject({ status: 409 });
+    expect(bucket.upload).toHaveBeenCalledOnce();
+    expect(rpc.mock.calls.map(([name]) => name)).toEqual([
+      "time_blocks_acquire_lease",
+      "time_blocks_publish_schedule",
+      "time_blocks_release_lease",
+    ]);
   });
 });
