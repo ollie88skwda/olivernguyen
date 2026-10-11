@@ -46,6 +46,21 @@ describe("private time-block timers", () => {
     expect(document.run.slots.every((slot) => slot.status === "pending")).toBe(true);
   });
 
+  it("regenerates duplicate activity IDs before creating planned blocks", () => {
+    const schedule = normalizeSchedule({
+      startTime: "07:00",
+      activities: [
+        { id: "duplicate", name: "School", hours: 1 },
+        { id: "duplicate", name: "Writing", hours: 1 },
+      ],
+    });
+    expect(new Set(schedule.activities.map((activity) => activity.id)).size).toBe(2);
+    expect(start(schedule).run.slots.map((slot) => slot.plannedStartAt)).toEqual([
+      "2026-10-01T14:00:00.000Z",
+      "2026-10-01T15:00:00.000Z",
+    ]);
+  });
+
   it("records actual start on the first tap and finish on the next tap without changing planned times", () => {
     const initial = start();
     const slot = initial.run.slots[0];

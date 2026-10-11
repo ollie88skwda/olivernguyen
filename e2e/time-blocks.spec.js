@@ -159,7 +159,8 @@ test.describe("private time blocks · in-memory test storage", () => {
       await firstBlock.getByRole("button", { name: "Start timer" }).click();
       await expect(firstBlock.getByRole("button", { name: "Finish timer" })).toBeVisible();
       await firstBlock.getByRole("button", { name: "Finish timer" }).click();
-      await expect(firstBlock.locator(".time-blocks-timer")).toHaveAttribute("aria-label", /elapsed$/);
+      await expect(firstBlock.getByRole("button", { name: "Finish timer" })).toHaveCount(0);
+      await expect(firstBlock).toContainText("finished");
     } finally {
       await context.close();
     }

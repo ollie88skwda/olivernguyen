@@ -25,6 +25,7 @@ export function normalizeSchedule(value) {
   }
 
   const startTime = cleanTime(value.startTime);
+  const usedIds = new Set();
   const activities = value.activities.map((activity) => {
     const name = typeof activity?.name === "string" ? activity.name.trim() : "";
     const hours = Number(activity?.hours);
@@ -33,7 +34,10 @@ export function normalizeSchedule(value) {
     if (!Number.isInteger(hours) || hours < 1 || hours > 24) {
       fail(400, "Each activity needs a whole number of hours from 1 to 24.");
     }
-    return { id: typeof activity.id === "string" ? activity.id : crypto.randomUUID(), name, hours };
+    let id = typeof activity.id === "string" ? activity.id : "";
+    while (!id || usedIds.has(id)) id = crypto.randomUUID();
+    usedIds.add(id);
+    return { id, name, hours };
   });
 
   const totalHours = activities.reduce((total, activity) => total + activity.hours, 0);
