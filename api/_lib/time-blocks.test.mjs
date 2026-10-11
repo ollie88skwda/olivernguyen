@@ -100,12 +100,14 @@ describe("time-block private storage configuration", () => {
     expect(rpc.mock.calls[1][1]).toMatchObject({ p_fencing_token: 9, p_object_path: path });
   });
 
-  it("rejects a second writer before reading or uploading schedule data", async () => {
+  it("rejects a concurrent timer tap before it can create or overwrite a timer", async () => {
     configureStorage();
     const { client, bucket, rpc } = storageClient({ acquire: [] });
+    const timerTap = { type: "toggle-session", sessionId: "slot-1" };
 
-    await expect(mutateTimeBlocks("user_owner", scheduleAction)).rejects.toMatchObject({ status: 409 });
+    await expect(mutateTimeBlocks("user_owner", timerTap)).rejects.toMatchObject({ status: 409 });
     expect(client.from).not.toHaveBeenCalled();
+    expect(bucket.download).not.toHaveBeenCalled();
     expect(bucket.upload).not.toHaveBeenCalled();
     expect(rpc).toHaveBeenCalledOnce();
   });
