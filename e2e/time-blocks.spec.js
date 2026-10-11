@@ -48,7 +48,9 @@ test.describe("private time blocks · in-memory test storage", () => {
       await expect(page.getByText("Schedule saved for your next run.")).toBeVisible();
       await page.getByRole("button", { name: "Start today’s plan" }).click();
       await expect(page.getByText("School · hour 1 of 2")).toBeVisible();
-      await expect(page.locator(".time-blocks-timer")).toHaveText("60:00");
+      await page.getByRole("button", { name: "Start timer" }).first().click();
+      await expect(page.getByRole("button", { name: "Finish timer" }).first()).toBeVisible();
+      await expect(page.locator(".time-blocks-timer")).toHaveText("00:00:00");
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(375);
       await settleCapture(page);
       await page.screenshot({ path: testInfo.outputPath("time-blocks-active-375.png"), fullPage: true });
@@ -86,8 +88,8 @@ test.describe("private time blocks · in-memory test storage", () => {
       await page.getByRole("button", { name: "Start today’s plan" }).click();
 
       expect(await page.evaluate(() => window.scrollY)).toBe(0);
-      await expect(page.getByRole("heading", { name: "School" })).toBeInViewport({ ratio: 1 });
-      await expect(page.getByRole("button", { name: "Confirm this hour" })).toBeInViewport({ ratio: 1 });
+      await expect(page.getByRole("heading", { name: "Your time blocks" })).toBeInViewport({ ratio: 1 });
+      await expect(page.getByRole("button", { name: "Start timer" }).first()).toBeInViewport({ ratio: 1 });
       expect(browserErrors).toEqual([]);
       await settleCapture(page);
       await page.screenshot({ path: testInfo.outputPath("time-blocks-focus-from-editor-bottom-375.png") });
@@ -142,7 +144,7 @@ test.describe("private time blocks · in-memory test storage", () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(375);
   });
 
-  test("shows an in-app deadline alert and requires a self-report before advancing", async ({ browser }, testInfo) => {
+  test("starts and finishes a due timer with two taps", async ({ browser }, testInfo) => {
     const context = await browser.newContext({
       viewport: { width: 375, height: 812 },
       isMobile: true,
@@ -151,28 +153,29 @@ test.describe("private time blocks · in-memory test storage", () => {
     try {
       const page = await context.newPage();
       await openBlocks(page, "state=ended&mode=graph&theme=dark");
-      const alert = page.getByRole("status").filter({ hasText: "Hour ended" });
-      await expect(alert).toContainText("Did you complete School, hour 1?");
-      await expect(page.getByRole("button", { name: "Confirm this hour" })).toBeEnabled();
-      await page.screenshot({ path: testInfo.outputPath("time-blocks-hour-ended-375.png"), fullPage: true });
-      await page.getByRole("button", { name: "Confirm this hour" }).click();
-      await expect(page.getByText(/This hour was due at/)).toBeVisible();
-      await expect(page.getByRole("button", { name: "Start this hour late" })).toBeVisible();
+      const firstBlock = page.locator(".time-blocks-activity").first();
+      await expect(firstBlock.getByRole("button", { name: "Start timer" })).toBeEnabled();
+      await page.screenshot({ path: testInfo.outputPath("time-blocks-timer-ready-375.png"), fullPage: true });
+      await firstBlock.getByRole("button", { name: "Start timer" }).click();
+      await expect(firstBlock.getByRole("button", { name: "Finish timer" })).toBeVisible();
+      await firstBlock.getByRole("button", { name: "Finish timer" }).click();
+      await expect(firstBlock.locator(".time-blocks-timer")).toHaveAttribute("aria-label", /elapsed$/);
     } finally {
       await context.close();
     }
   });
 
-  test("offers late start or skip and never auto-credits a missed hour", async ({ page }, testInfo) => {
+  test("lets late due blocks be skipped without auto-crediting them", async ({ page }, testInfo) => {
     await page.setViewportSize({ width: 375, height: 812 });
     await openBlocks(page, "state=late&mode=terminal&theme=light");
-    await expect(page.getByText(/This hour was due at/)).toBeVisible();
-    await expect(page.getByRole("button", { name: "Start this hour late" })).toBeVisible();
-    await page.getByRole("button", { name: "Skip this hour" }).click();
-    await expect(page.getByText("Writing · hour 1 of 1")).toBeVisible();
-    await expect(page.getByText(/This hour was due at/)).toBeVisible();
-    await expect(page.getByRole("button", { name: "Start this hour late" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Skip this hour" })).toBeVisible();
+    const secondBlock = page.locator(".time-blocks-activity").nth(1);
+    const thirdBlock = page.locator(".time-blocks-activity").nth(2);
+    await expect(secondBlock.getByRole("button", { name: "Start timer" })).toBeVisible();
+    await expect(secondBlock.getByRole("button", { name: "Skip block" })).toBeVisible();
+    await secondBlock.getByRole("button", { name: "Skip block" }).click();
+    await expect(secondBlock).toContainText("skipped");
+    await expect(thirdBlock.getByRole("button", { name: "Start timer" })).toBeVisible();
+    await expect(thirdBlock.getByRole("button", { name: "Skip block" })).toBeVisible();
     await page.screenshot({ path: testInfo.outputPath("time-blocks-late-skip-375.png"), fullPage: true });
   });
 
