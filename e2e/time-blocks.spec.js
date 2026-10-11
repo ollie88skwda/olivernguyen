@@ -17,7 +17,7 @@ async function settleCapture(page) {
 async function openBlocks(page, query = "mode=graph&theme=light") {
   await page.goto(`${HARNESS}?${query}`, { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
-  await expect(page.getByRole("heading", { name: "Time blocks" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Time blocks", exact: true })).toBeVisible();
 }
 
 test.describe("private time blocks · in-memory test storage", () => {
@@ -140,7 +140,7 @@ test.describe("private time blocks · in-memory test storage", () => {
 
     page.once("dialog", (dialog) => dialog.accept());
     await page.getByRole("button", { name: "Back to current run" }).click();
-    await expect(page.getByRole("heading", { name: "A".repeat(60) })).toBeVisible();
+    await expect(page.getByText(`${"A".repeat(60)} · hour 1 of 2`, { exact: true })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(375);
   });
 
