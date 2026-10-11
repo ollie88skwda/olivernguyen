@@ -25,6 +25,7 @@ export function normalizeSchedule(value) {
   }
 
   const startTime = cleanTime(value.startTime);
+  const usedIds = new Set();
   const activities = value.activities.map((activity) => {
     const name = typeof activity?.name === "string" ? activity.name.trim() : "";
     const hours = Number(activity?.hours);
@@ -33,7 +34,10 @@ export function normalizeSchedule(value) {
     if (!Number.isInteger(hours) || hours < 1 || hours > 24) {
       fail(400, "Each activity needs a whole number of hours from 1 to 24.");
     }
-    return { id: crypto.randomUUID(), name, hours };
+    let id = typeof activity.id === "string" ? activity.id : "";
+    while (!id || usedIds.has(id)) id = crypto.randomUUID();
+    usedIds.add(id);
+    return { id, name, hours };
   });
 
   const totalHours = activities.reduce((total, activity) => total + activity.hours, 0);
@@ -82,7 +86,7 @@ export function applyTimeBlocksAction(document, action, now = new Date()) {
         fail(400, "Choose a valid device time zone before starting the plan.");
       }
       if (next.run?.dateKey === dateKey) fail(409, "Today’s plan has already been started.");
-      const firstStartedAt = nowDate.getTime();
+      const plannedStart = nowDate.getTime();
       const slots = next.schedule.activities.flatMap((activity) =>
         Array.from({ length: activity.hours }, (_, index) => ({
           id: crypto.randomUUID(),
@@ -91,23 +95,17 @@ export function applyTimeBlocksAction(document, action, now = new Date()) {
           activityHour: index + 1,
           activityHours: activity.hours,
           status: "pending",
-          plannedStartAt: new Date(firstStartedAt + slotsOffset(next.schedule.activities, activity, index) * HOUR_MS).toISOString(),
+          plannedStartAt: new Date(plannedStart + slotsOffset(next.schedule.activities, activity, index) * HOUR_MS).toISOString(),
           startedAt: null,
-          endsAt: null,
           completedAt: null,
         })),
       );
-      const first = slots[0];
-      first.status = "active";
-      first.startedAt = nowIso;
-      first.endsAt = new Date(firstStartedAt + HOUR_MS).toISOString();
       next.run = {
         id: crypto.randomUUID(),
         dateKey,
         timeZone: requestedTimeZone.slice(0, 80),
         scheduleSnapshot: structuredClone(next.schedule),
         slots,
-        activeSessionId: first.id,
         status: "active",
         createdAt: nowIso,
         completedAt: null,
@@ -115,54 +113,33 @@ export function applyTimeBlocksAction(document, action, now = new Date()) {
       next.updatedAt = nowIso;
       return next;
     }
-    case "start-session": {
+    case "toggle-session": {
       const run = requireRun(next);
       const session = findSession(run, action.sessionId);
-      if (session.status === "active") return next;
-      if (run.activeSessionId) fail(409, "Finish or skip the active hour first.");
-      const nextPending = run.slots.find((slot) => slot.status === "pending");
-      if (!nextPending || nextPending.id !== session.id) fail(409, "This is not the next scheduled hour.");
+      if (session.status === "active") {
+        session.status = "completed";
+        session.completedAt = nowIso;
+        updateRunStatus(run, nowIso);
+        next.updatedAt = nowIso;
+        return next;
+      }
+      if (session.status !== "pending") fail(409, "This time block has already been finished or skipped.");
       requireSessionDue(session, nowDate);
       session.status = "active";
       session.startedAt = nowIso;
-      session.endsAt = new Date(nowDate.getTime() + HOUR_MS).toISOString();
-      let forecastAt = nowDate.getTime();
-      for (const slot of run.slots) {
-        if (slot.id === session.id || slot.status === "pending") {
-          slot.plannedStartAt = new Date(forecastAt).toISOString();
-          forecastAt += HOUR_MS;
-        }
-      }
-      run.activeSessionId = session.id;
+      session.completedAt = null;
       run.status = "active";
+      run.completedAt = null;
       next.updatedAt = nowIso;
       return next;
     }
-    case "confirm-session":
     case "skip-session": {
       const run = requireRun(next);
       const session = findSession(run, action.sessionId);
-      if (session.status === "completed" || session.status === "skipped") return next;
-      const isActive = session.id === run.activeSessionId && session.status === "active";
-      const isNextDue = action.type === "skip-session"
-        && !run.activeSessionId
-        && session.status === "pending"
-        && currentSession(run)?.id === session.id;
-      if (!isActive && !isNextDue) fail(409, "This hour is no longer active.");
-      if (isNextDue) requireSessionDue(session, nowDate);
-      if (action.type === "confirm-session" && nowDate.getTime() < Date.parse(session.endsAt)) {
-        fail(409, "This hour is not over yet. Keep focusing until the timer ends.");
-      }
-      session.status = action.type === "confirm-session" ? "completed" : "skipped";
-      session.completedAt = action.type === "confirm-session" ? nowIso : null;
-      run.activeSessionId = null;
-      const unfinished = run.slots.some((slot) => slot.status === "pending" || slot.status === "active");
-      if (!unfinished) {
-        run.status = "complete";
-        run.completedAt = nowIso;
-      } else {
-        run.status = "waiting";
-      }
+      if (session.status !== "pending") fail(409, "Only a time block that has not started can be skipped.");
+      requireSessionDue(session, nowDate);
+      session.status = "skipped";
+      updateRunStatus(run, nowIso);
       next.updatedAt = nowIso;
       return next;
     }
@@ -180,29 +157,41 @@ function slotsOffset(activities, current, index) {
   return offset;
 }
 
+function updateRunStatus(run, nowIso) {
+  const unfinished = run.slots.some((slot) => slot.status === "pending" || slot.status === "active");
+  run.status = unfinished ? "active" : "complete";
+  run.completedAt = unfinished ? null : nowIso;
+}
+
 function requireRun(document) {
-  if (!document.run) fail(409, "Start today’s plan before beginning a focus hour.");
+  if (!document.run) fail(409, "Start today’s plan before timing a time block.");
   return document.run;
 }
 
 function requireSessionDue(session, now) {
   const plannedStart = Date.parse(session.plannedStartAt);
   if (!Number.isFinite(plannedStart)) fail(500, "Saved time-block timing is invalid.");
-  if (now.getTime() < plannedStart) fail(409, "This hour is not due yet.");
+  if (now.getTime() < plannedStart) fail(409, "This time block is not due yet.");
 }
 
 function findSession(run, sessionId) {
-  if (typeof sessionId !== "string") fail(400, "Choose a scheduled hour.");
+  if (typeof sessionId !== "string") fail(400, "Choose a scheduled time block.");
   const session = run.slots.find((slot) => slot.id === sessionId);
-  if (!session) fail(404, "That scheduled hour was not found.");
+  if (!session) fail(404, "That scheduled time block was not found.");
   return session;
 }
 
 export function currentSession(run) {
   if (!run) return null;
-  return run.slots.find((slot) => slot.id === run.activeSessionId)
+  return run.slots.find((slot) => slot.status === "active")
     || run.slots.find((slot) => slot.status === "pending")
     || null;
+}
+
+export function elapsedMilliseconds(session, now = Date.now()) {
+  if (!session?.startedAt) return 0;
+  const end = session.completedAt ? Date.parse(session.completedAt) : Number(now);
+  return Math.max(0, end - Date.parse(session.startedAt));
 }
 
 export function focusState(run, now = Date.now()) {
@@ -214,5 +203,5 @@ export function focusState(run, now = Date.now()) {
     const plannedStart = Date.parse(session.plannedStartAt);
     return now < plannedStart ? "scheduled" : "due";
   }
-  return now >= Date.parse(session.endsAt) ? "awaiting-confirmation" : "active";
+  return "active";
 }

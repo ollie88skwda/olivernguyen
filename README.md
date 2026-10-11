@@ -17,9 +17,10 @@ Use `npm run dev:vercel` when testing Vercel serverless functions under `api/`.
 ## Owner time blocks
 
 The private `/time-blocks` route is an owner-only phone workflow: edit one ordered daily
-activity template, start each hour explicitly, and self-report completion or skipping. Due and
-ended notices appear only while the page is open; it does not send alerts while an iPhone is
-backgrounded or closed.
+activity template, start the day’s plan, then tap each due block to start its timer and tap it
+again to finish. Timers are saved independently, so different blocks can run simultaneously and
+remain active across reloads and midnight until finished. The page does not send alerts while an
+iPhone is backgrounded or closed.
 
 For isolated QA, open `http://localhost:3000/time-blocks-dev.html` after `npm run dev`. The
 harness uses in-memory storage. Keep `TIME_BLOCKS_BUCKET` unset until the dedicated private

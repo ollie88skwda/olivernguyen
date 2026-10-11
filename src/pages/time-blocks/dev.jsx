@@ -23,9 +23,13 @@ const startedAt = Date.now() - (state === "late" ? 2 * HOUR_MS + 5_000 : HOUR_MS
 if (state === "ended" || state === "late") {
   timeBlocks = applyTimeBlocksAction(timeBlocks, { type: "start-run", timeZone: "UTC" }, new Date(startedAt));
   if (state === "late") {
+    const firstSessionId = timeBlocks.run.slots[0].id;
     timeBlocks = applyTimeBlocksAction(timeBlocks, {
-      type: "confirm-session", sessionId: timeBlocks.run.slots[0].id,
+      type: "toggle-session", sessionId: firstSessionId,
     }, new Date(startedAt + HOUR_MS));
+    timeBlocks = applyTimeBlocksAction(timeBlocks, {
+      type: "toggle-session", sessionId: firstSessionId,
+    }, new Date(startedAt + HOUR_MS + 5_000));
   }
 }
 let failOnce = params.get("storage") === "fail-once";
