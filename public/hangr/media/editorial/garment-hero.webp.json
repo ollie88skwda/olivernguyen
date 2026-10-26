@@ -1,0 +1,13 @@
+{
+  "asset": "public/media/editorial/garment-hero.webp",
+  "dimensions": "1920x1080",
+  "bytes": 122090,
+  "sha256": "35e3037b27aa20331252b413e1259aa34ee0ecf53c926582be96ba71ea09b019",
+  "source": "Sarah Pflug / Burst \u2014 Minimalist Retail Clothing Display Photo",
+  "sourcePage": "https://www.shopify.com/stock-photos/photos/minimalist-retail-clothing-display",
+  "license": "Burst Some Rights Reserved; see https://www.shopify.com/stock-photos/licenses/shopify-some-rights-reserved",
+  "sourceFile": "docs/research/redesign-media/candidates/burst-minimalist-retail-clothing-display.jpg",
+  "provenanceManifest": "docs/implementation/v2-editorial/manifest.json",
+  "colorTreatment": "Crop and WebP encoding only; no grading or recoloring.",
+  "use": "Contextual editorial wardrobe imagery only, not Hangr product imagery or evidence of efficacy/manufacture."
+}

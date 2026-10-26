@@ -2,6 +2,9 @@ node_modules
 
 # Vite build output (Vercel builds it; never committed)
 dist/
+# Hangr's static vendor chunks include next/dist; these are deployed assets.
+!public/hangr/_next/static/chunks/next/dist/
+!public/hangr/_next/static/chunks/next/dist/**
 
 .env.local
 .env*.local

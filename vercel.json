@@ -6,12 +6,71 @@
   "framework": null,
   "rewrites": [
     {
+      "source": "/hangr",
+      "destination": "/hangr/index.html"
+    },
+    {
+      "source": "/hangr/",
+      "destination": "/hangr/index.html"
+    },
+    {
+      "source": "/hangr/home",
+      "destination": "/hangr/home/index.html"
+    },
+    {
+      "source": "/hangr/home/",
+      "destination": "/hangr/home/index.html"
+    },
+    {
+      "source": "/hangr/directions",
+      "destination": "/hangr/directions/index.html"
+    },
+    {
+      "source": "/hangr/directions/",
+      "destination": "/hangr/directions/index.html"
+    },
+    {
+      "source": "/hangr/directions/edit",
+      "destination": "/hangr/directions/edit/index.html"
+    },
+    {
+      "source": "/hangr/directions/edit/",
+      "destination": "/hangr/directions/edit/index.html"
+    },
+    {
+      "source": "/hangr/directions/studio",
+      "destination": "/hangr/directions/studio/index.html"
+    },
+    {
+      "source": "/hangr/directions/studio/",
+      "destination": "/hangr/directions/studio/index.html"
+    },
+    {
+      "source": "/hangr/directions/components",
+      "destination": "/hangr/directions/components/index.html"
+    },
+    {
+      "source": "/hangr/directions/components/",
+      "destination": "/hangr/directions/components/index.html"
+    },
+    {
       "source": "/api/auth/session",
       "destination": "/api/auth/login"
     },
     {
-      "source": "/((?!api/|assets/)(?!.*\\.[a-zA-Z0-9]+$).*)",
+      "source": "/((?!api/|assets/|hangr(?:/|$))(?!.*\\.[a-zA-Z0-9]+$).*)",
       "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/hangr/:path*",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
     }
   ]
 }
