@@ -1,0 +1,13 @@
+{
+  "asset": "public/media/editorial/garment-mobile.webp",
+  "dimensions": "900x1125",
+  "bytes": 32878,
+  "sha256": "81188b600083e9ab599bb7b5133f1558dff08601f239786363927fbb430f5fcd",
+  "source": "Sarah Pflug / Burst \u2014 Minimalist Retail Clothing Display Photo",
+  "sourcePage": "https://www.shopify.com/stock-photos/photos/minimalist-retail-clothing-display",
+  "license": "Burst Some Rights Reserved; see https://www.shopify.com/stock-photos/licenses/shopify-some-rights-reserved",
+  "sourceFile": "docs/research/redesign-media/candidates/burst-minimalist-retail-clothing-display.jpg",
+  "provenanceManifest": "docs/implementation/v2-editorial/manifest.json",
+  "colorTreatment": "Crop and WebP encoding only; no grading or recoloring.",
+  "use": "Contextual editorial wardrobe imagery only, not Hangr product imagery or evidence of efficacy/manufacture."
+}

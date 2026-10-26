@@ -9,6 +9,31 @@ and deleting it there.
 
 ---
 
+## 2026-10-26 · Hangr has a public, unlisted test hub
+
+### D-38 · Mount the existing Hangr site beneath `/hangr/`
+Oliver chose public access for anyone with the link, without adding it to the personal site's menu.
+The entry is the two-design comparison, with direct links to both complete designs, the original
+homepage at `/hangr/home/`, the component chooser and supporting test documents. No final design
+has been selected and no commerce has been added.
+
+Hangr keeps its existing brand in independent static documents. It does not mount inside the personal
+React tree, import personal styles or change the personal homepage, authentication or API routes.
+This is a transfer of the existing Hangr site, not a new Sakura component or a general brand exception.
+Scoped hosting rules resolve its exported directory indexes before the personal SPA fallback.
+
+The canonical producer is the sibling `hangr` project. Run `npm run build:hosted` there, then run
+`node scripts/sync-hangr.mjs ../hangr/out-hosted` here and rebuild. The tracked `public/hangr` snapshot
+is served directly; Vercel does not install or run a Next.js server for it. `public/hangr/hangr-build.json`
+records every mirrored file's identity. The sync tool refuses to replace an unrecognised directory.
+Its behavioral checks are `scripts/verify-hangr.mjs` and `tests/sync-hangr.test.js`.
+
+*Rejected:* replacing the personal homepage, merging an unrelated stale feature branch, wrapping
+Hangr in personal chrome, or converting its components to the host's framework. Separate static
+documents preserve both sites and make the added namespace independently replaceable.
+
+---
+
 ## 2026-09-08 · The rebuild is integrated
 
 ### D-37 · Component-library rebuild merged
