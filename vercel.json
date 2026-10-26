@@ -64,7 +64,16 @@
   ],
   "headers": [
     {
-      "source": "/hangr/:path*",
+      "source": "/hangr",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
+      "source": "/hangr/(.*)",
       "headers": [
         {
           "key": "X-Robots-Tag",
