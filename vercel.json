@@ -11,6 +11,11 @@
       "permanent": false
     },
     {
+      "source": "/hangr/",
+      "destination": "https://hangrve.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/hangr/:path*",
       "destination": "https://hangrve.vercel.app/",
       "permanent": false
