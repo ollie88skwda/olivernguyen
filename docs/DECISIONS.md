@@ -9,6 +9,20 @@ and deleting it there.
 
 ---
 
+## 2026-11-20 · One brand sitewide
+
+### D-38 · Sitewide brand = portfolio brand (Geologica, warm paper, pink accent), Oliver 2026-11-20
+Oliver, 2026-11-20: "make sure that all the branding stuff is consistent over all."
+- The `.sakura` token VALUES in `src/styles/sakura.css` now carry the D-37 portfolio brand, so every
+  `.sakura` page and the site chrome pick it up. Token NAMES are unchanged. `--accent` is accent
+  text, `--accent-hi` is the solid pink fill (carries `--on-accent`), `--primary` fills primary buttons.
+- Radii 4/8/12/16, buttons 44px / radius 8 / weight 600, headings 700, display 760 at -0.05em.
+- Wordmark = slash mark + "oliver nguyen". Chrome matches the portfolio bar; mode toggle and
+  graph links removed. Sakura palette, Familjen/Hanken/Martian/JetBrains fonts, and the square-surface rule are retired.
+- Detail: `docs/BRAND.md`; plan: `docs/plans/brand-sweep-2026-11-20.md`.
+
+---
+
 ## 2026-11-19 · The home becomes a terminal portfolio in clarity's brand, pink
 
 ### D-37 · `/` is a single scrollable terminal portfolio; clarity brand with a pink accent

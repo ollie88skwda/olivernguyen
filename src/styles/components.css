@@ -35,8 +35,8 @@
  * 4px-ladder rungs; coarse pointers get the 44px minimum tap target from §1.
  * ------------------------------------------------------------------------ */
 .sakura {
-  --ctl-h: 40px;
-  --ctl-h-sm: 32px;
+  --ctl-h: 44px;
+  --ctl-h-sm: 36px;
 }
 @media (pointer: coarse) {
   .sakura {
@@ -61,9 +61,9 @@
 
 .sakura .on-display {
   font-family: var(--font-display);
-  font-weight: 700;
+  font-weight: 760;
   letter-spacing: var(--track-display);
-  line-height: 1.05;
+  line-height: 0.96;
   color: var(--text);
   margin: 0;
 }
@@ -81,7 +81,7 @@
 .sakura .on-label {
   font-family: var(--font-mono-label);
   font-size: var(--fs-label);
-  font-weight: 500;
+  font-weight: 560;
   letter-spacing: var(--track-label);
   text-transform: uppercase;
   line-height: 1.4;
@@ -91,7 +91,7 @@
 }
 .sakura .on-label[data-tone="muted"] { color: var(--text-muted); }
 .sakura .on-label[data-tone="text"] { color: var(--text); }
-.sakura .on-label[data-tone="accent"] { color: var(--accent-hi); }
+.sakura .on-label[data-tone="accent"] { color: var(--accent); }
 
 /* mono body — JetBrains, the "read forty lines of it" face (D-08) */
 .sakura .on-mono {
@@ -121,11 +121,10 @@
   cursor: pointer;
   white-space: nowrap;
   text-decoration: none;
-  font-family: var(--font-mono-label);
-  font-size: var(--fs-label);
-  font-weight: 500;
-  letter-spacing: var(--track-label);
-  text-transform: uppercase;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0;
   transition:
     color var(--dur-state) var(--ease-state),
     background-color var(--dur-state) var(--ease-state),
@@ -138,23 +137,21 @@
 .sakura .on-btn[data-size="icon"] {
   width: var(--ctl-h);
   padding: 0;
-  font-family: var(--font-mono-body);
-  font-size: var(--fs-mono);
   letter-spacing: 0;
 }
 .sakura .on-btn > svg {
   width: 18px; /* §8: lucide sits on an 18px grid */
   height: 18px;
   flex: none;
-  stroke-width: 1.5;
+  stroke-width: 1.75;
 }
 
 .sakura .on-btn[data-variant="primary"] {
-  background: var(--accent);
-  color: var(--on-accent);
+  background: var(--primary);
+  color: var(--on-primary);
 }
 .sakura .on-btn[data-variant="primary"]:hover:not(:disabled) {
-  background: var(--accent-hi);
+  background: var(--text-muted);
 }
 
 .sakura .on-btn[data-variant="ghost"] {
@@ -162,15 +159,15 @@
   color: var(--text);
 }
 .sakura .on-btn[data-variant="ghost"]:hover:not(:disabled) {
-  border-color: var(--accent);
-  background: var(--surface-2);
-  color: var(--accent-hi);
+  border-color: var(--border-strong);
+  background: var(--hover);
+  color: var(--text);
 }
 
 .sakura .on-btn[data-variant="link"] {
   height: auto;
   padding: 0;
-  color: var(--accent-hi);
+  color: var(--accent);
   text-underline-offset: 3px;
 }
 .sakura .on-btn[data-variant="link"]:hover:not(:disabled) {
@@ -298,7 +295,7 @@
 }
 .sakura .on-check[data-state="checked"],
 .sakura .on-check[data-state="indeterminate"] {
-  background: var(--accent);
+  background: var(--accent-hi);
   border-color: var(--accent);
 }
 .sakura .on-check:disabled {
@@ -342,7 +339,7 @@
   width: var(--s-2);
   height: var(--s-2);
   border-radius: var(--r-pill);
-  background: var(--accent);
+  background: var(--accent-hi);
 }
 
 /* switch: a 3px track with a 3px thumb — square-ish on purpose (§4) */
@@ -371,7 +368,7 @@
     border-color var(--dur-state) var(--ease-state);
 }
 .sakura .on-switch[data-state="checked"] {
-  background: var(--accent);
+  background: var(--accent-hi);
   border-color: var(--accent);
 }
 .sakura .on-switch:disabled {
@@ -432,7 +429,7 @@
   background: transparent;
   font-family: var(--font-mono-label);
   font-size: var(--fs-label);
-  font-weight: 500;
+  font-weight: 560;
   letter-spacing: var(--track-label);
   text-transform: uppercase;
   line-height: 1;
@@ -441,7 +438,7 @@
 }
 .sakura .on-badge[data-tone="accent"] {
   border-color: var(--accent);
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 .sakura .on-badge[data-tone="success"] {
   border-color: var(--success);
@@ -456,7 +453,7 @@
   color: var(--danger-text);
 }
 .sakura .on-badge[data-solid="true"] {
-  background: var(--accent);
+  background: var(--accent-hi);
   border-color: var(--accent);
   color: var(--on-accent);
 }
@@ -511,8 +508,8 @@
 }
 .sakura .on-pill[data-status="live"] { border-color: var(--success); color: var(--success); }
 .sakura .on-pill[data-status="live"] .on-pill-dot { background: var(--success); }
-.sakura .on-pill[data-status="routing"] { border-color: var(--accent); color: var(--accent-hi); }
-.sakura .on-pill[data-status="routing"] .on-pill-dot { background: var(--accent-hi); }
+.sakura .on-pill[data-status="routing"] { border-color: var(--accent); color: var(--accent); }
+.sakura .on-pill[data-status="routing"] .on-pill-dot { background: var(--accent); }
 .sakura .on-pill[data-status="warning"] { border-color: var(--warning); color: var(--warning); }
 .sakura .on-pill[data-status="warning"] .on-pill-dot { background: var(--warning); }
 .sakura .on-pill[data-status="error"] { border-color: var(--error); color: var(--danger-text); }
@@ -526,23 +523,27 @@
  * carries shape would not survive being flattened.
  * ------------------------------------------------------------------------ */
 .sakura .on-wordmark {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-2);
+  min-height: var(--ctl-h);
   font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--fs-wordmark);
-  letter-spacing: var(--track-display);
+  letter-spacing: var(--track-heading);
   line-height: 1;
   color: var(--text);
   text-decoration: none;
   transition: color var(--dur-state) var(--ease-state);
 }
-.sakura .on-wordmark-dot {
-  color: var(--accent);
+.sakura .on-wordmark-slash {
+  flex: none;
 }
-/* Only the letters move on hover; the dot holds --accent so the mark never
-   flattens into one colour (§10 — the dot is the idea). */
+.sakura .on-wordmark-slash path {
+  fill: var(--accent);
+}
 .sakura a.on-wordmark:hover {
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 
 /* --------------------------------------------------------------------------
@@ -569,7 +570,7 @@
   inset: 0 50% 0 0;
   z-index: 0;
   border-radius: var(--r-pill);
-  background: var(--accent);
+  background: var(--accent-hi);
   transition: transform var(--dur-state) var(--ease-state);
 }
 .sakura .on-mode-toggle[data-mode="graph"] .on-mode-thumb {
@@ -587,7 +588,7 @@
   cursor: pointer;
   font-family: var(--font-mono-label);
   font-size: var(--fs-label);
-  font-weight: 500;
+  font-weight: 560;
   letter-spacing: var(--track-label);
   line-height: 1;
   color: var(--text-muted);
@@ -658,7 +659,7 @@
   font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--fs-title);
-  letter-spacing: var(--track-display);
+  letter-spacing: var(--track-heading);
   line-height: 1.1;
   color: var(--text);
   margin: 0;
@@ -728,7 +729,7 @@
 .sakura .on-progress-fill {
   width: 100%;
   height: 100%;
-  background: var(--accent);
+  background: var(--accent-hi);
   transition: transform var(--dur-state) var(--ease-state);
 }
 
@@ -785,7 +786,7 @@
   border-bottom: 1px solid var(--border);
   font-family: var(--font-mono-label);
   font-size: var(--fs-label);
-  font-weight: 500;
+  font-weight: 560;
   letter-spacing: var(--track-label);
   text-transform: uppercase;
   color: var(--text-faint);
@@ -848,7 +849,7 @@
   border-bottom: 1px solid transparent;
   font-family: var(--font-mono-label);
   font-size: var(--fs-label);
-  font-weight: 500;
+  font-weight: 560;
   letter-spacing: var(--track-label);
   text-transform: uppercase;
   color: var(--text-faint);
@@ -860,7 +861,7 @@
   color: var(--text-muted);
 }
 .sakura .on-tabs-trigger[data-state="active"] {
-  color: var(--accent-hi);
+  color: var(--accent);
   border-bottom-color: var(--accent);
 }
 .sakura .on-tabs-content {
@@ -950,7 +951,7 @@
 .sakura .on-menu-item[data-selected="true"],
 .sakura .on-menu-item[data-state="checked"] {
   background: var(--selection);
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 .sakura .on-menu-item[data-disabled] {
   color: var(--text-faint);
@@ -984,7 +985,7 @@
   font-family: var(--font-mono-body);
   width: var(--s-4);
   flex: none;
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 .sakura .on-menu-sep {
   height: 1px;
@@ -1000,7 +1001,7 @@
   font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--fs-body);
-  letter-spacing: var(--track-display);
+  letter-spacing: var(--track-heading);
   color: var(--text);
   margin: 0 0 var(--s-2);
 }
@@ -1034,7 +1035,7 @@
   font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--fs-title);
-  letter-spacing: var(--track-display);
+  letter-spacing: var(--track-heading);
   line-height: 1.1;
   color: var(--text);
   margin: 0;
@@ -1073,7 +1074,7 @@
   transition: color var(--dur-state) var(--ease-state);
 }
 .sakura .on-close:hover {
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 
 .sakura .on-sheet {
@@ -1137,7 +1138,7 @@
 .sakura .on-command-sigil {
   font-family: var(--font-mono-body);
   font-size: var(--fs-mono);
-  color: var(--term-prompt, var(--accent-hi));
+  color: var(--term-prompt, var(--accent));
   flex: none;
 }
 .sakura .on-command-input {
@@ -1150,7 +1151,7 @@
   color: var(--text);
   font-family: var(--font-mono-body);
   font-size: var(--fs-mono);
-  caret-color: var(--term-cursor, var(--accent-hi));
+  caret-color: var(--term-cursor, var(--accent));
 }
 .sakura .on-command-input::placeholder {
   color: var(--text-faint);
@@ -1229,7 +1230,7 @@
   font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--fs-body);
-  letter-spacing: var(--track-display);
+  letter-spacing: var(--track-heading);
   color: var(--text-muted);
 }
 .sakura .on-avatar[data-size="sm"] .on-avatar-fallback { font-size: var(--fs-mono); }
@@ -1247,7 +1248,7 @@
   display: inline-block;
   color: inherit;
 }
-.sakura .on-glyph[data-tone="accent"] { color: var(--accent-hi); }
+.sakura .on-glyph[data-tone="accent"] { color: var(--accent); }
 .sakura .on-glyph[data-tone="muted"] { color: var(--text-muted); }
 .sakura .on-glyph[data-tone="faint"] { color: var(--text-faint); }
 .sakura .on-glyph[data-tone="success"] { color: var(--success); }
@@ -1316,7 +1317,7 @@
 html[data-theme="light"][data-mode="terminal"] .sakura .on-log-line[data-state="active"] {
   border-left: 1px solid var(--border-strong);
   padding-left: calc(var(--s-4) - 1px);
-  font-weight: 500;
+  font-weight: 560;
 }
 
 /* code / log block — a surface, so square (§4) */
@@ -1396,7 +1397,7 @@ html[data-theme="light"][data-mode="terminal"] .sakura .on-log-line[data-state="
   color: var(--text);
   font-family: var(--font-mono-body);
   font-size: var(--fs-mono);
-  caret-color: var(--term-cursor, var(--accent-hi));
+  caret-color: var(--term-cursor, var(--accent));
 }
 .sakura .on-prompt-input::placeholder { color: var(--text-faint); }
 
@@ -1439,7 +1440,7 @@ html[data-mode="graph"] .sakura .on-node[data-active="true"] {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--fs-title);
-  letter-spacing: var(--track-display);
+  letter-spacing: var(--track-heading);
   line-height: 1.1;
   color: var(--text);
   margin: 0;
@@ -1477,7 +1478,7 @@ html[data-mode="graph"] .sakura .on-node[data-active="true"] {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--fs-title-lg);
-  letter-spacing: var(--track-display);
+  letter-spacing: var(--track-heading);
   line-height: 1.05;
   color: var(--text);
   margin: 0;
@@ -1500,9 +1501,9 @@ html[data-mode="graph"] .sakura .on-node[data-active="true"] {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--fs-title);
-  letter-spacing: var(--track-display);
+  letter-spacing: var(--track-heading);
   line-height: 1;
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 .sakura .on-stat-row {
   display: flex;
@@ -1524,7 +1525,7 @@ html[data-mode="graph"] .sakura .on-node[data-active="true"] {
   font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--fs-section);
-  letter-spacing: var(--track-display);
+  letter-spacing: var(--track-heading);
   line-height: 1.05;
   color: var(--text);
   margin: 0;
