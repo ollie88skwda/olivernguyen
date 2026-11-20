@@ -79,7 +79,7 @@
 .mj-hero-sub {
   margin: var(--s-6) 0 0;
   font-family: var(--font-sans);
-  font-weight: 500;
+  font-weight: 410;
   font-size: var(--fs-title);
   line-height: var(--lh-body);
   color: var(--text-muted);
@@ -190,7 +190,7 @@
   color: var(--text);
   font-family: var(--font-sans);
   font-size: var(--fs-body);
-  font-weight: 400;
+  font-weight: 410;
   line-height: var(--lh-body);
   letter-spacing: 0;
   text-transform: none;
@@ -427,7 +427,7 @@
   font-size: var(--fs-label);
   letter-spacing: var(--track-label);
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-faint);
 }
 .mj-pop-note {
@@ -457,7 +457,7 @@
   justify-content: flex-end;
   font-family: var(--font-mono-body);
   font-size: var(--fs-mono);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text);
 }
 
