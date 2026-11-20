@@ -9,6 +9,30 @@ and deleting it there.
 
 ---
 
+## 2026-11-19 · The home becomes a terminal portfolio in clarity's brand, pink
+
+### D-37 · `/` is a single scrollable terminal portfolio; clarity brand with a pink accent
+Oliver, 2026-11-19: "redesign the website to be more like a portfolio ... only want to go with the
+terminal ... showing off the evolution of my portfolio ... use the same branding that we use for
+clarity ... but just use pink instead of the blue." Context: Brown and design-leaning applications.
+
+- `/` now renders `src/portfolio/Portfolio.jsx` (content in `src/portfolio/content.js`, styles in
+  `src/portfolio/portfolio.css`, all scoped under `.pf`). Graph mode is no longer reachable from `/`;
+  `src/home/`, `src/graph/`, `src/terminal/` stay in the tree, unmounted. Site chrome is hidden on `/`
+  only; legacy routes are unchanged.
+- Brand: clarity's tokens copied from `because/src/app/globals.css` (paper neutrals, Geologica,
+  slash mark, 4/8/12/16/24 corners). Accent = clarity's blue ramp rotated to hue 352 in OKLCH,
+  chroma x1.2, same lightness steps. Accent text 8.2:1 on day page, 9.3:1 on night.
+  This supersedes the sakura tokens (BRAND.md) **for `/` only**; BRAND.md is not yet rewritten.
+- Sections are commands that type in on scroll: whoami, `ls ./work` (man-page project entries),
+  `git log --graph` (two lanes: site eras with screenshots, and projects), off-screen making, contact.
+  A live prompt (help / ls / open / log / theme) and a tmux status bar sit in a fixed dock;
+  keys 1-5 jump windows. Reduced motion renders everything complete.
+- Facts only: project copy is from each repo's docs and the activities grid; evidence in
+  `docs/portfolio-facts.md`. Screenshots in `public/portfolio/`.
+
+---
+
 ## 2026-08-28 · Theme choices move into the account-shaped menu
 
 ### D-36 · Appearance lives under Account

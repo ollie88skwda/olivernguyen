@@ -7,7 +7,7 @@ import { ClerkProvider } from "@clerk/react";
 import { NotFoundPage } from "./pages/not_found_page.js";
 import { SATResourcesError, SATResourcesLoading } from "./pages/sat/sat_route_states.jsx";
 // X-1 (P4): src/pages/home.js is unmounted but left in the tree, flagged.
-import Home from "./home/Home.jsx";
+import Home from "./portfolio/Portfolio.jsx";
 import RequirePassphrase from "./auth/RequirePassphrase";
 import RequireClerk, { clerkKey } from "./auth/RequireClerk";
 
@@ -110,7 +110,7 @@ const NavigationBridge = () => {
 
 const SiteChrome = () => {
   const { pathname } = useLocation();
-  if (NO_CHROME.some((route) => pathname.startsWith(route))) return null;
+  if (pathname === "/" || NO_CHROME.some((route) => pathname.startsWith(route))) return null;
   return <ChromeBar />;
 };
 
