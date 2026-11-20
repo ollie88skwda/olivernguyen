@@ -1,0 +1,7 @@
+/* /sign-in: put the Clerk card on the brand page background. */
+.sakura.signin-page {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-weight: 410;
+}

@@ -1,18 +1,18 @@
-/* ── /transfer ────────────────────────────────────────────────────────────────
-   One column: hero, composer, live list. Same vocabulary as /studio — cream
-   paper, Big Shoulders title, mono readouts — but the list ticks down on its
-   own clock instead of waiting for a poll. Tokens come from theme.css; only the
-   warn colour is local, same as EssayStudio's. */
+/* /transfer: one column of hero, composer and live list. Brand tokens only
+   (the .sakura scope); the list ticks down on its own clock. */
 
-:root {
-  --tr-warn: #8a3b12;
+.sakura {
+  --tr-warn: var(--danger-text, var(--error));
 }
 
 .tr-page {
   position: relative;
   z-index: 2;
   min-height: 100dvh;
-  background: var(--bg-base);
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-weight: 410;
   padding: 120px 24px 96px;
 }
 .tr-page *,
@@ -35,26 +35,25 @@
 
 .tr-eyebrow {
   font-family: var(--font-mono);
-  text-transform: uppercase;
-  letter-spacing: 0.18em;
-  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  font-weight: 600;
+  font-size: 0.78rem;
   color: var(--text-muted);
   margin: 0 0 18px;
 }
 .tr-title {
   font-family: var(--font-display);
-  text-transform: uppercase;
-  font-weight: 900;
+  font-weight: 760;
   font-size: clamp(2.6rem, 8vw, 4.4rem);
-  line-height: 0.88;
-  letter-spacing: 0.01em;
+  line-height: 0.96;
+  letter-spacing: -0.05em;
   color: var(--text);
   margin: 0;
 }
 .tr-rule {
-  height: 2px;
+  height: 1px;
   width: 104px;
-  background: rgba(18, 34, 49, 0.3);
+  background: var(--border-strong);
   margin: 24px 0 0;
 }
 .tr-sub {
@@ -68,6 +67,7 @@
   margin-top: 56px;
   border: 1px solid var(--border);
   background: var(--surface);
+  border-radius: var(--r-surface, 12px);
 }
 .tr-input {
   display: block;
@@ -97,24 +97,25 @@
 }
 .tr-count {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
   color: var(--text-faint);
 }
 .tr-send {
   font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--on-accent);
-  background: var(--accent);
-  border: 1px solid var(--accent);
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
+  font-weight: 600;
+  background: var(--primary);
+  color: var(--on-primary);
+  border: 1px solid var(--primary);
+  border-radius: var(--r-control, 8px);
+  min-height: 44px;
   padding: 10px 22px;
   cursor: pointer;
 }
 .tr-send:hover:not(:disabled) {
-  background: var(--accent-hi);
+  background: var(--text);
 }
 .tr-send:disabled {
   opacity: 0.45;
@@ -125,9 +126,8 @@
   max-width: 640px;
   margin: 18px auto 0;
   font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
   color: var(--tr-warn);
 }
 
@@ -139,14 +139,14 @@
 }
 .tr-empty {
   font-family: var(--font-sans);
-  font-style: italic;
-  font-size: 0.9rem;
+    font-size: 0.9rem;
   color: var(--text-faint);
   margin: 0;
 }
 .tr-item {
   border: 1px solid var(--border);
   background: var(--surface);
+  border-radius: var(--r-surface, 12px);
 }
 .tr-item-body {
   font-family: var(--font-mono);
@@ -169,9 +169,8 @@
 }
 .tr-item-expires {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
   color: var(--text-faint);
 }
 .tr-item-expires.soon {
@@ -184,18 +183,18 @@
 }
 .tr-copy {
   font-family: var(--font-mono);
-  font-size: 0.64rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 0.02em;
   color: var(--accent-hi);
   background: transparent;
-  border: 1px solid var(--accent);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--r-control, 8px);
+  min-height: 44px;
   padding: 7px 14px;
   cursor: pointer;
 }
 .tr-copy:hover {
-  background: var(--accent);
-  color: var(--on-accent);
+  background: var(--hover);
 }
 .tr-del {
   font-family: var(--font-mono);
@@ -204,6 +203,9 @@
   color: var(--text-faint);
   background: transparent;
   border: 1px solid var(--border);
+  border-radius: var(--r-control, 8px);
+  min-height: 44px;
+  min-width: 44px;
   padding: 7px 12px;
   cursor: pointer;
 }
@@ -216,9 +218,8 @@
   margin-top: 40px;
   text-align: center;
   font-family: var(--font-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
   color: var(--text-faint);
 }
 

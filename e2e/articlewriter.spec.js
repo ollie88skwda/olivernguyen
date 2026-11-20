@@ -32,10 +32,10 @@ const SAMPLE_ARTICLE = `
 
 test("empty state: form renders, no output yet", async ({ page }) => {
   await page.goto("/articlewriter", { waitUntil: "networkidle" });
-  await expect(page.getByRole("heading", { name: "Generate an Article", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Generate an article", level: 1 })).toBeVisible();
   await expect(page.getByLabel("Product name")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Generate Article" })).toBeVisible();
-  await expect(page.getByText("Generated Article")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Generate article" })).toBeVisible();
+  await expect(page.getByText("Generated article")).toHaveCount(0);
 });
 
 test("loading and success states: stubbed generator returns an article, copy works", async ({ page, context }) => {
@@ -51,25 +51,25 @@ test("loading and success states: stubbed generator returns an article, copy wor
   await page.goto("/articlewriter", { waitUntil: "networkidle" });
 
   await page.getByLabel("Product name").fill("Wing It Journal");
-  await page.getByRole("button", { name: "Generate Article" }).click();
+  await page.getByRole("button", { name: "Generate article" }).click();
 
   // Loading: explicit text + skeleton region, button disabled while busy.
   await expect(page.getByText("Generating article…")).toBeVisible();
   await expect(page.locator("[role='status'][aria-busy='true']")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Generate Article" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Generate article" })).toBeDisabled();
 
   // Success: the returned HTML is rendered on the page.
-  await expect(page.getByRole("heading", { name: "Generated Article", level: 2 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Generated article", level: 2 })).toBeVisible();
   await expect(page.getByRole("heading", { name: "The Wing It Journal" })).toBeVisible();
   await expect(page.getByText("Why winging it works")).toBeVisible();
   await expect(page.getByRole("link", { name: "example.com" })).toHaveAttribute("href", "https://example.com");
 
   // Copy: writes the raw HTML to the clipboard, confirms with an alert.
   page.once("dialog", (dialog) => {
-    expect(dialog.message()).toBe("Article copied to clipboard!");
+    expect(dialog.message()).toBe("Article copied.");
     dialog.accept();
   });
-  await page.getByRole("button", { name: "Copy to Clipboard" }).click();
+  await page.getByRole("button", { name: "Copy to clipboard" }).click();
   const clip = await page.evaluate(() => navigator.clipboard.readText());
   expect(clip).toContain("<h1>The Wing It Journal</h1>");
 });
@@ -79,12 +79,12 @@ test("failure state: generator unreachable shows the alert", async ({ page }) =>
   await page.goto("/articlewriter", { waitUntil: "networkidle" });
 
   await page.getByLabel("Product name").fill("Anything");
-  await page.getByRole("button", { name: "Generate Article" }).click();
+  await page.getByRole("button", { name: "Generate article" }).click();
 
   const alert = page.getByRole("alert");
   await expect(alert).toBeVisible();
   await expect(alert).toContainText("Couldn't generate the article");
-  await expect(page.getByRole("heading", { name: "Generated Article" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "Generated article" })).toHaveCount(0);
 });
 
 test.describe("375px coarse pointer", () => {
@@ -93,14 +93,14 @@ test.describe("375px coarse pointer", () => {
   test("form and buttons clear the bar and meet tap size", async ({ page }) => {
     await page.goto("/articlewriter", { waitUntil: "networkidle" });
 
-    const heading = page.getByRole("heading", { name: "Generate an Article" });
+    const heading = page.getByRole("heading", { name: "Generate an article" });
     await expect(heading).toBeVisible();
     // First readable element clears the fixed 64px chrome bar (R-I1 invariant).
     const box = await heading.boundingBox();
     expect(box.y).toBeGreaterThanOrEqual(64);
 
     const input = page.getByLabel("Product name");
-    const generate = page.getByRole("button", { name: "Generate Article" });
+    const generate = page.getByRole("button", { name: "Generate article" });
     for (const el of [input, generate]) {
       const b = await el.boundingBox();
       expect(b.height).toBeGreaterThanOrEqual(44); // §1 tap target on coarse pointer
