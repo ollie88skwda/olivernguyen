@@ -1,6 +1,6 @@
 /**
- * src/portfolio/content.js — every word on the portfolio home.
- * Facts only, sourced in docs/portfolio-facts.md. Keep lines short; links do the rest.
+ * src/portfolio/content.js: every word on the portfolio home.
+ * Facts only, sourced in docs/portfolio-facts.md. Short, plain lines. Screenshots, not live frames, so a site going down never shows here.
  */
 
 export const EMAIL = 'oliverdnguyen@gmail.com';
@@ -18,113 +18,92 @@ export const meta = {
 
 export const intro = {
   kicker: 'design + engineering',
-  lede: 'I design and build apps, websites and robots.',
+  lede: 'I design apps and websites, and I build robots for VEX.',
 };
 
 export const work = [
   {
     id: 'clarity',
-    name: 'clarity',
+    name: 'Clarity',
     line: 'Learn anything by teaching it to an AI.',
     kind: 'AI learning app',
     status: 'live',
     href: 'https://clarity.olivernguyen.com',
     hrefLabel: 'clarity.olivernguyen.com',
     shot: '/portfolio/work/clarity.webp',
-    noFrame: true, // clarity sends X-Frame-Options SAMEORIGIN; still until it allows olivernguyen.com
-    notes: [
-      ['brand', 'A slash mark, warm paper colors and one typeface, Geologica.'],
-      ['ui', 'One question at a time, like a curious student.'],
-      ['decision', 'It never moves on or grades you by itself. You stay in control.'],
-    ],
+    blurb:
+      'You explain a topic and Clarity listens like a curious student, asking one question at a time. I also designed its look, from the slash logo to the warm paper colors.',
   },
   {
     id: 'frog',
-    name: 'frog',
+    name: 'Frog',
     line: 'A training notebook run by a frog.',
     kind: 'workout app',
-    status: 'prototype',
-    href: null,
-    shot: '/portfolio/work/frog.webp',
-    notes: [
-      ['brand', 'The closer to the data, the more serious. The frog only jokes at the edges.'],
-      ['ui', 'Square corners, one green, and numbers that always line up.'],
-      ['decision', 'Three voices: Human, Frog and Ultrafrog. The words change, the numbers never do.'],
-    ],
+    status: 'live',
+    href: 'https://frog.olivernguyen.com',
+    hrefLabel: 'frog.olivernguyen.com',
+    phones: ['/portfolio/work/frog-today.webp', '/portfolio/work/frog-plan.webp', '/portfolio/work/frog-progress.webp'],
+    blurb:
+      'A workout log that tracks sleep, caffeine and stress next to your lifts, then shows what lines up. The numbers stay serious. The frog only jokes on empty screens and error pages.',
   },
   {
     id: 'hangr',
-    name: 'hangr',
+    name: 'Hangr',
     line: 'A hanger that steams your clothes.',
     kind: 'company site · Virtual Enterprise',
     status: 'live',
     href: 'https://hangrve.vercel.app',
     hrefLabel: 'hangrve.vercel.app',
     shot: '/portfolio/work/hangr.webp',
-    notes: [
-      ['brand', 'Built from the company brand book: slate, ice blue, a little mauve.'],
-      ['ui', 'Full-bleed photos and big serif headlines, like a clothing campaign.'],
-      ['decision', 'Product art never shows features the real hanger does not have.'],
-    ],
+    blurb:
+      "The site for Hangr, my Virtual Enterprise company's hanger with built-in steam. I worked from the company brand book and laid it out like a clothing campaign, with big photos and serif headlines.",
   },
   {
     id: 'everbloom',
-    name: 'everbloom',
+    name: 'Everbloom',
     line: 'Preserved roses that sway in the wind.',
     kind: 'company site · Virtual Enterprise',
     status: 'live',
     href: 'https://everbloom-ve.vercel.app',
     hrefLabel: 'everbloom-ve.vercel.app',
     shot: '/portfolio/work/everbloom.webp',
-    notes: [
-      ['brand', 'Italic serif labels and soft rose tones.'],
-      ['ui', 'Build a bouquet in four steps: roses, wrap, card, send.'],
-      ['decision', 'Cut the flashy hover effects. Buttons just change color.'],
-    ],
+    blurb:
+      'A shop for preserved roses. The roses at the top bend in the wind, and a four-step builder lets you put a bouquet together and send it.',
   },
   {
     id: 'smart-goals',
-    name: 'smart goals',
+    name: 'Smart Goals',
     line: 'Big goals, small daily wins.',
     kind: 'goal tracker',
     status: 'live',
     href: 'https://smart-goals-sooty.vercel.app/',
     hrefLabel: 'smart-goals-sooty.vercel.app',
     shot: '/portfolio/work/smartgoals.webp',
-    notes: [
-      ['brand', 'One green that only ever means progress.'],
-      ['ui', 'Every screen does one thing. The form asks one SMART question at a time.'],
-      ['decision', 'Dropped a busier stamp-and-paper look because it did too much.'],
-    ],
+    blurb:
+      'Pick a few big goals, break them into steps and add photos as proof. One green means progress, and the form asks one SMART question at a time.',
   },
   {
     id: 'synkra',
-    name: 'synkra',
+    name: 'Synkra',
     line: 'Find a time that works for everyone.',
     kind: 'group scheduling app',
     status: 'prototype',
     href: 'https://synkra.oliverdnguyen.workers.dev',
     hrefLabel: 'synkra.oliverdnguyen.workers.dev',
     shot: '/portfolio/work/synkra.webp',
-    notes: [
-      ['ui', 'Share a link, drag your busy times, see when everyone is free.'],
-      ['decision', 'No accounts. The fewer steps, the more friends answer.'],
-      ['brand', 'Soft and friendly, made for friend groups of any kind.'],
-    ],
+    blurb:
+      "Share a link, everyone drags over the times they're busy, and Synkra shows when the whole group is free. Nobody has to make an account.",
   },
   {
     id: 'consent-lab',
-    name: 'consent lab',
+    name: 'Consent Lab',
     line: 'Should an AI ask before it acts?',
     kind: 'research prototype',
     status: 'prototype',
     href: null,
     shot: '/portfolio/work/consentlab.webp',
-    notes: [
-      ['ui', 'Compares four ways an AI can ask permission, side by side.'],
-      ['brand', 'Looks like a tool, not an ad: navy, teal and clear status words.'],
-      ['decision', 'What the AI wants to do and what it actually did look different.'],
-    ],
+    blurb:
+      'A research tool that compares four ways an AI agent could ask permission before it edits your files, messages or calendar. It runs 24 invented test cases so you can see what each approach lets through.',
   },
 ];
 

@@ -1,10 +1,9 @@
 /**
  * src/portfolio/Portfolio.jsx — terminal portfolio home (D-37, revised 2026-11-20).
  *
- * Compact: whoami hero, a grid of work cards, a short "off screen" list with
- * the resume, contact. Each work card previews the LIVE site in a scaled
- * iframe (so it updates whenever that site does); sites that refuse framing
- * (clarity: X-Frame-Options SAMEORIGIN) or have no public URL use a still.
+ * whoami hero, one section per project (screenshot + short blurb), a short
+ * "off screen" list with the resume, contact. Screenshots only: a live
+ * iframe would show a broken page whenever a project site is down.
  *
  * Type matches clarity exactly: Geologica, SHRP 100, body 410, display 760
  * at -0.05em. Mono only for prompt lines.
@@ -94,55 +93,29 @@ const Block = ({ id, cmd, title, children }) => {
   );
 };
 
-/* ---------------- live preview ---------------- */
-const FRAME_W = 1440;
-const FRAME_H = 900;
+/* ---------------- screenshot ---------------- */
+const Shot = ({ p }) => (
+  <div className="pf-preview">
+    <img src={p.shot} alt={`${p.name} screenshot`} className="pf-preview-still" loading="lazy" decoding="async" width="1440" height="900" />
+  </div>
+);
 
-const Preview = ({ p }) => {
-  const box = useRef(null);
-  const near = useInView(box, '400px 0px');
-  const [scale, setScale] = useState(0.25);
-  const [loaded, setLoaded] = useState(false);
-  const live = Boolean(p.href) && !p.noFrame;
-
-  useEffect(() => {
-    const el = box.current;
-    if (!el || typeof ResizeObserver === 'undefined') return undefined;
-    const ro = new ResizeObserver(([e]) => setScale(e.contentRect.width / FRAME_W));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
-
-  return (
-    <div ref={box} className="pf-preview" data-loaded={loaded || !live || undefined}>
-      <img src={p.shot} alt="" className="pf-preview-still" loading="lazy" decoding="async" />
-      {live && near && (
-        <iframe
-          title={`${p.name}, live`}
-          src={p.href}
-          loading="lazy"
-          tabIndex={-1}
-          aria-hidden="true"
-          sandbox="allow-scripts allow-same-origin"
-          referrerPolicy="no-referrer"
-          onLoad={() => setLoaded(true)}
-          style={{ width: FRAME_W, height: FRAME_H, transform: `scale(${scale})` }}
-        />
-      )}
-    </div>
-  );
-};
+const Phones = ({ p }) => (
+  <div className="pf-phones">
+    {p.phones.map((src, k) => (
+      <img key={src} src={src} alt={`${p.name} screen ${k + 1}`} loading="lazy" decoding="async" width="500" height="844" />
+    ))}
+  </div>
+);
 
 const Project = ({ p, i }) => {
-  const live = Boolean(p.href) && !p.noFrame;
-  const frame = (
+  const frame = p.phones ? <Phones p={p} /> : (
     <div className="pf-card">
       <div className="pf-card-bar">
         <span className="pf-dots" aria-hidden="true"><i /><i /><i /></span>
         <span className="pf-card-url">{p.hrefLabel || 'not public yet'}</span>
-        {live && <span className="pf-live">live</span>}
       </div>
-      <Preview p={p} />
+      <Shot p={p} />
     </div>
   );
   return (
@@ -151,14 +124,7 @@ const Project = ({ p, i }) => {
         <p className="pf-project-idx">{String(i + 1).padStart(2, '0')} · {p.kind}</p>
         <h3>{p.name}</h3>
         <p className="pf-project-line">{p.line}</p>
-        <dl className="pf-notes">
-          {p.notes.map(([k, v]) => (
-            <div key={k}>
-              <dt>{k}</dt>
-              <dd>{v}</dd>
-            </div>
-          ))}
-        </dl>
+        <p className="pf-blurb">{p.blurb}</p>
         {p.href ? (
           <a className="pf-visit" href={p.href} target="_blank" rel="noreferrer">
             Visit {p.name} <span aria-hidden="true">↗</span>
