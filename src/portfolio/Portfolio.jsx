@@ -611,7 +611,8 @@ const StatusBar = ({ active, pct, go }) => {
                 go(w.id);
               }}
             >
-              {w.n}:{w.label}
+              {w.n}:<span className="pf-wl">{w.label}</span>
+              <span className="pf-ws">{w.short || w.label}</span>
               {active === w.id ? '*' : ''}
             </a>
           </li>

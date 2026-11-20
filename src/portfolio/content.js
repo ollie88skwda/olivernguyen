@@ -267,6 +267,6 @@ export const windows = [
   { id: 'top', n: 1, label: 'home' },
   { id: 'work', n: 2, label: 'work' },
   { id: 'log', n: 3, label: 'log' },
-  { id: 'making', n: 4, label: 'making' },
-  { id: 'contact', n: 5, label: 'contact' },
+  { id: 'making', n: 4, label: 'making', short: 'make' },
+  { id: 'contact', n: 5, label: 'contact', short: 'hi' },
 ];

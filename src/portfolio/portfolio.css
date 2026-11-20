@@ -426,6 +426,7 @@ html[data-theme="dark"]:has(.pf) { background: #191513; color-scheme: dark; }
 .pf-status-wins a { display: inline-flex; align-items: center; height: 40px; padding: 0 9px; white-space: nowrap; }
 .pf-status-wins a:hover { background: color-mix(in srgb, var(--on-accent) 10%, transparent); }
 .pf-status-wins a[aria-current] { background: var(--primary); color: var(--on-primary); font-weight: 700; }
+.pf-ws { display: none; }
 .pf-status-right { display: inline-flex; gap: 14px; white-space: nowrap; }
 
 /* ---------- responsive ---------- */
@@ -452,9 +453,12 @@ html[data-theme="dark"]:has(.pf) { background: #191513; color-scheme: dark; }
   .pf-commit[data-lane="1"] .pf-node { left: 29px; }
   .pf-commit[data-big] .pf-node { left: 27px; }
   .pf-status-right { display: none; }
+  .pf-wl { display: none; }
+  .pf-ws { display: inline; }
   .pf-status-session span { display: none; }
   .pf-status { gap: 8px; height: 40px; }
-  .pf-status-wins a { padding: 0 7px; }
+  .pf-status-wins a { padding: 0 6px; }
+  .pf-status { font-size: 11px; padding: 0 10px; gap: 6px; }
   .pf-shell-line { height: 48px; }
   .pf-fetch-art { display: none; }
 }
