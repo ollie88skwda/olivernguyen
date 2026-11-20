@@ -78,7 +78,7 @@ function NameScreen({ onSubmit }) {
     <div className="pull-name-screen">
       <div className="pull-name-card">
         <div className="pull-logo-area">
-          <MonoLabel tone="accent">AU Tournament Scheduler</MonoLabel>
+          <MonoLabel tone="accent">AU tournament scheduler</MonoLabel>
           <Display as="h1" className="pull-name-title">PULL.</Display>
           <p className="pull-tagline on-prose">Mark your weekends. Commit to the game.</p>
         </div>
@@ -101,12 +101,11 @@ function NameScreen({ onSubmit }) {
             autoComplete="off"
           />
           <Button type="submit" disabled={!input.trim()} className="pull-enter-btn">
-            Enter PULL →
+            Enter PULL
           </Button>
         </form>
         <p className="pull-fine-print">
-          Your name is saved to this device. Others in the group
-          <br />can see your picks across all their devices.
+          Your name is saved on this device. Everyone in the group can see your picks.
         </p>
       </div>
     </div>
@@ -250,7 +249,7 @@ function BestWeekendsBanner({ picks, weekends }) {
   return (
     <Card className="pull-banner">
       <MonoLabel as="h2" tone="accent">
-        Best Weekends So Far
+        Best weekends so far
       </MonoLabel>
       <div className="pull-banner-items">
         {ranked.map((w, i) => {
@@ -398,7 +397,7 @@ export const Pull = () => {
         } catch {
           serverVersionRef.current += 1;
           pendingPicksRef.current.delete(actionId);
-          toast.error("couldn't save your pick — check the connection and try again");
+          toast.error("Couldn't save your pick. Check your connection and try again.");
           await loadPicks({ silent: true });
           displayPicks(serverPicksRef.current);
         }
@@ -426,7 +425,7 @@ export const Pull = () => {
       <div className="pull-page">
         <div className="pull-content">
           <div className="pull-page-header">
-            <SectionHead kicker="AU Tournament Scheduler" title="PULL." as="h1" rule={false} />
+            <SectionHead kicker="AU tournament scheduler" title="PULL." as="h1" rule={false} />
             <div className="pull-user-info">
               <MonoLabel tone="text" className="pull-user-name">
                 {playerName}
@@ -438,9 +437,9 @@ export const Pull = () => {
           </div>
 
           <p className="pull-instructions on-prose">
-            Tap a weekend to mark your availability. The commitment scale shows{" "}
-            <strong>how much it would take to make you miss it</strong> — so the
-            group can find which weekends are real priorities.
+            Tap a weekend to mark when you're free. The scale shows{" "}
+            <strong>how much it would take to make you miss it</strong>, so the
+            group can see which weekends matter most.
           </p>
 
           {!loading && !fetchError && <BestWeekendsBanner picks={picks} weekends={weekends} />}
@@ -455,7 +454,7 @@ export const Pull = () => {
             <div className="pull-error" role="alert">
               <p className="pull-error-title">Couldn't load the picks</p>
               <p className="pull-error-detail">
-                The group's weekends didn't come through. Check your connection and try again.
+                The group's weekends didn't load. Check your connection and try again.
               </p>
               <Button onClick={() => loadPicks()}>Try again</Button>
             </div>
@@ -480,7 +479,7 @@ export const Pull = () => {
           )}
 
           <footer className="pull-footer">
-            <MonoLabel tone="faint">PULL. — Made for the group. Updates in real time.</MonoLabel>
+            <MonoLabel tone="faint">PULL. Made for the group. Updates live.</MonoLabel>
           </footer>
         </div>
       </div>

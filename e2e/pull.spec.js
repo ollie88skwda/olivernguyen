@@ -113,7 +113,7 @@ test("scheduler renders all states with mocked rows, both ladders", async ({ pag
     await enterName(page);
 
     // banner ranks by pool: W2 (5500) #1, W4 (5000) #2, W1 (620) #3
-    await expect(page.getByRole("heading", { name: "Best Weekends So Far" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Best weekends so far" })).toBeVisible();
     await expect(page.getByText("#1").first()).toBeVisible();
 
     // W1: committed pill + chips (mine accent) + progress

@@ -347,7 +347,7 @@ export const EmojiPage = () => {
           fishbowl
         </Display>
         <MonoLabel tone="faint" className="emoji-attribution">
-          made by ollie
+          Made by Ollie
         </MonoLabel>
       </header>
 
@@ -390,12 +390,12 @@ export const EmojiPage = () => {
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="type emoji or text, then hit return"
+              placeholder="Emoji or text, then return"
               aria-label="emoji or text"
             />
             <div className="emoji-count-group" role="group" aria-labelledby="emoji-count-label">
               <MonoLabel tone="faint" id="emoji-count-label" className="emoji-count-label">
-                count
+                Count
               </MonoLabel>
               {COUNT_PRESETS.map((preset) => (
                 <Button
