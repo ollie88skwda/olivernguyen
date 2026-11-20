@@ -598,7 +598,7 @@ const StatusBar = ({ active, pct, go }) => {
   return (
     <nav className="pf-status" aria-label="Sections">
       <span className="pf-status-session">
-        <Slash size={12} /> on
+        <Slash size={12} /> <span>on</span>
       </span>
       <ol className="pf-status-wins">
         {windows.map((w) => (
