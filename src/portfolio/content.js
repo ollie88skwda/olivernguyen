@@ -71,18 +71,6 @@ export const work = [
       'A shop for preserved roses. The roses at the top bend in the wind, and a four-step builder lets you put a bouquet together and send it.',
   },
   {
-    id: 'smart-goals',
-    name: 'Smart Goals',
-    line: 'Big goals, small daily wins.',
-    kind: 'goal tracker',
-    status: 'live',
-    href: 'https://smart-goals-sooty.vercel.app/',
-    hrefLabel: 'smart-goals-sooty.vercel.app',
-    shot: '/portfolio/work/smartgoals.webp',
-    blurb:
-      'Pick a few big goals, break them into steps and add photos as proof. One green means progress, and the form asks one SMART question at a time.',
-  },
-  {
     id: 'synkra',
     name: 'Synkra',
     line: 'Find a time that works for everyone.',

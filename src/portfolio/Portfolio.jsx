@@ -10,6 +10,7 @@
  */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { EMAIL, intro, making, meta, windows, work } from './content.js';
+import { Moon, Sun } from 'lucide-react';
 import { useTheme as useSiteTheme } from '../theme/ThemeProvider.jsx';
 import './portfolio.css';
 
@@ -212,12 +213,54 @@ const Contact = () => {
         <a className="pf-btn" href={meta.links.github} target="_blank" rel="noreferrer">GitHub</a>
         <a className="pf-btn" href={meta.links.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
       </div>
-      <p className="pf-foot">© 2026 Oliver Nguyen</p>
     </Block>
   );
 };
 
 /* ---------------- chrome ---------------- */
+const PAGES = [
+  { group: 'Projects', items: [['PULL', '/pull'], ['Emoji', '/emoji']] },
+  { group: 'College', items: [['College', '/college'], ['Major', '/major'], ['Apply', '/apply'], ['Studio', '/studio'], ['Transfer', '/transfer']] },
+  { group: 'Driving', items: [['Permit', '/permit'], ['License', '/license']] },
+  { group: 'SAT', items: [['Resources', '/sat-resources'], ['Sign up', '/sat-signup']] },
+];
+
+const PagesMenu = () => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!open) return undefined;
+    const close = (e) => {
+      if (e.type === 'keydown' ? e.key === 'Escape' : !ref.current?.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener('pointerdown', close);
+    document.addEventListener('keydown', close);
+    return () => {
+      document.removeEventListener('pointerdown', close);
+      document.removeEventListener('keydown', close);
+    };
+  }, [open]);
+  return (
+    <div className="pf-pages" ref={ref}>
+      <button type="button" className="pf-pages-btn" aria-expanded={open} aria-haspopup="true" onClick={() => setOpen((o) => !o)}>
+        Pages
+      </button>
+      {open && (
+        <div className="pf-pages-menu" role="menu">
+          {PAGES.map((g) => (
+            <div key={g.group} className="pf-pages-group">
+              <p>{g.group}</p>
+              {g.items.map(([label, href]) => (
+                <a key={href} href={href} role="menuitem">{label}</a>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 const StatusBar = ({ active, go }) => (
   <nav className="pf-status" aria-label="Sections">
     <span className="pf-status-session"><Slash size={12} /></span>
@@ -287,14 +330,17 @@ export const Portfolio = () => {
           <Slash size={20} />
           <span>oliver nguyen</span>
         </a>
+        <div className="pf-top-right">
+        <PagesMenu />
         <button
           type="button"
           className="pf-icon-btn"
           onClick={() => setTheme(dark ? 'light' : 'dark')}
           aria-label={dark ? 'Switch to light' : 'Switch to dark'}
         >
-          {dark ? '☀' : '☾'}
+          {dark ? <Sun size={18} strokeWidth={1.75} aria-hidden="true" /> : <Moon size={18} strokeWidth={1.75} aria-hidden="true" />}
         </button>
+        </div>
       </header>
       <main className="pf-main">
         <Hero />

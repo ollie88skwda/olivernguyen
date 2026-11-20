@@ -95,6 +95,18 @@ html[data-theme="dark"]:has(.pf) { background: #191513; color-scheme: dark; }
   backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
 }
 .pf-logo { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 18px; font-weight: 700; letter-spacing: -0.02em; }
+.pf-top-right { display: flex; align-items: center; gap: 4px; }
+.pf-pages { position: relative; }
+.pf-pages-btn { min-height: 44px; padding: 0 12px; border-radius: var(--r-sm); font-size: 15px; font-weight: 550; color: var(--soft); }
+.pf-pages-btn:hover, .pf-pages-btn[aria-expanded="true"] { background: var(--hover); color: var(--ink); }
+.pf-pages-menu {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 40; width: 240px;
+  display: grid; gap: 4px; padding: 8px; border-radius: var(--r-md);
+  background: var(--surface); border: 1px solid var(--line); box-shadow: var(--shadow-2);
+}
+.pf-pages-group p { padding: 8px 10px 2px; font: 400 11px/1.4 var(--mono); color: var(--faint); }
+.pf-pages-group a { display: flex; align-items: center; min-height: 40px; padding: 0 10px; border-radius: var(--r-sm); font-size: 15px; }
+.pf-pages-group a:hover { background: var(--hover); }
 .pf-icon-btn { width: 44px; height: 44px; border-radius: var(--r-sm); display: grid; place-items: center; font-size: 17px; color: var(--soft); }
 .pf-icon-btn:hover { background: var(--hover); color: var(--ink); }
 
@@ -208,8 +220,8 @@ a:hover > .pf-phones img { box-shadow: var(--shadow-2); }
 .pf-making-fact { color: var(--faint); font-size: 15px; }
 
 /* ---------- contact ---------- */
+.pf #contact { padding-bottom: 56px; }
 .pf-h2 { font-size: clamp(44px, 7vw, 80px); font-weight: 760; letter-spacing: -0.05em; line-height: 0.96; }
-.pf-foot { margin-top: 48px; padding-bottom: 32px; font-size: 13px; color: var(--faint); }
 
 /* ---------- status bar ---------- */
 .pf-status {
