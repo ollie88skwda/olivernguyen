@@ -34,13 +34,12 @@ export const Effort = ({ doc, derived, updateDoc }) => {
 
   return (
     <section id="effort" className="ap-sec">
-      <SectionHead kicker="S7 / Effort" title="What The List Costs You" />
+      <SectionHead kicker="S7 / Effort" title="What the list costs you" />
 
       <p className="on-prose ap-hint">
-        The real constraint on a list is not ambition, it is how many supplemental essays you are
-        willing to write well. Writing fifteen badly is worse than writing eight properly, which is
-        why the <Tip term="effort-budget">effort budget</Tip> feeds directly into which schools S3
-        recommends.
+        What limits a list is not ambition. It is how many supplemental essays you are willing to
+        write well. Fifteen rushed essays are worse than eight good ones, so the{' '}
+        <Tip term="effort-budget">effort budget</Tip> feeds into which schools S3 recommends.
       </p>
 
       <div className="ap-ev-stats">
@@ -48,7 +47,7 @@ export const Effort = ({ doc, derived, updateDoc }) => {
           <StatBlock value={totalEssays} label="supplemental essays" />
         </div>
         <div>
-          <StatBlock value={totalWords > 0 ? totalWords.toLocaleString() : '—'} label="words, if known" />
+          <StatBlock value={totalWords > 0 ? totalWords.toLocaleString() : 'n/a'} label="words, if known" />
         </div>
         <div className={unknownCount ? 'ap-ev-bad' : undefined}>
           <StatBlock value={unknownCount} label="schools with no essay count yet" />
@@ -74,17 +73,16 @@ export const Effort = ({ doc, derived, updateDoc }) => {
           }}
         />
         <p className="ap-rho-note">
-          Drag this down and S3's recommended set shrinks to whatever fits, ordered by value per
-          essay. Push it to the top for no limit, which is how you see where the curve flattens on
-          its own.
+          Drag this down and S3's recommended set shrinks to fit, ordered by value per essay. Push
+          it to the top for no limit, which shows where the curve flattens on its own.
         </p>
       </div>
 
       <h3 className="ap-sub">Cost against value</h3>
       <p className="on-prose ap-hint ap-hint-sub">
-        Each row is a school: how many essays it costs on the left, how much it raised the expected
-        best offer on the right. A long bar on the left and a short one on the right is a school
-        buying you very little for a lot of writing.
+        Each row is a school. The left bar is how many essays it costs and the right bar is how
+        much it raised the expected best offer. A long left bar and a short right bar means a lot
+        of writing for little gain.
       </p>
 
       <div className="ap-effort">
@@ -109,9 +107,8 @@ export const Effort = ({ doc, derived, updateDoc }) => {
 
       {unknownCount > 0 && (
         <p className="ap-gap ap-caveat">
-          {unknownCount} schools have no essay count yet, so they cost 1 by default in S3's
-          recommendation. That flatters them. It is in S8's gap list rather than being filled in
-          with a plausible number.
+          {unknownCount} schools have no essay count yet, so S3's recommendation counts them as 1
+          essay each. That flatters them. They are in S8's gap list, not filled in with a guess.
         </p>
       )}
 
@@ -120,13 +117,12 @@ export const Effort = ({ doc, derived, updateDoc }) => {
         <div className="pbody">
           <p>
             Most college lists are built by ranking schools and stopping when the list feels long
-            enough. That ignores the thing that actually determines quality, which is how much
-            attention each application gets.
+            enough. That ignores what decides quality: how much attention each application gets.
           </p>
           <p>
-            Treating essays as a budget makes the trade explicit. A school worth slightly less that
-            costs one essay instead of four can easily be the better addition, and a ranking can
-            never show you that because it never asked what anything cost.
+            Treating essays as a budget makes the trade clear. A school worth slightly less that
+            costs one essay instead of four can be the better addition. A ranking cannot show you
+            that because it never asks what anything costs.
           </p>
         </div>
       </details>

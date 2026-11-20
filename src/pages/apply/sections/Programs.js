@@ -32,19 +32,19 @@ const BUCKETS = [
     id: 'closing',
     title: 'Doors that close',
     blurb:
-      'Verified against the programme page: apply as a high school senior or you never can. These are the only ones where this autumn is genuinely your one shot.',
+      'Checked against the program page: apply as a high school senior or you never can. These are the only ones where this fall is your one shot.',
   },
   {
     id: 'later',
     title: 'Joinable later',
     blurb:
-      'Widely believed to be senior-only, and not. Each of these takes applications from students already enrolled, so missing it now is a setback rather than an ending. Worth knowing before you spend an essay or an Early Decision on one.',
+      'Often assumed to be senior-only, but they are not. Each one takes applications from students already enrolled, so missing it now is a setback, not the end. Worth knowing before you spend an essay or an Early Decision on one.',
   },
   {
     id: 'unverified',
     title: 'Not established',
     blurb:
-      'The programme page did not say either way. Recorded as unknown rather than assumed, because guessing this field wrong is how you miss a deadline that mattered.',
+      'The program page did not say either way. Recorded as unknown, not assumed, because a wrong guess here can mean a missed deadline.',
   },
 ];
 
@@ -94,13 +94,13 @@ export const Programs = ({ doc }) => {
 
   return (
     <section id="programs" className="ap-sec">
-      <SectionHead kicker="S4 / Programs" title="Doors That Close This Fall" />
+      <SectionHead kicker="S4 / Programs" title="Doors that close this fall" />
 
       <p className="on-prose ap-hint">
-        The highest-leverage thing on this page. A strong application to a good engineering school
-        is a strong application; a <Tip term="senior-only">senior-only</Tip> programme is a door
-        that shuts when high school ends. Every flag below was checked against the programme's own
-        page, and the sentence that proves it is quoted underneath.
+        This is the most time-sensitive part of the page. A strong application to a good
+        engineering school stays strong later. A <Tip term="senior-only">senior-only</Tip> program
+        is a door that shuts when high school ends. Every flag below was checked against the
+        program's own page, and the sentence that proves it is quoted underneath.
       </p>
 
       {urgent.length > 0 && (
@@ -118,8 +118,8 @@ export const Programs = ({ doc }) => {
           {urgent.some((p) => p.offList) && (
             <p className="ap-urgent-note">
               The marked ones are at schools you have not chosen to apply to. Going after those
-              scholarships means adding the school as well, which is a real cost and worth deciding
-              deliberately rather than by accident.
+              scholarships means adding the school too, which costs a whole extra application.
+              Decide that on purpose.
             </p>
           )}
         </div>
@@ -134,12 +134,12 @@ export const Programs = ({ doc }) => {
               onCheckedChange={(checked) => setShowBusinessHeavy(!!checked)}
             />
             <Label htmlFor="show-business-heavy" role="inline">
-              Show the {hiddenCount} programmes that commit you to a business degree
+              Show the {hiddenCount} programs that commit you to a business degree
             </Label>
           </span>
           <span className="ap-toggle-why">
-            Hidden by default because you said business happens outside school. They are still here
-            if a programme is worth it as pure differentiation.
+            Hidden by default because you said business happens outside school. Show them if a
+            program is worth it just for standing out.
           </span>
         </div>
       )}
@@ -209,7 +209,7 @@ export const Programs = ({ doc }) => {
                           target="_blank"
                           rel="noreferrer"
                         >
-                          source · read {program.fetchedAt || 'recently'}
+                          Source · read {program.fetchedAt || 'recently'}
                         </MonoLabel>
                       )}
                     </Card>
@@ -222,23 +222,22 @@ export const Programs = ({ doc }) => {
       })}
 
       <details className="plain">
-        <summary>Plain English: why "joinable later" is the useful half of this</summary>
+        <summary>Plain English: why "joinable later" is the useful half</summary>
         <div className="pbody">
           <p>
-            It is easy to find lists of prestigious programmes. It is much harder to find out which
-            of them you can still get into after you enrol, and that is the fact that actually
-            changes what you do this autumn.
+            Lists of prestigious programs are easy to find. Finding out which of them you can still
+            get into after you enroll is much harder, and that fact changes what you do this fall.
           </p>
           <p>
-            Several of the famous engineering-and-business dual degrees turn out to take
-            applications from students already at the school, usually at the end of first year. That
-            does not make them worse programmes. It makes them worse reasons to spend a binding
-            Early Decision, because not getting one in December is no longer the end of the road.
+            Several of the well-known engineering and business dual degrees take applications from
+            students already at the school, usually at the end of first year. That does not make
+            them worse programs. It makes them worse reasons to spend a binding Early Decision,
+            because missing one in December is not the end of the road.
           </p>
           <p>
             So the page sorts by whether the door shuts, not by how famous the name is. The
-            scholarship competitions are what survive that sort, and most of them want an
-            application well before the ordinary deadline.
+            scholarship competitions are what is left after that sort, and most of them want an
+            application well before the regular deadline.
           </p>
         </div>
       </details>

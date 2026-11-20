@@ -6,11 +6,11 @@ import { GLOSSARY } from '../glossary';
 // them. Same source the tooltips read, so a definition cannot drift between the two.
 export const Glossary = () => (
   <section id="glossary" className="ap-sec">
-    <SectionHead kicker="S9 / Glossary" title="Every Term, Plainly" />
+    <SectionHead kicker="S9 / Glossary" title="Every term, plainly" />
 
     <p className="on-prose ap-hint">
-      Nothing on this page needs a statistics background. If a word above was doing more work than
-      it explained, it is here.
+      You do not need a statistics background for this page. Any word above that was unclear is
+      explained here.
     </p>
 
     <dl className="ap-glossary">

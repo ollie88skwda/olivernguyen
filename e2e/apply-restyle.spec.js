@@ -54,7 +54,7 @@ const SECTION_IDS = [
 test("every section renders with the fixture", async ({ page }) => {
   await mockBackend(page);
   await page.goto("/apply?theme=light");
-  await expect(page.getByRole("heading", { name: "Where To Apply" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Where to apply" })).toBeVisible();
 
   for (const id of SECTION_IDS) {
     await expect(page.locator(`#${id}`)).toBeAttached();
@@ -89,20 +89,20 @@ test("edit mode paints inputs and the save stamp", async ({ page }) => {
   await mockBackend(page);
   await page.goto("/apply?theme=light");
 
-  await page.getByRole("button", { name: "EDIT", exact: true }).click();
+  await page.getByRole("button", { name: "Edit", exact: true }).click();
   await expect(
     page.getByLabel(/Kinesiology access, lo/).first()
   ).toBeVisible();
   // savedAt comes from the fixture's updated_at
-  await expect(page.getByText(/SAVED \d{2}:\d{2}/)).toBeVisible();
+  await expect(page.getByText(/Saved \d{2}:\d{2}/)).toBeVisible();
 
   // a number typed into an edit cell writes through updateDoc (swallowed)
   const input = page.getByLabel(/Kinesiology access, lo/).first();
   await input.fill("7");
   await expect(input).toHaveValue("7");
 
-  await page.getByRole("button", { name: "DONE", exact: true }).click();
-  await expect(page.getByRole("button", { name: "EDIT", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Done", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Edit", exact: true })).toBeVisible();
 });
 
 test("profile selects persist to localStorage only", async ({ page }) => {
@@ -129,7 +129,7 @@ test("filters: hard mode cuts schools and lists them", async ({ page }) => {
   await firstFilter.getByRole("radio", { name: "hard" }).click();
 
   await expect(page.getByText(/Cut by hard filters/)).toBeVisible();
-  await expect(page.locator(".ap-filter").first().getByText(/currently cutting them/)).toBeVisible();
+  await expect(page.locator(".ap-filter").first().getByText(/cutting them now/)).toBeVisible();
 });
 
 test("duel rungs answer and drive weights", async ({ page }) => {
@@ -171,7 +171,7 @@ test.describe("phone", () => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto("/apply?theme=light");
 
-    await expect(page.getByRole("heading", { name: "Where To Apply" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Where to apply" })).toBeVisible();
     // board scrolls horizontally instead of squashing
     const board = page.locator(".ap-board");
     const tableWrap = board.locator(".on-table-wrap");
@@ -179,7 +179,7 @@ test.describe("phone", () => {
     const scrollable = await tableWrap.evaluate((el) => el.scrollWidth > el.clientWidth);
     expect(scrollable).toBe(true);
     // controls are 44px tall on a coarse pointer (--ctl-h)
-    for (const name of ["EDIT"]) {
+    for (const name of ["Edit"]) {
       const ctl = page.getByRole("button", { name, exact: true });
       const height = await ctl.evaluate((el) => el.getBoundingClientRect().height);
       expect(height).toBeGreaterThanOrEqual(44);

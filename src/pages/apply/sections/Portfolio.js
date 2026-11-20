@@ -56,12 +56,12 @@ export const Portfolio = ({ doc, derived, updateDoc, profile, setProfile }) => {
 
   return (
     <section id="portfolio" className="ap-sec">
-      <SectionHead kicker="S3 / Portfolio" title="The List As One Bet" />
+      <SectionHead kicker="S3 / Portfolio" title="The list as one bet" />
 
       <p className="on-prose ap-hint">
-        Everything above scores schools. This scores the <Tip term="portfolio">set</Tip>. The
-        question is not which school is best, it is how good the best school that actually admits
-        you turns out to be, and whether the list has a floor under it.
+        Everything above scores single schools. This scores the <Tip term="portfolio">set</Tip>.
+        The question is not which school is best. It is how good the best school that admits you
+        turns out to be, and whether the list has a safe option in it.
       </p>
 
       <Profile profile={profile} setProfile={setProfile} />
@@ -74,8 +74,8 @@ export const Portfolio = ({ doc, derived, updateDoc, profile, setProfile }) => {
         <p className="ap-flag">
           <b>{programCount} of {priced.length}</b> schools use a real{' '}
           <Tip term="program-admit-rate">engineering admit rate</Tip>. The other{' '}
-          {fallbackCount} fall back to the campus-wide number because their university does not
-          publish one, and a campus rate always flatters an engineering applicant. Where both exist
+          {fallbackCount} use the campus-wide number because their university does not publish an
+          engineering one, and a campus rate flatters an engineering applicant. Where both exist
           the gap is large: UCLA's engineering rate is 3.9% against a 9.4% campus rate, and
           Berkeley's is 6.8% against 11.4%. Treat the {fallbackCount} fallbacks as optimistic.
         </p>
@@ -110,9 +110,8 @@ export const Portfolio = ({ doc, derived, updateDoc, profile, setProfile }) => {
           onChange={(event) => setRho(Number(event.target.value))}
         />
         <p className="ap-rho-note">
-          How much one underlying "how strong is this application" factor drives every decision at
-          once. This is a judgement call, not a measured constant, which is why it is a slider you
-          can argue with rather than a number buried in the code.
+          How much one shared factor, how strong the application is, drives every decision at
+          once. It is a judgment call, not a measured number, so it is a slider you can change.
         </p>
       </div>
 
@@ -144,16 +143,16 @@ export const Portfolio = ({ doc, derived, updateDoc, profile, setProfile }) => {
 
       <p className="ap-gap">
         Across the whole list the two answers are close, because the likely-tier schools put a
-        floor under it. That is the honest headline and it is not very dramatic.
+        floor under it. That is the real result, and it is not dramatic.
       </p>
 
       {reaches.length > 1 && (
         <>
           <h3 className="ap-sub">Where correlation actually bites</h3>
           <p className="on-prose ap-hint ap-hint-sub">
-            Narrow it to just the {reaches.length} reaches and the gap opens up. This is the
-            comparison that matters, because reaches are the applications people add believing each
-            one is a fresh roll of the dice.
+            Look at just the {reaches.length} reaches and the gap opens up. This is the comparison
+            that matters, because people add reaches believing each one is a fresh roll of the
+            dice.
           </p>
 
           <div className="ap-compare">
@@ -175,9 +174,9 @@ export const Portfolio = ({ doc, derived, updateDoc, profile, setProfile }) => {
 
           <p className="ap-gap">
             <b>{pct(reachNaive - reachReal)}</b> of false comfort on the reaches alone. The whole
-            list still has a floor, so you are unlikely to end up with nothing. What you are
-            unlikely to end up with is a <Tip term="shut-out">reach</Tip>, and no amount of adding
-            more reaches fixes that as efficiently as it looks.
+            list still has a floor, so you are unlikely to end up with nothing. You are also unlikely
+            to end up at a <Tip term="shut-out">reach</Tip>, and adding more reaches does not change
+            that as much as it looks like it would.
           </p>
         </>
       )}
@@ -187,8 +186,8 @@ export const Portfolio = ({ doc, derived, updateDoc, profile, setProfile }) => {
           <h3 className="ap-sub">Where the list stops paying</h3>
           <p className="on-prose ap-hint ap-hint-sub">
             Each bar is what one more application adds to the expected best offer, in the order a
-            greedy search would add them. When the bars flatten, more schools stop buying you
-            anything and start costing essays for free.
+            greedy search would add them. When the bars flatten, more schools add nothing and only
+            cost you essays.
           </p>
 
           <div className="ap-curve">
@@ -209,15 +208,15 @@ export const Portfolio = ({ doc, derived, updateDoc, profile, setProfile }) => {
           {flatAt > 0 && (
             <>
               <p className="ap-gap">
-                Past school <b>{flatAt}</b> each additional application adds less than a twentieth
-                of what the first one did.
+                After school <b>{flatAt}</b>, each extra application adds less than a twentieth of
+                what the first one did.
               </p>
               <p className="ap-gap ap-caveat">
-                Do not read that as "apply to {flatAt} schools". It flattens this fast because
-                program strength is still a placeholder on every row, so the schools look far more
-                interchangeable than they are. Fill that column in and the curve will spread out.
-                It is also measuring expected value, not risk: the reason to apply to more than{' '}
-                {flatAt} is the tail where the first {flatAt} all say no.
+                Do not read that as "apply to {flatAt} schools". The curve flattens this fast because
+                program strength is still a placeholder on every row, so the schools look more
+                alike than they are. Fill that column in and the curve spreads out. It also measures
+                expected value, not risk. The reason to apply to more than {flatAt} is the case
+                where the first {flatAt} all say no.
               </p>
             </>
           )}
@@ -234,9 +233,9 @@ export const Portfolio = ({ doc, derived, updateDoc, profile, setProfile }) => {
               recommended.ed.id}
           </p>
           <p className="ap-ed-note">
-            Chosen by trying it on every eligible school in the list and keeping whichever
-            placement raised the expected best offer most. It is binding and you get exactly one,
-            so it is modelled as something to spend rather than a bonus that applies everywhere.
+            Picked by trying it on every eligible school and keeping the one that raised the
+            expected best offer most. It is binding and you get exactly one, so the page treats it
+            as something to spend, not a bonus that applies everywhere.
           </p>
         </div>
       )}
@@ -246,20 +245,19 @@ export const Portfolio = ({ doc, derived, updateDoc, profile, setProfile }) => {
         <div className="pbody">
           <p>
             Suppose each of eight reach schools admits seven percent of applicants. Multiply the
-            rejections together and it looks like you have a forty four percent chance somewhere.
+            rejections together and it looks like you have a forty-four percent chance somewhere.
             That is the number a spreadsheet gives you, and it is wrong.
           </p>
           <p>
-            It is wrong because it assumes eight separate coin flips. But the same transcript and
-            the same essays go to all eight. In the versions of the world where you are a weaker
-            applicant than you think, all eight say no together, and in the versions where you are
-            stronger you had offers anyway. The eight outcomes move as a group.
+            It is wrong because it assumes eight separate coin flips. The same transcript and the
+            same essays go to all eight. If you are a weaker applicant than you think, all eight say
+            no together. If you are stronger, you had offers anyway. The eight outcomes move as a
+            group.
           </p>
           <p>
-            The practical consequence: past a certain point, another reach is not insurance. A
-            school you are likely to get into is insurance, and it is usually cheaper to apply to.
-            Drag the slider to zero to see the spreadsheet's world, and back up to watch the
-            difference appear.
+            So past a certain point, another reach is not insurance. A school you are likely to get
+            into is insurance, and it is usually cheaper to apply to. Drag the slider to zero to
+            see the spreadsheet's version, then back up to watch the difference appear.
           </p>
         </div>
       </details>

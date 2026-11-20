@@ -25,8 +25,8 @@ const BANDS = [
 
 const FIELDS = [
   { id: 'gpaPercentile', label: 'Grades', hint: 'against the admitted pool at your target schools' },
-  { id: 'testPercentile', label: 'Test scores', hint: 'SAT or ACT, or leave blank if going test-optional' },
-  { id: 'rigorPercentile', label: 'Course rigour', hint: 'how heavy your schedule is next to what is offered' },
+  { id: 'testPercentile', label: 'Test scores', hint: 'SAT or ACT, or leave blank if test-optional' },
+  { id: 'rigorPercentile', label: 'Course rigor', hint: 'how heavy your schedule is next to what your school offers' },
   { id: 'activitiesPercentile', label: 'Activities and awards', hint: 'the part an essay cannot fake' },
 ];
 
@@ -46,11 +46,10 @@ export const Profile = ({ profile, setProfile }) => {
       </div>
 
       <p className="ap-profile-why">
-        These four bands are what turn the numbers above from{' '}
-        <em>these schools' admit rates</em> into <em>your odds</em>. They are stored in this
-        browser and never sent to the database, because this page is going to be public and a
-        transcript has no business in a public row. Bands, not scores: the model only ever used
-        percentiles anyway.
+        These four bands turn the numbers above from <em>these schools' admit rates</em> into{' '}
+        <em>your odds</em>. They are stored in this browser and never sent to the database,
+        because this page is going to be public and a transcript does not belong in a public row.
+        Bands, not scores: the model only uses percentiles.
       </p>
 
       <div className="ap-profile-grid">
@@ -104,8 +103,8 @@ export const Profile = ({ profile, setProfile }) => {
       <div className="ap-profile-foot">
         {empty ? (
           <span className="ap-profile-note">
-            Nothing set yet, so every probability on this page describes the schools rather than
-            you, and the dial in S0 reads <Tip term="range">provisional</Tip>.
+            Nothing set yet, so every probability on this page describes the schools, not you, and
+            the dial in S0 reads <Tip term="range">provisional</Tip>.
           </span>
         ) : (
           <span className="ap-profile-note">
@@ -119,7 +118,7 @@ export const Profile = ({ profile, setProfile }) => {
             variant="danger"
             onClick={() => setProfile(clearProfile() || { ...EMPTY_PROFILE })}
           >
-            clear
+            Clear
           </Button>
         )}
       </div>

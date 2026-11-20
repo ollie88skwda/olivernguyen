@@ -74,7 +74,7 @@ export const Status = ({ doc, derived, clock }) => {
 
   return (
     <section id="status" className="ap-sec">
-      <SectionHead kicker="S0 / Status" title="Where The List Stands" />
+      <SectionHead kicker="S0 / Status" title="Where the list stands" />
 
       <div className="ap-status">
         <Dial value={outcome.pAtLeastOne} label="at least one" provisional={profileEmpty} />
@@ -86,8 +86,8 @@ export const Status = ({ doc, derived, clock }) => {
           </p>
           <p className="ap-status-line">
             <Tip term="shut-out">Shut out</Tip> everywhere: <b>{pct1(outcome.pShutOut)}</b>.
-            A spreadsheet assuming <Tip term="independence">independence</Tip> would tell you{' '}
-            {pct1(1 - outcome.naivePAtLeastOne)}, which is {pct1(overstatement)} of false comfort.
+            A spreadsheet that assumes <Tip term="independence">independence</Tip> would say{' '}
+            {pct1(1 - outcome.naivePAtLeastOne)}. That is {pct1(overstatement)} of false comfort.
           </p>
           <p className="ap-status-line">
             Reach {outcome.byTier.reach} · target {outcome.byTier.target} · likely{' '}
@@ -110,24 +110,24 @@ export const Status = ({ doc, derived, clock }) => {
 
       {profileEmpty && (
         <p className="ap-flag">
-          Every probability above is built from published admit rates alone. Nothing about you has
-          been entered yet, so these are wide on purpose and describe the schools, not your odds.
-          Turn on EDIT and fill in the profile to make them yours.
+          Every probability above comes from published admit rates alone. Nothing about you is
+          entered yet, so the ranges are wide and describe the schools, not your odds. Tap Edit and
+          fill in the profile to make them yours.
         </p>
       )}
 
       {reachHeavy && (
         <p className="ap-flag ap-flag-warn">
-          This list is top heavy. With only {outcome.byTier.likely} likely-tier school
-          {outcome.byTier.likely === 1 ? '' : 's'}, the correlated shut-out risk above is doing
-          real work. Adding a floor is cheaper than adding another reach.
+          This list is top heavy. It has only {outcome.byTier.likely} likely-tier school
+          {outcome.byTier.likely === 1 ? '' : 's'}, so the correlated shut-out risk above is high.
+          Adding a safer school costs less than adding another reach.
         </p>
       )}
 
       {gaps > 0 && (
         <p className="ap-flag">
-          {gaps} researched fields are still open across {doc.schools.length} schools. They are
-          listed per school in S8 rather than filled in with something plausible.
+          {gaps} researched fields are still open across {doc.schools.length} schools. S8 lists
+          them per school. Nothing is filled in with a guess.
         </p>
       )}
 
@@ -136,19 +136,19 @@ export const Status = ({ doc, derived, clock }) => {
         <div className="pbody">
           <p>
             You are not choosing one school. You are choosing a set of about fifteen, and a set can
-            be bad even when every school in it is good. Rank thirty four schools, take the top
+            be bad even when every school in it is good. Rank thirty-four schools, take the top
             fifteen, and you can end up with eight reaches that all say no on the same afternoon.
           </p>
           <p>
             So the number that matters is not how good the best school on the list is. It is how
-            good the best school that actually admits you turns out to be, averaged over every way
-            the season could go. That is what this page tries to make big.
+            good the best school that admits you turns out to be, averaged over every way the
+            season could go. This page tries to make that number big.
           </p>
           <p>
-            The other thing it does differently is assume the decisions are related. The same
-            transcript and the same essays go to every school, so if one committee is unimpressed
-            the others usually are too. Treating fifteen applications as fifteen independent coin
-            flips makes being shut out look far less likely than it is.
+            It also assumes the decisions are related. The same transcript and the same essays go to
+            every school, so if one committee is unimpressed the others usually are too. Treating
+            fifteen applications as fifteen independent coin flips makes being shut out look far
+            less likely than it is.
           </p>
         </div>
       </details>

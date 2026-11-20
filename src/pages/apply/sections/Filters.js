@@ -70,14 +70,13 @@ export const Filters = ({ doc, derived, updateDoc }) => {
 
   return (
     <section id="filters" className="ap-sec">
-      <SectionHead kicker="S6 / Filters" title="Tighten Or Loosen, Live" />
+      <SectionHead kicker="S6 / Filters" title="Tighten or loosen, live" />
 
       <p className="on-prose ap-hint">
-        None of these were made hard requirements, so all four start soft: they influence the
-        scoring and exclude nobody. Turning one to <b>hard</b> removes every school that fails it,
-        from the board and from the maths in S3, not just from view. That is why the research
-        covered all four for every school, so changing your mind in November is a click rather
-        than a reason to look everything up again.
+        None of these is a hard requirement, so all four start soft. They affect the scoring and
+        exclude nobody. Setting one to <b>hard</b> removes every school that fails it, from the
+        board and from the math in S3, not just from view. The research covered all four for every
+        school, so changing your mind in November takes one click.
       </p>
 
       <div className="ap-filters">
@@ -114,7 +113,7 @@ export const Filters = ({ doc, derived, updateDoc }) => {
               <p className="ap-filter-blurb">{filter.blurb}</p>
               <p className="ap-filter-count">
                 {failing} of {doc.schools.filter((s) => s.scores).length} schools would fail this
-                {mode === 'hard' && <b> · currently cutting them</b>}
+                {mode === 'hard' && <b> · cutting them now</b>}
               </p>
             </div>
           );
@@ -132,8 +131,8 @@ export const Filters = ({ doc, derived, updateDoc }) => {
             ))}
           </ul>
           <p className="ap-cutlist-note">
-            Listed rather than silently dropped. These are excluded from S3's probabilities too, so
-            the odds on this page always describe the list you can actually see.
+            Listed so nothing is dropped silently. They are left out of S3's probabilities too, so
+            the odds on this page always match the list you can see.
           </p>
         </div>
       )}
@@ -141,8 +140,8 @@ export const Filters = ({ doc, derived, updateDoc }) => {
       <h3 className="ap-sub">Add a school</h3>
       <p className="on-prose ap-hint ap-hint-sub">
         For when a counselor suggests one. It enters <Tip term="unresearched">unresearched</Tip>{' '}
-        and says so, with hatched cells on the board and wide ranges, so the Monte Carlo reports it
-        as genuinely uncertain rather than quietly mediocre. Nothing gets invented on its behalf.
+        with hatched cells on the board and wide ranges, so the Monte Carlo treats it as uncertain,
+        not mediocre. Nothing is made up for it.
       </p>
 
       <form className="ap-add" onSubmit={addSchool}>
@@ -154,7 +153,7 @@ export const Filters = ({ doc, derived, updateDoc }) => {
           aria-label="School name"
           onChange={(event) => setName(event.target.value)}
         />
-        <Button type="submit">add</Button>
+        <Button type="submit">Add</Button>
       </form>
 
       {added.length > 0 && (
@@ -166,7 +165,7 @@ export const Filters = ({ doc, derived, updateDoc }) => {
                 {school.addedBy} · {school.addedAt}
               </em>
               <Button type="button" variant="danger" size="sm" onClick={() => removeSchool(school.id)}>
-                remove
+                Remove
               </Button>
             </li>
           ))}
@@ -177,19 +176,19 @@ export const Filters = ({ doc, derived, updateDoc }) => {
         <summary>Plain English: why a hard filter changes the odds, not just the list</summary>
         <div className="pbody">
           <p>
-            It would be easy to make these filters hide rows. It would also be misleading. The big
-            number in S0 is the chance that at least one school admits you, and it is built from
-            the schools on the list. If a filter hid six schools from view but kept counting them,
-            that number would describe an application season you are not having.
+            Making these filters just hide rows would be easy, and misleading. The big number in S0
+            is the chance that at least one school admits you, and it is built from the schools on
+            the list. If a filter hid six schools but kept counting them, that number would describe
+            an application season you are not having.
           </p>
           <p>
-            So hard filters remove schools from the maths as well. Turn one on and watch the
-            probability in S0 fall, because you just decided not to apply to some of the schools
-            that were holding it up.
+            So hard filters remove schools from the math too. Turn one on and the probability in S0
+            falls, because you just chose not to apply to some of the schools that were holding it
+            up.
           </p>
           <p>
             Schools where nobody has checked the answer yet always pass. A gap in the research
-            should not turn itself into a decision about where you apply.
+            should not decide where you apply.
           </p>
         </div>
       </details>
