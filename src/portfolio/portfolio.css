@@ -145,15 +145,37 @@ html[data-theme="dark"]:has(.pf) { background: #191513; color-scheme: dark; }
 .pf-btn-primary { background: var(--primary); color: var(--on-primary); }
 .pf-btn-primary:hover { background: color-mix(in srgb, var(--primary) 86%, var(--page)); }
 
-/* ---------- work grid ---------- */
-.pf-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: 16px; }
+/* ---------- work: one section per project ---------- */
+.pf-projects { display: grid; }
+.pf-project {
+  display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(20px, 4vw, 48px);
+  align-items: center; padding: clamp(28px, 4vw, 44px) 0; border-top: 1px solid var(--line);
+}
+.pf-project:first-child { border-top: 0; padding-top: 0; }
+.pf-project-idx { font: 400 12px/1.4 var(--mono); color: var(--faint); margin-bottom: 8px; }
+.pf-project h3 { font-size: clamp(32px, 4vw, 44px); font-weight: 760; letter-spacing: -0.05em; line-height: 1; }
+.pf-project-line { margin-top: 8px; font-size: 18px; color: var(--soft); }
+.pf-notes { margin: 20px 0 0; display: grid; gap: 10px; }
+.pf-notes div { display: grid; grid-template-columns: 76px 1fr; gap: 12px; align-items: baseline; }
+.pf-notes dt { font: 400 12px/1.5 var(--mono); color: var(--accent); }
+.pf-notes dd { margin: 0; font-size: 15px; line-height: 1.5; color: var(--ink); }
+.pf-visit { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; margin-top: 12px; font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.22em; }
+.pf-visit:hover { color: var(--accent); text-decoration-thickness: 2px; }
+.pf-visit-off { text-decoration: none; color: var(--faint); font: 400 12px/1 var(--mono); }
+.pf-project-media { display: block; }
+.pf-project:nth-child(even) .pf-project-media { order: -1; }
+@media (max-width: 860px) {
+  .pf-project { grid-template-columns: 1fr; }
+  .pf-project .pf-project-media, .pf-project:nth-child(even) .pf-project-media { order: -1; }
+}
+
 .pf-card {
   display: flex; flex-direction: column;
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg);
   overflow: hidden; box-shadow: var(--shadow-1);
   transition: box-shadow var(--dur) var(--ease), transform var(--dur) var(--ease), border-color var(--dur) var(--ease);
 }
-a.pf-card:hover { box-shadow: var(--shadow-2); transform: translateY(-2px); border-color: var(--line-strong); }
+a:hover > .pf-card { box-shadow: var(--shadow-2); transform: translateY(-2px); border-color: var(--line-strong); }
 .pf-card-bar {
   display: flex; align-items: center; gap: 8px; height: 30px; padding: 0 12px;
   background: var(--subtle); border-bottom: 1px solid var(--line);
@@ -176,12 +198,6 @@ a.pf-card:hover { box-shadow: var(--shadow-2); transform: translateY(-2px); bord
 }
 .pf-preview[data-loaded] iframe { opacity: 1; }
 
-.pf-card-text { padding: 14px 16px 16px; display: grid; gap: 2px; }
-.pf-card-text h3 { font-size: 19px; font-weight: 700; letter-spacing: -0.025em; line-height: 1.2; display: flex; align-items: center; gap: 6px; }
-.pf-arrow { color: var(--faint); font-weight: 410; transition: transform var(--dur) var(--ease), color var(--dur) var(--ease); }
-a.pf-card:hover .pf-arrow { color: var(--accent); transform: translate(2px, -2px); }
-.pf-card-text p { color: var(--soft); }
-.pf-card-meta { font-size: 13px; color: var(--faint) !important; margin-top: 4px; }
 
 /* ---------- off screen ---------- */
 .pf-making { display: grid; gap: 20px; justify-items: start; }

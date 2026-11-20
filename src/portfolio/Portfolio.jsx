@@ -133,30 +133,46 @@ const Preview = ({ p }) => {
   );
 };
 
-const WorkCard = ({ p }) => {
-  const Tag = p.href ? 'a' : 'div';
-  const linkProps = p.href ? { href: p.href, target: '_blank', rel: 'noreferrer' } : {};
+const Project = ({ p, i }) => {
   const live = Boolean(p.href) && !p.noFrame;
-  return (
-    <Tag className="pf-card" {...linkProps}>
+  const frame = (
+    <div className="pf-card">
       <div className="pf-card-bar">
         <span className="pf-dots" aria-hidden="true"><i /><i /><i /></span>
-        <span className="pf-card-url">{p.hrefLabel || 'local only'}</span>
+        <span className="pf-card-url">{p.hrefLabel || 'not public yet'}</span>
         {live && <span className="pf-live">live</span>}
       </div>
       <Preview p={p} />
-      <div className="pf-card-text">
-        <h3>
-          {p.name}
-          {p.href && <span className="pf-arrow" aria-hidden="true">↗</span>}
-        </h3>
-        <p>{p.line}</p>
-        <p className="pf-card-meta">
-          {p.tag}
-          {p.status !== 'live' && <span> · {p.status}</span>}
-        </p>
+    </div>
+  );
+  return (
+    <article className="pf-project" id={`p-${p.id}`}>
+      <div className="pf-project-text">
+        <p className="pf-project-idx">{String(i + 1).padStart(2, '0')} · {p.kind}</p>
+        <h3>{p.name}</h3>
+        <p className="pf-project-line">{p.line}</p>
+        <dl className="pf-notes">
+          {p.notes.map(([k, v]) => (
+            <div key={k}>
+              <dt>{k}</dt>
+              <dd>{v}</dd>
+            </div>
+          ))}
+        </dl>
+        {p.href ? (
+          <a className="pf-visit" href={p.href} target="_blank" rel="noreferrer">
+            Visit {p.name} <span aria-hidden="true">↗</span>
+          </a>
+        ) : (
+          <p className="pf-visit pf-visit-off">{p.status}</p>
+        )}
       </div>
-    </Tag>
+      {p.href ? (
+        <a className="pf-project-media" href={p.href} target="_blank" rel="noreferrer" tabIndex={-1} aria-hidden="true">{frame}</a>
+      ) : (
+        <div className="pf-project-media">{frame}</div>
+      )}
+    </article>
   );
 };
 
@@ -184,9 +200,9 @@ const Hero = () => {
 
 const Work = () => (
   <Block id="work" cmd="ls ./work" title="Work">
-    <div className="pf-grid">
-      {work.map((p) => (
-        <WorkCard key={p.id} p={p} />
+    <div className="pf-projects">
+      {work.map((p, i) => (
+        <Project key={p.id} p={p} i={i} />
       ))}
     </div>
   </Block>
