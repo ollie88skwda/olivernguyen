@@ -13,10 +13,10 @@ export const clerkKey = () => process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
 // ClerkProvider, and without a key no provider is mounted, so that route would
 // white-screen exactly like the studio would.
 export const NotConfigured = ({ route = '/studio' }) => (
-  <main className="gate">
+  <main className="sakura gate">
     <div className="gate-card">
       <p className="gate-eyebrow">Route {route} · unavailable</p>
-      <h1 className="gate-title">Not Configured</h1>
+      <h1 className="gate-title">Not set up</h1>
       <p className="gate-hint">
         <code>REACT_APP_CLERK_PUBLISHABLE_KEY</code> is not set, so sign-in cannot load. The
         rest of the site is unaffected.
@@ -31,9 +31,9 @@ const ClerkGate = ({ children }) => {
   const location = useLocation();
   const { isLoaded, isSignedIn } = useAuth();
 
-  // Cream rather than a spinner: the sign-in page and the studio share this
+  // Page color rather than a spinner: the sign-in page and the studio share this
   // background, so an already-signed-in reload shows no flash of anything.
-  if (!isLoaded) return <div style={{ minHeight: '100dvh', background: '#f1e9d4' }} />;
+  if (!isLoaded) return <div style={{ minHeight: '100dvh', background: 'var(--bg, #fcf9f4)' }} />;
   if (!isSignedIn) {
     return <Redirect to={`/sign-in?redirect=${encodeURIComponent(location.pathname)}`} />;
   }

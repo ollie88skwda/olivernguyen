@@ -192,35 +192,35 @@ export const Routes = () => {
         </Route>
         <Route path="/major">
           <RequirePassphrase label="Route /major · private" route="/major">
-            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
+            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "var(--bg, #fcf9f4)" }} />}>
               <Major />
             </Suspense>
           </RequirePassphrase>
         </Route>
         <Route path="/apply">
           <RequirePassphrase label="Route /apply · private" route="/apply">
-            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
+            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "var(--bg, #fcf9f4)" }} />}>
               <Apply />
             </Suspense>
           </RequirePassphrase>
         </Route>
         <Route path="/studio/:schoolSlug/:promptSlug/:versionKey">
           <RequireClerk>
-            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
+            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "var(--bg, #fcf9f4)" }} />}>
               <WritingRoom />
             </Suspense>
           </RequireClerk>
         </Route>
         <Route path="/studio">
           <RequireClerk>
-            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
+            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "var(--bg, #fcf9f4)" }} />}>
               <EssayStudio />
             </Suspense>
           </RequireClerk>
         </Route>
         <Route path="/transfer">
           <RequireClerk>
-            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
+            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "var(--bg, #fcf9f4)" }} />}>
               <Transfer />
             </Suspense>
           </RequireClerk>

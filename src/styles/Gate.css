@@ -1,5 +1,5 @@
 /* Passphrase gate, shared by /major and /apply. Deliberately one field and one
-   button — the check is server-side, so there is nothing else to show here.
+   button. The check is server-side, so there is nothing else to show here.
    Consolidated from the near-identical mj-gate / ap-gate / es-gate copies. */
 
 .gate {
@@ -8,15 +8,19 @@
   min-height: 100dvh;
   display: grid;
   place-items: center;
-  padding: 28px;
-  background: var(--bg-base);
+  box-sizing: border-box;
+  padding: 20px;
+  background: var(--bg);
 }
 
 .gate-card {
+  box-sizing: border-box;
   width: min(360px, 100%);
   border: 1px solid var(--border);
   background: var(--surface);
-  padding: 30px 26px 22px;
+  border-radius: var(--r-lg, 16px);
+  box-shadow: 0 2px 6px rgb(59 41 33 / 0.06), 0 8px 24px rgb(59 41 33 / 0.08);
+  padding: 28px 24px 22px;
 }
 
 .gate-wrong {
@@ -40,20 +44,17 @@
 
 .gate-eyebrow {
   font-family: var(--font-mono);
-  font-size: 0.62rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-size: 12px;
   color: var(--text-faint);
   margin: 0 0 10px;
 }
 
 .gate-title {
   font-family: var(--font-display);
-  text-transform: uppercase;
-  font-weight: 900;
-  font-size: 2.6rem;
-  line-height: 0.9;
-  letter-spacing: 0.01em;
+  font-weight: 760;
+  font-size: 2.5rem;
+  line-height: 0.96;
+  letter-spacing: -0.05em;
   color: var(--text);
   margin: 0 0 20px;
 }
@@ -61,36 +62,37 @@
 .gate-in {
   width: 100%;
   box-sizing: border-box;
-  font-family: var(--font-mono);
-  font-size: 0.9rem;
-  letter-spacing: 0.14em;
+  min-height: 44px;
+  font-family: var(--font-sans);
+  font-size: 1rem;
   color: var(--text);
   background: var(--bg);
   border: 1px solid var(--border);
-  padding: 11px 12px;
+  border-radius: 8px;
+  padding: 0 12px;
 }
 
 .gate-in:focus {
-  outline: 2px solid var(--accent-hi);
+  outline: 2px solid var(--accent);
   outline-offset: 1px;
 }
 
 .gate-go {
   width: 100%;
+  min-height: 44px;
   margin-top: 12px;
-  font-family: var(--font-mono);
-  font-size: 0.66rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--on-accent);
-  background: var(--accent);
-  border: 1px solid var(--accent);
-  padding: 11px 12px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--on-primary, #fcf9f4);
+  background: var(--primary, #251d1a);
+  border: 0;
+  border-radius: 8px;
   cursor: pointer;
 }
 
 .gate-go:hover {
-  background: var(--accent-hi);
+  opacity: 0.9;
 }
 
 .gate-go:disabled {
@@ -102,11 +104,8 @@
 .gate-err {
   min-height: 1.2em;
   margin: 10px 0 0;
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #8a3b12;
+  font-size: 13px;
+  color: var(--error);
 }
 
 .gate-hint {
@@ -122,7 +121,7 @@
   font-family: var(--font-mono);
   font-size: 0.82em;
   background: var(--surface-2);
-  border: 1px solid var(--border);
+  border-radius: 4px;
   padding: 1px 4px;
 }
 
