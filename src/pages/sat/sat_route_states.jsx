@@ -19,7 +19,7 @@ export const SATResourcesLoading = () => (
     role="status"
     status="neutral"
     label="Loading"
-    message="Loading study resources…"
+    message="Loading study resources."
     busy
   />
 );
@@ -28,7 +28,7 @@ export const SATResourcesError = () => (
   <SATState
     role="alert"
     status="error"
-    label="Unable to load"
-    message="Study resources could not be loaded."
+    label="Failed to load"
+    message="Couldn't load the study resources."
   />
 );

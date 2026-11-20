@@ -57,10 +57,10 @@
 
 /* --- sub-heads ------------------------------------------------------------- */
 /* h3 = the §7 display title rung (D-12 card/node titles 24px);
-   h4 = §7 sans 600 at body size — Hanken Grotesk 400/500/600 is the §7 range,
+   h4 = §7 sans 600 at body size — 600 is in the §7 weight range,
    so the 600 weight is not invented. */
 
-.pm-sub {
+.pm-guide .pm-sub {
   margin: var(--s-6) 0 var(--s-3);
   font-size: var(--fs-title);
 }
@@ -152,7 +152,7 @@
 
 /* --- the 23-step DMV app walkthrough --------------------------------------- */
 /* A real ordered list (semantics preserved from the legacy <ol>): §7 label
-   role for the markers (JetBrains mono), §7 sans body for the steps. */
+   role for the markers (mono), §7 sans body for the steps. */
 
 .pm-steps {
   margin: var(--s-4) 0;

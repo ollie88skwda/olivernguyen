@@ -28,7 +28,7 @@
   gap: var(--s-3); /* §5: label → content is 12 */
   margin-bottom: var(--s-24); /* §5: section gap, phone rung */
 }
-/* Display sets the §7 role (Familjen 700, -0.02em) but not the size — the
+/* Display sets the §7 role (display role) but not the size — the
    consumer names the rung. A page title is the hero scale (§7). */
 .dl-hero h1 {
   font-size: var(--fs-display);

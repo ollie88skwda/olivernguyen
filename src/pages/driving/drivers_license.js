@@ -18,16 +18,16 @@ export const DriversLicense = () => {
       <div className="dl-col">
         <header className="dl-hero">
           <MonoLabel>driving</MonoLabel>
-          <Display as="h1">How to get your drivers license after your permit</Display>
+          <Display as="h1">How to get your driver's license after your permit</Display>
         </header>
         <section className="dl-section">
           <SectionHead title="1: Get your permit" />
           <p className="on-prose">
-            If you don't have your permit, go get it. Learn how to get it{" "}
+            If you don't have your permit yet, get it first. The{" "}
             <a className="dl-link" href="/permit">
-              here
-            </a>
-            .
+              permit guide
+            </a>{" "}
+            shows how.
           </p>
         </section>
       </div>
