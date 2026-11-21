@@ -18,7 +18,7 @@ export const meta = {
 
 export const intro = {
   kicker: 'design + engineering',
-  lede: 'I design apps and websites, and I build robots for VEX.',
+  lede: 'I make robots, apps and websites, and I want them to feel good to use.',
 };
 
 export const work = [
