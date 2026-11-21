@@ -119,7 +119,7 @@
   top: calc(var(--s-24) * -1); /* parked off-screen until focused */
   z-index: 90;
   padding: var(--s-1) 1ch;
-  background: var(--accent);
+  background: var(--accent-hi);
   color: var(--on-accent);
   border-radius: var(--r-control);
   text-decoration: none;
@@ -183,7 +183,7 @@
 }
 
 .term-screen .psigil {
-  color: var(--term-prompt, var(--accent-hi));
+  color: var(--term-prompt, var(--accent));
   font-weight: 700;
   white-space: pre;
 }
@@ -195,7 +195,7 @@
 .term-screen .ok { color: var(--success); }
 .term-screen .err { color: var(--danger-text); }
 .term-screen .acc { color: var(--accent); }
-.term-screen .hot { color: var(--accent-hi); }
+.term-screen .hot { color: var(--accent); }
 .term-screen .ln b { color: var(--text); font-weight: 700; }
 .term-screen .ind { padding-left: 4ch; }
 
@@ -228,7 +228,7 @@
 .term-screen .reader-lede {
   max-width: 55ch;
   margin: var(--s-3) 0 0;
-  color: var(--accent-hi);
+  color: var(--accent);
   font-family: var(--font-display);
   font-size: var(--fs-title);
   font-weight: 700;
@@ -358,7 +358,7 @@
   transition: color var(--dur-state) var(--ease-state);
 }
 .term-screen .obtn:hover {
-  color: var(--accent-hi);
+  color: var(--accent);
   background: var(--selection);
 }
 .term-screen .plain {
@@ -396,7 +396,7 @@
 
 /* block cursor: full-cell inverse, steps(1) blink (§3.1.3) */
 .term-screen .pcursor {
-  background: var(--term-cursor, var(--accent-hi));
+  background: var(--term-cursor, var(--accent));
   color: var(--on-accent);
   animation: term-blink var(--term-blink) steps(1) infinite;
 }
@@ -410,7 +410,7 @@
   animation: none;
   background: transparent;
   color: var(--text);
-  box-shadow: inset 0 0 0 1px var(--term-cursor, var(--accent-hi));
+  box-shadow: inset 0 0 0 1px var(--term-cursor, var(--accent));
 }
 
 /* the real input is visually offscreen; the echo + cursor are the prompt */
@@ -440,7 +440,7 @@
 }
 
 .term-screen .term-statusbar .sb-sess {
-  color: var(--accent-hi);
+  color: var(--accent);
   font-weight: 700;
 }
 
@@ -466,7 +466,7 @@
 }
 .term-screen .term-statusbar .tab.active {
   color: var(--on-accent);
-  background: var(--accent);
+  background: var(--accent-hi);
 }
 .term-screen .term-statusbar .tab.active::after {
   content: "*";
@@ -493,7 +493,7 @@
 }
 
 .term-screen .term-statusbar .sb-mode {
-  color: var(--accent-hi);
+  color: var(--accent);
   font-weight: 700;
 }
 .term-screen .term-statusbar .sb-dim {

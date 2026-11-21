@@ -9,6 +9,58 @@ and deleting it there.
 
 ---
 
+## 2026-11-20 · Sakura colours come back
+
+### D-42 · Sitewide colours = the original Sakura palette; Clarity type and shapes stay, Oliver 2026-11-20
+Oliver compared old vs new on the live home: "I like the old colors better except for the bar at the
+bottom", then "I'm happy with this homepage. Switch everything."
+- Colour tokens in `src/styles/sakura.css` and `src/portfolio/portfolio.css` are the D-02 Sakura Paper /
+  Night Plum hexes again. Supersedes the colour part of D-40/D-41 only; Geologica, radii, buttons and
+  the slash wordmark stay.
+- One change from D-02: light `--selection` #f7cede -> #f9d9e6 so `--accent` text on it clears 4.5:1.
+- Home bottom bar: tinted `--subtle` strip with a hairline; the current section is accent text with a
+  2px underline, not a solid accent slab.
+- Sign-in: Clerk v6 appearance variables renamed (`colorForeground`, `colorInput`...) so the card follows
+  the night theme.
+
+---
+
+## 2026-11-20 · One brand sitewide
+
+### D-41 · Sitewide brand = portfolio brand (Geologica, warm paper, pink accent), Oliver 2026-11-20
+Oliver, 2026-11-20: "make sure that all the branding stuff is consistent over all."
+- The `.sakura` token VALUES in `src/styles/sakura.css` now carry the D-37 portfolio brand, so every
+  `.sakura` page and the site chrome pick it up. Token NAMES are unchanged. `--accent` is accent
+  text, `--accent-hi` is the solid pink fill (carries `--on-accent`), `--primary` fills primary buttons.
+- Radii 4/8/12/16, buttons 44px / radius 8 / weight 600, headings 700, display 760 at -0.05em.
+- Wordmark = slash mark + "oliver nguyen". Chrome matches the portfolio bar; mode toggle and
+  graph links removed. Sakura palette, Familjen/Hanken/Martian/JetBrains fonts, and the square-surface rule are retired.
+- Detail: `docs/BRAND.md`; plan: `docs/plans/brand-sweep-2026-11-20.md`.
+
+---
+
+## 2026-11-19 · The home becomes a terminal portfolio in clarity's brand, pink
+
+### D-40 · `/` is a single scrollable terminal portfolio; clarity brand with a pink accent
+Oliver, 2026-11-19: "redesign the website to be more like a portfolio ... only want to go with the
+terminal ... showing off the evolution of my portfolio ... use the same branding that we use for
+clarity ... but just use pink instead of the blue." Context: Brown and design-leaning applications.
+
+- `/` now renders `src/portfolio/Portfolio.jsx` (content in `src/portfolio/content.js`, styles in
+  `src/portfolio/portfolio.css`, all scoped under `.pf`). Graph mode is no longer reachable from `/`;
+  `src/home/`, `src/graph/`, `src/terminal/` stay in the tree, unmounted. Site chrome is hidden on `/`
+  only; legacy routes are unchanged.
+- Brand: clarity's tokens copied from `because/src/app/globals.css` (paper neutrals, Geologica,
+  slash mark, 4/8/12/16/24 corners). Accent = clarity's blue ramp rotated to hue 352 in OKLCH,
+  chroma x1.2, same lightness steps. Accent text 8.2:1 on day page, 9.3:1 on night.
+  This supersedes the sakura tokens (BRAND.md) **for `/` only**; BRAND.md is not yet rewritten.
+- Sections are commands that type in on scroll: whoami, `ls ./work` (man-page project entries),
+  `git log --graph` (two lanes: site eras with screenshots, and projects), off-screen making, contact.
+  A live prompt (help / ls / open / log / theme) and a tmux status bar sit in a fixed dock;
+  keys 1-5 jump windows. Reduced motion renders everything complete.
+- Facts only: project copy is from each repo's docs and the activities grid; evidence in
+  `docs/portfolio-facts.md`. Screenshots in `public/portfolio/`.
+
 ## 2026-10-26 · Hangr has a public, unlisted test hub
 
 ### D-38 · Mount the existing Hangr site beneath `/hangr/`

@@ -54,7 +54,7 @@ export const Tornado = ({ doc, derived, onPreviewFlip }) => {
 
   return (
     <section id="fragility" className="mj-sec">
-      <SectionHead kicker="S4 / Fragility" title="How Little It Takes To Flip" />
+      <SectionHead kicker="S4 / Fragility" title="How little it takes to flip" />
 
       <p className="mj-hint">
         How much would you have to change your mind about each thing before a different major wins?

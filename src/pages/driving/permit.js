@@ -42,11 +42,11 @@ export const Permit = () => {
         <section className="pm-section">
           <PermitSectionHead kicker="01" number="1" title="Driver's ed" />
           <p className="on-prose">
-            Driver's ed will be the biggest time commitment when getting your
-            permit. All online courses will cost money, although if your school
-            offers driver's ed you can take that class (although it'll take more
-            time). I recommend using Aceable Driving, and you can buy their
-            California Driver's ed course{" "}
+            Driver's ed takes the most time of anything on the way to your
+            permit. Online courses all cost money. If your school offers
+            driver's ed you can take that instead, but it takes longer. I
+            recommend Aceable Driving. You can buy their California driver's ed
+            course{" "}
             <a
               href="http://share.aceable.com/6z9QCp"
               target="_blank"
@@ -54,34 +54,29 @@ export const Permit = () => {
             >
               here
             </a>
-            . This link gives you a $10 discount.*
+            . This link gives you a $10 discount.
           </p>
           <Display as="h3" className="pm-sub">
             Driver's ed info
           </Display>
           <p className="on-prose">
-            Driver's ed is going to be long and boring. It's projected to take
-            about 30 hours, but if you read quickly you can get through it in
-            less time. It took me about 4 months to complete because I'm very
-            lazy, but I know people who have done it in 2-7 days.
+            Driver's ed is long and boring. It's listed at about 30 hours, but
+            if you read fast you can finish sooner. It took me about 4 months
+            because I'm lazy, but I know people who did it in 2 to 7 days.
           </p>
           <p className="on-prose">
-            The point is, make sure to pay attention during the course, but not
-            all the information is ultra important. Don't skim, but you also
-            don't need to read it like a textbook. Most decisions on the road
-            are split second, and it is much more practical to use logic, common
-            sense, and basic road knowledge than it is to spend valuable time
-            trying to remember exactly what complex law driver's ed told you to
-            do. Just don't make stupid decisions that break laws, and you'll
-            probably be fine.
+            Pay attention during the course, but not every detail matters. Don't
+            skim, and don't read it like a textbook either. Most decisions on
+            the road happen in a split second, so common sense and basic road
+            knowledge help more than remembering an exact law. Don't make dumb
+            choices that break laws and you'll probably be fine.
           </p>
         </section>
 
         <section className="pm-section">
           <PermitSectionHead kicker="02" number="2" title="Other stuff" />
           <p className="on-prose">
-            Once you've done all the driver's ed stuff, everything else will be
-            pretty easy. You can visit the{" "}
+            Once driver's ed is done, the rest is pretty easy. Check the{" "}
             <a
               href="https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/instruction-permits/"
               target="_blank"
@@ -89,9 +84,8 @@ export const Permit = () => {
             >
               official dmv page
             </a>{" "}
-            and make sure you bring all the right things to your dmv visit. I'll
-            go through all the items you need, according to a screenshot from
-            the official dmv page:
+            to make sure you bring the right things to your DMV visit. Here are
+            the items you need, from a screenshot of that page:
           </p>
           <a
             className="pm-shot-link"
@@ -110,26 +104,25 @@ export const Permit = () => {
               Be at least 15 ½ but under 18
             </Display>
             <p className="on-prose">
-              If you are at the dmv and don't meet this requirement, I can't
+              If you're at the DMV and don't meet this requirement, I can't
               help.
             </p>
           </section>
           <section>
             <Display as="h3" className="pm-sub">
-              Have a Certificate of Completion/Enrollment of Driver Education
+              Have a certificate of completion or enrollment for driver education
             </Display>
             <p className="on-prose">
-              Make sure to bring in the PHYSICAL certificate that you should be
-              mailed after completing your driver's ed course.
+              Bring the paper certificate that gets mailed to you after you finish
+              your driver's ed course.
             </p>
           </section>
           <section>
             <Display as="h3" className="pm-sub">
-              Complete the California Driver's License or ID Card Application
+              Complete the California driver's license or ID card application
             </Display>
             <p className="on-prose">
-              This one's a bit more complicated. Visit the hyperlink on the
-              website or{" "}
+              This one's a bit harder. Use the link on that page or{" "}
               <a
                 href="https://www.dmv.ca.gov/portal/driver-licenses-identification-cards/dl-id-online-app-edl-44/"
                 target="_blank"
@@ -137,8 +130,8 @@ export const Permit = () => {
               >
                 here.
               </a>{" "}
-              Start off by creating a California DMV account, and then you can
-              fill out the application. Then follow these steps with a parent:
+              Create a California DMV account first, then fill out the
+              application. Follow these steps with a parent:
             </p>
             <ol className="pm-steps" type="1">
               <li>Start Application</li>
@@ -148,60 +141,56 @@ export const Permit = () => {
               <li>Select Driver's License</li>
               <li>No</li>
               <li>No</li>
-              <li>Check Yes if you want a REAL ID, otherwise click no</li>
-              <li>Fill out all the info (name, birthday, etc)</li>
+              <li>Check Yes if you want a REAL ID, otherwise click No</li>
+              <li>Fill out your info (name, birthday, etc.)</li>
               <li>Noncommercial</li>
               <li>Car (Basic Class C)</li>
               <li>No (probably)</li>
               <li>
-                Fill out your address and check if you get mail or not at this
-                address
+                Fill out your address and say whether you get mail there
               </li>
               <li>
-                Fill out all the stuff that will go in your ID card (gender,
-                weight, etc)
+                Fill out what goes on your ID card (gender, weight, etc.)
               </li>
               <li>No (probably)</li>
               <li>No</li>
               <li>No</li>
-              <li>Up to you if you would like to register/donate</li>
+              <li>Register or donate if you want to</li>
               <li>Yes (probably)</li>
               <li>No (probably)</li>
               <li>Next</li>
               <li>
-                Select whatever your parents would like to do, I recommend
-                signing electronically
+                Pick what your parents prefer. I recommend signing electronically
               </li>
               <li>
-                Schedule your appointment. Make sure to schedule your
-                appointment earlier rather than later.
+                Schedule your appointment. Book it early.
               </li>
             </ol>
             <p className="on-prose">
-              You don't need to follow these steps perfectly. Make sure to do
-              whatever applies to you.
+              You don't need to follow these steps exactly. Do whatever applies
+              to you.
             </p>
             <section>
               <Display as="h3" className="pm-sub">
-                Have a parent(s)/guardian(s) sign the application
+                Have a parent or guardian sign the application
               </Display>
               <p className="on-prose">
-                Either have your parents sign electronically or at the dmv
+                Your parents can sign electronically or at the DMV
                 appointment.
               </p>
             </section>
             <section>
               <Display as="h3" className="pm-sub">
-                Visit a DMV office where you will:
+                At the DMV office you will:
               </Display>
               <div>
                 <h4 className="pm-h4">
-                  1. Bring your California Identification Card or proof of
-                  identity and residency.
+                  1. Bring your California ID card or proof of identity and
+                  residency
                 </h4>
                 <p className="on-prose">
-                  Bring a proof of residency (I would bring two just in case one
-                  doesn't work). You can choose from{" "}
+                  Bring proof of residency. I'd bring two in case one doesn't
+                  work. You can choose from{" "}
                   <a
                     href="https://www.dmv.ca.gov/portal/file/federal-non-compliant-dl-id-card-documents-list-pdf/"
                     target="_blank"
@@ -212,26 +201,23 @@ export const Permit = () => {
                 </p>
                 <h4 className="pm-h4">2. Pay the application fee</h4>
                 <p className="on-prose">
-                  Pretty self explanatory $45 fee, I guess they have to make
-                  money somehow.
+                  The fee is $45.
                 </p>
                 <h4 className="pm-h4">3. Pass a vision exam</h4>
-                <p className="on-prose">Don't pull up to the dmv blind.</p>
+                <p className="on-prose">Don't show up to the DMV unable to see.</p>
                 <h4 className="pm-h4">4. Take a photo</h4>
                 <p className="on-prose">
                   <strong>
-                    VERY IMPORTANT: YOU ARE TAKING YOUR PHOTO HERE. THIS PHOTO
-                    WILL BE ON YOUR PERMIT AND YOUR ID CARD, SO THIS IS PRETTY
-                    PERMANANT
+                    Important: your photo is taken here. It goes on your permit and
+                    your ID card, so it sticks around.
                   </strong>
                   <br />
                   <br />
-                  Also, Make sure to smile, I made the mistake of not smiling
-                  and now I look like I was taking a mugshot.
+                  Smile. I didn't, and now I look like I'm in a mugshot.
                 </p>
                 <h4 className="pm-h4">5. Take the knowledge test</h4>
                 <p className="on-prose">
-                  I'll go over the knowledge test in the next section
+                  The next section covers the knowledge test.
                 </p>
               </div>
             </section>
@@ -241,9 +227,9 @@ export const Permit = () => {
         <section className="pm-section">
           <PermitSectionHead kicker="03" number="3" title="The knowledge test" />
           <p className="on-prose">
-            This is the part that most people fail. You need to get at least
-            38/46 questions right to pass. You can take the test 3 times before
-            you have to pay another $45 fee. I recommend using{" "}
+            Most people fail this part. You need at least 38 of 46 questions
+            right to pass. You can take the test 3 times before you have to pay
+            another $45 fee. I recommend using{" "}
             <a
               href="https://www.dmv.ca.gov/portal/driver-education-and-safety/educational-materials/sample-driver-license-dl-knowledge-tests/"
               target="_blank"
@@ -251,20 +237,19 @@ export const Permit = () => {
             >
               these practice tests
             </a>{" "}
-            to study. When I took the test, I got a 43/46, and I only studied
-            using these practice tests. The questions on the actual test are
-            very similar to the practice tests, so if you can pass the practice
-            tests, you can pass the real test.
+            to study. I got 43 of 46 and only studied with these. The real
+            questions are very similar, so if you can pass the practice tests,
+            you can pass the real one.
           </p>
         </section>
 
         <section className="pm-section">
           <PermitSectionHead kicker="04" number="4" title="Congrats!" />
           <p className="on-prose">
-            If you've made it this far, you should have your permit! Now you can
-            start practicing driving with your parents or a licensed driver over
-            25. Make sure to follow all the rules and restrictions on your
-            permit, and don't do anything stupid. Good luck!
+            If you made it this far, you should have your permit. You can now
+            practice driving with your parents or a licensed driver over 25.
+            Follow the rules and restrictions on your permit, and don't do
+            anything stupid. Good luck.
           </p>
         </section>
       </article>

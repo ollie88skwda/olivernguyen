@@ -136,7 +136,7 @@
     background-color var(--dur-state) var(--ease-state);
 }
 .pane-btns button:hover {
-  color: var(--accent-hi);
+  color: var(--accent);
   background: var(--selection);
 }
 

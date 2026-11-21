@@ -51,7 +51,7 @@ const PromptBlock = ({ prompt, overview, onOpen, onNewDraft, creatingDraft }) =>
                 aria-current={current ? 'true' : undefined}
                 title={
                   version.isOdyssey
-                    ? `${version.label} — counselor-authored pass (${version.author})`
+                    ? `${version.label}, counselor pass (${version.author})`
                     : `Open ${version.label}`
                 }
               >
@@ -118,9 +118,7 @@ export const Board = ({ school, eyebrow, showHint, overviews, onOpen, onNewDraft
 
     {showHint && (
       <Reveal as="p" className="es-hint">
-        One block per prompt, each with the question it is actually answering. The rail is the version
-        history — the outlined station is the newest draft, <code>OD</code> marks a counselor-authored
-        pass, and <code>+</code> clones the latest into the next draft.
+        One block per prompt, with the question it answers. The rail is the version history. The outlined station is the newest draft, <code>OD</code> marks a counselor pass, and <code>+</code> clones the latest into the next draft.
       </Reveal>
     )}
 

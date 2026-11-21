@@ -134,7 +134,7 @@ export const Major = () => {
       <main className="sakura mj-page mj-loading">
         <div className="mj-shell">
           <MonoLabel tone="muted" className="mj-loading-label">
-            Loading the doc
+            Loading
           </MonoLabel>
           <Skeleton shape="text" className="mj-loading-skel mj-loading-title" />
           <Skeleton shape="text" className="mj-loading-skel" />
@@ -164,10 +164,10 @@ export const Major = () => {
       <div className="mj-shell">
       <header className="mj-hero">
         <MonoLabel tone="muted" className="mj-hero-eyebrow">
-          Route /major · private · unlinked
+          Private page, not linked anywhere
         </MonoLabel>
         <Display as="h1" className="mj-hero-title">
-          Major Decision Engine
+          Major decision engine
         </Display>
         <Separator className="mj-hero-rule" />
         <p className="mj-hero-sub">

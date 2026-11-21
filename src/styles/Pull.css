@@ -138,7 +138,7 @@
 .pull-banner-date {
   font-family: var(--font-mono-body);
   font-size: var(--fs-mono);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text);
 }
 
@@ -201,7 +201,7 @@
 .pull-card-day {
   font-family: var(--font-mono-body);
   font-size: var(--fs-title);
-  font-weight: 500;
+  font-weight: 600;
   line-height: var(--lh-mono);
   color: var(--text);
 }
@@ -224,7 +224,7 @@
 }
 .pull-card-count {
   color: var(--text);
-  font-weight: 500;
+  font-weight: 600;
 }
 .pull-card-pool {
   color: var(--text-faint);
@@ -309,7 +309,7 @@
   min-width: 0;
 }
 .pull-level-label {
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .pull-level-right {
@@ -321,11 +321,11 @@
 .pull-level-amount {
   font-family: var(--font-mono-body);
   font-size: var(--fs-mono);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text);
 }
 .pull-level[aria-pressed="true"] .pull-level-amount {
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 
 .pull-clear {

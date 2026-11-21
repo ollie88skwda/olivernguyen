@@ -13,12 +13,12 @@ const SATSignup = () => {
   return (
     <div className="sakura sat-signup">
       <main className="sat-signup-main">
-        <Display as="h1">SAT Registration</Display>
+        <Display as="h1">SAT signup</Display>
         <p className="on-prose">
-          This page will contain information about signing up for the SAT.
+          This page will explain how to sign up for the SAT.
         </p>
         <p className="on-prose">
-          A signup form will live here once it is available.
+          The signup form will go here when it's ready.
         </p>
       </main>
     </div>

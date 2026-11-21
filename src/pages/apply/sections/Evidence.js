@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge';
 // not listed here still counts towards the gap totals; this is just what gets a column.
 const TRACKED = [
   { path: 'deadlines.regular', label: 'deadline' },
-  { path: 'admitRate.engineering', label: 'eng admit rate' },
+  { path: 'admitRate.engineering', label: 'engineering admit rate' },
   { path: 'switchPolicy', label: 'switch policy' },
   { path: 'kines', label: 'kinesiology' },
   { path: 'essays', label: 'essays' },
@@ -68,13 +68,12 @@ export const Evidence = ({ doc }) => {
 
   return (
     <section id="evidence" className="ap-sec">
-      <SectionHead kicker="S8 / Evidence" title="What This Page Does Not Know" />
+      <SectionHead kicker="S8 / Evidence" title="What this page does not know" />
 
       <p className="on-prose ap-hint">
-        Every populated field on this page came off a real university page and carries its link and
-        the date it was read. Everything else is listed here as missing rather than filled in with
-        something plausible. A confident wrong deadline costs an application cycle; a visible gap
-        costs an afternoon.
+        Every filled-in field on this page came from a real university page and has its link and
+        the date it was read. Everything else is listed here as missing, not guessed. A wrong
+        deadline can cost you an application cycle. A visible gap costs an afternoon.
       </p>
 
       <div className="ap-ev-stats">
@@ -94,8 +93,8 @@ export const Evidence = ({ doc }) => {
 
       {unsourced === 0 && (
         <p className="ap-ev-clean">
-          Every value shown across all {rows.length} schools carries a source URL. That is the rule
-          the research ran under, and this is the check that it held.
+          Every value shown across all {rows.length} schools has a source URL. That was the rule
+          for the research, and this check confirms it held.
         </p>
       )}
 
@@ -171,20 +170,17 @@ export const Evidence = ({ doc }) => {
         <summary>Plain English: why the gaps are the useful part</summary>
         <div className="pbody">
           <p>
-            A research document that looks complete is more dangerous than one that admits what it
-            missed, because you stop checking. The number above is deliberately large and
-            deliberately visible.
+            A research document that looks complete is riskier than one that admits what it missed,
+            because you stop checking. So the gap count above is large and easy to see.
           </p>
           <p>
-            The rule the research ran under was simple: if a claim could not be traced to a real
-            university page, it got written down as unknown instead of guessed. That is why some
-            schools have a dozen gaps. It is also why the fields that are filled in can be trusted
-            enough to make decisions with.
+            The rule for the research was simple: if a claim could not be traced to a real
+            university page, it was written down as unknown, not guessed. That is why some schools
+            have a dozen gaps. It is also why you can trust the fields that are filled in.
           </p>
           <p>
-            The assumptions list is the same idea pointed at this page's own reasoning. One of them
-            is already marked refuted, and finding that out changed which schools are worth an
-            Early Decision.
+            The assumptions list applies the same idea to this page's own reasoning. One assumption
+            is already marked refuted, and that changed which schools are worth an Early Decision.
           </p>
         </div>
       </details>

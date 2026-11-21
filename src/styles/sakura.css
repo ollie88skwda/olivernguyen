@@ -1,3 +1,10 @@
+@font-face {
+  font-family: "Geologica";
+  src: url("/fonts/Geologica-variable-latin.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 /* ============================================================================
  * SAKURA TOKENS — 04-sakura-palette.md §5, verbatim hexes.
  *
@@ -33,23 +40,30 @@
  * (04 §2.3 / §3.4 dark+light cores, §6.2 / §6.4 the two derived themes).
  * ========================================================================== */
 
+/* Colors: the original Sakura palette (D-02), restored sitewide by D-42
+ * (Oliver 2026-11-20). Fonts, radii and spacing stay on D-41. */
+
 /* ---- LIGHT SAKURA LADDER — "Sakura Paper" (default, and the graph canvas) ---- */
 .sakura {
   --bg: #faf1f5;
   --surface: #fdf8fa;
   --surface-2: #f2e2ea;
+  --hover: #f2e2ea;
   --border: #e2c9d4;
+  --border-strong: #d9b6c4;
   --text: #3a1e2b;
   --text-muted: #6f4459;
   --text-faint: #84536a;
+  --primary: #3a1e2b;
+  --on-primary: #fdf8fa;
   --accent: #a83a68;
   --accent-hi: #93275a;
   --on-accent: #fdf8fa;
   --success: #15734f;
   --warning: #835b10;
   --error: #b93a2c;
-  --selection: #f7cede;
-  /* graph-specific (04 §3.3) */
+  --selection: #f9d9e6; /* D-02 had #f7cede; lightened one step so accent text on it clears 4.5:1 (D-42) */
+  /* graph-specific (retired mode, D-40; kept so graph.css still resolves) */
   --node-fill: #fdf8fa;
   --node-border: #a97188;
   --node-border-active: #a83a68;
@@ -57,30 +71,23 @@
   --routing-pulse: #15734f;
   --dot-grid: #e8d3dc;
 
-  /* NOTE: --border-strong and --error-hi are deliberately NOT declared on the
-   * light core. Adding them here would change shipped graph · light rendering
-   * (components.css reads `var(--border-strong, var(--text-faint))` for control
-   * hairlines), which is a brand decision, not part of deriving a theme. They
-   * are declared on the terminal · light block below, which needs them, and are
-   * a candidate for promotion to the core in a later decision (04 §6.5). */
+  --error-hi: #95241a;
 
-  /* Fonts — BRAND.md §7 / DECISIONS D-07 + D-08. Re-declared here so sakura
-   * never depends on legacy theme.css being loaded (which still points its
-   * own :root --font-display at Big Shoulders; that stack is frozen).
-   *
-   * The mono is SPLIT (D-08): JetBrains Mono for anything you read many lines
-   * of, Martian Mono for labels/chips/statusline/key hints. `--font-mono` is
-   * kept as the label face because every existing sakura-scoped use of it
-   * (chrome nav, mode toggle, graph chips/legend/hintbar) is a label. */
-  --font-display: "Familjen Grotesk", sans-serif;
-  --font-sans: "Hanken Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono-body: "JetBrains Mono", ui-monospace, monospace;
-  --font-mono-label: "Martian Mono", ui-monospace, monospace;
+  /* Fonts: Geologica for everything, system mono for terminal-style labels
+   * (BRAND.md §7, D-41). Re-declared so sakura never depends on theme.css. */
+  --font-display: "Geologica", "Avenir Next", "Segoe UI", Arial, sans-serif;
+  --font-sans: "Geologica", "Avenir Next", "Segoe UI", Arial, sans-serif;
+  --font-mono-body: ui-monospace, "SF Mono", Menlo, monospace;
+  --font-mono-label: ui-monospace, "SF Mono", Menlo, monospace;
   --font-mono: var(--font-mono-label);
 
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);
+  font-weight: 410;
+  font-variation-settings: "SHRP" 100, "CRSV" 0, "slnt" 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* ---- DARK SAKURA LADDER — "Night Plum" (04 §2.1) ---- */
@@ -88,11 +95,14 @@ html[data-theme="dark"] .sakura {
   --bg: #180f14;
   --surface: #1f1319;
   --surface-2: #2a1b22;
+  --hover: #2a1b22;
   --border: #3a2430;
   --border-strong: #5c3a48;
   --text: #f5dce6;
   --text-muted: #d888a8;
   --text-faint: #b0788f;
+  --primary: #f5dce6;
+  --on-primary: #180f14;
   --accent: #ffb7d1;
   --accent-hi: #ff6fb0;
   --on-accent: #1f1319;
@@ -102,13 +112,6 @@ html[data-theme="dark"] .sakura {
   --error-hi: #ea897e;
   --selection: #3a2430;
 
-  /* graph-specific on the dark ladder — GRAPH · DARK, derived 2026-08-26
-   * (04 §6.3/§6.4). Same rule the light set was built with: hold the hue
-   * slice, move only the ladder position. node-fill is --surface (elevation
-   * goes lighter in both ladders); node-border is roseDim, the value BRAND.md
-   * §2.3 reserves for decorative strokes — 3.49:1 on the canvas, mirroring
-   * light's 3.51:1; edge and dot-grid mirror light's 1.66 / 1.28 canvas
-   * ratios so the canvas texture is exactly as quiet at night. */
   --node-fill: #1f1319;
   --node-border: #8f5b70;
   --node-border-active: #ffb7d1;
@@ -141,11 +144,6 @@ html[data-theme="dark"][data-mode="terminal"] .sakura {
  * quietness as --surface-2 (1.11:1 on the page) and the active row is carried
  * by a --border-strong rule plus 500 weight. See 04 §6.5 for the ledger. */
 html[data-theme="light"][data-mode="terminal"] .sakura {
-  /* the console's own hairline, and the deep red its .err class needs. Scoped
-   * here rather than to the light core on purpose — see the note above. */
-  --border-strong: #a97188;
-  --error-hi: #95241a;
-
   --term-log: #6f4459;
   --term-log-dim: #84536a;
   --term-prompt: #93275a;
@@ -173,8 +171,9 @@ html[data-theme="light"][data-mode="terminal"] .sakura {
  * ========================================================================== */
 .sakura {
   /* --- radius (§4): surfaces square · controls 3 · only toggles round --- */
-  --r-surface: 0;
-  --r-control: 3px;
+  --r-xs: 4px;
+  --r-surface: 12px;
+  --r-control: 8px;
   --r-pill: 999px;
 
   /* --- spacing (§5): the 4px ladder, and nothing between its rungs --- */
@@ -210,7 +209,7 @@ html[data-theme="light"][data-mode="terminal"] .sakura {
   --fs-title-lg: 32px;
   --fs-title: 24px;
   --fs-body: 16px;
-  --lh-body: 1.6;
+  --lh-body: 1.55;
   --fs-mono: 13px; /* §7 range 13–14 */
   --lh-mono: 1.7;
   --fs-label: 11px; /* §7 range 10–11 */
@@ -218,14 +217,15 @@ html[data-theme="light"][data-mode="terminal"] .sakura {
    * 12px." This names the nav value — it is not a new decision, and it is a
    * 4px-ladder rung. The 12px floor is a constraint on shrinking it, not a
    * second size, so no token is minted for it. */
-  --fs-wordmark: 20px;
+  --fs-wordmark: 18px;
 
   /* --- icons (§8) --- */
   /* §8: real icons are sized "on an 18px grid". This is that grid unit. It is
    * NOT a spacing-ladder value and must not be used for layout. D-17 fixed the
    * checkbox tick at exactly this size after it had been drawn smaller. */
   --icon: 18px;
-  --track-display: -0.02em;
+  --track-display: -0.05em;
+  --track-heading: -0.02em;
   --track-label: 0.12em; /* §7 range 0.08–0.16em */
 
   /* --- derived roles (no new colour: aliases onto §2 tokens) --- */
@@ -265,7 +265,7 @@ html[data-theme="light"][data-mode="terminal"] .sakura {
   --shadow-dossier: -18px 0 56px color-mix(in srgb, var(--text) 8%, transparent);
   --dossier-border: var(--border);
   /* Focus ring values ratified in BRAND.md §4 / DECISIONS.md D-35. */
-  --focus-ring: var(--accent-hi);
+  --focus-ring: var(--accent);
   --focus-ring-w: 2px;
 }
 

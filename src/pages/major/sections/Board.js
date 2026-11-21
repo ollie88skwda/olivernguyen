@@ -72,7 +72,7 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
 
   return (
     <section id="board" className="mj-sec">
-      <SectionHead kicker="S1 / The Board" title="The Matrix, As A Picture" />
+      <SectionHead kicker="S1 / The Board" title="The matrix, as a picture" />
 
       <p className="mj-hint">
         This is a <Tip term="weighted-matrix">weighted matrix</Tip>, drawn instead of tabulated.

@@ -25,7 +25,7 @@ export const ArticleWriter = () => {
 
   useEffect(() => {
     const previousTitle = document.title;
-    document.title = "Generate Article";
+    document.title = "Generate an article";
 
     return () => {
       document.title = previousTitle;
@@ -58,7 +58,7 @@ export const ArticleWriter = () => {
       setArticleHTML(htmlContent);
     } catch (err) {
       console.error("Error generating article:", err);
-      setError("Couldn't generate the article: the local generator service may be offline.");
+      setError("Couldn't generate the article. The local generator may be offline.");
     } finally {
       setLoading(false);
     }
@@ -67,17 +67,17 @@ export const ArticleWriter = () => {
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(articleHTML);
-      alert("Article copied to clipboard!");
+      alert("Article copied.");
     } catch (err) {
       console.error("Error copying article:", err);
-      alert("Couldn't copy to clipboard.");
+      alert("Couldn't copy. Try again.");
     }
   };
 
   return (
     <main className="sakura aw-page">
       <div className="aw-content">
-        <SectionHead as="h1" title="Generate an Article" />
+        <SectionHead as="h1" title="Generate an article" />
 
       <form className="aw-form" onSubmit={handleGenerateArticle}>
         <Label htmlFor="aw-product">Product name</Label>
@@ -87,10 +87,10 @@ export const ArticleWriter = () => {
           type="text"
           value={product}
           onChange={(e) => setProduct(e.target.value)}
-          placeholder="Enter product name"
+          placeholder="Product name"
         />
         <Button className="aw-submit" type="submit" disabled={loading}>
-          Generate Article
+          Generate article
         </Button>
       </form>
 
@@ -115,7 +115,7 @@ export const ArticleWriter = () => {
       {articleHTML && !loading && (
         <Card className="aw-card">
           <CardHeader>
-            <CardTitle as="h2">Generated Article</CardTitle>
+            <CardTitle as="h2">Generated article</CardTitle>
             <MonoLabel tone="muted">HTML</MonoLabel>
           </CardHeader>
           <CardContent>
@@ -127,7 +127,7 @@ export const ArticleWriter = () => {
           </CardContent>
           <CardFooter>
             <Button variant="ghost" type="button" onClick={handleCopy}>
-              Copy to Clipboard
+              Copy to clipboard
             </Button>
           </CardFooter>
         </Card>

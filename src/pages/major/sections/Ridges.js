@@ -177,7 +177,7 @@ export const Ridges = ({ doc, derived }) => {
 
   return (
     <section id="uncertainty" className="mj-sec">
-      <SectionHead kicker="S3 / Uncertainty" title="How Much The Three Overlap" />
+      <SectionHead kicker="S3 / Uncertainty" title="How much the three overlap" />
 
       <p className="mj-hint">
         You do not enter one number per box, you enter a <Tip term="range">range</Tip>. Then the page

@@ -27,12 +27,17 @@
   display: block;
   margin-bottom: var(--s-3); /* §5: label → content */
 }
-.ap-hero-title {
-  margin: 0 0 var(--s-6);
-  color: var(--accent-hi);
+.sakura .ap-hero .ap-hero-title {
+  margin: var(--s-3) 0 var(--s-6);
+  font-size: clamp(2.5rem, 7vw, 4rem);
+  font-weight: 760;
+  letter-spacing: var(--track-display);
+  line-height: 0.96;
+  color: var(--accent);
 }
-.ap-hero-rule {
+.sakura .ap-hero .ap-hero-rule {
   width: var(--s-16); /* §5 */
+  margin-top: 0;
   border-color: var(--accent-hi);
   margin-bottom: var(--s-4);
 }
@@ -106,7 +111,7 @@
   font-weight: 700;
   font-size: var(--fs-title);
   letter-spacing: var(--track-display);
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 .ap-status-line {
   margin: 0 0 var(--s-2);
@@ -153,7 +158,7 @@
   font-weight: 700;
   font-size: var(--fs-title);
   letter-spacing: var(--track-display);
-  fill: var(--accent-hi);
+  fill: var(--accent);
 }
 .ap-dial-k {
   text-anchor: middle;
@@ -186,12 +191,12 @@
   color: var(--text-faint);
   margin-bottom: var(--s-1);
 }
-/* dates are numbers: JetBrains body (§7 mono bodies) */
+/* dates are numbers: mono body */
 .ap-clock-v {
   font-family: var(--font-mono-body);
   font-size: var(--fs-title);
   line-height: 1;
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 
 /* ── S1 Board ────────────────────────────────────────────────────────────── */
@@ -223,7 +228,7 @@
   text-align: right;
 }
 .ap-total {
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 .ap-board-name {
   font-weight: 600;
@@ -255,7 +260,7 @@
   color: var(--text-muted);
 }
 /* the ink cell — a flagged data encoding: rating darkness via §2 tokens.
-   The colour ramp is data, the shape is a control (3px, §4). */
+   The colour ramp is data, the shape is a control (radius 8, §4). */
 .ap-cellbtn {
   box-sizing: border-box;
   width: 100%;
@@ -284,7 +289,7 @@
   color: inherit;
 }
 /* unresearched cells: hatched, not shaded — a mid grey would read "average"
-   and the honest answer is unknown. Hatch is a flagged legacy encoding,
+   and the honest answer is unknown. Hatch is a flagged data encoding,
    recoloured onto §2 tokens. */
 .ap-cellbtn[data-unknown="true"] {
   background: repeating-linear-gradient(
@@ -403,7 +408,7 @@
   font-weight: 700;
   font-size: var(--fs-title);
   letter-spacing: var(--track-display);
-  color: var(--accent-hi);
+  color: var(--accent);
   line-height: 1.1;
   flex: 1 1 0;
   min-width: 0;
@@ -417,7 +422,7 @@
 /* The rung ladder — a flagged custom control: a 17-stop radio scale whose
    intensity (distance from the centre) is part of the encoding, so it stays
    page composition. Semantics are already radio (role/aria-checked); the
-   tint ramp is token-mapped (§2) instead of navy rgba. */
+   tint ramp is token-mapped (§2) instead of a fixed rgba. */
 .ap-ladder {
   display: flex;
   gap: var(--s-1);
@@ -449,16 +454,16 @@
   background: var(--surface-2);
 }
 .ap-rung-on {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--accent-hi);
+  border-color: var(--accent-hi);
 }
 .ap-rung-on i {
   color: var(--on-accent);
   font-weight: 700;
 }
 .ap-rung-on:hover {
-  background: var(--accent);
-  border-color: var(--accent);
+  background: var(--accent-hi);
+  border-color: var(--accent-hi);
 }
 @media (pointer: coarse) {
   .ap-ladder {
@@ -513,7 +518,7 @@
   text-align: right;
   font-family: var(--font-mono-body);
   font-size: var(--fs-label);
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 .ap-cr {
   margin: var(--s-4) 0 0;
@@ -582,7 +587,7 @@
 .ap-rho-head output {
   font-family: var(--font-mono-body);
   font-size: var(--fs-title);
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 /* range sliders — flagged custom controls: no library slider exists, so the
    native control is token-styled via accent-color (§2). */
@@ -632,7 +637,7 @@
   text-align: right;
   font-family: var(--font-mono-body);
   font-size: var(--fs-label);
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 /* the "wrong answer" bar, shown for comparison — hatched (flagged encoding),
    token-mapped like the board cells. */
@@ -709,7 +714,7 @@
   font-size: var(--fs-label);
   letter-spacing: var(--track-label);
   text-transform: uppercase;
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 .ap-ed-v {
   margin: 0 0 var(--s-2);
@@ -717,7 +722,7 @@
   font-weight: 700;
   font-size: var(--fs-title);
   letter-spacing: var(--track-display);
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 .ap-ed-note {
   margin: 0;
@@ -751,7 +756,7 @@
   font-weight: 700;
   font-size: var(--fs-title);
   letter-spacing: var(--track-display);
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 .ap-profile-local {
   font-family: var(--font-mono-label);
@@ -781,13 +786,13 @@
   flex-direction: column;
   gap: var(--s-3); /* §5: label → content */
 }
-/* the hint sits inside the Martian label; it resets to the sans body voice */
+/* the hint sits inside the mono label; it resets to the sans body voice */
 .ap-pfield-hint {
   display: block;
   margin-top: var(--s-1);
   text-transform: none;
   font-family: var(--font-sans);
-  font-weight: 400;
+  font-weight: 410;
   letter-spacing: 0;
   font-size: var(--fs-body);
   color: var(--text-faint);
@@ -833,7 +838,7 @@
 }
 .ap-urgent-list b {
   font-family: var(--font-mono-body);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--warning);
   margin-right: var(--s-1);
 }
@@ -1063,7 +1068,7 @@
 .ap-collide li b {
   font-family: var(--font-mono-body);
   font-size: var(--fs-label);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text);
   margin-right: var(--s-2);
 }
@@ -1080,7 +1085,7 @@
 }
 /* ED is one choice with many candidates, not many obligations */
 .ap-collide-ed {
-  background: var(--accent);
+  background: var(--accent-hi);
   color: var(--on-accent);
 }
 .ap-collide li em {
@@ -1142,7 +1147,7 @@
   font-weight: 600;
 }
 .ap-tl-ed {
-  color: var(--accent-hi);
+  color: var(--accent);
   font-weight: 600;
 }
 
@@ -1211,7 +1216,7 @@
 }
 .ap-mode-on,
 .ap-mode-on:hover {
-  background: var(--accent);
+  background: var(--accent-hi);
   color: var(--on-accent);
 }
 .ap-filter-blurb {
@@ -1390,7 +1395,7 @@
   min-width: 640px;
 }
 .ap-ev-cell a {
-  color: var(--accent-hi);
+  color: var(--accent);
   text-underline-offset: 3px;
 }
 .ap-ev-cell a:hover {
@@ -1461,7 +1466,7 @@
   font-weight: 700;
   font-size: var(--fs-body);
   letter-spacing: var(--track-display);
-  color: var(--accent-hi);
+  color: var(--accent);
   line-height: 1.2;
 }
 .ap-gloss dd {
@@ -1503,7 +1508,7 @@
   border-bottom: 1px dotted var(--text-faint);
 }
 .sakura .tt::after {
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 .sakura .tt .bub {
   display: none;
@@ -1560,7 +1565,7 @@
   font-size: var(--fs-label);
   letter-spacing: var(--track-label);
   text-transform: uppercase;
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 .sakura details.plain > summary::-webkit-details-marker {
   display: none;
@@ -1645,4 +1650,8 @@
   .sakura .tt .bub {
     animation: none;
   }
+}
+
+.ap-urgent-list li > :last-child:not(span:first-of-type) {
+  margin-left: var(--s-2);
 }

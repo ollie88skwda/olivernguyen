@@ -11,7 +11,8 @@
 // Resolution (THEMES.md §6.1):
 //   1. ?theme= URL param        (shareable links; also written back on toggle)
 //   2. localStorage 'on.theme'  (returning visitors)
-//   3. prefers-color-scheme     (first visit only — see below)
+//   3. prefers-color-scheme     (first visit only — see below; skipped on
+//                                the portfolio home "/", which opens light, D-40)
 //   4. 'light'                  (matches `.sakura`, the un-themed default)
 //
 // An explicit choice WINS AND PERSISTS. The OS preference is followed live
@@ -41,6 +42,9 @@ const ThemeContext = createContext(null);
 
 // { theme, explicit } — `explicit` is false only for an OS-derived first visit,
 // which is the one state where the OS is still allowed to change our mind.
+// The portfolio home always opens light for first-time visitors (D-40).
+const followsOs = () => window.location.pathname !== "/";
+
 const resolveInitialTheme = () => {
   try {
     const param = new URLSearchParams(window.location.search).get("theme");
@@ -50,11 +54,13 @@ const resolveInitialTheme = () => {
   } catch {
     /* storage blocked (private mode) — fall through */
   }
-  try {
-    if (window.matchMedia(DARK_MQ).matches)
-      return { theme: "dark", explicit: false };
-  } catch {
-    /* no matchMedia — fall through */
+  if (followsOs()) {
+    try {
+      if (window.matchMedia(DARK_MQ).matches)
+        return { theme: "dark", explicit: false };
+    } catch {
+      /* no matchMedia — fall through */
+    }
   }
   return { theme: "light", explicit: false };
 };
@@ -90,7 +96,7 @@ export const ThemeProvider = ({ children }) => {
 
   // Follow the OS until the visitor chooses. After that this listener is inert.
   useEffect(() => {
-    if (explicit) return undefined;
+    if (explicit || !followsOs()) return undefined;
     let mq;
     try {
       mq = window.matchMedia(DARK_MQ);

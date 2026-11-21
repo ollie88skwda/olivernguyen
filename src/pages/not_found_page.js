@@ -1,18 +1,11 @@
 import React from "react";
-import "../styles/App.css";
+import "../styles/sakura.css";
+import "../styles/NotFound.css";
 
-export const NotFoundPage = () => {
-  return (
-    <div>
-      <div className="content">
-        <h1>You probably shouldn't be here...</h1>
-        <div className="try-links">
-          <h2>Try:</h2>
-          <h3>
-            <a href="/">Home</a>
-          </h3>
-        </div>
-      </div>
-    </div>
-  );
-};
+export const NotFoundPage = () => (
+  <main className="sakura nf-page">
+    <p className="nf-code">404</p>
+    <h1>This page doesn't exist</h1>
+    <a className="nf-home" href="/">Back home</a>
+  </main>
+);

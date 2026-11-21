@@ -113,7 +113,7 @@ export const Status = ({ doc, derived }) => {
 
   return (
     <section id="status" className="mj-sec">
-      <SectionHead kicker="S0 / Status" title="Where It Stands" />
+      <SectionHead kicker="S0 / Status" title="Where it stands" />
 
       <div className="mj-status">
         <Dial score={confidence.score} label={confidence.label} />

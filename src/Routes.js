@@ -7,7 +7,7 @@ import { ClerkProvider } from "@clerk/react";
 import { NotFoundPage } from "./pages/not_found_page.js";
 import { SATResourcesError, SATResourcesLoading } from "./pages/sat/sat_route_states.jsx";
 // X-1 (P4): src/pages/home.js is unmounted but left in the tree, flagged.
-import Home from "./home/Home.jsx";
+import Home from "./portfolio/Portfolio.jsx";
 import RequirePassphrase from "./auth/RequirePassphrase";
 import RequireClerk, { clerkKey } from "./auth/RequireClerk";
 import RequireOwner from "./auth/RequireOwner.jsx";
@@ -113,7 +113,7 @@ const NavigationBridge = () => {
 
 const SiteChrome = ({ clerkEnabled }) => {
   const { pathname } = useLocation();
-  if (NO_CHROME.some((route) => pathname.startsWith(route))) return null;
+  if (pathname === "/" || NO_CHROME.some((route) => pathname.startsWith(route))) return null;
   return <ChromeBar clerkEnabled={clerkEnabled} />;
 };
 
@@ -195,35 +195,35 @@ export const Routes = () => {
         </Route>
         <Route path="/major">
           <RequirePassphrase label="Route /major · private" route="/major">
-            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
+            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "var(--bg, #faf1f5)" }} />}>
               <Major />
             </Suspense>
           </RequirePassphrase>
         </Route>
         <Route path="/apply">
           <RequirePassphrase label="Route /apply · private" route="/apply">
-            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
+            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "var(--bg, #faf1f5)" }} />}>
               <Apply />
             </Suspense>
           </RequirePassphrase>
         </Route>
         <Route path="/studio/:schoolSlug/:promptSlug/:versionKey">
           <RequireClerk>
-            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
+            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "var(--bg, #faf1f5)" }} />}>
               <WritingRoom />
             </Suspense>
           </RequireClerk>
         </Route>
         <Route path="/studio">
           <RequireClerk>
-            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
+            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "var(--bg, #faf1f5)" }} />}>
               <EssayStudio />
             </Suspense>
           </RequireClerk>
         </Route>
         <Route path="/transfer">
           <RequireClerk>
-            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#f1e9d4" }} />}>
+            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "var(--bg, #faf1f5)" }} />}>
               <Transfer />
             </Suspense>
           </RequireClerk>

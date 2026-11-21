@@ -248,7 +248,7 @@ body:has(.site-chrome-bar) .graph-root {
 .graph-root .g-dot {
   width: var(--s-2); height: var(--s-2);
   border-radius: var(--r-pill);
-  background: var(--accent);
+  background: var(--accent-hi);
   flex: none;
 }
 
@@ -347,7 +347,7 @@ body:has(.site-chrome-bar) .graph-root {
 .graph-root .filterbar .slash {
   font-family: var(--font-mono-body);
   font-size: var(--fs-mono);
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 .graph-root .f-input {
   font-family: var(--font-mono-body);
@@ -403,7 +403,7 @@ body:has(.site-chrome-bar) .graph-root {
     background-color var(--dur-state) var(--ease-state);
 }
 .graph-root .sug.sel, .graph-root .sug:hover { background: var(--surface-2); }
-.graph-root .sug.sel .sl, .graph-root .sug:hover .sl { color: var(--accent-hi); }
+.graph-root .sug.sel .sl, .graph-root .sug:hover .sl { color: var(--accent); }
 
 /* ------------------------------ ⌘K palette ----------------------------- */
 
@@ -454,7 +454,7 @@ body:has(.site-chrome-bar) .graph-root {
     background-color var(--dur-state) var(--ease-state);
 }
 .graph-root .pal-list li.sel, .graph-root .pal-list li:hover { background: var(--surface-2); }
-.graph-root .pal-list li.sel .pl, .graph-root .pal-list li:hover .pl { color: var(--accent-hi); }
+.graph-root .pal-list li.sel .pl, .graph-root .pal-list li:hover .pl { color: var(--accent); }
 .graph-root .pal-list .empty {
   color: var(--text-faint);
   font-family: var(--font-mono-body);

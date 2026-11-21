@@ -28,7 +28,7 @@ describe('RequireClerk', () => {
     delete process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
     useAuth.mockReturnValue({ isLoaded: true, isSignedIn: false });
     renderGate();
-    expect(screen.getByText(/not configured/i)).toBeInTheDocument();
+    expect(screen.getByText(/not set up/i)).toBeInTheDocument();
     expect(screen.queryByText('vault')).not.toBeInTheDocument();
   });
 
@@ -37,7 +37,7 @@ describe('RequireClerk', () => {
     useAuth.mockReturnValue({ isLoaded: false, isSignedIn: false });
     renderGate();
     expect(screen.queryByText('vault')).not.toBeInTheDocument();
-    expect(screen.queryByText(/not configured/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/not set up/i)).not.toBeInTheDocument();
   });
 
   it('does not render the vault when loaded and signed out', () => {

@@ -103,7 +103,7 @@ const routes = [
     "/definitely-not-a-page",
     async (page) => {
       await expect(
-        page.getByText(/you probably shouldn't be here/i),
+        page.getByText(/this page doesn't exist/i),
       ).toBeVisible();
     },
   ],

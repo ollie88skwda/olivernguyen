@@ -88,7 +88,7 @@ test("type roles and radii map to brand tokens", async ({ page }) => {
   const inputRadius = await page.locator(".on-field").first().evaluate((el) => getComputedStyle(el).borderRadius);
   expect(inputRadius).toBe("3px");
   // pills are the only 999px things: enter edit mode to render the save stamp
-  await page.getByRole("button", { name: "EDIT", exact: true }).click();
+  await page.getByRole("button", { name: "Edit", exact: true }).click();
   const pill = page.locator("[data-slot='status-pill']");
   const pillRadius = await pill.evaluate((el) => getComputedStyle(el).borderRadius);
   expect(pillRadius).toBe("999px");
@@ -99,7 +99,7 @@ test("focus ring appears on controls and tooltip bubbles carry no shadow", async
   await page.goto("/apply?theme=dark");
   await page.waitForSelector(".ap-board tbody tr");
 
-  const btn = page.getByRole("button", { name: "EDIT", exact: true });
+  const btn = page.getByRole("button", { name: "Edit", exact: true });
   await btn.focus();
   const outline = await btn.evaluate((el) => getComputedStyle(el).outlineStyle);
   expect(outline).not.toBe("none");
@@ -120,7 +120,7 @@ test("edit controls reach 40px on a fine pointer and board cells 32px", async ({
   await page.goto("/apply?theme=light");
   await page.waitForSelector(".ap-board tbody tr");
 
-  const edit = page.getByRole("button", { name: "EDIT", exact: true });
+  const edit = page.getByRole("button", { name: "Edit", exact: true });
   expect(await edit.evaluate((el) => el.getBoundingClientRect().height)).toBe(40);
   const cell = page.locator(".ap-cellbtn").first();
   expect(await cell.evaluate((el) => el.getBoundingClientRect().height)).toBe(32);

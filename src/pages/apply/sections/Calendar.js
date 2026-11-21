@@ -75,12 +75,12 @@ export const Calendar = ({ doc, derived }) => {
 
   return (
     <section id="calendar" className="ap-sec">
-      <SectionHead kicker="S5 / Calendar" title="The Season, To Scale" />
+      <SectionHead kicker="S5 / Calendar" title="The season, to scale" />
 
       <p className="on-prose ap-hint">
-        Everything with a date, laid on one line from the day applications open to the last
-        deadline worth planning around. Only the {programCount} programmes whose door actually
-        shuts appear here; the ones you can join later are not emergencies.
+        Everything with a date, on one line from the day applications open to the last deadline
+        worth planning around. Only the {programCount} programs whose door shuts appear here. The
+        ones you can join later are not urgent.
       </p>
 
       <div className="ap-gantt">
@@ -145,9 +145,9 @@ export const Calendar = ({ doc, derived }) => {
             ))}
           </ul>
           <p className="ap-collide-note">
-            These are the weeks a plan actually fails in. Nothing here is individually hard; the
-            problem is that they land together, and the essays for them get written in the weeks
-            before, not during.
+            These are the weeks a plan falls apart. Nothing here is hard on its own. The problem is
+            that it all lands together, and the essays get written in the weeks before, not
+            during.
           </p>
         </div>
       )}
@@ -174,13 +174,12 @@ export const Calendar = ({ doc, derived }) => {
           <p>
             Everyone quotes November 30, because that is when the UC application closes. But you
             said you are willing to use Early Decision, and Early Decision is binding and
-            single-use. That choice gets made around November 1, and once it is made it cannot be
-            unmade.
+            single-use. That choice gets made around November 1, and you cannot undo it.
           </p>
           <p>
-            So the decision that constrains everything else lands a month before the deadline
-            people plan around. The scholarship competitions land even earlier, some of them in
-            early October, and those are the ones that vanish entirely if you miss them.
+            So the decision that limits everything else comes a month before the deadline people
+            plan around. The scholarship competitions come even earlier, some in early October, and
+            you lose those completely if you miss them.
           </p>
         </div>
       </details>

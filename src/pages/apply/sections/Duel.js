@@ -83,7 +83,7 @@ export const Duel = ({ doc, derived, updateDoc }) => {
   if (pairs.length === 0) {
     return (
       <section id="weights" className="ap-sec">
-        <SectionHead kicker="S2 / Weights" title="You Never Type A Weight" />
+        <SectionHead kicker="S2 / Weights" title="You never type a weight" />
         <p className="on-prose ap-hint">Add at least two criteria and the matchups appear here.</p>
       </section>
     );
@@ -111,20 +111,19 @@ export const Duel = ({ doc, derived, updateDoc }) => {
 
   return (
     <section id="weights" className="ap-sec">
-      <SectionHead kicker="S2 / Weights" title="You Never Type A Weight" />
+      <SectionHead kicker="S2 / Weights" title="You never type a weight" />
 
       <p className="on-prose ap-hint">
-        Asked how important special programs are out of 100, you would make something up. Nobody
-        can answer that honestly. But you can answer this one against that one, all day. So the
-        page asks {pairs.length} small matchups and works the <Tip term="weight">weights</Tip> out
-        from the answers. The method is called <Tip term="ahp">AHP</Tip>.
+        If you were asked how important special programs are out of 100, you would make a number
+        up. Comparing one thing against another is easier. So the page asks {pairs.length} small
+        matchups and works out the <Tip term="weight">weights</Tip> from your answers. The method
+        is called <Tip term="ahp">AHP</Tip>.
       </p>
 
       <p className="on-prose ap-hint ap-hint-sub">
-        These start pre-answered, which is unusual and deliberate. They encode two decisions you
-        already made: that kinesiology is a nice-to-have rather than a co-equal criterion, and that
-        a program that makes you stand out beats a department that ranks higher. Change any of them
-        and every weight moves.
+        These start answered. They encode two decisions you already made: kinesiology is a
+        nice-to-have, not an equal criterion, and a program that makes you stand out beats a
+        department that ranks higher. Change any answer and every weight moves.
       </p>
 
       <div className="ap-duel-progress">
@@ -168,13 +167,13 @@ export const Duel = ({ doc, derived, updateDoc }) => {
 
         <div className="ap-duel-nav">
           <Button type="button" variant="ghost" onClick={() => step(-1)}>
-            prev
+            Prev
           </Button>
           <MonoLabel tone="faint" className="ap-duel-at">
             {index + 1} / {pairs.length}
           </MonoLabel>
           <Button type="button" variant="ghost" onClick={() => step(1)}>
-            next
+            Next
           </Button>
         </div>
       </div>
@@ -197,9 +196,9 @@ export const Duel = ({ doc, derived, updateDoc }) => {
 
       <p className={checkable && !consistent ? 'ap-cr ap-cr-bad' : 'ap-cr'}>
         {!checkable
-          ? 'Answer three or more matchups and the page starts checking whether they agree with each other.'
+          ? 'Answer three or more matchups and the page checks whether your answers agree with each other.'
           : consistent
-            ? `Your answers agree with each other. Consistency ratio ${cr.toFixed(2)}, anything under ${CR_LIMIT} is fine.`
+            ? `Your answers agree with each other. Consistency ratio ${cr.toFixed(2)}. Anything under ${CR_LIMIT} is fine.`
             : `Your answers contradict each other somewhere. Consistency ratio ${cr.toFixed(2)}, over the ${CR_LIMIT} limit.`}
       </p>
 
@@ -207,19 +206,18 @@ export const Duel = ({ doc, derived, updateDoc }) => {
         <summary>Plain English: why comparing two at a time works better</summary>
         <div className="pbody">
           <p>
-            Handing out percentages across four things at once is a task people are genuinely bad
-            at. The numbers come out round, they sum to 100 because you forced them to, and they do
-            not survive being asked again a week later.
+            People are bad at handing out percentages across four things at once. The numbers come
+            out round, they sum to 100 because you forced them to, and they change when you are
+            asked again a week later.
           </p>
           <p>
-            Comparing two things is something people are good at. Ask enough pairs and the answers
-            pin down a full set of weights, and they pin it down more honestly than the direct
-            question would have.
+            People are good at comparing two things. Ask enough pairs and the answers pin down a
+            full set of weights, and they do it better than the direct question would.
           </p>
           <p>
             It also lets the page catch you contradicting yourself. If you say A beats B, B beats C,
-            and C beats A, there is no set of weights that fits, and the consistency ratio above
-            says so instead of quietly averaging the contradiction away.
+            and C beats A, no set of weights fits. The consistency ratio above says so instead of
+            averaging the contradiction away.
           </p>
         </div>
       </details>

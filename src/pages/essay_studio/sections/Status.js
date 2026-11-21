@@ -27,7 +27,7 @@ const Group = ({ school, showLabel, onOpen }) => {
             label={prompt.title}
             count={prompt.latest.wordCount}
             limit={prompt.latest.wordLimit}
-            title={`Open ${school.name} — ${prompt.title} ${prompt.latest.label}`}
+            title={`Open ${school.name}, ${prompt.title} ${prompt.latest.label}`}
             onClick={() => onOpen(prompt, prompt.latest)}
           />
         ))}
@@ -44,7 +44,7 @@ export const Status = ({ schools, eyebrow, onOpen }) => {
 
   return (
     <section id="status" className="es-sec">
-      <SectionHeading eyebrow={eyebrow} title="Where Everything Stands" />
+      <SectionHeading eyebrow={eyebrow} title="Where things stand" />
 
       <Reveal as="p" className="es-hint">
         One bar per prompt, drawn on the latest draft. The wall is that prompt&rsquo;s word limit;

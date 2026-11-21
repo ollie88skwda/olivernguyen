@@ -100,7 +100,7 @@ export const Apply = () => {
   if (loading || !doc || !derived) {
     return (
       <main className="ap-page ap-loading sakura">
-        <MonoLabel tone="faint">LOADING THE BOARD</MonoLabel>
+        <MonoLabel tone="faint">Loading the board</MonoLabel>
       </main>
     );
   }
@@ -108,8 +108,8 @@ export const Apply = () => {
   const savedTime = savedAt ? new Date(savedAt) : null;
   const stamp =
     savedTime && !Number.isNaN(savedTime.getTime())
-      ? `SAVED ${savedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}`
-      : 'NOT SAVED YET';
+      ? `Saved ${savedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}`
+      : 'Not saved yet';
 
   const sectionProps = { doc, derived, editing, updateDoc, profile, setProfile };
   const clock = { binding: daysUntil(BINDING), uc: daysUntil(UC_CLOSE) };
@@ -123,16 +123,16 @@ export const Apply = () => {
             Route /apply · private · unlinked
           </MonoLabel>
           <Display as="h1" className="ap-hero-title">
-            Where To Apply
+            Where to apply
           </Display>
           <Separator className="ap-hero-rule" />
           <p className="on-prose ap-hero-sub">
-            /major decides what to study. This decides where to apply, and it scores the whole
-            list rather than ranking schools one at a time.
+            /major decides what to study. This page decides where to apply. It scores the whole
+            list instead of ranking schools one at a time.
           </p>
           <p className="on-prose ap-hero-note">
-            Every claim here came off a real university page and carries its link and the date it
-            was read. Anything nobody checked yet says so instead of guessing.
+            Every claim here came from a real university page and has its link and the date it was
+            read. Anything nobody has checked yet says so.
           </p>
         </header>
 
@@ -150,7 +150,7 @@ export const Apply = () => {
         <div className="ap-tools">
           {editing && (
             <StatusPill status={offline ? 'warning' : 'live'}>
-              {offline ? 'OFFLINE, NOT SAVING' : stamp}
+              {offline ? 'Offline, not saving' : stamp}
             </StatusPill>
           )}
           <Button
@@ -159,7 +159,7 @@ export const Apply = () => {
             aria-pressed={editing}
             onClick={() => setEditing((on) => !on)}
           >
-            {editing ? 'DONE' : 'EDIT'}
+            {editing ? 'Done' : 'Edit'}
           </Button>
         </div>
       </main>

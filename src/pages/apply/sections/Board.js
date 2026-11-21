@@ -89,14 +89,13 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
 
   return (
     <section id="board" className="ap-sec">
-      <SectionHead kicker="S1 / The Board" title="Every School, As Ink" />
+      <SectionHead kicker="S1 / The Board" title="Every school, as ink" />
 
       <p className="on-prose ap-hint">
-        Each column is one thing you care about and each box is how well a school does on it.
-        Darker is better. The number at the end of a row is the whole{' '}
-        <Tip term="weighted-matrix">weighted</Tip> result. Columns are even and the{' '}
-        <Tip term="weight">weight</Tip> sits under each heading as a bar and a percentage, so the
-        heading can just be the name of the thing.
+        Each column is one thing you care about. Each box shows how well a school does on it, and
+        darker is better. The number at the end of a row is the full{' '}
+        <Tip term="weighted-matrix">weighted</Tip> result. The <Tip term="weight">weight</Tip>{' '}
+        sits under each heading as a bar and a percentage.
       </p>
 
       <div className="ap-board-tools">
@@ -138,7 +137,7 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
                     </span>
                   </TableHead>
                 ))}
-                <TableHead numeric>total</TableHead>
+                <TableHead numeric>Total</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -194,7 +193,7 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
                               data-unknown={unknown || undefined}
                               aria-label={label}
                             >
-                              <span className="ap-cell-v">{unknown ? '—' : dec2(rating)}</span>
+                              <span className="ap-cell-v">{unknown ? '?' : dec2(rating)}</span>
                             </button>
                           </TooltipTrigger>
                           <TooltipContent align={tooltipAlign(index)} side="top" sideOffset={8} className="ap-cell-tip">
@@ -202,7 +201,7 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
                               {school.name} · {criterion.label}
                             </b>
                             {unknown ? (
-                              <span>Not researched yet. Wide on purpose, so it reads as unknown.</span>
+                              <span>Not researched yet. The range is wide so it reads as unknown.</span>
                             ) : (
                               <>
                                 <span>
@@ -238,13 +237,13 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
           className="ap-more"
           onClick={() => setShowAll((on) => !on)}
         >
-          {showAll ? 'show top 12' : `show all ${schools.length}`}
+          {showAll ? 'Show top 12' : `Show all ${schools.length}`}
         </Button>
       )}
 
       <div className="ap-legend">
         <span className="ap-key">
-          Darkness is how well a school does on that column
+          Darker means a school does better on that column
           <span className="ap-ramp" aria-hidden="true">
             {RAMP.map((step) => (
               <i key={step} style={{ background: cellStyle(step).background }} />
@@ -263,20 +262,19 @@ export const Board = ({ doc, derived, editing, updateDoc }) => {
         <summary>Plain English: where these scores came from</summary>
         <div className="pbody">
           <p>
-            Three of the four columns were filled in from research, not opinion. Whether a
-            kinesiology department exists is a fact. Whether you can start undeclared and how hard
-            it is to switch majors afterwards are facts. How many programs a school has whose door
-            shuts when high school ends is a fact. Hover any box and it tells you the rule that
-            produced its number.
+            Three of the four columns come from research, not opinion. Whether a kinesiology
+            department exists is a fact. So is whether you can start undeclared, how hard it is to
+            switch majors afterwards, and how many programs a school has whose door shuts when high
+            school ends. Hover any box to see the rule that produced its number.
           </p>
           <p>
-            Program strength is the exception. Whether Georgia Tech beats Purdue for what you
-            actually want to do is your call, not something a page can look up, so every school
-            starts as a placeholder there until you fill it in.
+            Program strength is the exception. Whether Georgia Tech beats Purdue for what you want
+            to do is your call, not something a page can look up. Every school starts as a
+            placeholder there until you fill it in.
           </p>
           <p>
-            Anything nobody has checked stays hatched and wide rather than landing in the middle. A
-            grey box in the middle would read as average, and the honest answer is that we do not
+            Anything nobody has checked stays hatched and wide instead of landing in the middle. A
+            grey box in the middle would read as average, and the real answer is that we do not
             know yet.
           </p>
         </div>

@@ -79,7 +79,7 @@
 .mj-hero-sub {
   margin: var(--s-6) 0 0;
   font-family: var(--font-sans);
-  font-weight: 500;
+  font-weight: 410;
   font-size: var(--fs-title);
   line-height: var(--lh-body);
   color: var(--text-muted);
@@ -180,7 +180,7 @@
 }
 .sakura .tt::after {
   font-family: var(--font-mono-label);
-  color: var(--accent-hi);
+  color: var(--accent);
   margin-left: var(--s-1);
 }
 .sakura .tt .bub {
@@ -190,7 +190,7 @@
   color: var(--text);
   font-family: var(--font-sans);
   font-size: var(--fs-body);
-  font-weight: 400;
+  font-weight: 410;
   line-height: var(--lh-body);
   letter-spacing: 0;
   text-transform: none;
@@ -231,7 +231,7 @@
   color: var(--warning);
 }
 .mj-lvl-lean {
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 .mj-lvl-clear {
   color: var(--success);
@@ -427,7 +427,7 @@
   font-size: var(--fs-label);
   letter-spacing: var(--track-label);
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-faint);
 }
 .mj-pop-note {
@@ -457,7 +457,7 @@
   justify-content: flex-end;
   font-family: var(--font-mono-body);
   font-size: var(--fs-mono);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text);
 }
 
@@ -761,7 +761,7 @@
 }
 .mjb-torn-hit:hover .mjb-torn-l,
 .mjb-torn-hit:focus-visible .mjb-torn-l {
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 .mjb-torn-hit:hover .mjb-torn-bar {
   opacity: 0.82;
@@ -1078,7 +1078,7 @@
   margin-top: var(--s-2);
 }
 .mjc-link {
-  color: var(--accent-hi);
+  color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 3px;
   transition: color var(--dur-state) var(--ease-state);

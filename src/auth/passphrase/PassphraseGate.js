@@ -16,7 +16,7 @@ export const PassphraseGate = ({ label }) => {
   };
 
   return (
-    <main className="gate">
+    <main className="sakura gate">
       <form className={error ? 'gate-card gate-wrong' : 'gate-card'} onSubmit={submit}>
         <p className="gate-eyebrow">{label}</p>
         <h1 className="gate-title">Passphrase</h1>

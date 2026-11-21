@@ -93,7 +93,7 @@ export const Transfer = () => {
       setCopiedId(item.id);
       setTimeout(() => setCopiedId((current) => (current === item.id ? null : current)), 1500);
     } catch {
-      setError('Clipboard is blocked in this browser — select the text and copy manually.');
+      setError('This browser blocked the clipboard. Select the text and copy it by hand.');
     }
   };
 
@@ -109,18 +109,18 @@ export const Transfer = () => {
   const visible = items.filter((item) => new Date(item.expiresAt).getTime() > now);
 
   return (
-    <main className="tr-page">
+    <main className="sakura tr-page">
       <div className="tr-user">
         <UserButton afterSignOutUrl="/college" />
       </div>
 
       <header className="tr-hero">
-        <p className="tr-eyebrow">Route /transfer · private · auto-expires</p>
+        <p className="tr-eyebrow">/transfer · private · auto-expires</p>
         <h1 className="tr-title">Transfer</h1>
         <div className="tr-rule" aria-hidden="true" />
         <p className="tr-sub">
-          A private clipboard between your signed-in machines. Paste something here, pick it up on
-          the other side — every item deletes itself 30 minutes after it is sent.
+          A private clipboard between your signed-in machines. Paste something here and pick it up
+          on the other one. Every item deletes itself 30 minutes after you send it.
         </p>
       </header>
 
@@ -130,7 +130,7 @@ export const Transfer = () => {
           className="tr-input"
           rows={6}
           maxLength={MAX_CONTENT}
-          placeholder="Paste text, a link, a code snippet…"
+          placeholder="Paste text, a link or code"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={(e) => {
@@ -154,7 +154,7 @@ export const Transfer = () => {
 
       <section className="tr-list" aria-label="Active transfers">
         {loaded && visible.length === 0 && !error ? (
-          <p className="tr-empty">Nothing active. Whatever you send here will be waiting on your other machine within seconds.</p>
+          <p className="tr-empty">Nothing here yet. Whatever you send shows up on your other machine within seconds.</p>
         ) : (
           visible.map((item) => (
             <article className="tr-item" key={item.id}>

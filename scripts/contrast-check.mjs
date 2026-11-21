@@ -110,19 +110,21 @@ const UI = 3; // non-text UI (borders)
 /* ---- the LIGHT ladder core (04 §3.4) ---- */
 const lightCore = () => {
   checkAll(
-    [...TEXT_TIERS, "--accent", "--accent-hi", "--success", "--warning", "--error"],
+    [...TEXT_TIERS, "--accent", "--success", "--warning", "--error"],
     SURFACES,
     TEXT,
   );
-  check("--on-accent", "--accent", TEXT);
+  // --accent is accent TEXT; --accent-hi is the solid fill carrying --on-accent.
   check("--on-accent", "--accent-hi", TEXT);
+  check("--on-primary", "--primary", TEXT);
+  check("--accent", "--selection", TEXT);
   check("--text", "--selection", TEXT);
 };
 
 /* ---- the DARK ladder core (04 §2.3) ---- */
 const darkCore = () => {
   checkAll(
-    [...TEXT_TIERS, "--accent", "--accent-hi", "--success", "--warning", "--error-hi"],
+    [...TEXT_TIERS, "--accent", "--success", "--warning", "--error-hi"],
     SURFACES,
     TEXT,
   );
@@ -130,8 +132,10 @@ const darkCore = () => {
   // case (04 §4.2), which is why --danger-text aliases to it on this ladder.
   check("--error", "--bg", TEXT);
   check("--error", "--surface", TEXT);
-  check("--on-accent", "--accent", TEXT);
+  // --accent is accent TEXT; --accent-hi is the solid fill carrying --on-accent.
   check("--on-accent", "--accent-hi", TEXT);
+  check("--on-primary", "--primary", TEXT);
+  check("--accent", "--selection", TEXT);
   check("--text", "--selection", TEXT);
 };
 
