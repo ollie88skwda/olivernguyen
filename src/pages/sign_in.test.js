@@ -19,7 +19,7 @@ describe('SignInPage', () => {
   it('explains itself instead of white-screening when no publishable key is set', () => {
     delete process.env.REACT_APP_CLERK_PUBLISHABLE_KEY;
     render(<SignInPage />);
-    expect(screen.getByText(/not configured/i)).toBeInTheDocument();
+    expect(screen.getByText(/not set up/i)).toBeInTheDocument();
     expect(screen.queryByText('clerk sign in card')).not.toBeInTheDocument();
   });
 

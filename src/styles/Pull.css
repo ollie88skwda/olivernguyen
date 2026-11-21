@@ -325,7 +325,7 @@
   color: var(--text);
 }
 .pull-level[aria-pressed="true"] .pull-level-amount {
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 
 .pull-clear {

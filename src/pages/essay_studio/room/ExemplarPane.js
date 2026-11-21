@@ -11,7 +11,7 @@ const stripFrontmatter = (raw) => String(raw ?? '').replace(/^---[\s\S]*?\n---\s
 const TIER_NOTE = {
   A: 'published by the university',
   B: 'published by a book or news outlet',
-  C: 'self-reported — the writing is real, the admission is a claim',
+  C: 'self-reported, so the writing is real but the admission is a claim',
 };
 
 export const ExemplarPane = ({ promptKey, exemplars, error, docs, onLoad }) => {

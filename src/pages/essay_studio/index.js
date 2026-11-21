@@ -72,26 +72,25 @@ export const EssayStudio = () => {
   };
 
   return (
-    <main className="es-page">
+    <main className="es-page sakura">
       <div className="es-user">
         <UserButton afterSignOutUrl="/college" />
       </div>
 
       <header className="es-hero">
         <Reveal as="p" className="es-hero-eyebrow">
-          Route /studio · private · unlinked
+          Private page, not linked anywhere
         </Reveal>
         <h1 className="es-hero-title">
           <WordReveal text="Essay Studio" />
         </h1>
         <div className="es-hero-rule" aria-hidden="true" />
         <Reveal as="p" className="es-hero-sub" delay={0.4}>
-          Every draft in the vault, what it is answering, and how far over the word wall it runs.
-          Open a version to write.
+          Every draft in the vault, the prompt it answers, and how far it is over the word limit. Open a version to write.
         </Reveal>
       </header>
 
-      {loadingFiles && vault.prompts.length === 0 && <p className="es-readout">Reading the vault…</p>}
+      {loadingFiles && vault.prompts.length === 0 && <p className="es-readout">Reading the vault...</p>}
       {filesError && <p className="es-readout es-readout-error">{filesError}</p>}
       {draftError && <p className="es-readout es-readout-error">{draftError}</p>}
 
@@ -117,9 +116,8 @@ export const EssayStudio = () => {
           <section className="es-sec">
             <p className="es-readout">Vault read, nothing to show</p>
             <p className="es-hint">
-              No prompt folders came back. The Desk looks for a directory containing{' '}
-              <code>00_Overview.md</code> — check that the repo in <code>GITHUB_REPO</code> is the vault
-              and that its default branch has the <code>UC/</code> tree.
+              No prompt folders came back. The desk looks for a directory containing{' '}
+              <code>00_Overview.md</code>. Check that the repo in <code>GITHUB_REPO</code> is the vault and that its default branch has the <code>UC/</code> tree.
             </p>
           </section>
         )

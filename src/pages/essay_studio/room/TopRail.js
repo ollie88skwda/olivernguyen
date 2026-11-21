@@ -61,7 +61,7 @@ export const TopRail = ({
             className={current ? 'es-version es-version-on' : 'es-version'}
             aria-current={current ? 'true' : undefined}
             onClick={() => !current && onSwitch(versionSlug(entry))}
-            title={entry.isOdyssey ? `${entry.label} — counselor pass` : entry.label}
+            title={entry.isOdyssey ? `${entry.label}, counselor pass` : entry.label}
           >
             {entry.label}
             {entry.isOdyssey && <i className="es-version-od" aria-hidden="true" />}
@@ -77,7 +77,7 @@ export const TopRail = ({
       onClick={onToggleVim}
       title={
         vimMode
-          ? 'Vim mode on — :w saves, :wq saves and returns, :q goes back'
+          ? 'Vim mode on. :w saves, :wq saves and returns, :q goes back'
           : 'Turn on Vim keybindings'
       }
     >

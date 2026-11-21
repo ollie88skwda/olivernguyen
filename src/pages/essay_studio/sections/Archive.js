@@ -51,11 +51,10 @@ export const Archive = ({ schools, eyebrow, docs, onLoad }) => {
 
   return (
     <section id="archive" className="es-sec">
-      <SectionHeading eyebrow={eyebrow} title="Not In Play" />
+      <SectionHeading eyebrow={eyebrow} title="Not in play" />
 
       <Reveal as="p" className="es-hint">
-        Prompts you did not select and the reference material. Kept out of the board so the four you are
-        writing stay the whole picture.
+        Prompts you did not pick, plus reference material. They stay off the board so it only shows what you are writing.
       </Reveal>
 
       {archive.length > 0 && (

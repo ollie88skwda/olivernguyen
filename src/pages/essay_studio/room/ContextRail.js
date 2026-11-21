@@ -38,7 +38,7 @@ const EditablePane = ({ path, doc, editor, dirty, saving, onChange, onSave, onRe
         {!saving && dirty && <span className="es-ctx-state es-ctx-state-warn">Unsaved</span>}
         {editor && editor.conflict && (
           <button type="button" className="es-ctx-btn es-ctx-btn-warn" onClick={onReload}>
-            Changed elsewhere — reload
+            Changed elsewhere, reload
           </button>
         )}
       </div>

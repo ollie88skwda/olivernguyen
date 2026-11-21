@@ -122,7 +122,7 @@ export const WritingRoom = () => {
         if (!wantsSave) return;
         const ok = await saveAllDirty();
         if (!ok) {
-          window.alert('Save failed — staying on this draft so nothing is lost.');
+          window.alert('Save failed. You are still on this draft, so nothing is lost.');
           return;
         }
       }
@@ -166,7 +166,7 @@ export const WritingRoom = () => {
   if (!prompt || !version) {
     const loading = vault.prompts.length === 0;
     return (
-      <main className="es-room es-room-center">
+      <main className="es-room es-room-center sakura">
         <p className="es-readout">{loading ? 'Reading the vault…' : 'No such draft.'}</p>
         {!loading && (
           <button type="button" className="es-back" onClick={() => history.push('/studio')}>
@@ -185,7 +185,7 @@ export const WritingRoom = () => {
   const geometry = budgetGeometry(liveCount, version.wordLimit);
 
   return (
-    <main className={contextOpen ? 'es-room' : 'es-room es-room-wide'}>
+    <main className={contextOpen ? 'es-room sakura' : 'es-room es-room-wide sakura'}>
       <TopRail
         school={school}
         prompt={prompt}

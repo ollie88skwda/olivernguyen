@@ -6,8 +6,8 @@
    are the same two /major defines. */
 
 :root {
-  --es-warn: #8a3b12;
-  --es-good: #1d5b3a;
+  --es-warn: var(--warning);
+  --es-good: var(--success);
 }
 
 /* ══ shared ═══════════════════════════════════════════════════════════════ */
@@ -51,7 +51,7 @@
 
 .es-pill {
   font-family: var(--font-mono);
-  font-size: 0.55rem;
+  font-size: 0.68rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   padding: 3px 7px;
@@ -61,11 +61,11 @@
   display: inline-block;
 }
 .es-pill-warn {
-  border-color: rgba(138, 59, 18, 0.45);
+  border-color: color-mix(in srgb, var(--es-warn) 45%, transparent);
   color: var(--es-warn);
 }
 .es-pill-good {
-  border-color: rgba(29, 91, 58, 0.4);
+  border-color: color-mix(in srgb, var(--es-good) 40%, transparent);
   color: var(--es-good);
 }
 
@@ -82,10 +82,10 @@
   list-style: none;
   padding: 12px 15px;
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: 0.68rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 .es-page details.plain > summary::-webkit-details-marker,
 .es-room details.plain > summary::-webkit-details-marker {
@@ -111,7 +111,7 @@
 /* markdown subset (markdown.js) */
 .es-md-h {
   font-family: var(--font-mono);
-  font-size: 0.58rem;
+  font-size: 0.68rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-faint);
@@ -141,7 +141,7 @@
   max-width: var(--maxw);
   margin: 0 auto;
   padding: 76px 24px 140px;
-  background: transparent;
+  background: var(--bg);
 }
 .es-page-center {
   display: grid;
@@ -161,18 +161,17 @@
 }
 .es-hero-title {
   font-family: var(--font-display);
-  text-transform: uppercase;
-  font-weight: 900;
+  font-weight: 760;
   font-size: clamp(2.6rem, 8vw, 4.4rem);
-  line-height: 0.88;
-  letter-spacing: 0.01em;
+  line-height: 0.96;
+  letter-spacing: -0.05em;
   color: var(--text);
   margin: 0;
 }
 .es-hero-rule {
   height: 2px;
   width: 104px;
-  background: rgba(18, 34, 49, 0.3);
+  background: var(--border-strong);
   margin: 24px 0 0;
 }
 .es-hero-sub {
@@ -237,7 +236,7 @@
   cursor: pointer;
 }
 .es-budget-row-link:hover .es-budget-name {
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 .es-budget-row-link:hover .es-track {
   border-color: var(--accent);
@@ -248,10 +247,9 @@
 }
 .es-budget-name {
   font-family: var(--font-display);
-  text-transform: uppercase;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 1.02rem;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.02em;
   line-height: 1.15;
   color: var(--text);
 }
@@ -280,8 +278,8 @@
 .es-track-over {
   background: repeating-linear-gradient(
     135deg,
-    rgba(138, 59, 18, 0.85) 0 5px,
-    rgba(138, 59, 18, 0.5) 5px 10px
+    color-mix(in srgb, var(--es-warn) 85%, transparent) 0 5px,
+    color-mix(in srgb, var(--es-warn) 50%, transparent) 5px 10px
   );
 }
 .es-track-wall {
@@ -349,10 +347,10 @@
 .es-key-over {
   background: repeating-linear-gradient(
     135deg,
-    rgba(138, 59, 18, 0.85) 0 4px,
-    rgba(138, 59, 18, 0.5) 4px 8px
+    color-mix(in srgb, var(--es-warn) 85%, transparent) 0 4px,
+    color-mix(in srgb, var(--es-warn) 50%, transparent) 4px 8px
   );
-  border-color: rgba(138, 59, 18, 0.5);
+  border-color: color-mix(in srgb, var(--es-warn) 50%, transparent);
 }
 /* Needs to out-specify `.es-key i`, which sets the swatch box. */
 .es-key i.es-key-wall {
@@ -376,10 +374,9 @@
 }
 .es-prompt-title {
   font-family: var(--font-display);
-  text-transform: uppercase;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 1.35rem;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.02em;
   color: var(--text);
   margin: 0;
 }
@@ -435,7 +432,7 @@
   top: -1px;
   right: -1px;
   font-family: var(--font-mono);
-  font-size: 0.45rem;
+  font-size: 0.68rem;
   letter-spacing: 0.08em;
   padding: 2px 4px;
   background: var(--es-warn);
@@ -457,7 +454,7 @@
 }
 .es-stn-d {
   font-family: var(--font-mono);
-  font-size: 0.56rem;
+  font-size: 0.68rem;
   letter-spacing: 0.06em;
   color: var(--text-faint);
 }
@@ -498,7 +495,7 @@
 }
 .es-archive-item > summary::before {
   content: "+ ";
-  color: var(--accent-hi);
+  color: var(--accent);
   font-weight: 700;
 }
 .es-archive-item[open] > summary::before {
@@ -537,7 +534,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
   grid-template-rows: auto minmax(0, 1fr) auto;
-  background: var(--bg-base);
+  background: var(--bg);
 }
 .es-room-wide {
   grid-template-columns: minmax(0, 1fr) 34px;
@@ -566,7 +563,7 @@
   font-size: 0.6rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--accent-hi);
+  color: var(--accent);
   background: none;
   border: 0;
   padding: 6px 8px 6px 0;
@@ -584,18 +581,17 @@
 }
 .es-rail-school {
   font-family: var(--font-mono);
-  font-size: 0.52rem;
+  font-size: 0.68rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-faint);
 }
 .es-rail-title {
   font-family: var(--font-display);
-  text-transform: uppercase;
-  font-weight: 800;
+  font-weight: 700;
   font-size: 1.06rem;
   line-height: 1.05;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.02em;
   color: var(--text);
   min-width: 0;
 }
@@ -603,7 +599,7 @@
 /* Vim toggle: off reads as a label, on reads as a live mode. */
 .es-vim {
   font-family: var(--font-mono);
-  font-size: 0.54rem;
+  font-size: 0.68rem;
   letter-spacing: 0.14em;
   padding: 5px 9px;
   border: 1px solid var(--border);
@@ -667,7 +663,7 @@
 
 .es-save {
   font-family: var(--font-mono);
-  font-size: 0.58rem;
+  font-size: 0.68rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -721,7 +717,7 @@
 }
 .es-fileline {
   font-family: var(--font-mono);
-  font-size: 0.56rem;
+  font-size: 0.68rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-faint);
@@ -737,7 +733,7 @@
 
 .es-odyssey {
   border-left: 3px solid var(--es-warn);
-  background: rgba(138, 59, 18, 0.07);
+  background: color-mix(in srgb, var(--es-warn) 7%, transparent);
   padding: 12px 15px;
   margin: 0 0 20px;
   font-size: 0.88rem;
@@ -751,15 +747,15 @@
   flex-wrap: wrap;
   padding: 11px 14px;
   margin: 0 0 20px;
-  background: rgba(138, 59, 18, 0.08);
-  border: 1px solid rgba(138, 59, 18, 0.3);
+  background: color-mix(in srgb, var(--es-warn) 8%, transparent);
+  border: 1px solid color-mix(in srgb, var(--es-warn) 30%, transparent);
   font-family: var(--font-mono);
   font-size: 0.7rem;
   color: var(--es-warn);
 }
 .es-conflict button {
   font-family: var(--font-mono);
-  font-size: 0.58rem;
+  font-size: 0.68rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   background: none;
@@ -775,7 +771,7 @@
   gap: 9px;
   margin-left: auto;
   font-family: var(--font-mono);
-  font-size: 0.56rem;
+  font-size: 0.68rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-faint);
@@ -799,7 +795,7 @@
   border-bottom: 1px solid var(--border);
   background: var(--surface-2);
   font-family: var(--font-mono);
-  font-size: 0.56rem;
+  font-size: 0.68rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-faint);
@@ -833,7 +829,7 @@
   flex: 1;
   writing-mode: vertical-rl;
   font-family: var(--font-mono);
-  font-size: 0.54rem;
+  font-size: 0.68rem;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--text-faint);
@@ -843,7 +839,7 @@
   padding: 12px 0;
 }
 .es-ctx-handle:hover {
-  color: var(--accent-hi);
+  color: var(--accent);
   background: var(--surface);
 }
 
@@ -863,7 +859,7 @@
   flex: 1;
   min-width: 0;
   font-family: var(--font-mono);
-  font-size: 0.55rem;
+  font-size: 0.68rem;
   /* Four tabs share a 320px rail, and "Exemplars" is the longest label by some
      margin. Tracking and padding are set so it fits on one line without the
      other three looking cramped. */
@@ -905,7 +901,7 @@
   cursor: pointer;
 }
 .es-ctx-close:hover {
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 
 .es-ctx-body {
@@ -916,7 +912,7 @@
 }
 .es-ctx-h {
   font-family: var(--font-mono);
-  font-size: 0.54rem;
+  font-size: 0.68rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-faint);
@@ -959,7 +955,7 @@
 .es-ctx-beats code {
   font-family: var(--font-mono);
   font-size: 0.72em;
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 /* ── exemplars ─────────────────────────────────────────────────────────────
    Other people's essays, ranked. Read-only by construction, so nothing here
@@ -991,7 +987,7 @@
   color: var(--text);
 }
 .es-ex-head:hover .es-ex-title {
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 .es-ex-rank {
   flex: 0 0 auto;
@@ -1009,7 +1005,7 @@
 .es-ex-tier {
   flex: 0 0 auto;
   font-family: var(--font-mono);
-  font-size: 0.52rem;
+  font-size: 0.68rem;
   letter-spacing: 0.08em;
   padding: 1px 4px;
   border: 1px solid var(--border);
@@ -1029,13 +1025,13 @@
 .es-ex-score {
   flex: 0 0 auto;
   font-family: var(--font-mono);
-  font-size: 0.62rem;
+  font-size: 0.68rem;
   color: var(--text-muted);
 }
 .es-ex-meta {
   margin: 0 0 0 calc(1.1em + 8px);
   font-family: var(--font-mono);
-  font-size: 0.54rem;
+  font-size: 0.68rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-faint);
@@ -1059,10 +1055,10 @@
   display: inline-block;
   margin-top: 8px;
   font-family: var(--font-mono);
-  font-size: 0.56rem;
+  font-size: 0.68rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 
 .es-ctx-more {
@@ -1074,10 +1070,10 @@
   cursor: pointer;
   list-style: none;
   font-family: var(--font-mono);
-  font-size: 0.54rem;
+  font-size: 0.68rem;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--accent-hi);
+  color: var(--accent);
 }
 .es-ctx-more > summary::-webkit-details-marker {
   display: none;
@@ -1099,25 +1095,25 @@
 }
 .es-ctx-btn {
   font-family: var(--font-mono);
-  font-size: 0.54rem;
+  font-size: 0.68rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   padding: 5px 10px;
   border: 1px solid var(--border);
   background: var(--surface);
-  color: var(--accent-hi);
+  color: var(--accent);
   cursor: pointer;
 }
 .es-ctx-btn:hover {
   border-color: var(--accent);
 }
 .es-ctx-btn-warn {
-  border-color: rgba(138, 59, 18, 0.5);
+  border-color: color-mix(in srgb, var(--es-warn) 50%, transparent);
   color: var(--es-warn);
 }
 .es-ctx-state {
   font-family: var(--font-mono);
-  font-size: 0.52rem;
+  font-size: 0.68rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-faint);
@@ -1158,7 +1154,7 @@
 }
 .es-foot-note {
   font-family: var(--font-mono);
-  font-size: 0.55rem;
+  font-size: 0.68rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--text-faint);

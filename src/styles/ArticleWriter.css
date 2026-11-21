@@ -113,7 +113,7 @@
   margin: 0 0 var(--s-4);
 }
 .aw-article a {
-  color: var(--accent-hi);
+  color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 3px; /* same underline treatment as .on-btn link */
 }

@@ -1,4 +1,4 @@
-// Wordmark: the slash mark in accent pink, then "oliver nguyen" in 700 (D-37/D-38).
+// Wordmark: the slash mark in accent pink, then "oliver nguyen" in 700 (lowercase, matching the home top bar) (D-37/D-38).
 // The slash path is the same one src/portfolio/Portfolio.jsx draws. Values live
 // in src/styles/components.css (.on-wordmark). `as` lets it be a link or text.
 import * as React from "react";

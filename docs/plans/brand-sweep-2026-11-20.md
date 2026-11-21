@@ -22,3 +22,9 @@ Owner: root agent in Herdr workspace `olivernguyen` (w179). Source request (Oliv
 - Run `npx vitest run <your dirs>` and keep tests green; update tests only where they assert copy you changed.
 - Keep behaviour, routes, auth gates and data untouched; this is look + words only.
 - Report: files changed, before/after screenshot paths, tests run, anything left.
+
+## Status (root agent, final)
+- All helpers reported and committed: brand layer (Jack, D-38), pull/emoji (George), sat/driving (Mike), college/transfer/sign-in/404/articlewriter (Ruby), major (Leo), apply (Lucy), mom/girlfriend checked unchanged (Ben). Studio (Frank) closed without a report; his edits were reviewed by the root agent and committed.
+- Root agent did: passphrase/sign-in gates, 404 layout, readable-pink text pass (`--accent-hi` text -> `--accent`), lowercase wordmark, sign-in test copy.
+- Verified 2026-11-20: vitest 478/478, contrast-check 175/175, Playwright sweep of 15 routes x light/dark x 1440/390: no page errors, no overflow; only /mom keeps its own fonts (intentional gift page).
+- Left open: Playwright e2e suites not run (several assert the old graph/terminal home and old pink hexes, e.g. e2e/permit-lane.spec.js); docs/COMPONENTS.md and /_components copy still describe old radii; /college has unwritten [headline] placeholders (Oliver to write); /transfer and /studio inner views only checked by code since they are behind Clerk sign-in.
