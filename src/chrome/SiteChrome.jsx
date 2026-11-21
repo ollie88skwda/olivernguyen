@@ -28,7 +28,6 @@ const MENU = [
   { label: "PULL", href: "/pull" },
   { label: "Transfer", href: "/transfer" },
   { group: "College", items: [
-    { label: "College", href: "/college" },
     { label: "Major", href: "/major" },
     { label: "Apply", href: "/apply" },
     { label: "Studio", href: "/studio" },

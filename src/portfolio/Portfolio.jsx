@@ -220,7 +220,7 @@ const Contact = () => {
 /* ---------------- chrome ---------------- */
 const PAGES = [
   { group: 'Projects', items: [['PULL', '/pull'], ['Emoji', '/emoji']] },
-  { group: 'College', items: [['College', '/college'], ['Major', '/major'], ['Apply', '/apply'], ['Studio', '/studio'], ['Transfer', '/transfer']] },
+  { group: 'College', items: [['Major', '/major'], ['Apply', '/apply'], ['Studio', '/studio'], ['Transfer', '/transfer']] },
   { group: 'Driving', items: [['Permit', '/permit'], ['License', '/license']] },
   { group: 'SAT', items: [['Resources', '/sat-resources'], ['Sign up', '/sat-signup']] },
 ];
