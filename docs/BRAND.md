@@ -1,9 +1,8 @@
 # BRAND.md — olivernguyen.com
 
-Master design system. Decided by D-37 (portfolio) and D-38 (sitewide), 2026-11-20. It replaces the
-earlier sakura system. Reference implementation: `src/portfolio/portfolio.css` (live at `/`); shared
+Master design system. Decided by D-37 (portfolio), D-38 (sitewide) and D-39 (Sakura colours back), 2026-11-20. Reference implementation: `src/portfolio/portfolio.css` (live at `/`); shared
 tokens for every other page: `src/styles/sakura.css` (the `.sakura` scope, token names kept).
-Contrast is enforced by `node scripts/contrast-check.mjs`. Same system as Clarity, accent rotated to pink.
+Contrast is enforced by `node scripts/contrast-check.mjs`. Type and shape follow Clarity; colours are Sakura (D-39).
 
 ## 1. Rules
 - Build only from tokens: `var(--token)`, never a hex, radius, duration or font name in a component.
@@ -14,20 +13,24 @@ Contrast is enforced by `node scripts/contrast-check.mjs`. Same system as Clarit
 ## 2. Colour (token → light / dark)
 | Token | Light | Dark | Role |
 |---|---|---|---|
-| `--bg` | #fcf9f4 | #191513 | page |
-| `--surface-2` | #f7f1e8 | #1f1b18 | subtle band |
-| `--surface` | #fffefb | #221e1c | cards, fields |
-| `--hover` | #ece5da | #292421 | hover fill |
-| `--border` | #dcd7ce | #383330 | hairlines |
-| `--border-strong` | #c4bdb3 | #514c48 | control borders |
-| `--text` | #211816 | #ece7df | ink |
-| `--text-muted` | #5a4c47 | #c4bcb4 | secondary text |
-| `--text-faint` | #786c63 | #958e88 | tertiary, labels |
-| `--primary` / `--on-primary` | #251d1a / #fcf9f4 | #e2ddd5 / #191513 | primary button |
-| `--accent` | #783555 | #eba6c4 | accent TEXT, links, focus ring, slash |
-| `--accent-hi` | #eab1c9 | #e19dba | accent SOLID fill (carries `--on-accent` #211816) |
-| `--selection` | #fee2ed | #2c1921 | text selection, accent wash |
-| `--success` | #036262 | #77cfcf | success |
+| `--bg` | #faf1f5 | #180f14 | page |
+| `--surface-2` | #f2e2ea | #2a1b22 | subtle band |
+| `--surface` | #fdf8fa | #1f1319 | cards, fields |
+| `--hover` | #f2e2ea | #2a1b22 | hover fill |
+| `--border` | #e2c9d4 | #3a2430 | hairlines |
+| `--border-strong` | #d9b6c4 | #5c3a48 | control borders |
+| `--text` | #3a1e2b | #f5dce6 | ink |
+| `--text-muted` | #6f4459 | #d888a8 | secondary text |
+| `--text-faint` | #84536a | #b0788f | tertiary, labels |
+| `--primary` / `--on-primary` | #3a1e2b / #fdf8fa | #f5dce6 / #180f14 | primary button |
+| `--accent` | #a83a68 | #ffb7d1 | accent TEXT, links, focus ring, slash |
+| `--accent-hi` | #93275a | #ff6fb0 | accent SOLID fill (carries `--on-accent` #fdf8fa / #1f1319) |
+| `--selection` | #f9d9e6 | #3a2430 | text selection, accent wash |
+| `--success` | #15734f | #46b989 | success |
+
+Colours are the original Sakura palette (D-02: Sakura Paper / Night Plum), restored by D-39. The
+whole palette is dyed pink; do not swap in neutral-base colours. The home's bottom bar is a quiet
+tinted strip, not a solid accent slab.
 
 Pink is the only accent. Use it for the slash, links, focus and small fills, not large areas.
 
@@ -52,7 +55,7 @@ retired (D-37); its `--node-*`, `--term-*` tokens remain only so the unmounted c
 `lucide-react` only, 18px, strokeWidth 1.75 (see `src/components/brand/icon.jsx`). Theme toggle: Sun / Moon in a 44px ghost button.
 
 ## 8. Logo
-The slash mark (path in `src/portfolio/Portfolio.jsx`, drawn by `<Wordmark>`) in `--accent`, then "oliver nguyen" in 700, 18px.
+The slash mark (path in `src/portfolio/Portfolio.jsx`, drawn by `<Wordmark>`) in `--accent`, then "Oliver Nguyen" in 700, 18px.
 
 ## 9. Chrome
 `src/chrome/SiteChrome.jsx` shows on every route except `/`: 56px, page colour at 88%, 12px blur, wordmark left, theme toggle and Pages menu right.

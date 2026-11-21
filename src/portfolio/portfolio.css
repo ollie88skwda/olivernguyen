@@ -1,8 +1,7 @@
 /*
  * src/portfolio/portfolio.css — terminal portfolio (D-37, revised 2026-11-20).
  *
- * Brand: the same system as clarity (because/src/app/globals.css), accent
- * ramp rotated to pink. Type measured from clarity.olivernguyen.com:
+ * Brand: clarity's type and shape system with the Sakura palette (D-39). Type measured from clarity.olivernguyen.com:
  *   display 760 · -0.05em · lh 0.96   body 410 · lh 1.55   label 550-600
  *   font-variation-settings "SHRP" 100, "CRSV" 0, "slnt" 0  (the sharpness)
  * Scoped under .pf.
@@ -16,21 +15,19 @@
 }
 
 .pf {
-  --pink-3: #fee2ed; --pink-5: #f8d1e1; --pink-7: #e3abc3;
-  --pink-9: #eab1c9; --pink-10: #e2a4be; --pink-11: #783555;
 
-  --page: #fcf9f4; --subtle: #f7f1e8; --surface: #fffefb; --hover: #ece5da;
-  --line: #dcd7ce; --line-strong: #c4bdb3;
-  --ink: #211816; --soft: #5a4c47; --faint: #786c63;
-  --primary: #251d1a; --on-primary: #fcf9f4;
+  --page: #faf1f5; --subtle: #f2e2ea; --surface: #fdf8fa; --hover: #f2e2ea;
+  --line: #e2c9d4; --line-strong: #d9b6c4;
+  --ink: #3a1e2b; --soft: #6f4459; --faint: #84536a;
+  --primary: #3a1e2b; --on-primary: #fdf8fa;
 
-  --accent: var(--pink-11);
-  --accent-solid: var(--pink-9);
-  --accent-solid-hover: var(--pink-10);
-  --accent-bg: var(--pink-3);
-  --accent-sel: var(--pink-5);
-  --on-accent: #211816;
-  --ok: #036262; --ok-bg: #e3f6f6;
+  --accent: #a83a68;
+  --accent-solid: #93275a;
+  --accent-solid-hover: #a83a68;
+  --accent-bg: #f7cede;
+  --accent-sel: #f7cede;
+  --on-accent: #fdf8fa;
+  --ok: #15734f; --ok-bg: #e3f2ea;
 
   --shadow-1: 0 1px 2px rgb(59 41 33 / 0.06), 0 1px 1px rgb(59 41 33 / 0.04);
   --shadow-2: 0 2px 6px rgb(59 41 33 / 0.06), 0 8px 24px rgb(59 41 33 / 0.08);
@@ -47,20 +44,20 @@
 }
 
 html[data-theme="dark"] .pf {
-  --pink-3: #2c1921; --pink-5: #412833; --pink-7: #643c4e;
-  --pink-9: #e19dba; --pink-10: #f0b1cb; --pink-11: #eba6c4;
-  --page: #191513; --subtle: #1f1b18; --surface: #221e1c; --hover: #292421;
-  --line: #383330; --line-strong: #514c48;
-  --ink: #ece7df; --soft: #c4bcb4; --faint: #958e88;
-  --primary: #e2ddd5; --on-primary: #191513;
-  --on-accent: #191513;
-  --ok: #77cfcf; --ok-bg: #0e2626;
+  --accent: #ffb7d1; --accent-solid: #ff6fb0; --accent-solid-hover: #ffb7d1;
+  --accent-bg: #2a1b22; --accent-sel: #3a2430;
+  --page: #180f14; --subtle: #1f1319; --surface: #1f1319; --hover: #2a1b22;
+  --line: #3a2430; --line-strong: #5c3a48;
+  --ink: #f5dce6; --soft: #d888a8; --faint: #b0788f;
+  --primary: #f5dce6; --on-primary: #180f14;
+  --on-accent: #1f1319;
+  --ok: #46b989; --ok-bg: #182520;
   --shadow-1: 0 1px 2px rgb(0 0 0 / 0.3);
   --shadow-2: 0 2px 6px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.36);
 }
 
-html:has(.pf) { background: #fcf9f4; scroll-padding-top: 64px; }
-html[data-theme="dark"]:has(.pf) { background: #191513; color-scheme: dark; }
+html:has(.pf) { background: #faf1f5; scroll-padding-top: 64px; }
+html[data-theme="dark"]:has(.pf) { background: #180f14; color-scheme: dark; }
 
 .pf, .pf *, .pf *::before, .pf *::after { box-sizing: border-box; }
 .pf {
@@ -248,4 +245,24 @@ a:hover > .pf-phones img { box-shadow: var(--shadow-2); }
 @media (prefers-reduced-motion: reduce) {
   .pf *, .pf *::before, .pf *::after { animation: none !important; transition: none !important; }
   .pf-block:not([data-done]) .pf-out, .pf-hero-body:not([data-show]) { opacity: 1; transform: none; }
+}
+.pf-logo span { white-space: nowrap; }
+@media (max-width: 420px) {
+  .pf-top-right { gap: 0; }
+  .pf-top-right .pf-pages-btn { padding: 0 8px; }
+}
+
+/* Bottom bar: the bottom bar is a quiet tinted strip, not a solid
+ * accent slab. Only the current window carries the accent (Oliver 2026-11-20:
+ * the old-colors bar "looks a little bit weird"). */
+.pf .pf-status {
+  background: var(--subtle); color: var(--soft);
+  border-top: 1px solid var(--line);
+}
+.pf .pf-status-session { background: var(--accent-bg); }
+.pf .pf-status-session .pf-slash path { fill: var(--accent); }
+.pf .pf-status a:hover { background: var(--hover); color: var(--ink); }
+.pf .pf-status a[aria-current] {
+  background: transparent; color: var(--accent); font-weight: 700;
+  box-shadow: inset 0 -2px 0 var(--accent);
 }

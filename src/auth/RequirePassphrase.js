@@ -16,7 +16,7 @@ export const RequirePassphrase = ({ label, route, children }) => {
 
   // Page color rather than a spinner: the gate and the page behind it share this
   // background, so a signed-in reload shows no flash of anything.
-  if (checking) return <div style={{ minHeight: '100dvh', background: 'var(--bg, #fcf9f4)' }} />;
+  if (checking) return <div style={{ minHeight: '100dvh', background: 'var(--bg, #faf1f5)' }} />;
   if (apiMissing) return <ApiMissing route={route || label} />;
   if (!authed) return <PassphraseGate label={label} />;
   return children;

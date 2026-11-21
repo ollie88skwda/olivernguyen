@@ -132,7 +132,7 @@ function Specimens() {
           id="marks"
           title="Wordmark · mode toggle"
           source="hand-built · BRAND §10 / §4 · D-25"
-          rule="The slash is --accent, then “oliver nguyen” in 700. The mode toggle is the second and last 999px component."
+          rule="The slash is --accent, then “Oliver Nguyen” in 700. The mode toggle is the second and last 999px component."
         >
           <Row label="Wordmark">
             <Wordmark />

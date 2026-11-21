@@ -40,33 +40,36 @@
  * (04 §2.3 / §3.4 dark+light cores, §6.2 / §6.4 the two derived themes).
  * ========================================================================== */
 
+/* Colors: the original Sakura palette (D-02), restored sitewide by D-39
+ * (Oliver 2026-11-20). Fonts, radii and spacing stay on D-38. */
+
 /* ---- LIGHT SAKURA LADDER — "Sakura Paper" (default, and the graph canvas) ---- */
 .sakura {
-  --bg: #fcf9f4;
-  --surface: #fffefb;
-  --surface-2: #f7f1e8;
-  --hover: #ece5da;
-  --border: #dcd7ce;
-  --border-strong: #c4bdb3;
-  --text: #211816;
-  --text-muted: #5a4c47;
-  --text-faint: #786c63;
-  --primary: #251d1a;
-  --on-primary: #fcf9f4;
-  --accent: #783555;
-  --accent-hi: #eab1c9;
-  --on-accent: #211816;
-  --success: #036262;
+  --bg: #faf1f5;
+  --surface: #fdf8fa;
+  --surface-2: #f2e2ea;
+  --hover: #f2e2ea;
+  --border: #e2c9d4;
+  --border-strong: #d9b6c4;
+  --text: #3a1e2b;
+  --text-muted: #6f4459;
+  --text-faint: #84536a;
+  --primary: #3a1e2b;
+  --on-primary: #fdf8fa;
+  --accent: #a83a68;
+  --accent-hi: #93275a;
+  --on-accent: #fdf8fa;
+  --success: #15734f;
   --warning: #835b10;
   --error: #b93a2c;
-  --selection: #fee2ed;
+  --selection: #f9d9e6; /* D-02 had #f7cede; lightened one step so accent text on it clears 4.5:1 (D-39) */
   /* graph-specific (retired mode, D-37; kept so graph.css still resolves) */
-  --node-fill: #fffefb;
-  --node-border: #8a7f76;
-  --node-border-active: #783555;
-  --edge: #dcd7ce;
-  --routing-pulse: #036262;
-  --dot-grid: #ece5da;
+  --node-fill: #fdf8fa;
+  --node-border: #a97188;
+  --node-border-active: #a83a68;
+  --edge: #d9b6c4;
+  --routing-pulse: #15734f;
+  --dot-grid: #e8d3dc;
 
   --error-hi: #95241a;
 
@@ -89,43 +92,43 @@
 
 /* ---- DARK SAKURA LADDER — "Night Plum" (04 §2.1) ---- */
 html[data-theme="dark"] .sakura {
-  --bg: #191513;
-  --surface: #221e1c;
-  --surface-2: #1f1b18;
-  --hover: #292421;
-  --border: #383330;
-  --border-strong: #514c48;
-  --text: #ece7df;
-  --text-muted: #c4bcb4;
-  --text-faint: #958e88;
-  --primary: #e2ddd5;
-  --on-primary: #191513;
-  --accent: #eba6c4;
-  --accent-hi: #e19dba;
-  --on-accent: #211816;
-  --success: #77cfcf;
+  --bg: #180f14;
+  --surface: #1f1319;
+  --surface-2: #2a1b22;
+  --hover: #2a1b22;
+  --border: #3a2430;
+  --border-strong: #5c3a48;
+  --text: #f5dce6;
+  --text-muted: #d888a8;
+  --text-faint: #b0788f;
+  --primary: #f5dce6;
+  --on-primary: #180f14;
+  --accent: #ffb7d1;
+  --accent-hi: #ff6fb0;
+  --on-accent: #1f1319;
+  --success: #46b989;
   --warning: #e8a94a;
-  --error: #ea6a5a;
+  --error: #e15647;
   --error-hi: #ea897e;
-  --selection: #2c1921;
+  --selection: #3a2430;
 
-  --node-fill: #221e1c;
-  --node-border: #7a736d;
-  --node-border-active: #eba6c4;
-  --edge: #383330;
-  --routing-pulse: #77cfcf;
-  --dot-grid: #292421;
+  --node-fill: #1f1319;
+  --node-border: #8f5b70;
+  --node-border-active: #ffb7d1;
+  --edge: #4f323e;
+  --routing-pulse: #46b989;
+  --dot-grid: #34242b;
 }
 
 /* ---- TERMINAL CONSOLE · DARK LADDER (04 §2.2) ---- */
 html[data-theme="dark"][data-mode="terminal"] .sakura {
-  --term-log: #c4bcb4;
-  --term-log-dim: #958e88;
-  --term-prompt: #eba6c4;
-  --term-active-line: #292421;
-  --term-cursor: #e19dba;
-  --term-success-line: #1b2422;
-  --term-error-line: #2b1b19;
+  --term-log: #d888a8;
+  --term-log-dim: #b0788f;
+  --term-prompt: #ff6fb0;
+  --term-active-line: #31202a;
+  --term-cursor: #ff6fb0;
+  --term-success-line: #182520;
+  --term-error-line: #2b1917;
 }
 
 /* ---- TERMINAL CONSOLE · LIGHT LADDER — plum ink on sakura paper.
@@ -141,13 +144,13 @@ html[data-theme="dark"][data-mode="terminal"] .sakura {
  * quietness as --surface-2 (1.11:1 on the page) and the active row is carried
  * by a --border-strong rule plus 500 weight. See 04 §6.5 for the ledger. */
 html[data-theme="light"][data-mode="terminal"] .sakura {
-  --term-log: #5a4c47;
-  --term-log-dim: #786c63;
-  --term-prompt: #783555;
-  --term-active-line: #f7f1e8;
-  --term-cursor: #783555;
-  --term-success-line: #e3f6f6;
-  --term-error-line: #fcefeb;
+  --term-log: #6f4459;
+  --term-log-dim: #84536a;
+  --term-prompt: #93275a;
+  --term-active-line: #f9e2ed;
+  --term-cursor: #93275a;
+  --term-success-line: #daece3;
+  --term-error-line: #fae3de;
 }
 
 /* ::selection uses --selection in both modes (04 §5 rationing rules). */

@@ -287,10 +287,10 @@ export const Portfolio = () => {
   const [active, setActive] = useState('top');
   const { theme, setTheme } = useSiteTheme();
   const dark = theme === 'dark';
-
   useEffect(() => {
     const m = document.querySelector('meta[name="theme-color"]');
-    if (m) m.setAttribute('content', dark ? '#191513' : '#fcf9f4');
+    const c = dark ? '#180f14' : '#faf1f5';
+    if (m) m.setAttribute('content', c);
   }, [dark]);
 
   const go = useCallback((id) => {
@@ -328,7 +328,7 @@ export const Portfolio = () => {
       <header className="pf-top">
         <a className="pf-logo" href="#top" onClick={(e) => { e.preventDefault(); go('top'); }}>
           <Slash size={20} />
-          <span>oliver nguyen</span>
+          <span>Oliver Nguyen</span>
         </a>
         <div className="pf-top-right">
         <PagesMenu />

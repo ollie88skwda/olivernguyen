@@ -9,6 +9,22 @@ and deleting it there.
 
 ---
 
+## 2026-11-20 · Sakura colours come back
+
+### D-39 · Sitewide colours = the original Sakura palette; Clarity type and shapes stay, Oliver 2026-11-20
+Oliver compared old vs new on the live home: "I like the old colors better except for the bar at the
+bottom", then "I'm happy with this homepage. Switch everything."
+- Colour tokens in `src/styles/sakura.css` and `src/portfolio/portfolio.css` are the D-02 Sakura Paper /
+  Night Plum hexes again. Supersedes the colour part of D-37/D-38 only; Geologica, radii, buttons and
+  the slash wordmark stay.
+- One change from D-02: light `--selection` #f7cede -> #f9d9e6 so `--accent` text on it clears 4.5:1.
+- Home bottom bar: tinted `--subtle` strip with a hairline; the current section is accent text with a
+  2px underline, not a solid accent slab.
+- Sign-in: Clerk v6 appearance variables renamed (`colorForeground`, `colorInput`...) so the card follows
+  the night theme.
+
+---
+
 ## 2026-11-20 · One brand sitewide
 
 ### D-38 · Sitewide brand = portfolio brand (Geologica, warm paper, pink accent), Oliver 2026-11-20

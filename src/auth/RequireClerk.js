@@ -33,7 +33,7 @@ const ClerkGate = ({ children }) => {
 
   // Page color rather than a spinner: the sign-in page and the studio share this
   // background, so an already-signed-in reload shows no flash of anything.
-  if (!isLoaded) return <div style={{ minHeight: '100dvh', background: 'var(--bg, #fcf9f4)' }} />;
+  if (!isLoaded) return <div style={{ minHeight: '100dvh', background: 'var(--bg, #faf1f5)' }} />;
   if (!isSignedIn) {
     return <Redirect to={`/sign-in?redirect=${encodeURIComponent(location.pathname)}`} />;
   }

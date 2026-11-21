@@ -10,11 +10,18 @@ import '../styles/SignIn.css';
 // not a broken sign-in.
 const appearance = {
   variables: {
+    // Clerk v6 names (colorText/colorInputBackground are gone; with them the
+    // card kept its default dark ink on the night background).
     colorPrimary: 'var(--primary)',
+    colorPrimaryForeground: 'var(--on-primary)',
     colorBackground: 'var(--surface)',
-    colorText: 'var(--text)',
-    colorTextSecondary: 'var(--text-muted)',
-    colorInputBackground: 'var(--bg)',
+    colorForeground: 'var(--text)',
+    colorMutedForeground: 'var(--text-muted)',
+    colorNeutral: 'var(--text)',
+    colorBorder: 'var(--border)',
+    colorInput: 'var(--bg)',
+    colorInputForeground: 'var(--text)',
+    colorRing: 'var(--accent)',
     borderRadius: '8px',
     fontFamily: 'var(--font-sans)',
   },
