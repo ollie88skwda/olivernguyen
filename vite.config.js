@@ -3,6 +3,7 @@ import { defineConfig, loadEnv } from "vite";
 import { configDefaults } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
+import { verifierApi } from "./scripts/vite-verifier-api.mjs";
 
 // CRA compat: legacy source reads process.env.REACT_APP_* at runtime
 // (src/auth/RequireClerk.js, src/lib/supabase.js). In dev/build we statically
@@ -33,7 +34,7 @@ export default defineConfig(({ command, mode }) => {
     // them with lang derived from the extension (js) and chokes on their JSX.
     // Narrow it to real .jsx/.tsx — fast-refresh never applied to raw-JSX .js
     // files anyway (their source lacks the jsx-runtime import it keys on).
-    plugins: [react({ include: /\.[tj]sx$/ }), tailwindcss()],
+    plugins: [react({ include: /\.[tj]sx$/ }), tailwindcss(), verifierApi()],
     define,
     // JSX-in-.js (CRA legacy, ~97 files) needs two different switches:
     // - dev server + Vitest run the vite:oxc JS transform plugin, which
