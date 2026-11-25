@@ -68,7 +68,8 @@ export default defineConfig(({ command, mode }) => {
     resolve: {
       alias: { "@": path.resolve(import.meta.dirname, "src") },
     },
-    server: { port: 3000 },
+    // Workshop is reached over Tailscale https (Clerk blocks sign-in from raw-IP http origins).
+    server: { port: 3000, allowedHosts: [".ts.net"] },
     test: {
       environment: "jsdom",
       globals: true,

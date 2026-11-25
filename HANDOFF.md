@@ -1,7 +1,7 @@
 # olivernguyen.com handoff
 
 ## Workshop (set up 2026-11-19)
-- Link (Tailscale, phone OK): http://100.69.165.32:13300/
+- Link (Tailscale https, phone OK, sign-in works): https://homes-mac-studio.tail95be78.ts.net:8460/ (`tailscale serve --https=8460 http://127.0.0.1:3300`; stop: `tailscale serve --https=8460 off`). The raw-IP http link http://100.69.165.32:13300/ still loads but Clerk sign-in is blocked there (Cloudflare 403 on non-secure origins).
 - Dev server: Herdr workspace `olivernguyen` (w179), tab `└ workshop-dev` (pane w179:p1K): `./node_modules/.bin/vite --host 127.0.0.1 --port 3300 --strictPort` (hot reload). Stop: Ctrl-C in that pane.
 - Exposure: `tailnet-expose 3300 13300 --bg`; stop with `tailnet-expose --stop 13300`.
 - Survives only while that pane and the tailnet-expose process run; not proven across reboots.
@@ -14,3 +14,4 @@
 - Follow-up: `feat/component-library` still says D-37/38/39 for these; rebase or reset it onto main before more work so the two don't drift.
 
 - 2026-11-25: /verifier dashboard for The Verifier (repo ~/Documents/Code/THE-VERIFIER, see its HANDOFF.md). Code: src/pages/verifier/, api/verifier/, api/_lib/verifier.mjs, scripts/vite-verifier-api.mjs (dev-only). Workshop only, NOT live. Live needs Oliver's yes, a Supabase bucket `verifier`, and VERIFIER_PUBLISH=1 in the loop.
+- 2026-11-25: Clerk DEV instance Google sign-in switched to Clerk shared credentials (custom Google client 1062975674798-... removed from dev only) because Google Cloud lacked the dev redirect URI and the console needed an unlocked screen. Prod untouched. Prior dev config saved at THE-VERIFIER/data/clerk-dev-before-20261125.json (secret was not exportable). To restore custom creds: add https://equal-sturgeon-67.clerk.accounts.dev/v1/oauth_callback to that Google OAuth client, then set client_id/secret in Clerk dev.
