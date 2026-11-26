@@ -38,7 +38,8 @@ export function validateAction(body) {
 }
 
 export async function queueAction(body, userId) {
-  const item = { ...body, by: userId, at: new Date().toISOString(), uid: randomUUID() };
+  const { action, id, agree, note } = body;
+  const item = { action, id, agree, note, by: userId, at: new Date().toISOString(), uid: randomUUID() };
   const name = `${item.at.replace(/[:.]/g, "-")}-${item.uid}.json`;
   const dir = process.env.VERIFIER_DIR;
   if (dir) {
