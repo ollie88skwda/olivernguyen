@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  Activity, Bot, CircleCheck, CircleDashed, CircleDot, CircleX, FlaskConical, FolderKanban, GitCommitHorizontal,
+  Activity, ArrowDownRight, ArrowUpRight, Bot, CircleCheck, CircleDashed, CircleDot, CircleX, FlaskConical, FolderKanban, Gauge, GitCommitHorizontal,
   Inbox, LayoutDashboard, Menu, MessageSquareWarning, RefreshCw, ShieldCheck, Wrench, X,
 } from 'lucide-react';
 import { UserButton } from '@clerk/react';
@@ -101,62 +101,257 @@ function outcomeColor(sc) {
   return sc.outcome >= 3 ? 'var(--vf-green)' : sc.outcome === 2 ? 'var(--vf-yellow)' : 'var(--vf-red)';
 }
 
-// ---------- views ----------
-function Overview({ snap, open, go }) {
-  const { metrics, current, previous, days } = snap;
-  const pending = snap.proposals.filter((p) => p.status === 'proposed').length;
-  const active = snap.proposals.filter((p) => p.status === 'active').length;
-  const maxRoots = Math.max(1, ...days.map((d) => d.roots));
+// ---------- charts ----------
+function Area({ values, color = 'var(--vf-accent)', height = 44 }) {
+  const id = React.useId().replace(/:/g, '');
+  const nums = values.filter((v) => v != null);
+  if (nums.length < 2) return <svg className="vf-area" style={{ height }} />;
+  const min = Math.min(...nums), max = Math.max(...nums), span = max - min || 1;
+  const step = 100 / (values.length - 1);
+  const pts = values.map((v, i) => (v == null ? null : [i * step, 38 - ((v - min) / span) * 34]));
+  const real = pts.filter(Boolean);
+  const line = real.map(([x, y], i) => `${i ? 'L' : 'M'}${x.toFixed(2)},${y.toFixed(2)}`).join('');
+  const fill = `${line}L${real[real.length - 1][0].toFixed(2)},40L${real[0][0].toFixed(2)},40Z`;
   return (
-    <>
-      <div className="vf-banner">
-        <Activity width={15} height={15} style={{ flexShrink: 0, marginTop: 2 }} color="var(--vf-accent)" />
+    <svg className="vf-area" style={{ height }} viewBox="0 0 100 40" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id={id} x1="0" x2="0" y1="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.35" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d={fill} fill={`url(#${id})`} />
+      <path d={line} fill="none" stroke={color} strokeWidth="1.6" vectorEffect="non-scaling-stroke" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+// Trend colour: green when the last week moved the good way, red when it moved the bad way.
+function trend(def, cur, prev) {
+  if (cur == null || prev == null || prev === 0) return { pct: null, tone: 'flat' };
+  const rel = (cur - prev) / Math.abs(prev);
+  if (Math.abs(rel) < 0.03) return { pct: 0, tone: 'flat' };
+  const good = def.better === 'lower' ? rel < 0 : rel > 0;
+  return { pct: Math.round(rel * 100), tone: good ? 'good' : 'bad' };
+}
+const TONE_COLOR = { good: 'var(--vf-green)', bad: 'var(--vf-red)', flat: 'var(--vf-accent)' };
+
+function Pill({ t }) {
+  if (t.pct == null) return <span className="vf-pill" data-tone="flat">no data</span>;
+  if (t.pct === 0) return <span className="vf-pill" data-tone="flat">flat</span>;
+  const Arrow = t.pct > 0 ? ArrowUpRight : ArrowDownRight;
+  // Past +200% a percentage stops meaning much; show it as a multiple instead.
+  const label = t.pct >= 200 ? `${Math.round(t.pct / 100 + 1)}×` : `${Math.abs(t.pct)}%`;
+  return <span className="vf-pill" data-tone={t.tone}><Arrow width={12} height={12} />{label}</span>;
+}
+
+function Kpi({ icon: Icon, label, value, sub, t, series, onClick }) {
+  return (
+    <button className="vf-kpi" onClick={onClick}>
+      <div className="vf-kpi-top">
+        <span className="vf-kpi-icon" data-tone={t.tone}><Icon width={15} height={15} /></span>
+        <span className="vf-kpi-label">{label}</span>
+        <Pill t={t} />
+      </div>
+      <div className="vf-kpi-value">{value}</div>
+      <div className="vf-kpi-sub">{sub}</div>
+      <Area values={series} color={TONE_COLOR[t.tone]} height={48} />
+    </button>
+  );
+}
+
+function DailyChart({ days }) {
+  const [hover, setHover] = useState(null);
+  const max = Math.max(1, ...days.map((d) => d.roots));
+  const top = Math.ceil(max / 5) * 5;
+  const ticks = [top, Math.round(top / 2), 0];
+  const weekStart = days.length - 7;
+  const h = hover != null ? days[hover] : null;
+  return (
+    <div className="vf-card vf-chart">
+      <div className="vf-chart-head">
         <div>
-          <strong style={{ color: 'var(--vf-text)' }}>{current.roots} tasks</strong> in the last 7 days across {current.sessions.toLocaleString()} agent sessions.{' '}
-          {pending ? <button className="vf-muted" style={{ textDecoration: 'underline' }} onClick={() => go('proposals')}>{pending} proposal{pending > 1 ? 's' : ''} waiting for you</button> : 'No proposals waiting.'}
-          {active ? ` ${active} experiment${active > 1 ? 's' : ''} running.` : ''}
-          <div className="vf-faint" style={{ marginTop: 2 }}>Numbers are heuristics from your session logs, not ground truth. Tap a card to see how it is measured.</div>
+          <div className="vf-chart-title">Tasks per day</div>
+          <div className="vf-faint">Tasks you started, last 6 weeks. This week is highlighted.</div>
+        </div>
+        <div className="vf-chart-readout">
+          {h ? (<><strong>{h.roots}</strong> tasks · {h.sessions} sessions · {fmt(h.cost, 'usd')}<span className="vf-faint"> · {shortDate(h.date)}</span></>)
+            : <span className="vf-faint">Hover or tap a bar</span>}
         </div>
       </div>
+      <div className="vf-chart-plot">
+        <div className="vf-chart-y">{ticks.map((t) => <span key={t}>{t}</span>)}</div>
+        <div className="vf-chart-area" onMouseLeave={() => setHover(null)}>
+          {ticks.map((t) => <div key={t} className="vf-grid" style={{ bottom: `${(t / top) * 100}%` }} />)}
+          <div className="vf-chart-bars">
+            {days.map((d, i) => (
+              <button
+                key={d.date}
+                className="vf-cbar"
+                data-week={i >= weekStart ? 'true' : undefined}
+                data-active={hover === i ? 'true' : undefined}
+                aria-label={`${shortDate(d.date)}: ${d.roots} tasks`}
+                onMouseEnter={() => setHover(i)}
+                onFocus={() => setHover(i)}
+                onClick={() => setHover(i)}
+              >
+                <span style={{ height: `${(d.roots / top) * 100}%` }} />
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+      <div className="vf-chart-x"><span>{shortDate(days[0]?.date)}</span><span>{shortDate(days[Math.floor(days.length / 2)]?.date)}</span><span>Today</span></div>
+    </div>
+  );
+}
 
-      <div className="vf-metrics">
-        {metrics.map((m) => {
-          const d = delta(m, current.values[m.key], previous.values[m.key]);
+const KIND_LABEL = { root: 'Your tasks', worker: 'Workers', eval: 'Evals', cron: 'Scheduled', watcher: 'Watchers' };
+const KIND_COLOR = { root: '#5e6ad2', worker: '#8b5cf6', eval: '#d97757', cron: '#4cb782', watcher: '#f2c94c' };
+function Spend({ snap }) {
+  const byKind = {};
+  for (const r of snap.harness) byKind[r.kind] = (byKind[r.kind] || 0) + r.cost;
+  const rows = Object.entries(byKind).sort((a, b) => b[1] - a[1]);
+  const total = rows.reduce((a, [, c]) => a + c, 0) || 1;
+  const projects = [...snap.projects].sort((a, b) => b.cost - a.cost).slice(0, 5);
+  const pmax = Math.max(1, ...projects.map((p) => p.cost));
+  return (
+    <div className="vf-card vf-spend">
+      <div className="vf-chart-title">Where compute goes</div>
+      <div className="vf-faint">Last 7 days · {fmt(total, 'usd')} total</div>
+      <div className="vf-stack">
+        {rows.map(([k, c]) => <span key={k} style={{ width: `${(c / total) * 100}%`, background: KIND_COLOR[k] || '#888' }} title={`${KIND_LABEL[k] || k}: ${fmt(c, 'usd')}`} />)}
+      </div>
+      <div className="vf-legend">
+        {rows.map(([k, c]) => (
+          <div key={k} className="vf-legend-row">
+            <span className="vf-dot" style={{ background: KIND_COLOR[k] || '#888' }} />
+            <span>{KIND_LABEL[k] || k}</span>
+            <span className="vf-faint vf-num" style={{ marginLeft: 'auto' }}>{Math.round((c / total) * 100)}%</span>
+            <span className="vf-num" style={{ width: 64, textAlign: 'right' }}>{fmt(c, 'usd')}</span>
+          </div>
+        ))}
+      </div>
+      <div className="vf-spend-h">Top projects · last 14 days</div>
+      {projects.map((p) => (
+        <div key={p.project} className="vf-hbar">
+          <span className="vf-hbar-name">{p.project}</span>
+          <span className="vf-hbar-track"><span style={{ width: `${(p.cost / pmax) * 100}%` }} /></span>
+          <span className="vf-num vf-muted">{fmt(p.cost, 'usd')}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ExperimentStrip({ snap, open, go }) {
+  const running = snap.proposals.filter((p) => p.status === 'active');
+  const waiting = snap.proposals.filter((p) => p.status === 'proposed');
+  if (!running.length && !waiting.length) return null;
+  return (
+    <div className="vf-exp-grid">
+      {waiting.length > 0 && (
+        <button className="vf-card vf-exp vf-exp-wait" onClick={() => go('proposals')}>
+          <div className="vf-exp-top"><Inbox width={14} height={14} /><span>Waiting for you</span></div>
+          <div className="vf-exp-big">{waiting.length}</div>
+          <div className="vf-faint">proposal{waiting.length > 1 ? 's' : ''} to approve or reject</div>
+        </button>
+      )}
+      {running.map((p) => {
+        const ev = p.evidence || {};
+        const day = p.trial_start ? Math.min(p.trial_days, (Date.now() - Date.parse(p.trial_start)) / 864e5) : 0;
+        const tasks = ev.trialTasks ?? 0;
+        const worse = (ev.guards || []).filter((g) => g.worse).length;
+        return (
+          <button key={p.id} className="vf-card vf-exp" onClick={() => open({ type: 'proposal', p })}>
+            <div className="vf-exp-top"><FlaskConical width={14} height={14} /><span>In trial</span>
+              {worse > 0 && <span className="vf-pill" data-tone="bad" style={{ marginLeft: 'auto' }}>{worse} guard{worse > 1 ? 's' : ''} worse</span>}
+            </div>
+            <div className="vf-exp-title">{p.title}</div>
+            <div className="vf-progress"><span style={{ width: `${(day / p.trial_days) * 100}%` }} /></div>
+            <div className="vf-exp-meta"><span>Day {Math.min(p.trial_days, Math.floor(day) + 1)} of {p.trial_days}</span><span>{Math.min(tasks, 15)}/15 tasks</span></div>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ---------- views ----------
+const HERO = [
+  { key: 'corrections_per_task', icon: MessageSquareWarning, label: 'Pushback per task', sub: 'times you had to correct an agent' },
+  { key: 'clean_end_rate', icon: CircleCheck, label: 'Clean finish', sub: 'tasks that ended with a real answer' },
+  { key: 'cost_per_task', icon: Gauge, label: 'Compute per task', sub: 'model spend for one task you start' },
+];
+
+function Overview({ snap, open, go }) {
+  const { metrics, current, previous, days } = snap;
+  const def = (k) => metrics.find((m) => m.key === k);
+  const last28 = days.slice(-28);
+  const rootsPrevWeek = days.slice(-14, -7).reduce((a, d) => a + d.roots, 0);
+  const tasksT = trend({ better: 'higher' }, current.roots, rootsPrevWeek || null);
+  const rest = metrics.filter((m) => !HERO.some((h) => h.key === m.key));
+  const hour = new Date().getHours();
+  const hello = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const checks = snap.self?.checks || [];
+  const healthy = checks.filter((c) => c.ok === true).length;
+  const known = checks.filter((c) => c.ok != null).length;
+  return (
+    <>
+      <div className="vf-hero">
+        <div>
+          <h2 className="vf-hello">{hello}, Oliver</h2>
+          <p className="vf-muted">Here is how your agents did over the last 7 days. Numbers come from your session logs and are estimates.</p>
+        </div>
+        <button className="vf-health" onClick={() => go('self')} data-ok={healthy === known ? 'true' : 'false'}>
+          <span className="vf-dot" /> Verifier {healthy === known ? 'healthy' : `${known - healthy} check${known - healthy > 1 ? 's' : ''} failing`}
+        </button>
+      </div>
+
+      <div className="vf-kpis">
+        <Kpi icon={Bot} label="Tasks this week" value={current.roots} sub={`${current.sessions.toLocaleString()} agent sessions`} t={tasksT}
+          series={last28.map((d) => d.roots)} onClick={() => go('sessions')} />
+        {HERO.map((h) => {
+          const m = def(h.key);
+          if (!m) return null;
+          return <Kpi key={h.key} icon={h.icon} label={h.label} value={fmt(current.values[h.key], m.unit)} sub={h.sub}
+            t={trend(m, current.values[h.key], previous.values[h.key])} series={last28.map((d) => d[h.key])} onClick={() => open({ type: 'metric', m })} />;
+        })}
+      </div>
+
+      <ExperimentStrip snap={snap} open={open} go={go} />
+
+      <div className="vf-main-grid">
+        <DailyChart days={days} />
+        <Spend snap={snap} />
+      </div>
+
+      <div className="vf-section-h"><h2>Everything else</h2><span>green is better than the week before, red is worse</span></div>
+      <div className="vf-minis">
+        {rest.map((m) => {
+          const t = trend(m, current.values[m.key], previous.values[m.key]);
           return (
-            <button key={m.key} className="vf-metric" onClick={() => open({ type: 'metric', m })}>
-              <span className="vf-metric-label">{m.label}</span>
-              <span className="vf-metric-value">{fmt(current.values[m.key], m.unit)}</span>
-              <span className={`vf-metric-delta ${d.cls}`}>{d.text}</span>
-              <Spark values={days.slice(-28).map((x) => x[m.key])} />
+            <button key={m.key} className="vf-mini" onClick={() => open({ type: 'metric', m })}>
+              <div className="vf-mini-top"><span className="vf-muted">{m.label}</span><Pill t={t} /></div>
+              <div className="vf-mini-value">{fmt(current.values[m.key], m.unit)}</div>
+              <Area values={last28.map((d) => d[m.key])} color={TONE_COLOR[t.tone]} height={30} />
             </button>
           );
         })}
       </div>
 
-      <div className="vf-two">
-        <div>
-          <div className="vf-section-h"><h2>Tasks per day</h2><span>root sessions you started, 6 weeks</span></div>
-          <div className="vf-card">
-            <div className="vf-bars">
-              {days.map((d) => <div key={d.date} className="vf-bar" title={`${d.date}: ${d.roots} tasks, ${d.sessions} sessions`} style={{ height: `${(d.roots / maxRoots) * 100}%` }} />)}
-            </div>
-            <div className="vf-bar-axis"><span>{shortDate(days[0]?.date)}</span><span>{shortDate(days[days.length - 1]?.date)}</span></div>
+      <div className="vf-section-h"><h2>Latest pushback</h2><span>where you had to step in</span>
+        <button className="vf-link" onClick={() => go('feed')}>See all</button></div>
+      <div className="vf-list">
+        {snap.feed.slice(0, 6).map((t, i) => (
+          <div key={i} className="vf-row">
+            <span className="vf-dot" style={{ background: t.c ? 'var(--vf-red)' : 'var(--vf-yellow)' }} />
+            <span className="vf-row-title">{t.text}</span>
+            <span className="vf-row-meta vf-hide-sm"><span className="vf-chip">{t.project}</span></span>
+            <span className="vf-row-time">{ago(t.ts)}</span>
           </div>
-        </div>
-        <div>
-          <div className="vf-section-h"><h2>Latest pushback</h2><span>where you had to step in</span></div>
-          <div className="vf-list">
-            {snap.feed.slice(0, 6).map((t, i) => (
-              <div key={i} className="vf-row">
-                <span className="vf-dot" style={{ background: t.c ? 'var(--vf-red)' : 'var(--vf-yellow)' }} />
-                <span className="vf-row-title">{t.text}</span>
-                <span className="vf-row-meta vf-hide-sm">{t.project}</span>
-                <span className="vf-row-time">{ago(t.ts)}</span>
-              </div>
-            ))}
-            {!snap.feed.length && <div className="vf-empty">No pushback in the last 2 weeks.</div>}
-          </div>
-        </div>
+        ))}
+        {!snap.feed.length && <div className="vf-empty">No pushback in the last 2 weeks.</div>}
       </div>
     </>
   );
@@ -573,7 +768,7 @@ export default function Verifier() {
             </button>
           </React.Fragment>
         ))}
-        <div className="vf-side-foot"><UserButton /><span>updated {ago(snap.generatedAt)} ago</span></div>
+        <div className="vf-side-foot"><UserButton /><span>updated {ago(snap.generatedAt) === 'now' ? 'just now' : `${ago(snap.generatedAt)} ago`}</span></div>
       </nav>
       {navOpen && <div className="vf-peek-scrim" style={{ zIndex: 25 }} onClick={() => setNavOpen(false)} />}
 
@@ -583,7 +778,7 @@ export default function Verifier() {
           <span className="vf-top-crumb vf-hide-sm">Verifier ›</span>
           <h1>{current.label}</h1>
           <div className="vf-top-right">
-            <span className="vf-hide-sm">{error ? `refresh failed: ${error}` : `snapshot ${ago(snap.generatedAt)} ago`}</span>
+            <span className="vf-hide-sm">{error ? `refresh failed: ${error}` : (ago(snap.generatedAt) === "now" ? "updated just now" : `updated ${ago(snap.generatedAt)} ago`)}</span>
             <button className="vf-menu-btn" style={{ display: 'inline-grid' }} onClick={load} aria-label="Refresh" disabled={loading}><RefreshCw width={14} height={14} /></button>
           </div>
         </header>
