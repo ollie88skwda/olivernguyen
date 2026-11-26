@@ -10,8 +10,8 @@
 .me-header .on-display { font-size: var(--fs-section); margin: 0; }
 .me-grid { display: grid; gap: var(--s-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, calc(var(--s-16) * 4)), 1fr)); }
 .me-link { color: inherit; text-decoration: none; display: block; }
-.me-link .on-card { height: 100%; }
+.me-page .me-card { height: 100%; display: grid; align-content: start; gap: var(--s-2); }
 .me-row { display: flex; align-items: center; justify-content: space-between; color: var(--text-muted); }
-.me-link .on-card-title { display: flex; align-items: center; gap: var(--s-2); }
+.me-page .me-title { display: flex; align-items: center; gap: var(--s-2); margin: 0; }
 .me-arrow { color: var(--text-muted); }
 .me-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }

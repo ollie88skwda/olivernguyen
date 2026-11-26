@@ -1,7 +1,7 @@
 import React from "react";
 import { ArrowUpRight, BookOpenText, CalendarClock, FileText, FlaskConical, GraduationCap, HeartPulse, Repeat } from "lucide-react";
 
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Display, MonoLabel } from "@/components/brand";
 import "./me.css";
 
@@ -29,16 +29,13 @@ export default function OwnerHub() {
         <nav className="me-grid" aria-label="Private pages">
           {PAGES.map(({ href, title, body, icon: Icon, gate }) => (
             <a key={href} href={href} className="me-link">
-              <Card interactive>
-                <CardHeader>
-                  <div className="me-row">
-                    <Icon aria-hidden="true" size={20} />
-                    <MonoLabel tone="muted">{gate}</MonoLabel>
-                  </div>
-                  <CardTitle>{title} <ArrowUpRight aria-hidden="true" size={16} className="me-arrow" /></CardTitle>
-                  <CardDescription>{body}</CardDescription>
-                  <MonoLabel tone="muted">{href}</MonoLabel>
-                </CardHeader>
+              <Card interactive className="me-card">
+                <div className="me-row">
+                  <Icon aria-hidden="true" size={20} />
+                  <MonoLabel tone="muted">{gate}</MonoLabel>
+                </div>
+                <CardTitle className="me-title">{title} <ArrowUpRight aria-hidden="true" size={16} className="me-arrow" /></CardTitle>
+                <CardDescription>{body}</CardDescription>
               </Card>
             </a>
           ))}
