@@ -64,6 +64,12 @@ export const TrackerMenuItem = () => (
     <DropdownMenuSeparator />
     <DropdownMenuLabel>Private</DropdownMenuLabel>
     <DropdownMenuItem asChild>
+      <a href="/me">All my pages</a>
+    </DropdownMenuItem>
+    <DropdownMenuItem asChild>
+      <a href="/verifier">The Verifier</a>
+    </DropdownMenuItem>
+    <DropdownMenuItem asChild>
       <a href="/tracker">Life tracker</a>
     </DropdownMenuItem>
     <DropdownMenuItem asChild>

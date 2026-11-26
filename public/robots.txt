@@ -5,3 +5,5 @@ Disallow:
 # in src/Routes.js so it does not exist in a production build at all; this line
 # is belt and braces.
 Disallow: /_components
+Disallow: /me
+Disallow: /verifier

@@ -46,6 +46,8 @@ const Transfer = lazy(() => import("./pages/transfer/index.js"));
 const Tracker = lazy(() => import("./pages/tracker/TrackerPage.jsx"));
 const TimeBlocks = lazy(() => import("./pages/time-blocks/TimeBlocksPage.jsx"));
 const MomFifty = lazy(() => import("./pages/mom/index.js"));
+const Verifier = lazy(() => import("./pages/verifier/index.jsx"));
+const OwnerHub = lazy(() => import("./pages/me/index.jsx"));
 
 // Dev-only component gallery (/_components). Behind import.meta.env.DEV so the
 // route, its chunk and the whole component-gallery tree are absent from a
@@ -82,7 +84,7 @@ const ClerkBridge = ({ children }) => {
 // pages/top_bar (grain retired, /debt dropped, TERM|GRAPH toggle added);
 // top_bar.js stays in the tree unmounted (P4 policy).
 // /be-my-girlfriend and the restored /mom + /mum page opt out of chrome.
-const NO_CHROME = ["/be-my-girlfriend", "/bemygirlfriend", "/girlfriend", "/mom", "/mum"];
+const NO_CHROME = ["/be-my-girlfriend", "/bemygirlfriend", "/girlfriend", "/mom", "/mum", "/verifier"];
 
 const isPublicAsset = (href) => {
   try {
@@ -227,6 +229,18 @@ export const Routes = () => {
               <Transfer />
             </Suspense>
           </RequireClerk>
+        </Route>
+        <Route path="/verifier">
+          <RequireOwner>
+            <Suspense fallback={<div style={{ minHeight: "100dvh", background: "#08090a" }} />}>
+              <Verifier />
+            </Suspense>
+          </RequireOwner>
+        </Route>
+        <Route path="/me">
+          <RequireOwner>
+            <OwnerHub />
+          </RequireOwner>
         </Route>
         <Route path="/tracker">
           <RequireOwner>
