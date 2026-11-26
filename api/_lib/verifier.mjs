@@ -1,5 +1,7 @@
 import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
+import { spawn } from "node:child_process";
+import { existsSync } from "node:fs";
 import { createClient } from "@supabase/supabase-js";
 
 // /verifier dashboard data. The Verifier loop (github.com/ollie88skwda/the-verifier)
@@ -42,6 +44,14 @@ export async function queueAction(body, userId) {
   if (dir) {
     await mkdir(`${dir}/data/inbox`, { recursive: true });
     await writeFile(`${dir}/data/inbox/${name}`, JSON.stringify(item));
+    // On the Mac, apply it now instead of waiting for the 10-minute loop.
+    // The loop still picks it up if this kick fails; it holds a lock so they never overlap.
+    const bun = [`${process.env.HOME}/.bun/bin/bun`, "/opt/homebrew/bin/bun"].find(existsSync) || "bun";
+    try {
+      const child = spawn(bun, ["src/cli.ts", "inbox"], { cwd: dir, detached: true, stdio: "ignore" });
+      child.on("error", () => {});
+      child.unref();
+    } catch {}
   } else {
     const { error } = await bucket().upload(`inbox/${name}`, JSON.stringify(item), { contentType: "application/json" });
     if (error) throw new Error(`Queue failed: ${error.message}`);

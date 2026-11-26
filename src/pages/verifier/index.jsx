@@ -360,7 +360,8 @@ function Peek({ item, onClose, act, snap }) {
   }
 
   if (item.type === 'proposal') {
-    const p = item.p;
+    const p = snap.proposals.find((x) => x.id === item.p.id) || item.p;
+    const starting = (snap.pending || []).some((a) => a.id === p.id && a.action === 'approve');
     const ev = p.evidence;
     title = p.id;
     body = (
@@ -375,7 +376,15 @@ function Peek({ item, onClose, act, snap }) {
           {p.decision && (<><dt>Decision</dt><dd>{p.decision}</dd></>)}
           {p.note && (<><dt>Your note</dt><dd>{p.note}</dd></>)}
         </dl>
-        {p.status === 'proposed' && (
+        {p.last_error && p.status === 'proposed' && (
+          <div className="vf-prose" style={{ color: 'var(--vf-red)' }}>
+            <h4>Last approve did not start</h4>{p.last_error.replace(/^\S+ /, '')}
+          </div>
+        )}
+        {starting && (
+          <div className="vf-prose"><h4>Starting…</h4>Your approval reached the Mac and is being applied. This page updates by itself.</div>
+        )}
+        {p.status === 'proposed' && !starting && (
           <>
             <textarea className="vf-textarea" placeholder="Optional note (why, or what to change)" value={note} onChange={(e) => setNote(e.target.value)} />
             <div className="vf-actions">
@@ -501,16 +510,42 @@ export default function Verifier() {
 
   useEffect(() => { window.location.hash = view; setNavOpen(false); }, [view]);
 
+  // After a tap, check back every few seconds until the action has been applied
+  // (or failed), so the result shows up without a manual refresh.
+  const watch = useCallback((id, before) => {
+    let n = 0;
+    const tick = async () => {
+      n += 1;
+      let s;
+      try { s = await apiFetch('/api/verifier/snapshot'); setSnap(s); } catch { s = null; }
+      const p = s?.proposals.find((x) => x.id === id);
+      // Done only when the result is visible: a new status or a new error.
+      const changed = p && p.status !== before.status;
+      const failed = p && p.last_error && p.last_error !== before.last_error;
+      if (changed || failed) {
+        setToast(changed ? (p.status === 'active' ? 'Trial started. It is under Experiments now.' : `Done: ${p.status}`) : 'That did not start. The reason is shown on the proposal.');
+        setTimeout(() => setToast(null), 5000);
+        return;
+      }
+      if (n < 60) setTimeout(tick, 3000);
+      else setToast(null);
+    };
+    setTimeout(tick, 1500);
+  }, []);
+
   const act = useCallback(async (body) => {
+    const before = snap?.proposals.find((x) => x.id === body.id) || {};
     try {
       await apiFetch('/api/verifier/action', { method: 'POST', body: JSON.stringify(body) });
-      setToast('Queued. The Verifier applies it on its next run (within 10 min).');
-      setPeek(null);
+      setToast(body.action === 'approve' ? 'Starting…' : 'Sent.');
+      setSnap((s) => s && { ...s, pending: [...(s.pending || []), { action: body.action, id: body.id }] });
+      if (body.action !== 'label') watch(body.id, before);
+      else setTimeout(() => setToast(null), 3000);
     } catch (e) {
       setToast(`Failed: ${e.message}`);
+      setTimeout(() => setToast(null), 5000);
     }
-    setTimeout(() => setToast(null), 3500);
-  }, []);
+  }, [snap, watch]);
 
   if (error && !snap) return <div className="vf"><div className="vf-loading">{error}</div></div>;
   if (!snap) return <div className="vf"><div className="vf-loading">Loading the Verifier…</div></div>;
