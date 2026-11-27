@@ -293,7 +293,11 @@ function Overview({ snap, open, go }) {
   const rest = metrics.filter((m) => !HERO.some((h) => h.key === m.key));
   const hour = new Date().getHours();
   const hello = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
-  const checks = snap.self?.checks || [];
+  // Freshness is judged here from the snapshot's age, not from the snapshot's own
+  // self-check: a stopped Verifier leaves a frozen snapshot that still says "fresh".
+  const ageMin = (Date.now() - Date.parse(snap.generatedAt)) / 60000;
+  const stale = ageMin > 30;
+  const checks = (snap.self?.checks || []).map((c) => (c.key === 'fresh' ? { ...c, ok: !stale } : c));
   const healthy = checks.filter((c) => c.ok === true).length;
   const known = checks.filter((c) => c.ok != null).length;
   return (
@@ -303,8 +307,8 @@ function Overview({ snap, open, go }) {
           <h2 className="vf-hello">{hello}, Oliver</h2>
           <p className="vf-muted">Here is how your agents did over the last 7 days. Numbers come from your session logs and are estimates.</p>
         </div>
-        <button className="vf-health" onClick={() => go('self')} data-ok={healthy === known ? 'true' : 'false'}>
-          <span className="vf-dot" /> Verifier {healthy === known ? 'healthy' : `${known - healthy} check${known - healthy > 1 ? 's' : ''} failing`}
+        <button className="vf-health" onClick={() => go('self')} data-ok={!stale && healthy === known ? 'true' : 'false'}>
+          <span className="vf-dot" /> {stale ? `Verifier stopped · last update ${ago(snap.generatedAt)} ago` : healthy === known ? 'Verifier healthy' : `Verifier: ${known - healthy} check${known - healthy > 1 ? 's' : ''} failing`}
         </button>
       </div>
 
